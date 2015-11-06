@@ -1,0 +1,14 @@
+// Variables
+$breadcrumbHeight: 40px;
+
+#breadcrumb
+{
+  height: $breadcrumbHeight;
+  min-height: $breadcrumbHeight;
+  max-height: $breadcrumbHeight;
+  padding: 10px 0 0 10px;
+
+  #breadcrumb-title  {
+    padding-left: 5px;
+  }
+}
