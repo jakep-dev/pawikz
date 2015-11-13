@@ -12,7 +12,7 @@
     {
         var api = {};
 
-        api.dataUrl = 'app/core/services/api/data/';
+        api.dataUrl = '/app/core/services/api/data/';
 
         api.dashboard = {
             project  : $resource(api.dataUrl + 'dashboard/project/data.json', null, {

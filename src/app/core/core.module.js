@@ -27,6 +27,8 @@
                 'uiGmapgoogle-maps',
                 'textAngular',
                 'ng-sortable',
-                'backTop'
+                'backTop',
+                'ksSwiper',
+                'angularSoap'
             ]);
 })();

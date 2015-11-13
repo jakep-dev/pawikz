@@ -9,6 +9,8 @@
     /** @ngInject */
     function config($stateProvider)
     {
+
+
         $stateProvider.state('app.dashboard-project', {
             url    : '/dashboard-project',
             views  : {
@@ -22,7 +24,7 @@
               }
             },
             resolve: {
-                DashboardData: function (apiResolver)
+                DashboardData: function (apiResolver, dataservice)
                 {
                     return apiResolver.resolve('dashboard.project@get');
                 }

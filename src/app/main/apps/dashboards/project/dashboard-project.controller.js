@@ -6,18 +6,23 @@
         .module('app.dashboard-project')
         .controller('DashboardProjectController', DashboardProjectController);
 
+
+
     /** @ngInject */
-    function DashboardProjectController($rootScope, $mdSidenav, DTColumnDefBuilder, DashboardData)
+    function DashboardProjectController($rootScope, $mdSidenav, DTColumnDefBuilder, DashboardData, dataservice)
     {
 
         var vm = this;
+        $rootScope.breadcrumb = 'Dashboard';
         $rootScope.templateDetails = [];
-        vm.templateDetails = DashboardData.templateDetails;
 
-        angular.forEach(vm.templateDetails, function(row)
-        {
-          $rootScope.templateDetails.push(row);
-        });
+        //vm.templateDetails = DashboardData.templateDetails;
+        //
+        //angular.forEach(vm.templateDetails, function(row)
+        //{
+        //  $rootScope.templateDetails.push(row);
+        //});
+
 
         //Dashboard DataTable Configuration
         vm.dtOptions = {
@@ -38,6 +43,17 @@
         function toggleSidenav(sidenavId) {
           $mdSidenav(sidenavId).toggle();
         }
+
+
+        dataservice.getDashboard().then(function(data)
+        {
+            vm.templateDetails = data;
+
+            angular.forEach(vm.templateDetails, function(row)
+            {
+                $rootScope.templateDetails.push(row);
+            });
+        });
     }
 
 })();

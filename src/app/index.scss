@@ -5,9 +5,41 @@
 // bower:scss
 // endbower
 
+
 /**
  *  Do not remove this comments bellow. It's the markers used by gulp-inject to inject
  *  all your sass files automatically
  */
 // injector
 // endinjector
+
+$loadingBackground:darkorange;
+
+#loading-bar .bar{
+  background: $loadingBackground;
+}
+
+#loading-bar .peg
+{
+  -moz-box-shadow: $loadingBackground 1px 0 6px 1px;
+  -ms-box-shadow: $loadingBackground 1px 0 6px 1px;
+  -webkit-box-shadow: $loadingBackground 1px 0 6px 1px;
+  box-shadow: $loadingBackground 1px 0 6px 1px;
+}
+
+#loading-bar-spinner .spinner-icon {
+  width: 95px;
+  height: 95px;
+  border:  solid 4px transparent;
+  border-top-color:  $loadingBackground;
+  border-left-color: $loadingBackground;
+}
+
+
+#loading-bar-spinner {
+  display: block;
+  position: fixed;
+  z-index: 10002;
+  top: 50%;
+  left: 50%;
+}

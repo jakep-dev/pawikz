@@ -11,6 +11,9 @@
             // Core
             'app.core',
 
+            // Blocks
+            'app.blocks',
+
             // Navigation
             'app.navigation',
 
@@ -24,6 +27,9 @@
             'app.dashboards',
 
             // Feedback
-            'app.pages.feedback'
+            'app.pages.feedback',
+
+            // Blank
+            'app.pages.blank'
         ]);
 })();
