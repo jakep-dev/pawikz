@@ -10,15 +10,15 @@
     .controller('DashboardSearchProjectController', DashboardSearchProjectController);
 
   /** @ngInject */
-  function DashboardSearchProjectController($rootScope, $mdSidenav)
+  function DashboardSearchProjectController($rootScope, $mdSidenav, dataservice)
   {
     var vm = this;
+    vm.loadingSearchProgress = false;
+    vm.companyId = 0;
+    vm.userId = 0;
 
-    vm.companyName = 'All';
-    vm.userName = 'All';
-
-    vm.companyNames = [{company: 'All'}];
-    vm.users = [{ user: 'All' }];
+    vm.companyNames = [{ id: 0,  name: 'All' }];
+    vm.users = [{ id: 0,  name: 'All' }];
 
     // Methods
     vm.toggleSidenav = toggleSidenav;
@@ -27,18 +27,20 @@
     vm.loadCompanyNames = loadCompanyNames;
     vm.loadUserNames = loadUserNames;
 
-
-
     // Load User Names
     function loadUserNames() {
       if (_.size(vm.users) === 1) {
-        _.each($rootScope.templateDetails, function (row) {
+        vm.loadingSearchProgress = true;
+        dataservice.getDashboardUsers().then(function(data)
+        {
+          var result = data.list;
 
-          if (_.where(vm.users, {user: row.createdName}).length === 0) {
-            vm.users.push({
-              user: row.createdName
-            });
-          }
+          angular.forEach(result, function(row)
+          {
+            vm.users.push(row);
+          });
+
+          vm.loadingSearchProgress = false;
         });
       }
     }
@@ -46,12 +48,16 @@
     // Load Company Names
     function loadCompanyNames() {
       if (_.size(vm.companyNames) === 1) {
-        _.each($rootScope.templateDetails, function (row) {
-          if (_.where(vm.companyNames, {company: row.company}).length === 0) {
-            vm.companyNames.push({
-              company: row.company
-            });
-          }
+        vm.loadingSearchProgress = true;
+        dataservice.getDashboardCompanies().then(function(data)
+        {
+          var result = data.list;
+
+          angular.forEach(result, function(row)
+          {
+            vm.companyNames.push(row);
+          });
+          vm.loadingSearchProgress = false;
         });
       }
     }
@@ -61,13 +67,36 @@
     }
 
     function filterDashboard() {
+      vm.loadingSearchProgress = true;
+      $rootScope.templateDetails = [];
+      dataservice.getDashboard(25357, vm.userId, vm.companyId, 1, 10).then(function(data)
+      {
 
+        angular.forEach(data.projects, function(row)
+        {
+          $rootScope.templateDetails.push(row);
+        });
+
+        vm.loadingSearchProgress = false;
+      });
     }
 
     // Clear search
     function searchClear() {
-      vm.companyName = 'All';
-      vm.userName = 'All';
+      vm.companyId = 0;
+      vm.userId = 0;
+      vm.loadingSearchProgress = true;
+      $rootScope.templateDetails = [];
+      dataservice.getDashboard(25357, 25357, 1000637, 1, 10).then(function(data)
+      {
+
+        angular.forEach(data.projects, function(row)
+        {
+          $rootScope.templateDetails.push(row);
+        });
+
+        vm.loadingSearchProgress = false;
+      });
     }
   }
 

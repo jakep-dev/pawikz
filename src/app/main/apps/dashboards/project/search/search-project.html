@@ -10,20 +10,21 @@
                     </md-icon>
                 </md-button>
             </div>
+            <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="vm.loadingSearchProgress"></md-progress-linear>
 
         </md-toolbar>
 
         <md-content layout-padding>
             <md-input-container class="md-accent" flex>
                 <label class="font-size-20"><strong>Company Name </strong></label>
-                <md-select ng-model="vm.companyName" class="md-accent" md-on-open="vm.loadCompanyNames()">
-                    <md-option layout-padding ng-repeat="company in vm.companyNames" value="{{company.company}}">{{company.company}}</md-option>
+                <md-select ng-model="vm.companyId" class="md-accent" md-on-open="vm.loadCompanyNames()">
+                    <md-option layout-padding ng-repeat="company in vm.companyNames" value="{{company.id}}">{{company.name}}</md-option>
                 </md-select>
             </md-input-container>
             <md-input-container class="md-accent" flex>
                 <label class="font-size-20"><strong>Users </strong></label>
-                <md-select ng-model="vm.userName" class="md-accent" md-on-open="vm.loadUserNames()" >
-                    <md-option layout-padding ng-repeat="user in vm.users" value="{{user.user}}">{{user.user}}</md-option>
+                <md-select ng-model="vm.userId" class="md-accent" md-on-open="vm.loadUserNames()" >
+                    <md-option layout-padding ng-repeat="user in vm.users" value="{{user.id}}">{{user.name}}</md-option>
                 </md-select>
             </md-input-container>
         </md-content>

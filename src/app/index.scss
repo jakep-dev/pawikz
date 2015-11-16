@@ -17,6 +17,7 @@ $loadingBackground:darkorange;
 
 #loading-bar .bar{
   background: $loadingBackground;
+  height: 4px;
 }
 
 #loading-bar .peg
@@ -37,9 +38,10 @@ $loadingBackground:darkorange;
 
 
 #loading-bar-spinner {
-  display: block;
+  display: none;
   position: fixed;
   z-index: 10002;
   top: 50%;
   left: 50%;
+
 }

@@ -10,7 +10,7 @@ var cors = require('cors');
 var exception = require('./exception/exception')();
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8000;
 var routes;
 
 var environment = process.env.NODE_ENV;
@@ -24,11 +24,19 @@ app.use(cors());
 app.use(exception.init);
 
 
-routes = require('./data/dashboard/dashboard.data')(app);
+routes = require('./routes');
+routes.init(app);
 
 console.log('About to crank up node');
 console.log('PORT=' + port);
 console.log('NODE_ENV=' + environment);
+
+
+app.get('/ping', function(req, res, next) {
+  console.log(req.body);
+  res.send('pong');
+});
+
 
 switch (environment) {
   case 'build':
@@ -39,8 +47,10 @@ switch (environment) {
   default:
     console.log('** DEV **');
     app.use(express.static('./src/app/'));
+    app.use(express.static('./src/assets/'));
     app.use(express.static('./'));
-    app.use(express.static('./.tmp/'));
+    app.use(express.static('./.tmp'));
+
     app.use('/*', express.static('./.tmp/serve/index.html'));
     break;
 }

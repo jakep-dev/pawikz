@@ -13,16 +13,10 @@
     {
 
         var vm = this;
-        $rootScope.breadcrumb = 'Dashboard';
+
+        vm.dashboardLoading = false;
+
         $rootScope.templateDetails = [];
-
-        //vm.templateDetails = DashboardData.templateDetails;
-        //
-        //angular.forEach(vm.templateDetails, function(row)
-        //{
-        //  $rootScope.templateDetails.push(row);
-        //});
-
 
         //Dashboard DataTable Configuration
         vm.dtOptions = {
@@ -45,14 +39,16 @@
         }
 
 
-        dataservice.getDashboard().then(function(data)
+        dataservice.getDashboard(25357, 25357, 1000637, 1, 10).then(function(data)
         {
-            vm.templateDetails = data;
+            //vm.templateDetails = data.projects;
 
-            angular.forEach(vm.templateDetails, function(row)
+            angular.forEach(data.projects, function(row)
             {
                 $rootScope.templateDetails.push(row);
             });
+
+            vm.dashboardLoading = true;
         });
     }
 

@@ -12,22 +12,51 @@
 
         var service = {
             getDashboard: getDashboard,
+            getDashboardUsers: getDashboardUsers,
+            getDashboardCompanies: getDashboardCompanies,
             ready: ready
         };
 
         return service;
 
-        function getDashboard() {
-            return $http.get('/api/dashboard')
-                .then(getDashboardComplete)
+        function getDashboardUsers()
+        {
+            return $http.get('/api/users')
+                .then(function(data, status, headers, config)
+                {
+                    return data.data;
+                })
                 .catch(function(message) {
                     $location.url('/');
                 });
-
-            function getDashboardComplete(data, status, headers, config) {
-                return data.data;
-            }
         }
+
+        function getDashboard(userId, searchUserId, searchCompanyId, pageNo, perPage) {
+
+            var url = '/api/dashboard/'.concat(userId, '/', searchUserId, '/', searchCompanyId, '/', pageNo, '/', perPage);
+
+            return $http.get(url)
+                .then(function(data, status, headers, config)
+                {
+                    return data.data;
+                })
+                .catch(function(message) {
+                    $location.url('/');
+                });
+        }
+
+        function getDashboardCompanies()
+        {
+            return $http.get('/api/companies')
+                .then(function(data, status, headers, config)
+                {
+                    return data.data;
+                })
+                .catch(function(message) {
+                    $location.url('/');
+                });
+        }
+
 
         function getReady() {
             if (!readyPromise) {
