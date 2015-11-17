@@ -39,7 +39,7 @@
         }
 
 
-        dataservice.getDashboard(25357, 25357, 1000637, 1, 10).then(function(data)
+        dataservice.getDashboard(25357, 0, 0, 1, 10).then(function(data)
         {
             //vm.templateDetails = data.projects;
 
