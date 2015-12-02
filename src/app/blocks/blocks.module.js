@@ -9,7 +9,7 @@
         .module('app.blocks',
             [
                 // Logger
-                'blocks.logger'
-
+                //'blocks.logger'
+                'blocks.error'
             ]);
 })();

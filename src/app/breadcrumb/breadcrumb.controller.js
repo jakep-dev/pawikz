@@ -13,7 +13,7 @@
   function BreadcrumbController($rootScope)
   {
     var vm = this;
-    vm.path = 'Dashboard';
+    //vm.path = $rootScope.title;
   }
 
 })();

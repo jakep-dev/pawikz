@@ -13,6 +13,8 @@
 
         $urlRouterProvider.otherwise('/dashboard-project');
 
+        //$urlRouterProvider.otherwise('/overview');
+
         $stateProvider
             .state('app', {
                 abstract: true,

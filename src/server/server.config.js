@@ -29,7 +29,8 @@ exports.restcall =
                 methods:{
                     templateList: 'getTemplateList',
                     userLookUp: 'getUserLookup',
-                    companyLookUp: 'getCompanyLookup'
+                    companyLookUp: 'getCompanyLookup',
+                    overView: 'getTemplateOverview'
                 }
             }]
 }

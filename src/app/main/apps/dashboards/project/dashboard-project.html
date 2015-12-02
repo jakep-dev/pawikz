@@ -63,7 +63,7 @@
 
                                 <md-divider></md-divider>
 
-                                  <table class="dataTable row-border hover" id="dashBoardDetails" ng-if="vm.dashboardLoading" ng-cloak
+                                  <table class="dataTable row-border hover" id="dashBoardDetails" ng-if="vm.dashboardLoading"
                                        layout-padding datatable="ng" dt-options="vm.dtOptions" dt-column-defs="vm.dtColumnDefs">
                                     <thead>
                                     <tr class="md-orange-A400-bg font-size-15">
@@ -102,7 +102,7 @@
                                     <tbody>
                                     <tr ng-repeat="template in $root.templateDetails">
                                         <td>{{ template.companyName }}</td>
-                                        <td><a ui-sref="app.pages_blank">{{ template.projectName }}</a></td>
+                                        <td><a ui-sref="app.overview">{{ template.projectName }}</a></td>
                                         <td>{{ template.status }}</td>
                                         <td></td>
                                         <td>{{ template.createdBy }}</td>
@@ -113,7 +113,6 @@
 
                             </div>
                         </div>
-
                 </ms-widget-front>
                 <!-- / Front -->
 

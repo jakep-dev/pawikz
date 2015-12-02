@@ -1,0 +1,58 @@
+$accordionPadding: 12px;
+$contentAccordionPadding:10px;
+
+.ms-accordion {
+  position: relative;
+  font-size: $font-size-base;
+  perspective: 3000px;
+  padding: $accordionPadding;
+
+  .ms-accordion-title {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    opacity: 1;
+    z-index: 10;
+    padding: $contentAccordionPadding;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    transition: transform 0.5s ease-out 0s, visibility 0s ease-in 0.2s, opacity 0s ease-in 0.2s;
+    transform: rotateY(0deg);
+  }
+
+  .ms-accordion-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding: $contentAccordionPadding;
+    opacity: 1;
+    z-index: 10;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    transition: transform 0.5s ease-out 0s, visibility 0s ease-in 0.2s, opacity 0s ease-in 0.2s;
+    transform: rotateY(0deg);
+  }
+
+  .md-button {
+    margin: 0;
+
+    &.md-icon-button {
+      margin: 0 2px;
+      width: 24px;
+      min-height: 24px;
+      height: 24px;
+      line-height: 24px;
+    }
+  }
+
+  &.collapsed {
+
+
+  }
+}

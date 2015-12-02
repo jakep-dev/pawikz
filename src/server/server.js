@@ -10,10 +10,10 @@ var cors = require('cors');
 var exception = require('./exception/exception')();
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 3000;
 var routes;
 
-var environment = process.env.NODE_ENV;
+var environment = process.env.NODE_ENV || 'Dev';
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -46,11 +46,11 @@ switch (environment) {
     break;
   default:
     console.log('** DEV **');
-    app.use(express.static('./src/app/'));
+   // app.use('app',express.static(__dirname + './app/'));
     app.use(express.static('./src/assets/'));
+    app.use(express.static('./src/app/'));
     app.use(express.static('./'));
     app.use(express.static('./.tmp'));
-
     app.use('/*', express.static('./.tmp/serve/index.html'));
     break;
 }
@@ -60,6 +60,8 @@ app.listen(port, function() {
   console.log('env = ' + app.get('env') +
       '\n__dirname = ' + __dirname +
       '\nprocess.cwd = ' + process.cwd());
+
+
 });
 
 

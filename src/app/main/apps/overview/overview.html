@@ -1,0 +1,80 @@
+<div id="overview" class="page-layout simple fullwidth white-bg" layout="row" ng-cloak>
+
+
+
+    <!-- CENTER -->
+    <div class="center" flex layout-margin>
+
+        <md-content>
+            <div class="lock-size" layout="row" layout-align="start start">
+                <md-fab-speed-dial md-open="isOpen" md-direction="right"
+                                   ng-mouseover="isOpen = true"
+                                   ng-mouseleave="isOpen = false"
+                                   class="md-fling">
+                    <md-fab-trigger>
+                        <md-button aria-label="menu" class="md-fab md-warn">
+                            <md-icon md-font-icon="icon-menu" class="icon"></md-icon>
+                        </md-button>
+                    </md-fab-trigger>
+                    <md-fab-actions>
+                        <md-button aria-label="Save All" class="md-fab md-raised md-mini">
+                            <md-icon md-font-icon="icon-content-save-all" class="icon"  aria-label="Save">
+                                <md-tooltip md-direction="top">
+                                   Save all
+                                </md-tooltip>
+                            </md-icon>
+                        </md-button>
+                        <md-button aria-label="Mode" class="md-fab md-raised md-mini">
+                            <md-icon md-font-icon="icon-tablet-ipad" class="icon" aria-label="Mode">
+                                <md-tooltip md-direction="top">
+                                    Tablet View
+                                </md-tooltip>
+                            </md-icon>
+                        </md-button>
+                    </md-fab-actions>
+                </md-fab-speed-dial>
+            </div>
+        </md-content>
+
+        <div ng-hide="false">
+            <md-content ng-include="'app/main/apps/overview/sections/project/project-section.html'"
+                        ng-controller="OverviewController as vm">
+            </md-content>
+
+            <md-content ng-include="'app/main/apps/overview/sections/steps/steps-section.html'"
+                        ng-controller="OverviewController as vm">
+            </md-content>
+        </div>
+
+        <div ng-hide="true">
+            <ms-widget  layout="column" flex>
+                <!-- Front -->
+                <ms-widget-front class="white-bg">
+                    <md-content>
+                        <md-tabs md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
+                            <md-tab>
+                                <md-tab-label>Overview</md-tab-label>
+                                <md-content
+                                        ng-include="'app/main/apps/overview/sections/project/project-section.html'"
+                                        ng-controller="OverviewController as vm">
+                                </md-content>
+                            </md-tab>
+                            <md-tab>
+                                <md-tab-label >Steps</md-tab-label>
+                                <md-content class="scrollable" ms-scroll
+                                            ng-include="'app/main/apps/overview/sections/steps/steps-section.html'"
+                                            ng-controller="OverviewController as vm">
+                                </md-content>
+                            </md-tab>
+                        </md-tabs>
+                    </md-content>
+                </ms-widget-front>
+            </ms-widget>
+
+        </div>
+
+    </div>
+    <!-- / CENTER -->
+
+
+</div>

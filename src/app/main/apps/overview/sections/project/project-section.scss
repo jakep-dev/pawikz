@@ -1,0 +1,29 @@
+$expandHeight: 64px;
+
+#expand-content-mode-toggle {
+  width: $expandHeight;
+  height: $expandHeight;
+  margin: 0;
+  float:right;
+  border-radius: 0;
+
+  md-icon {
+    transition: transform 0.3s ease-in-out 0.1s;
+    transform: rotate(0deg);
+  }
+}
+
+#workUpName
+{
+  text-align: center;
+}
+
+#overviewGrid
+{
+  overflow: hidden;
+
+  md-grid-tile
+  {
+    background-color: rgba(232, 255, 219, 0.24);
+  }
+}

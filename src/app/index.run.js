@@ -9,6 +9,8 @@
     /** @ngInject */
     function runBlock($rootScope, $timeout)
     {
+
+
         //$rootScope.$on('$stateChangeStart', function ()
         //{
         //    $rootScope.loadingSearchProgress = true;

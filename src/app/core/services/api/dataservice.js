@@ -14,6 +14,7 @@
             getDashboard: getDashboard,
             getDashboardUsers: getDashboardUsers,
             getDashboardCompanies: getDashboardCompanies,
+            getOverview: getOverview,
             ready: ready
         };
 
@@ -35,6 +36,8 @@
 
             var url = '/api/dashboard/'.concat(userId, '/', searchUserId, '/', searchCompanyId, '/', pageNo, '/', perPage);
 
+            console.log(url);
+
             return $http.get(url)
                 .then(function(data, status, headers, config)
                 {
@@ -48,6 +51,20 @@
         function getDashboardCompanies()
         {
             return $http.get('/api/companies')
+                .then(function(data, status, headers, config)
+                {
+                    return data.data;
+                })
+                .catch(function(message) {
+                    $location.url('/');
+                });
+        }
+
+        function getOverview(projectId)
+        {
+            var url = '/api/overview/'.concat(projectId);
+
+            return $http.get(url)
                 .then(function(data, status, headers, config)
                 {
                     return data.data;

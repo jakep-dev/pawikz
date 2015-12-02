@@ -8,11 +8,11 @@
     angular
         .module('fuse', [
 
-            // Core
-            'app.core',
-
             // Blocks
             'app.blocks',
+
+            // Core
+            'app.core',
 
             // Navigation
             'app.navigation',
@@ -25,6 +25,9 @@
 
             // Dashboards
             'app.dashboards',
+
+            // Overview
+            'app.overview',
 
             // Feedback
             'app.pages.feedback',

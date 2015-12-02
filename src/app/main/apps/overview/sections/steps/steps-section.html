@@ -1,0 +1,79 @@
+
+<div class="widget-group" layout="row" flex layout-wrap>
+    <ms-widget  layout="column" flex>
+
+    <!-- Front -->
+    <ms-widget-front class="white-bg">
+        <div class="simple-table-container">
+            <div>
+
+                <div class="table-title">
+                    <i class="icon-book-multiple s18"></i>
+                    Steps
+
+                    <md-menu id="steps-Menu" md-position-mode="target-right target">
+                        <md-button class="md-icon-button" ng-click="$mdOpenMenu()"
+                                   aria-label="more">
+                            <md-tooltip md-direction="top">
+                                All widgets are here
+                            </md-tooltip>
+                            <md-icon md-font-icon="icon-dots-vertical" ></md-icon>
+                        </md-button>
+
+                        <md-menu-content flex layout-padding center>
+                            <md-menu-item>
+                                <md-button  aria-label="Reload widget">
+                                                      <span layout="row" layout-align="start center">
+                                                        <md-icon md-font-icon="icon-reload"></md-icon>
+                                                        <span hide-sm>Reload</span>
+                                                      </span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button  aria-label="Expand/Collapse widget" ng-click="vm.toggleSidenav('quick-panel')">
+                                                          <span layout="row" layout-align="start center">
+                                                                <md-icon md-font-icon="icon-arrow-down-bold"></md-icon>
+                                                                <span hide-sm>Expand/Collapse</span>
+                                                          </span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button  aria-label="Select/UnSelect widget">
+                                                        <span layout="row" layout-align="start center">
+                                                             <md-icon md-font-icon="icon-select"></md-icon>
+                                                            <span>Select/UnSelect</span>
+                                                        </span>
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                </div>
+
+                <md-divider></md-divider>
+
+                <div class="content" layout-padding>
+
+                    <!--<md-grid-list id="stepsGrid"-->
+                                  <!--md-cols-sm="2" md-cols-md="2" md-cols-gt-md="3"-->
+                                  <!--md-row-height="2:3" md-gutter="8px" ms-scroll >-->
+                        <!--<md-grid-tile>-->
+                            <!--<md-grid-tile-header class="orange-A400-bg">-->
+
+                            <!--</md-grid-tile-header>-->
+                            <!--<md-content>-->
+                                <!---->
+                            <!--</md-content>-->
+                            <!---->
+                            <!--<md-grid-tile-footer></md-grid-tile-footer>-->
+                        <!--</md-grid-tile>-->
+                    <!--</md-grid-list>-->
+
+                </div>
+
+            </div>
+        </div>
+    </ms-widget-front>
+    <!-- / Front -->
+
+</ms-widget>
+</div>

@@ -10,7 +10,7 @@
     .controller('DashboardSearchProjectController', DashboardSearchProjectController);
 
   /** @ngInject */
-  function DashboardSearchProjectController($rootScope, $mdSidenav, dataservice)
+  function DashboardSearchProjectController($rootScope, $mdSidenav, dataservice, $stateParams)
   {
     var vm = this;
     vm.loadingSearchProgress = false;
@@ -69,7 +69,7 @@
     function filterDashboard() {
       vm.loadingSearchProgress = true;
       $rootScope.templateDetails = [];
-      dataservice.getDashboard(25357, vm.userId, vm.companyId, 1, 10).then(function(data)
+      dataservice.getDashboard($stateParams.userId, vm.userId, vm.companyId, 1, 10).then(function(data)
       {
 
         angular.forEach(data.projects, function(row)
@@ -87,7 +87,7 @@
       vm.userId = 0;
       vm.loadingSearchProgress = true;
       $rootScope.templateDetails = [];
-      dataservice.getDashboard(25357, 25357, 1000637, 1, 10).then(function(data)
+      dataservice.getDashboard($stateParams.userId, 0, 0, 1, 10).then(function(data)
       {
 
         angular.forEach(data.projects, function(row)

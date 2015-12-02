@@ -10,9 +10,8 @@
     function config($stateProvider)
     {
 
-
         $stateProvider.state('app.dashboard-project', {
-            url    : '/dashboard-project',
+            url    : '/dashboard-project/:userId/:token',
             views  : {
                 'content@app': {
                     templateUrl: 'app/main/apps/dashboards/project/dashboard-project.html',
@@ -22,12 +21,6 @@
                 templateUrl: 'app/main/apps/dashboards/project/search/search-project.html',
                 controller : 'DashboardSearchProjectController as vm'
               }
-            },
-            resolve: {
-                DashboardData: function (apiResolver, dataservice)
-                {
-                    return apiResolver.resolve('dashboard.project@get');
-                }
             }
         });
     }

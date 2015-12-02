@@ -9,8 +9,9 @@
 
 
     /** @ngInject */
-    function DashboardProjectController($rootScope, $mdSidenav, DTColumnDefBuilder, DashboardData, dataservice)
+    function DashboardProjectController($rootScope, $mdSidenav, $stateParams, DTColumnDefBuilder, dataservice)
     {
+        $rootScope.title = 'Dashboard';
 
         var vm = this;
 
@@ -21,10 +22,13 @@
         //Dashboard DataTable Configuration
         vm.dtOptions = {
           dom       : '<"top"f>rt<"bottom"<"left"<"length"l>><"right"<"info"i><"pagination"p>>>',
-          pagingType: 'simple',
+          pagingType: 'simple_numbers',
           autoWidth : false,
           responsive: true
         };
+
+        //25357
+
 
 
         vm.dtColumnDefs = [
@@ -39,9 +43,8 @@
         }
 
 
-        dataservice.getDashboard(25357, 0, 0, 1, 10).then(function(data)
+        dataservice.getDashboard($stateParams.userId, 0, 0, 1, 10).then(function(data)
         {
-            //vm.templateDetails = data.projects;
 
             angular.forEach(data.projects, function(row)
             {
