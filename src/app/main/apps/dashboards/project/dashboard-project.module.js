@@ -19,7 +19,7 @@
                 },
               'search-engine@app': {
                 templateUrl: 'app/main/apps/dashboards/project/search/search-project.html',
-                controller : 'DashboardSearchProjectController as vm'
+                controller : 'DashboardProjectController as vm'
               }
             }
         });

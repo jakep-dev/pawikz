@@ -17,7 +17,7 @@
 
         <md-grid-list id="overviewGrid"
                 md-cols-sm="2" md-cols-md="4" md-cols-gt-md="4"
-                md-row-height="3:2" md-gutter="8px" >
+                md-row-height="3:2"  >
 
             <md-grid-tile  md-colspan="2">
                 <div layout="row" flex layout-align="center center">
@@ -34,17 +34,16 @@
                     </div>
                     <div layout="column" layout-align="center end" flex layout-padding>
                         <div flex>
-                            Currency
+                            {{ vm.templateOverview.defaultCurrency }}
                         </div>
                         <div flex>
-                            Entity Type
+                            {{ vm.templateOverview.organizationType }}
                         </div>
                         <div flex>
-                            Created
+                            {{ vm.templateOverview.createdBy }}
                         </div>
                     </div>
                 </div>
-
             </md-grid-tile>
             <md-grid-tile  md-colspan="2">
                 <div layout="row" flex layout-align="center center">
@@ -53,7 +52,7 @@
                             Company
                         </div>
                         <div flex>
-                            GICS Industry
+                            {{ vm.templateOverview.industry }}
                         </div>
                         <div flex>
                             Modified
@@ -61,13 +60,13 @@
                     </div>
                     <div layout="column" layout-align="center end" flex layout-padding>
                         <div flex>
-                            Currency
+                            {{ vm.templateOverview.companyName }}
                         </div>
                         <div flex>
-                            Entity Type
+                            {{ vm.templateOverview.organizationType }}
                         </div>
                         <div flex>
-                            Created
+                            {{ vm.templateOverview.lastModifiedDate }}
                         </div>
                     </div>
                 </div>

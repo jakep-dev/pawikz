@@ -12,13 +12,13 @@
 
 
     /** @ngInject */
-    function OverviewController($rootScope, dataservice)
+    function OverviewController($rootScope, $stateParams, dataservice)
     {
 
         $rootScope.title = 'Overview';
         var vm = this;
 
-        dataservice.getOverview(100145066).then(function(data)
+        dataservice.getOverview($stateParams.projectId).then(function(data)
         {
             if(angular.isDefined(data.templateOverview))
             {

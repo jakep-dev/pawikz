@@ -17,8 +17,9 @@
                 'angular-loading-bar',
                 //'angular-chartist',
                 //'chart.js',
+                'trNgGrid',
                 'datatables',
-                'datatables.fixedheader',
+
                 //'gridshore.c3js.chart',
                 //'nvd3',
                 'pascalprecht.translate',

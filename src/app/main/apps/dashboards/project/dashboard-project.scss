@@ -5,6 +5,14 @@
   #dashBoardDetails
   {
     width: 98%;
+    thead tr:first-child
+    {
+      background-color: darkorange;
+    };
+    tr:hover {
+      background-color: #0fb9ff;
+      color: white;
+    }
   }
 
 

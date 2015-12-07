@@ -14,7 +14,7 @@
             scope: {
                 step: '='
             },
-            template: 'ms-step-overview.html'
+            templateUrl: 'app/core/directives/ms-step-overview/ms-step-overview.html'
         };
     }
 })();

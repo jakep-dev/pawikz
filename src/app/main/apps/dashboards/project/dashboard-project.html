@@ -10,109 +10,67 @@
 
                 <!-- Front -->
                 <ms-widget-front class="white-bg">
-                        <div class="simple-table-container">
-                            <div>
-                                <div class="table-title">
-                                    <i class="icon-apps s18"></i>
-                                    Dashboard
-                                    <md-menu id="dashBoard-Menu" md-position-mode="target-right target">
-                                        <md-button class="md-icon-button" ng-click="$mdOpenMenu()"
-                                                   aria-label="more">
-                                            <md-tooltip md-direction="top">
-                                                All widgets are here
-                                            </md-tooltip>
-                                            <md-icon md-font-icon="icon-dots-vertical"></md-icon>
-                                        </md-button>
+                    <div class="simple-table-container">
+                        <div>
+                            <div class="table-title">
+                                <i class="icon-apps s18"></i>
+                                Dashboard
+                                <md-menu id="dashBoard-Menu" md-position-mode="target-right target">
+                                    <md-button class="md-icon-button" ng-click="$mdOpenMenu()"
+                                               aria-label="more">
+                                        <md-tooltip md-direction="top">
+                                            All widgets are here
+                                        </md-tooltip>
+                                        <md-icon md-font-icon="icon-dots-vertical"></md-icon>
+                                    </md-button>
 
-                                        <md-menu-content flex layout-padding center>
-                                                <md-menu-item>
-                                                    <md-button  aria-label="Filter widget" ng-click="vm.toggleSidenav('quick-panel')">
+                                    <md-menu-content flex layout-padding center>
+                                        <md-menu-item>
+                                            <md-button  aria-label="Filter widget" ng-click="vm.toggleSidenav('quick-panel')">
                                                           <span layout="row" layout-align="start center">
                                                                 <md-icon md-font-icon="icon-filter"></md-icon>
                                                                 <span hide-sm>Filter</span>
                                                           </span>
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item>
-                                                    <md-button  aria-label="Refresh widget">
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button  aria-label="Refresh widget" ng-click="vm.searchClear()">
                                                       <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-reload"></md-icon>
                                                         <span hide-sm>Reload</span>
                                                       </span>
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item hide-sm hide-md>
-                                                    <md-button  aria-label="Excel widget">
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item hide-sm hide-md>
+                                            <md-button  aria-label="Excel widget">
                                                         <span layout="row" layout-align="start center">
                                                              <md-icon md-font-icon="icon-file-excel"></md-icon>
                                                             <span>Excel</span>
                                                         </span>
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item hide-sm hide-md>
-                                                    <md-button  aria-label="PDF widget">
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item hide-sm hide-md>
+                                            <md-button  aria-label="PDF widget">
                                                        <span layout="row" layout-align="start center">
                                                             <md-icon md-font-icon="icon-file-pdf"></md-icon>
                                                              <span>Pdf</span>
                                                        </span>
-                                                    </md-button>
-                                                </md-menu-item>
-                                        </md-menu-content>
-                                    </md-menu>
-                                </div>
-
-                                <md-divider></md-divider>
-
-                                  <table class="dataTable row-border hover" id="dashBoardDetails" ng-if="vm.dashboardLoading"
-                                       layout-padding datatable="ng" dt-options="vm.dtOptions" dt-column-defs="vm.dtColumnDefs">
-                                    <thead>
-                                    <tr class="md-orange-A400-bg font-size-15">
-                                        <th class="secondary-text">
-                                            <div class="table-header">
-                                                <span class="column-title">Company</span>
-                                            </div>
-                                        </th>
-                                        <th class="secondary-text">
-                                            <div class="table-header">
-                                                <span class="column-title">Project Name</span>
-                                            </div>
-                                        </th>
-                                        <th class="secondary-text">
-                                            <div class="table-header">
-                                                <span class="column-title">Status</span>
-                                            </div>
-                                        </th>
-                                        <th class="secondary-text">
-                                            <div class="table-header">
-                                                <span class="column-title">Project History</span>
-                                            </div>
-                                        </th>
-                                        <th class="secondary-text">
-                                            <div class="table-header">
-                                                <span class="column-title">Created By</span>
-                                            </div>
-                                        </th>
-                                        <th class="secondary-text">
-                                            <div class="table-header">
-                                                <span class="column-title">Updated</span>
-                                            </div>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="template in $root.templateDetails">
-                                        <td>{{ template.companyName }}</td>
-                                        <td><a ui-sref="app.overview">{{ template.projectName }}</a></td>
-                                        <td>{{ template.status }}</td>
-                                        <td></td>
-                                        <td>{{ template.createdBy }}</td>
-                                        <td>{{ template.lastUpdateDate }}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
+                                            </md-button>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
                             </div>
+
+                            <md-divider></md-divider>
+
+                            <table class="row-border cell-border" width="100%"
+                                   id="dashBoardDetails" layout-padding datatable="" dt-options="vm.dtOptions"
+                                   dt-column-defs="vm.dtColumnDefs" dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">
+
+                            </table>
+
                         </div>
+                    </div>
                 </ms-widget-front>
                 <!-- / Front -->
 

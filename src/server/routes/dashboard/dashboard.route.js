@@ -12,7 +12,7 @@
         var client = config.restcall.client;
         var config = config;
 
-        app.get('/api/dashboard/:userId/:searchUserId/:searchCompanyId/:pageNo/:perPage', getDashboard);
+        app.get('/api/dashboard/:userId/:searchUserId/:searchCompanyId/:rowNum/:perPage/:sOrder/:sFilter', getDashboard);
         app.get('/api/users', getDashboardUsers);
         app.get('/api/companies', getDashboardCompanies);
 
@@ -39,8 +39,10 @@
                     user_id: req.params.userId,
                     srch_user_id: req.params.searchUserId,
                     srch_company_id: req.params.searchCompanyId,
-                    pageNo:req.params.pageNo,
+                    pageNo:req.params.rowNum,
                     results_per_page:req.params.perPage,
+                    sort_order:req.params.sOrder,
+                    sort_filter:req.params.sFilter,
                     ssnid: 'testToken'
                 }
             };

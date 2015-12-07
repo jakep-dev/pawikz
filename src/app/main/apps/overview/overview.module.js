@@ -13,7 +13,7 @@
     function config($stateProvider)
     {
         $stateProvider.state('app.overview', {
-            url    : '/overview',
+            url    : '/overview/:projectId',
             views  : {
                 'content@app': {
                     templateUrl: 'app/main/apps/overview/overview.html',

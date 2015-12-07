@@ -1,6 +1,15 @@
-<md-content id="stepOverview" ng-cloak>
-    <md-list-item ng-repeat="section in step.sections">
-        <p> {{ section.name }} </p>
-        <md-checkbox class="md-secondary" ng-model="section.name"></md-checkbox>
-    </md-list-item>
-</md-content>
+<md-grid-list id="stepsGrid"
+              md-cols-sm="1" md-cols-md="1" md-cols-gt-md="1"
+              md-row-height="3:4">
+    <md-grid-tile-header>
+        {{step.stepName}}
+    </md-grid-tile-header>
+    <md-content id="stepOverview" ng-cloak>
+        <md-list-item ng-repeat="section in step.sections">
+            <p> {{ section.label }} </p>
+            <md-checkbox class="md-secondary" ng-model="section.value"></md-checkbox>
+        </md-list-item>
+    </md-content>
+    <md-grid-tile-footer></md-grid-tile-footer>
+</md-grid-list>
+

@@ -41,7 +41,7 @@
                                 <md-button  aria-label="Select/UnSelect widget">
                                                         <span layout="row" layout-align="start center">
                                                              <md-icon md-font-icon="icon-select"></md-icon>
-                                                            <span>Select/UnSelect</span>
+                                                            <span hide-sm>Select/UnSelect</span>
                                                         </span>
                                 </md-button>
                             </md-menu-item>
@@ -53,20 +53,20 @@
 
                 <div class="content" layout-padding>
 
-                    <!--<md-grid-list id="stepsGrid"-->
-                                  <!--md-cols-sm="2" md-cols-md="2" md-cols-gt-md="3"-->
-                                  <!--md-row-height="2:3" md-gutter="8px" ms-scroll >-->
-                        <!--<md-grid-tile>-->
-                            <!--<md-grid-tile-header class="orange-A400-bg">-->
-
+                    <md-grid-list id="stepsGrid"
+                                  md-cols-sm="1" md-cols-md="2" md-cols-gt-md="3"
+                                  md-row-height="2:3" md-gutter="8px" ms-scroll >
+                        <md-grid-tile ng-repeat="step in vm.templateOverview.steps">
+                            <!--<md-grid-tile-header>-->
+                                <!--{{ step.stepName }}-->
                             <!--</md-grid-tile-header>-->
-                            <!--<md-content>-->
-                                <!---->
-                            <!--</md-content>-->
-                            <!---->
-                            <!--<md-grid-tile-footer></md-grid-tile-footer>-->
-                        <!--</md-grid-tile>-->
-                    <!--</md-grid-list>-->
+                            <!--<md-list-item ng-repeat="section in step.sections">-->
+                                <!--<p> {{ section.label }} </p>-->
+                                <!--<md-checkbox class="md-secondary" ng-model="section.label"></md-checkbox>-->
+                            <!--</md-list-item>-->
+                            <ms-step-overview step="step"></ms-step-overview>
+                        </md-grid-tile>
+                    </md-grid-list>
 
                 </div>
 

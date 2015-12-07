@@ -32,9 +32,10 @@
                 });
         }
 
-        function getDashboard(userId, searchUserId, searchCompanyId, pageNo, perPage) {
+        function getDashboard(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder, sortFilter) {
 
-            var url = '/api/dashboard/'.concat(userId, '/', searchUserId, '/', searchCompanyId, '/', pageNo, '/', perPage);
+            var url = '/api/dashboard/'.concat(userId, '/', searchUserId, '/', searchCompanyId, '/', rowNum, '/',
+                                               perPage, '/', sortOrder, '/', sortFilter);
 
             console.log(url);
 
