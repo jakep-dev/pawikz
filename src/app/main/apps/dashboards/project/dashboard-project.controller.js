@@ -57,6 +57,7 @@
             console.log(aoData[2].value);
 
 
+
             console.log('Draw='+ draw + ' sortOrder=' + sortOrder +' sortFilterIndex=' + sortFilterIndex +
                 ' sortFilter=' + sortFilter +
                 ' start=' + start + ' length=' + length);
@@ -67,11 +68,22 @@
             dataservice.getDashboard($stateParams.userId, $rootScope.userId, $rootScope.companyId,
                 start, length, sortOrder, sortFilter).then(function(data)
             {
+
+
+                var blankData = {
+                    companyName: '',
+                    projectName: '',
+                    status: '',
+                    createdBy: '',
+                    lastUpdateDate: ''
+                };
+
+
                 var records = {
                     draw: draw,
                     recordsTotal: angular.isDefined(data.paging) ? data.paging.totalResults : 0,
                     recordsFiltered: angular.isDefined(data.paging) ? data.paging.totalResults   : 0,
-                    data: data.projects
+                    data: angular.isDefined(data.projects) && data.projects !== null ? data.projects : blankData
                 };
 
                 console.log(records);
