@@ -11,9 +11,9 @@
     {
         $locationProvider.html5Mode(true);
 
-        $urlRouterProvider.otherwise('/dashboard-project');
+        //$urlRouterProvider.otherwise('/dashboard-project');
 
-        //$urlRouterProvider.otherwise('/overview/100145066');
+        $urlRouterProvider.otherwise('/overview/100145066');
 
         $stateProvider
             .state('app', {

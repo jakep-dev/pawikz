@@ -14,6 +14,9 @@
                                         DTOptionsBuilder, DTInstanceFactory, dataservice)
     {
         $rootScope.title = 'Dashboard';
+        $rootScope.passedUserId = $stateParams.userId;
+        $rootScope.passedToken = $stateParams.token;
+        $rootScope.projectOverview = [];
 
         console.log($rootScope.title);
 
@@ -21,6 +24,7 @@
         $rootScope.companyId = 0;
         $rootScope.userId = 0;
         $rootScope.isSearching = false;
+
 
         vm.companyNames = [{ id: 0,  name: 'All' }];
         vm.users = [{ id: 0,  name: 'All' }];
@@ -36,9 +40,9 @@
             .withOption('autoWidth', true)
             .withOption('responsive', true)
             .withOption('stateSave', true)
-            //.withOption('lengthMenu', [[10, 25, 50, 100], [10, 25, 50, 100]])
             .withPaginationType('full')
             .withDOM('<"top bottom"<"left"<"length"l>><"right"f>>rt<"bottom"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+
 
 
         function serverData(sSource, aoData, fnCallback, oSettings)
@@ -121,12 +125,16 @@
 
         function actionHtml(data, type, full, meta)
         {
-            //console.log('data = ' + data);
-            //console.log('type = ' + type);
-            //console.log('full = ' + full);
-            //console.log('meta = ' + meta);
+            //console.log('data = ');
+            //console.log(data);
+            //console.log('type = ');
+            //console.log(type);
+            //console.log('full = ');
+            //console.log(full);
+            //console.log('meta = ');
+            //console.log(meta);
 
-            return '<a ui-sref="app.overview" href="/pages/blank">' + data + '</a>';
+            return '<a ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
         }
 
         // Methods

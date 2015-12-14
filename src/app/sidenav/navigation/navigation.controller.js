@@ -7,18 +7,18 @@
         .controller('NavigationController', NavigationController);
 
     /** @ngInject */
-    function NavigationController()
+    function NavigationController($rootScope)
     {
         var vm = this;
+
+        $rootScope.projectOverview = [];
 
         // Data
         vm.msScrollOptions = {
             suppressScrollX: true
         };
 
-        // Methods
 
-        //////////
     }
 
 })();

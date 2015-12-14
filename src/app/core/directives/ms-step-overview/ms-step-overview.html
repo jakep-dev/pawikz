@@ -1,15 +1,44 @@
-<md-grid-list id="stepsGrid"
-              md-cols-sm="1" md-cols-md="1" md-cols-gt-md="1"
-              md-row-height="3:4">
-    <md-grid-tile-header>
-        {{step.stepName}}
-    </md-grid-tile-header>
-    <md-content id="stepOverview" ng-cloak>
-        <md-list-item ng-repeat="section in step.sections">
-            <p> {{ section.label }} </p>
-            <md-checkbox class="md-secondary" ng-model="section.value"></md-checkbox>
-        </md-list-item>
-    </md-content>
-    <md-grid-tile-footer></md-grid-tile-footer>
-</md-grid-list>
+<div id="step-header" class="step-table-title md-amber-A200-bg" md-swipe-up="expandCollapseToggle()">
+    {{ step.stepName }}
 
+    <md-button class="md-icon-button" aria-label="expand/collapse"
+               ng-disabled="!expandable"
+               ng-click="expandCollapseToggle()" style="float:right">
+        <md-tooltip md-direction="top">
+            expand/collapse
+        </md-tooltip>
+        <md-icon md-font-icon="icon-backburger"
+        ng-class="{'expand': isExpanded, 'collapse': !isExpanded}"></md-icon>
+    </md-button>
+
+    <md-button class="md-icon-button"
+               aria-label="select/unselect"
+               ng-if="!isOverAllSelected"
+               ng-click="selectAll()"
+               style="float:right">
+        <md-tooltip md-direction="top">
+            select/unselect all
+        </md-tooltip>
+        <md-icon md-font-icon="icon-select"></md-icon>
+    </md-button>
+
+    <md-button class="md-icon-button" aria-label="select/unselect"
+               ng-click="unSelectAll()"
+               ng-if="isOverAllSelected"
+               style="float:right">
+        <md-tooltip md-direction="top">
+            select/unselect all
+        </md-tooltip>
+        <md-icon md-font-icon="icon-select-inverse"></md-icon>
+    </md-button>
+</div>
+
+<md-divider></md-divider>
+<md-content id="step-content" ng-if="!isExpanded" ng-animate="'expandCollapse'">
+    <md-list>
+        <md-list-item  ng-repeat="section in step.sections">
+            <md-checkbox class="md-secondary" ng-model="section.value"></md-checkbox>
+            <p> {{ section.label }} </p>
+        </md-list-item>
+    </md-list>
+</md-content>

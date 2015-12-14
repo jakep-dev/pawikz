@@ -19,7 +19,8 @@
                 //'chart.js',
                 'trNgGrid',
                 'datatables',
-
+                'datatables.tabletools',
+                'datatables.bootstrap',
                 //'gridshore.c3js.chart',
                 //'nvd3',
                 'pascalprecht.translate',

@@ -39,7 +39,7 @@
                     user_id: req.params.userId,
                     srch_user_id: req.params.searchUserId,
                     srch_company_id: req.params.searchCompanyId,
-                    pageNo:req.params.rowNum,
+                    row_num:req.params.rowNum,
                     results_per_page:req.params.perPage,
                     sort_order:req.params.sOrder,
                     sort_filter:req.params.sFilter,

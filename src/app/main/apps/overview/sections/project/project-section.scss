@@ -24,7 +24,15 @@ $expandHeight: 64px;
 
   md-grid-tile
   {
-    background-color: rgba(255, 181, 0, 0.15);
-    border-radius: 6px;
+    border-radius: 0px;
   }
+}
+
+#overviewGrid table tr td:nth-child(1) {
+  font-weight: bold;
+}
+
+
+#overviewGrid table tr td:nth-child(2) span {
+  float:right;
 }

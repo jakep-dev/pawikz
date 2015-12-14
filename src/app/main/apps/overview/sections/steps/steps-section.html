@@ -7,12 +7,12 @@
         <div class="simple-table-container">
             <div>
 
-                <div class="table-title">
+                <div class="table-title" ng-if="!vm.isTabletMode">
                     <i class="icon-book-multiple s18"></i>
                     Steps
 
                     <md-menu id="steps-Menu" md-position-mode="target-right target">
-                        <md-button class="md-icon-button" ng-click="$mdOpenMenu()"
+                        <md-button class="md-icon-button" ng-mouseover="$mdOpenMenu()"
                                    aria-label="more">
                             <md-tooltip md-direction="top">
                                 All widgets are here
@@ -32,7 +32,7 @@
                             <md-menu-item>
                                 <md-button  aria-label="Expand/Collapse widget" ng-click="vm.toggleSidenav('quick-panel')">
                                                           <span layout="row" layout-align="start center">
-                                                                <md-icon md-font-icon="icon-arrow-down-bold"></md-icon>
+                                                                <md-icon md-font-icon="icon-backburger"></md-icon>
                                                                 <span hide-sm>Expand/Collapse</span>
                                                           </span>
                                 </md-button>
@@ -45,31 +45,44 @@
                                                         </span>
                                 </md-button>
                             </md-menu-item>
+                            <md-menu-item>
+                                <md-button  aria-label="Tab widget" ng-click="vm.flipStepView()">
+                                    <span layout="row" layout-align="start center" ng-if="!vm.isStepTabletMode">
+                                         <md-icon md-font-icon="icon-cellphone-iphone"></md-icon>
+                                        <span hide-sm>Tab mode</span>
+                                    </span>
+                                    <span layout="row" layout-align="start center" ng-if="vm.isStepTabletMode">
+                                         <md-icon md-font-icon="icon-desktop-mac"></md-icon>
+                                        <span hide-sm>Desktop mode</span>
+                                    </span>
+                                </md-button>
+                            </md-menu-item>
                         </md-menu-content>
                     </md-menu>
-                </div>
-
-                <md-divider></md-divider>
-
-                <div class="content" layout-padding>
-
-                    <md-grid-list id="stepsGrid"
-                                  md-cols-sm="1" md-cols-md="2" md-cols-gt-md="3"
-                                  md-row-height="2:3" md-gutter="8px" ms-scroll >
-                        <md-grid-tile ng-repeat="step in vm.templateOverview.steps">
-                            <!--<md-grid-tile-header>-->
-                                <!--{{ step.stepName }}-->
-                            <!--</md-grid-tile-header>-->
-                            <!--<md-list-item ng-repeat="section in step.sections">-->
-                                <!--<p> {{ section.label }} </p>-->
-                                <!--<md-checkbox class="md-secondary" ng-model="section.label"></md-checkbox>-->
-                            <!--</md-list-item>-->
-                            <ms-step-overview step="step"></ms-step-overview>
-                        </md-grid-tile>
-                    </md-grid-list>
 
                 </div>
+                <md-divider ng-if="!vm.isTabletMode"></md-divider>
 
+
+                <md-content layout-padding ng-if="!vm.isStepTabletMode">
+                    <div layout="column" layout-align="start top">
+                        <div flex ng-repeat="step in vm.templateOverview.steps"
+                              class="md-whiteframe-2dp" style="margin: 5px">
+                            <ms-step-overview step="step" expandable="true"></ms-step-overview>
+                        </div>
+                    </div>
+                </md-content>
+
+                <md-content layout-padding ng-if="vm.isStepTabletMode">
+                    <md-tabs md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
+                        <md-tab ng-repeat="step in vm.templateOverview.steps">
+                            <md-tab-label>{{ step.stepName }}</md-tab-label>
+                            <md-content>
+                                <ms-step-overview step="step" expandable="false"></ms-step-overview>
+                            </md-content>
+                        </md-tab>
+                    </md-tabs>
+                </md-content>
             </div>
         </div>
     </ms-widget-front>

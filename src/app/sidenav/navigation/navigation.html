@@ -10,9 +10,26 @@
 <ms-nav ms-scroll="vm.msScrollOptions" class="scrollable">
 
     <ms-nav-item>
-        <a ms-nav-button ui-sref="app.dashboard-project" ui-sref-active="active md-accent-bg" md-ink-ripple>
+        <a ms-nav-button ui-sref="app.dashboard-project({userId:$root.passedUserId, token:$root.passedToken})" ui-sref-active="active md-accent-bg" md-ink-ripple>
             <i class="icon-tile-four s16"></i>
             <span class="ms-nav-label">Dashboards</span>
         </a>
+    </ms-nav-item>
+
+    <ms-nav-item ms-nav-toggle ng-if="(!!$root.projectOverview && $root.projectOverview.length > 0)">
+        <a ms-nav-button md-ink-ripple>
+            <i class="icon-view-agenda s16"></i>
+            <span class="ms-nav-label">Project Overview</span>
+            <i class="icon-chevron-down s16 arrow"></i>
+        </a>
+
+        <ms-nav-toggle-items>
+            <ms-nav-item ng-repeat="step in $root.projectOverview">
+                <a ms-nav-button ui-sref="app.pages.blank"
+                   ui-sref-active="active md-accent-bg" md-ink-ripple>
+                    <span class="ms-nav-label">{{ step.stepName }}</span>
+                </a>
+            </ms-nav-item>
+        </ms-nav-toggle-items>
     </ms-nav-item>
 </ms-nav>

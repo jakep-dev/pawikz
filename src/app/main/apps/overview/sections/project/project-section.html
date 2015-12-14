@@ -3,77 +3,71 @@
     <!-- Front -->
     <ms-widget-front class="white-bg">
 
-      <md-content layout-padding>
-          </br>
-          <md-input-container md-no-float class="md-accent">
-              <input id="workUpName" placeholder="Work Up Name" ng-model="vm.templateOverview.projectName" class="font-size-24"/>
-              <div ng-messages="vm.templateOverview.projectName.$error">
-                  <div ng-message="required">This is required.</div>
-              </div>
-          </md-input-container>
-      </md-content>
-
-    <md-content layout-padding>
-
-        <md-grid-list id="overviewGrid"
-                md-cols-sm="2" md-cols-md="4" md-cols-gt-md="4"
-                md-row-height="3:2"  >
-
-            <md-grid-tile  md-colspan="2">
-                <div layout="row" flex layout-align="center center">
-                    <div layout="column" class="text-bold" layout-align="center start" flex layout-padding>
-                        <div flex>
-                            Currency
-                        </div>
-                        <div flex>
-                            Entity Type
-                        </div>
-                        <div flex>
-                            Created
-                        </div>
-                    </div>
-                    <div layout="column" layout-align="center end" flex layout-padding>
-                        <div flex>
-                            {{ vm.templateOverview.defaultCurrency }}
-                        </div>
-                        <div flex>
-                            {{ vm.templateOverview.organizationType }}
-                        </div>
-                        <div flex>
-                            {{ vm.templateOverview.createdBy }}
-                        </div>
-                    </div>
+        <md-content layout-padding>
+            </br>
+            <md-input-container md-no-float class="md-accent">
+                <input id="workUpName" placeholder="Work Up Name" ng-model="vm.templateOverview.projectName" class="font-size-24"/>
+                <div ng-messages="vm.templateOverview.projectName.$error">
+                    <div ng-message="required">This is required.</div>
                 </div>
-            </md-grid-tile>
-            <md-grid-tile  md-colspan="2">
-                <div layout="row" flex layout-align="center center">
-                    <div layout="column" class="text-bold" layout-align="center start" flex layout-padding>
-                        <div flex>
-                            Company
-                        </div>
-                        <div flex>
-                            {{ vm.templateOverview.industry }}
-                        </div>
-                        <div flex>
-                            Modified
-                        </div>
-                    </div>
-                    <div layout="column" layout-align="center end" flex layout-padding>
-                        <div flex>
-                            {{ vm.templateOverview.companyName }}
-                        </div>
-                        <div flex>
-                            {{ vm.templateOverview.organizationType }}
-                        </div>
-                        <div flex>
-                            {{ vm.templateOverview.lastModifiedDate }}
-                        </div>
-                    </div>
-                </div>
-            </md-grid-tile>
+            </md-input-container>
+        </md-content>
 
-        </md-grid-list>
-    </md-content>
+        <md-content layout-padding class="light-blue-50-bg">
+
+            <div id="overviewGrid" layout="row" layout-sm="column">
+                <div  flex>
+                    <table class="simple" width="100%">
+                        <tbody>
+                        <tr>
+                            <td>Currency</td>
+                            <td>
+                                <span>{{vm.templateOverview.defaultCurrency}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Entity Type</td>
+                            <td>
+                                <span>{{ vm.templateOverview.organizationType }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Created</td>
+                            <td>
+                                <span>{{ vm.templateOverview.createdBy }}</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <md-divider></md-divider>
+                <div  flex>
+                    <table class="simple" width="100%">
+                        <tbody>
+                        <tr>
+                            <td>Company</td>
+                            <td>
+                                <span>{{ vm.templateOverview.companyName }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> GCIS Industry </td>
+                            <td>
+                                <span>{{ vm.templateOverview.industry }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Modified</td>
+                            <td>
+                                <span>{{ vm.templateOverview.lastModifiedDate }}</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </md-content>
 
     </ms-widget-front>
     <!-- / Front -->

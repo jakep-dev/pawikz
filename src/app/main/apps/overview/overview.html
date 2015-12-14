@@ -3,7 +3,7 @@
 
 
     <!-- CENTER -->
-    <div class="center" flex layout-margin>
+    <div class="center" flex layout-margin ng-show="vm.isOverviewLoaded">
 
         <md-content>
             <div class="lock-size" layout="row" layout-align="start start">
@@ -24,10 +24,15 @@
                                 </md-tooltip>
                             </md-icon>
                         </md-button>
-                        <md-button aria-label="Mode" class="md-fab md-raised md-mini">
-                            <md-icon md-font-icon="icon-tablet-ipad" class="icon" aria-label="Mode">
+                        <md-button aria-label="Mode" class="md-fab md-raised md-mini" ng-click="vm.flipView()">
+                            <md-icon md-font-icon="icon-tablet-ipad" class="icon" aria-label="Mode" ng-if="!vm.isTabletMode">
                                 <md-tooltip md-direction="top">
                                     Tablet View
+                                </md-tooltip>
+                            </md-icon>
+                            <md-icon md-font-icon="icon-desktop-mac" class="icon" aria-label="Mode" ng-if="vm.isTabletMode">
+                                <md-tooltip md-direction="top">
+                                    Desktop View
                                 </md-tooltip>
                             </md-icon>
                         </md-button>
@@ -36,17 +41,15 @@
             </div>
         </md-content>
 
-        <div ng-hide="false">
-            <md-content ng-include="'app/main/apps/overview/sections/project/project-section.html'"
-                        ng-controller="OverviewController as vm">
+        <div ng-if="!vm.isTabletMode">
+            <md-content ng-include="'app/main/apps/overview/sections/project/project-section.html'">
             </md-content>
 
-            <md-content ng-include="'app/main/apps/overview/sections/steps/steps-section.html'"
-                        ng-controller="OverviewController as vm">
+            <md-content ng-include="'app/main/apps/overview/sections/steps/steps-section.html'">
             </md-content>
         </div>
 
-        <div ng-hide="true">
+        <div ng-if="vm.isTabletMode">
             <ms-widget  layout="column" flex>
                 <!-- Front -->
                 <ms-widget-front class="white-bg">
@@ -55,15 +58,13 @@
                             <md-tab>
                                 <md-tab-label>Overview</md-tab-label>
                                 <md-content
-                                        ng-include="'app/main/apps/overview/sections/project/project-section.html'"
-                                        ng-controller="OverviewController as vm">
+                                     ng-include="'app/main/apps/overview/sections/project/project-section.html'">
                                 </md-content>
                             </md-tab>
                             <md-tab>
                                 <md-tab-label >Steps</md-tab-label>
                                 <md-content class="scrollable" ms-scroll
-                                            ng-include="'app/main/apps/overview/sections/steps/steps-section.html'"
-                                            ng-controller="OverviewController as vm">
+                                     ng-include="'app/main/apps/overview/sections/steps/steps-section.html'">
                                 </md-content>
                             </md-tab>
                         </md-tabs>
