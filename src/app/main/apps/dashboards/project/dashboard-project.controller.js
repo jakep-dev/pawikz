@@ -26,7 +26,7 @@
         $rootScope.isSearching = false;
 
 
-        vm.companyNames = [{ id: 0,  name: 'All' }];
+        vm.companyNames = [{ id: 0,  name: 'All', shortName:'All' }];
         vm.users = [{ id: 0,  name: 'All' }];
 
         //Dashboard DataTable Configuration
@@ -169,6 +169,7 @@
                 dataservice.getDashboardCompanies().then(function(data)
                 {
                     var result = data.list;
+
 
                     angular.forEach(result, function(row)
                     {

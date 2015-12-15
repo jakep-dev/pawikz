@@ -1,10 +1,10 @@
 
-(function(dashboardRoute)
+(function(overviewRoute)
 {
 
     var underscore = require('underscore');
 
-    dashboardRoute.init = function(app, config)
+    overviewRoute.init = function(app, config)
     {
         var client = config.restcall.client;
         var config = config;

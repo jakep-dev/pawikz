@@ -77,7 +77,6 @@
 
             client.get(config.restcall.url + '/templateSearch/' + methodName,args,function(data,response)
             {
-                console.log(data);
                 res.send(data);
             });
         }
@@ -105,6 +104,7 @@
 
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
+                //console.log(data);
                 res.send(data);
             });
         }
