@@ -27,6 +27,7 @@
             <ms-nav-item ng-repeat="step in $root.projectOverview">
                 <a ms-nav-button ui-sref="app.pages.blank"
                    ui-sref-active="active md-accent-bg" md-ink-ripple>
+                    <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>
                     <span class="ms-nav-label">{{ step.stepName }}</span>
                 </a>
             </ms-nav-item>

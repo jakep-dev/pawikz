@@ -16,9 +16,11 @@
 
         $scope.unSelectAll = unSelectAll;
         $scope.selectAll = selectAll;
+        $scope.checkSelection = checkSelection;
 
         console.log('Inside StepOverview Directive = ' + $scope.isExpanded);
 
+        //UnSelectAll the checkbox
         function unSelectAll()
         {
             angular.forEach($scope.step.sections, function(section)
@@ -28,6 +30,7 @@
             $scope.isOverAllSelected = false;
         }
 
+        //SelectAll the checkbox
         function selectAll()
         {
             angular.forEach($scope.step.sections, function(section)
@@ -35,6 +38,12 @@
                 section.value = true;
             });
             $scope.isOverAllSelected = true;
+        }
+
+
+        function checkSelection()
+        {
+            $scope.isOverAllSelected = isAllSectionSelected();
         }
 
         function expandCollapseToggle()
@@ -74,13 +83,17 @@
             return isAllSelected;
         }
 
-
-
         function isExpandable()
         {
             return (angular.isDefined($scope.expandable) && $scope.expandable === true);
         }
 
+        //$scope.$watch(
+        //    "$scope.isOverAllSelected",
+        //    function() {
+        //        console.log($scope.isOverAllSelected);
+        //    }// Object equality (not just reference).
+        //);
     }
 
     /** @ngInject */

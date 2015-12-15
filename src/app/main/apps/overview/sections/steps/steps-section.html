@@ -33,15 +33,20 @@
                                 <md-button  aria-label="Expand/Collapse widget" ng-click="vm.toggleSidenav('quick-panel')">
                                                           <span layout="row" layout-align="start center">
                                                                 <md-icon md-font-icon="icon-backburger"></md-icon>
-                                                                <span hide-sm>Expand/Collapse</span>
+                                                                <span hide-sm>Expand All</span>
                                                           </span>
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item>
-                                <md-button  aria-label="Select/UnSelect widget">
-                                                        <span layout="row" layout-align="start center">
-                                                             <md-icon md-font-icon="icon-select"></md-icon>
-                                                            <span hide-sm>Select/UnSelect</span>
+                                <md-button  aria-label="Select/UnSelect widget" ng-click="vm.flipSelectionView()">
+                                                        <span layout="row" layout-align="start center" ng-if="vm.isAllSelected">
+                                                            <md-icon md-font-icon="icon-select-inverse"></md-icon>
+                                                            <span hide-sm>UnSelect All</span>
+                                                        </span>
+
+                                                        <span layout="row" layout-align="start center" ng-if="!vm.isAllSelected">
+                                                              <md-icon md-font-icon="icon-select"></md-icon>
+                                                            <span hide-sm>Select All</span>
                                                         </span>
                                 </md-button>
                             </md-menu-item>

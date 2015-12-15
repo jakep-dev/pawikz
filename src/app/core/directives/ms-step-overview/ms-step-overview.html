@@ -37,7 +37,7 @@
 <md-content id="step-content" ng-if="!isExpanded" ng-animate="'expandCollapse'">
     <md-list>
         <md-list-item  ng-repeat="section in step.sections">
-            <md-checkbox class="md-secondary" ng-model="section.value"></md-checkbox>
+            <md-checkbox class="md-secondary" ng-model="section.value" ng-change="checkSelection()"></md-checkbox>
             <p> {{ section.label }} </p>
         </md-list-item>
     </md-list>

@@ -12,7 +12,7 @@
 
 
     /** @ngInject */
-    function OverviewController($rootScope, $stateParams, dataservice)
+    function OverviewController($rootScope, $stateParams, dataservice, $scope)
     {
         $rootScope.projectId = $stateParams.projectId;
         $rootScope.title = 'Overview';
@@ -21,10 +21,12 @@
         vm.isOverviewLoaded = false;
         vm.isTabletMode = false;
         vm.isStepTabletMode = false;
+        vm.isAllSelected = false;
 
         vm.flipView = flipView;
         vm.expandCollapseToggle = expandCollapseToggle;
         vm.flipStepView = flipStepView;
+        vm.flipSelectionView = flipSelectionView;
         //vm.templateOverview = overViewData();
         //
         //angular.forEach(vm.templateOverview.steps, function(step)
@@ -34,7 +36,7 @@
         //    })
         //});
 
-        console.log(vm.templateOverview)
+        //console.log(vm.templateOverview)
 
         ////Data
         dataservice.getOverview($stateParams.projectId).then(function(data)
@@ -50,6 +52,8 @@
                        stepName: step.stepName
                    })
                 });
+
+                //vm.isAllSelected = isAllSelected();
             }
             vm.isOverviewLoaded = true;
         });
@@ -66,6 +70,29 @@
         {
             vm.isStepTabletMode = !vm.isStepTabletMode;
         }
+
+        function flipSelectionView()
+        {
+            vm.isAllSelected = !vm.isAllSelected;
+            selectionProcess(vm.isAllSelected);
+            console.log($scope);
+        }
+
+        function selectionProcess(value)
+        {
+            if(angular.isDefined(vm.templateOverview)) {
+
+                angular.forEach(vm.templateOverview.steps, function(step)
+                {
+
+                    angular.forEach(step.sections, function(section)
+                    {
+                        section.value = value;
+                    });
+                });
+            }
+        }
+
 
         function expandCollapseToggle()
         {
