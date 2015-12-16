@@ -13,21 +13,21 @@
 
     <md-button class="md-icon-button"
                aria-label="select/unselect"
-               ng-if="!isOverAllSelected"
-               ng-click="selectAll()"
+               ng-if="!step.value"
+               ng-click="setStepSelection()"
                style="float:right">
         <md-tooltip md-direction="top">
-            select/unselect all
+            Select all
         </md-tooltip>
         <md-icon md-font-icon="icon-select"></md-icon>
     </md-button>
 
     <md-button class="md-icon-button" aria-label="select/unselect"
-               ng-click="unSelectAll()"
-               ng-if="isOverAllSelected"
+               ng-click="setStepSelection()"
+               ng-if="step.value"
                style="float:right">
         <md-tooltip md-direction="top">
-            select/unselect all
+            Unselect all
         </md-tooltip>
         <md-icon md-font-icon="icon-select-inverse"></md-icon>
     </md-button>
@@ -37,7 +37,7 @@
 <md-content id="step-content" ng-if="!isExpanded" ng-animate="'expandCollapse'">
     <md-list>
         <md-list-item  ng-repeat="section in step.sections">
-            <md-checkbox class="md-secondary" ng-model="section.value" ng-change="checkSelection()"></md-checkbox>
+            <md-checkbox class="md-secondary" ng-model="section.value" ng-change="singleSelection()"></md-checkbox>
             <p> {{ section.label }} </p>
         </md-list-item>
     </md-list>

@@ -84,7 +84,7 @@
 
                 angular.forEach(vm.templateOverview.steps, function(step)
                 {
-
+                    step.value = value;
                     angular.forEach(step.sections, function(section)
                     {
                         section.value = value;

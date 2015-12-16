@@ -2,7 +2,7 @@
 (function(overviewRoute)
 {
 
-    var underscore = require('underscore');
+    var u = require('underscore');
 
     overviewRoute.init = function(app, config)
     {
@@ -20,7 +20,7 @@
 
             var methodName = '';
 
-            if(!underscore.isUndefined(service) && !underscore.isNull(service))
+            if(!u.isUndefined(service) && !u.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.overView;
@@ -36,16 +36,37 @@
                 }
             };
 
+            console.log(config.restcall.url + '/templateSearch/' + methodName);
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
-                res.send(data);
+                res.send(setOverViewDetails(data));
             });
         }
 
 
         function getServiceDetails(serviceName)
         {
-            return underscore.find(config.restcall.service, { name: serviceName });
+            return u.find(config.restcall.service, { name: serviceName });
+        }
+        
+        function setOverViewDetails(data)
+        {
+           if(!u.isUndefined(data) && (!u.isUndefined(data.templateOverview)))
+           {
+               var steps = data.templateOverview.steps;
+
+               u.each(steps, function(step)
+               {
+                   u.each(step.sections, function(section)
+                   {
+                      section.value = (section.value === 'true');
+                   });
+
+                   step.value = u.every(step.sections, u.identity({value: true}));
+                   console.log('After Manipulation = ' + step.value);
+               });
+           }
+           return data;
         }
 
     };

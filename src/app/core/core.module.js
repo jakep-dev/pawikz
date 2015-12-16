@@ -31,6 +31,7 @@
                 'ng-sortable',
                 'backTop',
                 'ksSwiper',
-                'angularSoap'
+                'angularSoap',
+                'angular-underscore'
             ]);
 })();

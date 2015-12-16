@@ -11,39 +11,34 @@
     function MsStepOverviewController($scope)
     {
         $scope.isExpanded = false;
-        $scope.isOverAllSelected = isAllSectionSelected();
         $scope.expandCollapseToggle = expandCollapseToggle;
+        $scope.singleSelection = singleSelection;
+        $scope.setStepSelection = setStepSelection;
 
-        $scope.unSelectAll = unSelectAll;
-        $scope.selectAll = selectAll;
-        $scope.checkSelection = checkSelection;
 
         console.log('Inside StepOverview Directive = ' + $scope.isExpanded);
 
-        //UnSelectAll the checkbox
-        function unSelectAll()
+        console.log($scope.step);
+
+        //set the step select and unselect feature.
+        function setStepSelection()
+        {
+            $scope.step.value = !$scope.step.value;
+            setChildSelection();
+        }
+
+        //set the child select and unselect feature
+        function setChildSelection()
         {
             angular.forEach($scope.step.sections, function(section)
             {
-                section.value = false;
+                section.value = $scope.step.value;
             });
-            $scope.isOverAllSelected = false;
         }
 
-        //SelectAll the checkbox
-        function selectAll()
+        function singleSelection()
         {
-            angular.forEach($scope.step.sections, function(section)
-            {
-                section.value = true;
-            });
-            $scope.isOverAllSelected = true;
-        }
-
-
-        function checkSelection()
-        {
-            $scope.isOverAllSelected = isAllSectionSelected();
+            recalculateSelection();
         }
 
         function expandCollapseToggle()
@@ -51,49 +46,22 @@
             $scope.isExpanded = !$scope.isExpanded;
         }
 
-        function isAllSectionSelected()
+        function recalculateSelection()
         {
-            var isAllSelected = false;
+            console.log('Enter recalculate selection');
 
             if(angular.isDefined($scope.step) &&
                angular.isDefined($scope.step.sections))
             {
-                var totalCount = $scope.step.sections.length;
-                var actualCount = 0;
-                angular.forEach($scope.step.sections, function(section)
-                {
-
-                    section.value = angular.isDefined(section.value) ? JSON.parse(section.value) : false;
-                    if(section.value)
-                    {
-                        actualCount++;
-                    }
-
-                });
-
-                if(totalCount === actualCount)
-                {
-                    isAllSelected = true;
-                }
-                console.log('TotalCount = ' + totalCount);
-                console.log('ActualCount = ' + actualCount);
+                $scope.step.value = _.every($scope.step.sections,
+                    _.identity({value: true}));
             }
-
-
-            return isAllSelected;
         }
 
         function isExpandable()
         {
             return (angular.isDefined($scope.expandable) && $scope.expandable === true);
         }
-
-        //$scope.$watch(
-        //    "$scope.isOverAllSelected",
-        //    function() {
-        //        console.log($scope.isOverAllSelected);
-        //    }// Object equality (not just reference).
-        //);
     }
 
     /** @ngInject */
