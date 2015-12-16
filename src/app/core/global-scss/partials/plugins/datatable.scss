@@ -1172,3 +1172,16 @@ table.dataTable.dtr-inline.collapsed {
         }
     }
 }
+
+table.dataTable thead .sorting_desc:after {
+    content: '\25BE';
+    padding-left: 5px;
+}
+table.dataTable thead .sorting_asc:after {
+    content: '\25B4';
+    padding-left: 5px;
+}
+table.dataTable thead .sorting &:after {
+    content: '';
+    padding-left: 5px;
+}

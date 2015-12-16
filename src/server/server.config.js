@@ -21,7 +21,8 @@ exports.restcall =
     service: [{
                 name: 'templateManager',
                 methods:{
-                   auth:'authenticate'
+                   auth:'authenticate',
+                   saveOverview: 'updateTemplateOverview'
                 }
               },
             {

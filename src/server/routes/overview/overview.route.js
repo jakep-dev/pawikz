@@ -10,6 +10,7 @@
         var config = config;
 
         app.get('/api/overview/:projectId', getOverview);
+        app.post('/api/saveOverview', saveOverview);
 
         //Get Dashboard data
         function getOverview(req, res, next) {
@@ -43,10 +44,44 @@
             });
         }
 
-
-        function getServiceDetails(serviceName)
+        function saveOverview(req, res, next)
         {
-            return u.find(config.restcall.service, { name: serviceName });
+            var service = getServiceDetails('templateManager');
+            console.log('Parameters -');
+            console.log(req.body);
+
+            var methodName = '';
+
+            if(!u.isUndefined(service) && !u.isNull(service))
+            {
+                console.log(service.name);
+                methodName = service.methods.saveOverview;
+            }
+
+            console.log(methodName);
+
+            var args =
+            {
+                data: {
+                    userId: req.body.userId,
+                    projectId: req.body.projectId,
+                    steps: req.body.steps
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            console.log(config.restcall.url + '/' + service.name + '/' + methodName);
+
+            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                console.log(data);
+                res.send(data);
+            });
+        }
+
+
+        function getServiceDetails(serviceName) {
+            return u.find(config.restcall.service, {name: serviceName});
         }
         
         function setOverViewDetails(data)

@@ -33,6 +33,9 @@
             'app.pages.feedback',
 
             // Blank
-            'app.pages.blank'
+            'app.pages.blank',
+
+            // Components
+            'app.components'
         ]);
 })();
