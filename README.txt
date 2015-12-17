@@ -7,3 +7,5 @@ Step 6: bower install
 Step 7: gulp clean
 Step 8: gulp build
 Step 9: NODE_ENV=build node ./src/server/server.js
+
+Step X: gulp serve
