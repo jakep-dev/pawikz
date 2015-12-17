@@ -99,8 +99,6 @@
                     dataType: "json",
                 })
                .then(function(data, status, headers, config) {
-                    console.log('Success');
-                    console.log(data);
                     return data;
                 })
                .catch(function(message) {

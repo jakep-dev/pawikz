@@ -13,6 +13,7 @@
 
     <md-button class="md-icon-button"
                aria-label="select/unselect"
+               ng-disabled="(step.sections.length === 0)"
                ng-if="!step.value"
                ng-click="setStepSelection()"
                style="float:right">

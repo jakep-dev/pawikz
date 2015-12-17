@@ -12,7 +12,7 @@
 
 
     /** @ngInject */
-    function OverviewController($rootScope, $stateParams, dataservice, $scope)
+    function OverviewController($rootScope, $stateParams, $scope, $interval, dataservice, autoSaveFeature)
     {
         $rootScope.projectId = $stateParams.projectId;
         $rootScope.title = 'Overview';
@@ -30,28 +30,66 @@
         vm.flipStepView = flipStepView;
         vm.flipSelectionView = flipSelectionView;
         vm.saveAll = saveAll;
+        vm.reload = loadData;
+        var promise = [];
 
+        //Data
+        loadData();
 
-        ////Data
-        dataservice.getOverview($stateParams.projectId).then(function(data)
+        function loadData()
         {
-            if(angular.isDefined(data.templateOverview))
+            cancelPromise();
+            dataservice.getOverview($stateParams.projectId).then(function(data)
             {
-                vm.templateOverview = data.templateOverview;
-                console.log(vm.templateOverview);
-
-                angular.forEach(vm.templateOverview.steps, function(step)
+                if(angular.isDefined(data.templateOverview))
                 {
-                   $rootScope.projectOverview.push({
-                       stepName: step.stepName
-                   })
-                });
-            }
-            vm.isOverviewLoaded = true;
-        });
+                    vm.templateOverview = data.templateOverview;
+                    console.log(vm.templateOverview);
+
+                    angular.forEach(vm.templateOverview.steps, function(step)
+                    {
+                        $rootScope.projectOverview.push({
+                            stepName: step.stepName
+                        });
+                    });
+
+                    autoSave();
+
+                }
+                vm.isOverviewLoaded = true;
+            });
+        }
+
+
+        function autoSave()
+        {
+            $scope.$watch('vm.templateOverview',function()
+                {
+                    console.log('Watching .... Data changed');
+                    console.log(_.size(promise));
+
+                    if(_.size(promise) === 0)
+                    {
+                        console.log('Creating Promise');
+                        promise = $interval(function()
+                        {
+                            saveAll();
+                        }, autoSaveFeature.timeOut);
+
+                    }
+                },
+                true);
+        }
+
+        function cancelPromise()
+        {
+            $interval.cancel(promise);
+            promise = [];
+        }
 
         function saveAll()
         {
+            console.log('Saving....');
             var userId = $rootScope.passedUserId;
             var projectId = $rootScope.projectId;
             var steps = [];
@@ -78,7 +116,7 @@
                         stepId: stepId,
                         stepName: stepName,
                         sections: sections
-                    })
+                    });
                 });
             }
 
@@ -86,9 +124,11 @@
 
             dataservice.saveOverview(userId, projectId, steps).then(function(data)
             {
-                console.log('Inside saveOverview')
+                console.log('Inside saveOverview');
                 console.log(data);
             });
+
+            cancelPromise();
         }
 
         //Methods
@@ -117,7 +157,11 @@
 
                 angular.forEach(vm.templateOverview.steps, function(step)
                 {
-                    step.value = value;
+                    if(_.size(step.sections) !== 0)
+                    {
+                        step.value = value;
+                    }
+
                     angular.forEach(step.sections, function(section)
                     {
                         section.value = value;
@@ -126,92 +170,11 @@
             }
         }
 
-
         function expandCollapseToggle()
         {
-            console.log('Expand/Collapse');
             vm.isExpanded = !vm.isExpanded;
         }
 
-
-        function overViewData()
-        {
-            return {
-                steps: [
-                    {
-                        stepName: 'Step 1',
-                        sections: [{
-                            label: 'Label 1'
-                        },
-                            {
-                                label: 'Label 2'
-                                ,value: true
-                            },
-                            {
-                                label: 'Label 3'
-                                ,value: true
-                            }]
-                    },
-                    {
-                        stepName: 'Step 1',
-                        sections: [{
-                            label: 'Label 1'
-                        },
-                            {
-                                label: 'Label 2'
-                                ,value: true
-                            },
-                            {
-                                label: 'Label 3'
-                                ,value: true
-                            }]
-                    },
-                    {
-                        stepName: 'Step 1',
-                        sections: [{
-                            label: 'Label 1'
-                        },
-                            {
-                                label: 'Label 2'
-                                ,value: true
-                            },
-                            {
-                                label: 'Label 3'
-                                ,value: true
-                            },{
-                                label: 'Label 4'
-                                ,value: true
-                            },
-                            {
-                                label: 'Label 4'
-                                ,value: true
-                            }]
-                    },
-                    {
-                        stepName: 'Step 1',
-                        sections: [{
-                            label: 'Label 1'
-                            ,value: true
-                        },
-                            {
-                                label: 'Label 2'
-                                ,value: true
-                            },
-                            {
-                                label: 'Label 3'
-                                ,value: true
-                            },{
-                                label: 'Label 4'
-                                ,value: true
-                            },
-                            {
-                                label: 'Label 4'
-                                ,value: true
-                            }]
-                    }
-                ]
-            }
-        }
     }
 
 })();

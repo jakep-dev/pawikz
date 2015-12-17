@@ -8,8 +8,6 @@
     angular
         .module('app.blocks',
             [
-                // Logger
                 //'blocks.logger'
-                'blocks.error'
             ]);
 })();

@@ -3,5 +3,8 @@
     'use strict';
 
     angular
-        .module('fuse');
+        .module('fuse')
+        .constant('autoSaveFeature',{
+            timeOut: 10000
+        });
 })();

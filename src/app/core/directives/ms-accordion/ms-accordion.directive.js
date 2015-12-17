@@ -10,7 +10,7 @@
         .controller('MsAccordionController', MsAccordionController)
         .directive('msAccordion', msAccordionDirective)
         .directive('msAccordionTitle', msAccordionTitleDirective)
-        .directive('msAccordionContent',msAccordionContentDirective)
+        .directive('msAccordionContent',msAccordionContentDirective);
 
     /** @ngInject */
     function MsAccordionController($scope, $element)
