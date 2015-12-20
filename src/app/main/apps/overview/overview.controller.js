@@ -13,19 +13,13 @@
 
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope, $interval, overviewService,
-                                autoSaveFeature, bottomSheetConfig)
+                                clientConfig, bottomSheetConfig, navConfig)
     {
         $rootScope.projectId = $stateParams.projectId;
         $rootScope.title = 'Overview';
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
-
-        console.log($scope);
-
-
-        console.log('BottomsheetConfiguration');
-        console.log(bottomSheetConfig);
 
         var vm = this;
         vm.isExpanded = true;
@@ -59,7 +53,7 @@
 
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
-                        $rootScope.projectOverview.push({
+                        navConfig.sideNavItems.push({
                             stepName: step.stepName
                         });
                     });
@@ -86,7 +80,7 @@
                         promise = $interval(function()
                         {
                             saveAll();
-                        }, autoSaveFeature.timeOut);
+                        }, clientConfig.appSettings.autoSaveTimeOut);
 
                     }
                 },

@@ -7,11 +7,13 @@
         .controller('NavigationController', NavigationController);
 
     /** @ngInject */
-    function NavigationController($rootScope)
+    function NavigationController(navConfig)
     {
         var vm = this;
 
-        $rootScope.projectOverview = [];
+        navConfig.sideNavItems = [];
+
+        vm.sideNavItems = navConfig.sideNavItems;
 
         // Data
         vm.msScrollOptions = {

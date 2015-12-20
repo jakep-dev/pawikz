@@ -9,10 +9,10 @@
         .module('app.core')
         .factory('dashboardService', dashboardService);
 
-    dashboardService.$inject = ['$http', '$location', '$q'];
+    dashboardService.$inject = ['$http', '$location', '$q', 'clientConfig'];
 
     /* @ngInject */
-    function dashboardService($http, $location, $q) {
+    function dashboardService($http, $location, $q, clientConfig) {
         var readyPromise;
 
         var service = {
@@ -24,24 +24,12 @@
 
         return service;
 
-        //Get Dashboard Users
-        function getUsers()
-        {
-            return $http.get('/api/users')
-                .then(function(data, status, headers, config)
-                {
-                    return data.data;
-                })
-                .catch(function(message) {
-                    $location.url('/');
-                });
-        }
-
         //Get Dashboard Details
         function get(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder, sortFilter) {
 
-            var url = '/api/dashboard/'.concat(userId, '/', searchUserId, '/', searchCompanyId, '/', rowNum, '/',
-                perPage, '/', sortOrder, '/', sortFilter);
+            var url = clientConfig.endpoints.dashboardEndPoint.get.concat(userId, '/',
+                            searchUserId, '/', searchCompanyId, '/', rowNum, '/',
+                            perPage, '/', sortOrder, '/', sortFilter);
 
             console.log(url);
 
@@ -54,11 +42,23 @@
                 });
         }
 
+        //Get Dashboard Users
+        function getUsers()
+        {
+            return $http.get(clientConfig.endpoints.dashboardEndPoint.getUsers)
+                .then(function(data, status, headers, config)
+                {
+                    return data.data;
+                })
+                .catch(function(message) {
+                    $location.url('/');
+                });
+        }
 
         //Get Dashboard Companies
         function getCompanies()
         {
-            return $http.get('/api/companies')
+            return $http.get(clientConfig.endpoints.dashboardEndPoint.getCompanies)
                 .then(function(data, status, headers, config)
                 {
                     return data.data;

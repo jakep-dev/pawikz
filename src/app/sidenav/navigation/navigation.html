@@ -33,7 +33,7 @@
         </ms-nav-toggle-items>
     </ms-nav-item>
 
-    <ms-nav-item ms-nav-toggle ng-if="(!!$root.projectOverview && $root.projectOverview.length > 0)">
+    <ms-nav-item ms-nav-toggle ng-if="(!!vm.sideNavItems && vm.sideNavItems.length > 0)">
         <a ms-nav-button md-ink-ripple>
             <i class="icon-view-agenda s16"></i>
             <span class="ms-nav-label">Project Overview</span>
@@ -41,7 +41,7 @@
         </a>
 
         <ms-nav-toggle-items>
-            <ms-nav-item ng-repeat="step in $root.projectOverview">
+            <ms-nav-item ng-repeat="step in vm.sideNavItems">
                 <a ms-nav-button ui-sref="app.pages_blank"
                    ui-sref-active="active md-accent-bg" md-ink-ripple>
                     <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>

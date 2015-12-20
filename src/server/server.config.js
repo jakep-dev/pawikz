@@ -4,7 +4,7 @@
 
 exports.webservice =
 {
-    security: 'http',
+    protocol: 'http',
     url: 'dev-vm-websvc.advisen.com',
     port: 8080,
     service:'advwebservice'
@@ -15,7 +15,7 @@ var Client = require('node-rest-client').Client;
 exports.restcall =
 {
     client: new Client(),
-    url: exports.webservice.security.concat('://', exports.webservice.url, ':', exports.webservice.port,
+    url: exports.webservice.protocol.concat('://', exports.webservice.url, ':', exports.webservice.port,
          '/',exports.webservice.service),
 
     service: [{

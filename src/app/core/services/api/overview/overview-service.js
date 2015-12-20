@@ -8,10 +8,10 @@
         .module('app.core')
         .factory('overviewService', overviewService);
 
-    overviewService.$inject = ['$http', '$location', '$q'];
+    overviewService.$inject = ['$http', '$location', '$q', 'clientConfig'];
 
     /* @ngInject */
-    function overviewService($http, $location, $q) {
+    function overviewService($http, $location, $q, clientConfig) {
         var readyPromise;
 
         var service = {
@@ -26,7 +26,7 @@
         //Get Overview Details
         function get(projectId)
         {
-            var url = '/api/overview/'.concat(projectId);
+            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
 
             return $http.get(url)
                 .then(function(data, status, headers, config)
@@ -50,7 +50,7 @@
             };
 
             return $http({
-                url : "/api/saveOverview",
+                url : clientConfig.endpoints.overViewEndPoint.save,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",
@@ -59,8 +59,8 @@
                 .then(function(data, status, headers, config) {
                     return data;
                 })
-                .catch(function(message) {
-                    console.log('error while saving');
+                .catch(function(error) {
+                    console.log('error while saving ' + error);
                 });
         }
 

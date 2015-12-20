@@ -9,10 +9,10 @@
         .module('app.core')
         .factory('chartService', chartService);
 
-    chartService.$inject = ['$http', '$location', '$q'];
+    chartService.$inject = ['$http', '$location', '$q', 'clientConfig'];
 
     /* @ngInject */
-    function chartService($http, $location, $q) {
+    function chartService($http, $location, $q, clientConfig) {
         var readyPromise;
 
         var service = {
