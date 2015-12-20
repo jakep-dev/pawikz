@@ -81,15 +81,15 @@
         }
 
         //Save Overview Details
-        function saveOverview(userId, projectId, steps)
+        function saveOverview(userId, projectId, projectName, steps)
         {
 
             var input = {
                 userId: userId,
                 projectId: projectId,
+                projectName: projectName,
                 steps: steps
             };
-
 
            return $http({
                     url : "/api/saveOverview",

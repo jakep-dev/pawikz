@@ -23,6 +23,9 @@
             // Breadcrumb
             'app.breadcrumb',
 
+            // Bottomsheet
+            'app.bottomsheet',
+
             // Dashboards
             'app.dashboards',
 

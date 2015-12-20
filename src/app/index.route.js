@@ -11,7 +11,7 @@
     {
         $locationProvider.html5Mode(true);
 
-        $urlRouterProvider.otherwise('/dashboard-project');
+        $urlRouterProvider.otherwise('/dashboard-project/{userId}/{token}');
 
         //$urlRouterProvider.otherwise('/overview/100145066');
 
@@ -33,6 +33,10 @@
                     'breadcrumb@app': {
                       templateUrl: 'app/breadcrumb/breadcrumb.html',
                       controller : 'BreadcrumbController as vm'
+                    },
+                    'bottomsheet@app': {
+                        templateUrl: 'app/bottomsheet/bottomsheet.html',
+                        controller : 'BottomsheetController as vm'
                     }
                 }
             });

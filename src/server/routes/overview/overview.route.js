@@ -65,6 +65,8 @@
                 data: {
                     userId: req.body.userId,
                     projectId: req.body.projectId,
+                    projectName: req.body.projectName,
+                    token: 'testToken',
                     steps: req.body.steps
                 },
                 headers:{'Content-Type':'application/json'}

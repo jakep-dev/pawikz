@@ -17,6 +17,7 @@
         $rootScope.passedUserId = $stateParams.userId;
         $rootScope.passedToken = $stateParams.token;
         $rootScope.projectOverview = [];
+        $rootScope.isBottomSheet = false;
 
         console.log($rootScope.title);
 
