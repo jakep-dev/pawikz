@@ -12,8 +12,8 @@
 
 
     /** @ngInject */
-    function OverviewController($rootScope, $stateParams, $scope, $interval, dataservice, autoSaveFeature,
-                                bottomSheetConfig)
+    function OverviewController($rootScope, $stateParams, $scope, $interval, overviewService,
+                                autoSaveFeature, bottomSheetConfig)
     {
         $rootScope.projectId = $stateParams.projectId;
         $rootScope.title = 'Overview';
@@ -50,7 +50,7 @@
         function loadData()
         {
             cancelPromise();
-            dataservice.getOverview($stateParams.projectId).then(function(data)
+            overviewService.get($stateParams.projectId).then(function(data)
             {
                 if(angular.isDefined(data.templateOverview))
                 {
@@ -138,7 +138,7 @@
 
             console.log(steps);
 
-            dataservice.saveOverview(userId, projectId, projectName, steps).then(function(data)
+            overviewService.save(userId, projectId, projectName, steps).then(function(data)
             {
                 console.log('Inside saveOverview');
                 console.log(data);

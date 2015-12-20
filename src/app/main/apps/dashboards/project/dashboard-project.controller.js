@@ -11,7 +11,7 @@
     /** @ngInject */
     function DashboardProjectController($rootScope, $mdSidenav, $stateParams,
                                         DTColumnDefBuilder, DTColumnBuilder,
-                                        DTOptionsBuilder, DTInstanceFactory, dataservice)
+                                        DTOptionsBuilder, DTInstanceFactory, dashboardService)
     {
         $rootScope.title = 'Dashboard';
         $rootScope.passedUserId = $stateParams.userId;
@@ -71,7 +71,7 @@
             console.log('searchCompanyId = ' + $rootScope.companyId);
             console.log('userId = ' + $rootScope.userId);
 
-            dataservice.getDashboard($stateParams.userId, $rootScope.userId, $rootScope.companyId,
+            dashboardService.get($stateParams.userId, $rootScope.userId, $rootScope.companyId,
                 start, length, sortOrder, sortFilter).then(function(data)
             {
 
@@ -150,7 +150,7 @@
             if (_.size(vm.users) === 1) {
                 $rootScope.isSearching = true;
 
-                dataservice.getDashboardUsers().then(function(data)
+                dashboardService.getUsers().then(function(data)
                 {
                     var result = data.list;
 
@@ -168,7 +168,7 @@
         function loadCompanyNames() {
             if (_.size(vm.companyNames) === 1) {
                 $rootScope.isSearching = true;
-                dataservice.getDashboardCompanies().then(function(data)
+                dashboardService.getCompanies().then(function(data)
                 {
                     var result = data.list;
 
