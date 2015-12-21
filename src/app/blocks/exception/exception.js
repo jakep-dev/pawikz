@@ -15,7 +15,7 @@
 
         function catcher(message) {
             return function(reason) {
-                logger.error(message, reason);
+                logger.simpleToast(message, reason, 'error');
             };
         }
     }

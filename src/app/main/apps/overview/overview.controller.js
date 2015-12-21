@@ -12,8 +12,9 @@
 
 
     /** @ngInject */
-    function OverviewController($rootScope, $stateParams, $scope, $interval, overviewService,
-                                clientConfig, bottomSheetConfig, navConfig)
+    function OverviewController($rootScope, $stateParams, $scope, $interval,
+                                overviewService, clientConfig, bottomSheetConfig,
+                                navConfig, logger)
     {
         $rootScope.projectId = $stateParams.projectId;
         $rootScope.title = 'Overview';
@@ -35,10 +36,17 @@
         vm.flipSelectionView = flipSelectionView;
         vm.saveAll = saveAll;
         vm.reload = loadData;
+        vm.goTop = goTop;
         var promise = [];
 
         //Data
         loadData();
+
+        //Go to top
+        function goTop()
+        {
+
+        }
 
         //Load data for project-section and step-section
         function loadData()
@@ -61,8 +69,10 @@
                     autoSave();
 
                 }
+                logger.simpleToast('AutoSave Enabled');
                 vm.isOverviewLoaded = true;
             });
+
         }
 
 
@@ -136,6 +146,7 @@
             {
                 console.log('Inside saveOverview');
                 console.log(data);
+                logger.simpleToast('Saved successfully');
             });
 
             cancelPromise();

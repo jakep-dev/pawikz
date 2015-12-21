@@ -9,9 +9,10 @@
 
 
     /** @ngInject */
-    function DashboardProjectController($rootScope, $mdSidenav, $stateParams,
+    function DashboardProjectController($rootScope, $mdSidenav, $stateParams, $mdToast,
                                         DTColumnDefBuilder, DTColumnBuilder,
-                                        DTOptionsBuilder, DTInstanceFactory, dashboardService)
+                                        DTOptionsBuilder, DTInstanceFactory, dashboardService,
+                                        dialog)
     {
         $rootScope.title = 'Dashboard';
         $rootScope.passedUserId = $stateParams.userId;
@@ -19,13 +20,10 @@
         $rootScope.projectOverview = [];
         $rootScope.isBottomSheet = false;
 
-        console.log($rootScope.title);
-
         var vm = this;
         $rootScope.companyId = 0;
         $rootScope.userId = 0;
         $rootScope.isSearching = false;
-
 
         vm.companyNames = [{ id: 0,  name: 'All', shortName:'All' }];
         vm.users = [{ id: 0,  name: 'All' }];
@@ -49,9 +47,6 @@
 
         function serverData(sSource, aoData, fnCallback, oSettings)
         {
-
-            console.log(aoData);
-
             var draw = aoData[0].value;
             var columns = aoData[1].value;
             var sortOrder = aoData[2].value[0].dir;
@@ -59,10 +54,6 @@
             var sortFilter = columns[sortFilterIndex].data;
             var start = aoData[3].value;
             var length = aoData[4].value;
-
-            console.log(aoData[2].value);
-
-
 
             console.log('Draw='+ draw + ' sortOrder=' + sortOrder +' sortFilterIndex=' + sortFilterIndex +
                 ' sortFilter=' + sortFilter +
@@ -75,7 +66,6 @@
                 start, length, sortOrder, sortFilter).then(function(data)
             {
 
-
                 var blankData = {
                     companyName: '',
                     projectName: '',
@@ -83,7 +73,6 @@
                     createdBy: '',
                     lastUpdateDate: ''
                 };
-
 
                 var records = {
                     draw: draw,
@@ -127,15 +116,6 @@
 
         function actionHtml(data, type, full, meta)
         {
-            //console.log('data = ');
-            //console.log(data);
-            //console.log('type = ');
-            //console.log(type);
-            //console.log('full = ');
-            //console.log(full);
-            //console.log('meta = ');
-            //console.log(meta);
-
             return '<a ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
         }
 
@@ -185,9 +165,7 @@
         //Filter Dashboard
         function filterDashboard() {
             $rootScope.isSearching = true;
-            var oTable = $('#dashBoardDetails').dataTable();
-            oTable.fnClearTable();
-            oTable.fnDraw();
+            redrawDataTable();
         }
 
         // Clear search
@@ -195,11 +173,16 @@
             $rootScope.isSearching = true;
             $rootScope.companyId = 0;
             $rootScope.userId = 0;
+            redrawDataTable();
+        }
+
+        // Redraw datatable
+        function redrawDataTable()
+        {
             var oTable = $('#dashBoardDetails').dataTable();
             oTable.fnClearTable();
             oTable.fnDraw();
         }
-
     }
 
 })();

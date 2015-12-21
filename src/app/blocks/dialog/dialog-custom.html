@@ -1,0 +1,30 @@
+<md-dialog aria-label="Dialog Custom" ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{ ctrl.title }}</h2>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+    <div ms-scroll>
+        <md-dialog-content layout="row">
+            <div class="md-dialog-content" flex>
+               {{ ctrl.content }}
+            </div>
+        </md-dialog-content>
+    </div>
+
+    <div>
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="ctrl.cancelCallBack()">
+                {{ ctrl.cancelName }}
+            </md-button>
+            <md-button ng-click="ctrl.okCallBack()" style="margin-right:20px;" md-autofocus>
+                {{ ctrl.okName }}
+            </md-button>
+        </md-dialog-actions>
+    </div>
+
+
+
+</md-dialog>

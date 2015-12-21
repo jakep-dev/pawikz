@@ -28,7 +28,7 @@
             },
             appSettings:
             {
-                autoSaveTimeOut: 10000
+                autoSaveTimeOut: 10000,
             }
         });
 })();
