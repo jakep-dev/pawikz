@@ -4,7 +4,10 @@
 
     angular
         .module('fuse')
-        .config(config);
+        .config(function($httpProvider)
+        {
+            $httpProvider.interceptors.push('interceptor');
+        });
 
     /** @ngInject */
     function config()

@@ -9,9 +9,7 @@
         .module('app.blocks',
             [
                'blocks.interceptor',
-
-                'blocks.logger',
-
-                'blocks.dialog'
+               'blocks.logger',
+               'blocks.dialog'
             ]);
 })();

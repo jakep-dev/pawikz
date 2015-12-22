@@ -46,11 +46,11 @@ switch (environment) {
     break;
   default:
     console.log('** DEV **');
-   // app.use('app',express.static(__dirname + './app/'));
-    app.use(express.static('./src/assets/'));
-    app.use(express.static('./src/app/'));
-    app.use(express.static('./'));
-    app.use(express.static('./.tmp'));
+    console.log(__dirname);
+    app.use('/bower_components', express.static('./bower_components/'));
+    app.use('/app', express.static('./src/app/'));
+    app.use('/app', express.static('./.tmp/serve/app/'));
+    app.use('/assets', express.static('./src/assets/'));
     app.use('/*', express.static('./.tmp/serve/index.html'));
     break;
 }

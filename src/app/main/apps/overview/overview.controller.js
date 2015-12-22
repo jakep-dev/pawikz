@@ -59,6 +59,8 @@
                     vm.templateOverview = data.templateOverview;
                     console.log(vm.templateOverview);
 
+                    navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({
@@ -141,6 +143,7 @@
             }
 
             console.log(steps);
+            console.log(projectName);
 
             overviewService.save(userId, projectId, projectName, steps).then(function(data)
             {

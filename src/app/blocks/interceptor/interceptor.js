@@ -11,23 +11,8 @@
         .factory('interceptor', ['$q','$location',function($q,$location){
             return {
                 response: function(response){
-                    console.log('Inside Response Interceptor');
-
-                    return promise.then(
-                        function success(response) {
-                            return response;
-                        },
-                        function error(response) {
-                            console.log('error');
-
-                            if(response.status === 401){
-                                $location.path('/signin');
-                                return $q.reject(response);
-                            }
-                            else{
-                                return $q.reject(response);
-                            }
-                        });
+                    console.log(response.status);
+                    return response || $q.when(response);
                 },
                 request: function(request)
                 {
@@ -49,30 +34,4 @@
 
             }
         }]);
-
-    //interceptor.$inject = ['$q', '$location'];
-    //
-    ///* @ngInject */
-    //function interceptor($q, $location) {
-    //    return
-    //    {
-    //        response: function(response)
-    //        {
-    //            return promise.then(
-    //                function success(response)
-    //                {
-    //                    return response;
-    //                }
-    //            )
-    //        },
-    //        function error(response)
-    //        {
-    //            if(reponse.status === 400)
-    //            {
-    //                $location.path('/signin');
-    //            }
-    //            return $q.reject(response);
-    //        }
-    //    }
-    //}
 })();

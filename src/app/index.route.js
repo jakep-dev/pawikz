@@ -11,7 +11,7 @@
     {
         $locationProvider.html5Mode(true);
 
-        $urlRouterProvider.otherwise('/dashboard-project/{userId}/{token}');
+       // $urlRouterProvider.otherwise('/dashboard-project/{userId}/{token}');
 
         //$urlRouterProvider.otherwise('/overview/100145066');
 

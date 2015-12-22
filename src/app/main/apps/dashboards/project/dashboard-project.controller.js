@@ -176,6 +176,8 @@
             redrawDataTable();
         }
 
+
+
         // Redraw datatable
         function redrawDataTable()
         {

@@ -18,8 +18,7 @@
         var service = {
             get: get,
             getUsers: getUsers,
-            getCompanies: getCompanies,
-            ready: ready
+            getCompanies: getCompanies
         };
 
         return service;
@@ -66,26 +65,6 @@
                 .catch(function(message) {
                     $location.url('/');
                 });
-        }
-
-        function getReady() {
-            if (!readyPromise) {
-                // Apps often pre-fetch session data ("prime the app")
-                // before showing the first view.
-                // This app doesn't need priming but we add a
-                // no-op implementation to show how it would work.
-
-                readyPromise = $q.when(service);
-            }
-            return readyPromise;
-        }
-
-        function ready(promisesArray) {
-            return getReady()
-                .then(function() {
-                    return promisesArray ? $q.all(promisesArray) : readyPromise;
-                })
-                .catch();
         }
     }
 })();

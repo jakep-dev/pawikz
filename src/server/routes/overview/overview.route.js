@@ -72,7 +72,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(config.restcall.url + '/' + service.name + '/' + methodName);
+          console.log(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
