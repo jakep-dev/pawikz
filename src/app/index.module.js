@@ -14,6 +14,9 @@
             // Core
             'app.core',
 
+            // Data
+            'app.data',
+
             // Navigation
             'app.navigation',
 
@@ -32,11 +35,8 @@
             // Overview
             'app.overview',
 
-            // Feedback
-            'app.pages.feedback',
-
-            // Blank
-            'app.pages.blank',
+            // Pages
+            'app.pages',
 
             // Components
             'app.components'

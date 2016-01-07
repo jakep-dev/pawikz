@@ -24,6 +24,13 @@
                 },
                 chartEndPoint:{
                     get: ''
+                },
+                toolBarEndPoint:{
+                    get: '/api/getUser/'
+                },
+                authEndPoint:
+                {
+                    auth:'/api/authenticate'
                 }
             },
             appSettings:

@@ -1,0 +1,201 @@
+<div id="login" layout="row" layout-align="start">
+    <div id="login-intro" flex hide show-gt-md>
+        <div>
+            <img md-menu-align-target  src="assets/images/logos/advisen-logo-L.png">
+        </div>
+        <div class="description">
+            Advisen is leading the way to smarter and more efficient risk and insurance communities.
+            Through its information, analytics, ACORD messaging gateway, news, research, and events,
+            Advisen reaches more than 150,000 commercial insurance and risk professionals at 8,000
+            organizations worldwide. The company was founded in 2000 and is headquartered in New York City,
+            with offices in the US and the UK.
+        </div>
+        <div layout="column" layout-margin layout-padding layout-align="center start">
+            <div id="contact-Info" layout="column">
+                <div>
+                    <strong>
+                        Sales & General Information
+                    </strong>
+                    <md-divider></md-divider>
+                </div>
+                <div layout="column">
+                    <span>Contact Advisen with sales and general questions:</span>
+
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div layout="row">
+                        <div>
+                            <md-icon class="icon-phone"></md-icon>
+                        </div>
+                        <a href="tel:12128974800">+1 (212) 897-4800</a>
+                    </div>
+
+                    <div layout="row">
+                        <div>
+                            <md-icon class="icon-email"></md-icon>
+                        </div>
+                        <a href="mailto:info@advisen.com?subject=Advisen Website Inquiry" title="Email Advisen">info@advisen.com</a>
+                    </div>
+                </div>
+            </div>
+            <div>
+                &nbsp;
+            </div>
+            <div id="customer-support">
+                <div>
+                    <strong>Customer Support</strong>
+                    <md-divider></md-divider>
+                </div>
+                <div layout="column">
+                    <span>Contact an Advisen client services representative:</span>
+
+                    <div>&nbsp;</div>
+                    <div layout="row">
+                        <div>
+                            <md-icon class="icon-phone"></md-icon>
+                        </div>
+                        <a href="tel:12128974800">+1 (212) 897-4800</a>
+                    </div>
+
+                    <div layout="row">
+                        <div>
+                            <md-icon class="icon-email"></md-icon>
+                        </div>
+                        <a href="mailto:support@advisen.com?subject=Advisen Website Inquiry" title="Email Advisen">support@advisen.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="login-form-wrapper" class="md-whiteframe-8dp">
+        <div id="login-form">
+            <div class="title">Log in to your account</div>
+            <div class="description">
+            </div>
+
+            <form name="loginForm" novalidate>
+                <md-input-container class="md-block md-accent" md-no-float>
+                    <input type="email" name="email" ng-model="vm.form.email" placeholder="Email"
+                           ng-pattern="/^.+@.+\..+$/" required />
+                    <div ng-messages="loginForm.email.$error" ng-show="loginForm.email.$touched" role="alert" multiple>
+                        <div ng-message="required">
+                            <span>Email field is required</span>
+                        </div>
+                        <div ng-message="pattern">
+                            <span>Email must be a valid e-mail address</span>
+                        </div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block md-accent" md-no-float>
+                    <input type="password" name="password" ng-model="vm.form.password" placeholder="Password"
+                           required>
+                    <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">
+                        <div ng-message="required">
+                            <span>Password field is required</span>
+                        </div>
+                    </div>
+                </md-input-container>
+
+                <div class="remember-forgot-password" layout="row" layout-sm="column"
+                     layout-align="space-between center">
+                    <md-checkbox class="remember-me" ng-model="data.cb1" aria-label="Remember Me">
+                        <span>Remember Me</span>
+                    </md-checkbox>
+
+                    <a ui-sref="app.pages_auth_forgot-password" class="forgot-password md-accent-color"
+                    >Forgot Password?</a>
+                </div>
+
+                <md-button type="submit" class="md-raised md-primary" aria-label="LOG IN"
+                           ng-click="vm.LogIn(vm.form.email, vm.form.password)"
+                           ng-disabled="loginForm.$invalid || loginForm.$pristine">
+                    LOG IN
+                </md-button>
+            </form>
+
+            <div class="separator">
+                <span class="text">OR</span>
+            </div>
+
+            <div layout="column" layout-align="start center">
+                <md-button class="md-raised google" ng-disabled="true">
+                    <div layout="row" layout-align="center center">
+                        <span>
+                            <md-icon md-font-icon="icon-google-plus" class="s16"></md-icon>
+                            <span>Log in with Google</span>
+                            <md-tooltip md-direction="top">
+                                Coming soon!
+                            </md-tooltip>
+                        </span>
+                    </div>
+                </md-button>
+
+                <md-button class="md-raised facebook" ng-disabled="true">
+                    <div layout="row" layout-align="center center">
+                        <span>
+                            <md-icon md-font-icon="icon-facebook" class="s16"></md-icon>
+                            <span>Log in with Facebook</span>
+                            <md-tooltip md-direction="top">
+                                Coming soon!
+                            </md-tooltip>
+                        </span>
+                    </div>
+                </md-button>
+            </div>
+
+            <div class="register" layout="row" layout-sm="column" layout-align="center center">
+                <span class="text">Don't have an account?</span>
+                <a class="link" ui-sref="app.pages_auth_register">Create an
+                    account</a>
+            </div>
+
+            <div layout="column" layout-align="center center" layout-padding hide-gt-md>
+                <div>
+                    <strong>
+                        Sales & General Information
+                    </strong>
+                    <div layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini" ng-click="vm.goUrl('tel:12128974800')">
+                            <md-icon md-font-icon="icon-phone" class="icon s20"></md-icon>
+                            <md-tooltip md-direction="top">
+                                +1 (212) 897-4800
+                            </md-tooltip>
+                        </md-button>
+
+                        <md-button class="md-fab md-mini" ng-click="vm.goUrl('mailto:info@advisen.com?subject=Advisen Website Inquiry')">
+                            <md-icon md-font-icon="icon-email" class="icon s20"></md-icon>
+                            <md-tooltip md-direction="top">
+                                info@advisen.com
+                            </md-tooltip>
+                        </md-button>
+                    </div>
+                </div>
+                <div>
+                    <strong>
+                        Customer Support
+                    </strong>
+                    <div layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini" ng-click="vm.goUrl('tel:12128974800')">
+                            <md-icon md-font-icon="icon-phone" class="icon s20"></md-icon>
+                            <md-tooltip md-direction="top">
+                                +1 (212) 897-4800
+                            </md-tooltip>
+                        </md-button>
+
+                        <md-button class="md-fab md-mini" ng-click="vm.goUrl('mailto:support@advisen.com?subject=Advisen Website Inquiry')">
+                            <md-icon md-font-icon="icon-email" class="icon s20"></md-icon>
+                            <md-tooltip md-direction="top">
+                                support@advisen.com
+                            </md-tooltip>
+                        </md-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

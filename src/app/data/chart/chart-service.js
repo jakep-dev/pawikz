@@ -6,7 +6,7 @@
     'use strict';
 
     angular
-        .module('app.core')
+        .module('app.data')
         .factory('chartService', chartService);
 
     chartService.$inject = ['$http', '$location', '$q', 'clientConfig'];

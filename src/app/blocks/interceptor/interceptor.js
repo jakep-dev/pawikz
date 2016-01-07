@@ -12,6 +12,12 @@
             return {
                 response: function(response){
                     console.log(response.status);
+
+                    if(response.status === 'Unauthorized' || response.status === 401)
+                    {
+                        $location.url('/pages/auth/login');
+                    }
+
                     return response || $q.when(response);
                 },
                 request: function(request)
@@ -22,7 +28,6 @@
                 requestError: function(rejection)
                 {
                     console.log('Inside Request Error Interceptor');
-
                     return $q.reject(rejection);
                 },
                 responseError: function(rejection)

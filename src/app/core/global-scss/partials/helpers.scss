@@ -65,6 +65,25 @@ img {
     }
 }
 
+// Flex Scrollable (without display:block)
+.flex-scrollable {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    &.only-x {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    &.only-y {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
+
 // Background Icon
 .background-image-center {
     position: absolute;

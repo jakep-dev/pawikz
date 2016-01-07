@@ -20,8 +20,8 @@
         function getDashboard(req, res, next) {
 
             var service = getServiceDetails('templateSearch');
-            console.log(service);
-            console.log(req.params);
+            console.log(req.headers);
+
 
             var methodName = '';
 
@@ -31,7 +31,6 @@
                 methodName = service.methods.templateList;
             }
 
-           console.log(methodName);
 
             var args =
             {
@@ -44,6 +43,9 @@
                     sort_order:req.params.sOrder,
                     sort_filter:req.params.sFilter,
                     ssnid: 'testToken'
+                },
+                headers:{
+                    'Content-Type':'application/json'
                 }
             };
 

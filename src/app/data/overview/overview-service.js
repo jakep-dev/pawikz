@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.core')
+        .module('app.data')
         .factory('overviewService', overviewService);
 
     overviewService.$inject = ['$http', '$location', '$q', 'clientConfig'];

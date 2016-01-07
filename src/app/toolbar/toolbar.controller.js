@@ -7,7 +7,7 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $translate, $mdToast)
+    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $location)
     {
         var vm = this;
 
@@ -58,10 +58,11 @@
 
         /**
          * Logout Function
+         * Remove the stored token and navigate to login page
          */
         function logout()
         {
-
+            $location.url('/pages/auth/login');
         }
 
 
