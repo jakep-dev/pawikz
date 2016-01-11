@@ -1,0 +1,8 @@
+{
+  "ERROR404": {
+    "CODE": "404",
+    "MESSAGE": "Lo sentimos , pero no hemos podido encontrar la página que desea",
+    "SEARCH": "Busca lo que quieras",
+    "GO_BACK": "Vuelve la cuenta de inicio de sesión"
+  }
+}
