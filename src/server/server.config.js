@@ -22,7 +22,9 @@ exports.restcall =
                 name: 'templateManager',
                 methods:{
                    auth:'authenticate',
-                   saveOverview: 'updateTemplateOverview'
+                   saveOverview: 'updateTemplateOverview',
+                   logout: 'deleteSession',
+                   userInfo: 'getUserInfo'
                 }
               },
             {
@@ -34,4 +36,14 @@ exports.restcall =
                     overView: 'getTemplateOverview'
                 }
             }]
+}
+
+
+exports.parallel = function(middlewares)
+{
+    return function (req, res, next) {
+        async.each(middlewares, function (mw, cb) {
+            mw(req, res, cb);
+        }, next);
+    };
 }

@@ -26,25 +26,30 @@
         //Get Dashboard Details
         function get(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder, sortFilter) {
 
-            var url = clientConfig.endpoints.dashboardEndPoint.get.concat(userId, '/',
-                            searchUserId, '/', searchCompanyId, '/', rowNum, '/',
-                            perPage, '/', sortOrder, '/', sortFilter);
+            var input =  {
+                userId: userId,
+                searchUserId: searchUserId,
+                searchCompanyId: searchCompanyId,
+                rowNum: rowNum,
+                perPage: perPage,
+                sortOrder: sortOrder,
+                sortFilter: sortFilter
+            };
 
-            console.log(url);
-
-            return $http.get(url).then(function(data, status, headers, config)
-                {
+            return $http.post(clientConfig.endpoints.dashboardEndPoint.get, input)
+                .then(function(data, status, headers, config) {
                     return data.data;
-                })
-                .catch(function(message) {
-                    $location.url('/');
+                },function(error) {
+                    console.log('error while saving ' + error);
                 });
         }
 
         //Get Dashboard Users
-        function getUsers()
+        function getUsers(userId)
         {
-            return $http.get(clientConfig.endpoints.dashboardEndPoint.getUsers)
+            var url = clientConfig.endpoints.dashboardEndPoint.getUsers.concat(userId)
+
+            return $http.get(url)
                 .then(function(data, status, headers, config)
                 {
                     return data.data;
@@ -55,9 +60,11 @@
         }
 
         //Get Dashboard Companies
-        function getCompanies()
+        function getCompanies(userId)
         {
-            return $http.get(clientConfig.endpoints.dashboardEndPoint.getCompanies)
+            var url = clientConfig.endpoints.dashboardEndPoint.getCompanies.concat(userId);
+
+            return $http.get(url)
                 .then(function(data, status, headers, config)
                 {
                     return data.data;

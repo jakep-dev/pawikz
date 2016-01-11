@@ -12,7 +12,8 @@
         var service = {
             confirm: confirm,
             alert: alert,
-            custom: custom
+            custom: custom,
+            status: status
         }
 
         return service;

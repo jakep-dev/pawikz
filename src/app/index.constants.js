@@ -14,9 +14,9 @@
             endpoints:
             {
                 dashboardEndPoint:{
-                    get: '/api/dashboard/',
-                    getUsers: '/api/users',
-                    getCompanies: '/api/companies'
+                    get: '/api/dashboard',
+                    getUsers: '/api/users/',
+                    getCompanies: '/api/companies/'
                 },
                 overViewEndPoint:{
                     get: '/api/overview/',
@@ -25,12 +25,11 @@
                 chartEndPoint:{
                     get: ''
                 },
-                toolBarEndPoint:{
-                    get: '/api/getUser/'
-                },
                 authEndPoint:
                 {
-                    auth:'/api/authenticate'
+                    auth:'/api/authenticate/',
+                    logout: '/api/logout',
+                    getUser: '/api/userInfo'
                 }
             },
             appSettings:

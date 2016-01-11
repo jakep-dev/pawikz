@@ -138,7 +138,7 @@ function startBrowserSync()
             logLevel: 'debug',
             logPrefix: 'gulp-pattern',
             notify: true,
-            reloadDelay: 1000
+            reloadDelay: 100
     };
 
     browserSync(options);

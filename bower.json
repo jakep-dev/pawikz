@@ -39,7 +39,10 @@
     "tr-ng-grid": "trNgGrid#~3.1.5",
     "angular-datatables": "~0.5.1",
     "angular-underscore": "~0.5.0",
-    "v-accordion": "~1.4.1"
+    "v-accordion": "~1.4.1",
+    "angular-storage": "~0.5.0",
+    "a0-angular-storage": "~0.0.13",
+    "angular-disable-all": "~0.0.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.0"

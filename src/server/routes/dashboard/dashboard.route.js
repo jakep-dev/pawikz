@@ -12,16 +12,17 @@
         var client = config.restcall.client;
         var config = config;
 
-        app.get('/api/dashboard/:userId/:searchUserId/:searchCompanyId/:rowNum/:perPage/:sOrder/:sFilter', getDashboard);
-        app.get('/api/users', getDashboardUsers);
-        app.get('/api/companies', getDashboardCompanies);
+        config.parallel([
+            app.post('/api/dashboard', getDashboard),
+            app.get('/api/users/:userId', getDashboardUsers),
+            app.get('/api/companies/:userId', getDashboardCompanies)
+        ]);
 
         //Get Dashboard data
         function getDashboard(req, res, next) {
 
             var service = getServiceDetails('templateSearch');
-            console.log(req.headers);
-
+            console.log(req.body);
 
             var methodName = '';
 
@@ -35,23 +36,25 @@
             var args =
             {
                 parameters: {
-                    user_id: req.params.userId,
-                    srch_user_id: req.params.searchUserId,
-                    srch_company_id: req.params.searchCompanyId,
-                    row_num:req.params.rowNum,
-                    results_per_page:req.params.perPage,
-                    sort_order:req.params.sOrder,
-                    sort_filter:req.params.sFilter,
-                    ssnid: 'testToken'
+                    user_id: req.body.userId,
+                    srch_user_id: req.body.searchUserId,
+                    srch_company_id: req.body.searchCompanyId,
+                    row_num:req.body.rowNum,
+                    results_per_page:req.body.perPage,
+                    sort_order:req.body.sortOrder,
+                    sort_filter:req.body.sortFilter,
+                    ssnid: req.headers['x-session-token']
                 },
                 headers:{
                     'Content-Type':'application/json'
                 }
             };
 
+            //console.log(args);
+
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
-                res.send(data);
+                res.status(response.statusCode).send(data);
             });
         }
 
@@ -72,14 +75,14 @@
             var args =
             {
                 parameters: {
-                    user_id: 25357,
-                    ssnid: 'testToken'
+                    user_id: req.params.userId,
+                    ssnid: req.headers['x-session-token']
                 }
             };
 
             client.get(config.restcall.url + '/templateSearch/' + methodName,args,function(data,response)
             {
-                res.send(data);
+                res.status(response.statusCode).send(data);
             });
         }
 
@@ -99,15 +102,14 @@
             var args =
             {
                 parameters: {
-                    user_id: 25357,
-                    ssnid: 'testToken'
+                    user_id: req.params.userId,
+                    ssnid: req.headers['x-session-token']
                 }
             };
 
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
-                //console.log(data);
-                res.send(data);
+                res.status(response.statusCode).send(data);
             });
         }
 

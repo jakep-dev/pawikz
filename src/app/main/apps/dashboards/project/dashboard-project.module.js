@@ -11,7 +11,7 @@
     {
 
         $stateProvider.state('app.dashboard-project', {
-            url    : '/dashboard-project/{userId}/{token}',
+            url    : '/dashboard-project/{userId}/{token}/{isNav}',
             views  : {
                 'content@app': {
                     templateUrl: 'app/main/apps/dashboards/project/dashboard-project.html',

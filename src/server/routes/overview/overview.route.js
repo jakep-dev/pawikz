@@ -9,15 +9,15 @@
         var client = config.restcall.client;
         var config = config;
 
-        app.get('/api/overview/:projectId', getOverview);
-        app.post('/api/saveOverview', saveOverview);
+        config.parallel([app.get('/api/overview/:projectId', getOverview),
+            app.post('/api/saveOverview', saveOverview)]);
+
 
         //Get Dashboard data
         function getOverview(req, res, next) {
 
             var service = getServiceDetails('templateSearch');
-            console.log(service);
-            console.log(req.params);
+            console.log(req.headers);
 
             var methodName = '';
 
@@ -33,17 +33,18 @@
             {
                 parameters: {
                     project_id: req.params.projectId,
-                    ssnid: 'testToken'
+                    ssnid: req.headers['x-session-token']
                 }
             };
 
             console.log(config.restcall.url + '/templateSearch/' + methodName);
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
-                res.send(setOverViewDetails(data));
+                res.status(response.statusCode).send(setOverViewDetails(data));
             });
         }
 
+        //Save Overview data
         function saveOverview(req, res, next)
         {
             var service = getServiceDetails('templateManager');
@@ -66,7 +67,7 @@
                     userId: req.body.userId,
                     projectId: req.body.projectId,
                     projectName: req.body.projectName,
-                    token: 'testToken',
+                    token: req.headers['x-session-token'],
                     steps: req.body.steps
                 },
                 headers:{'Content-Type':'application/json'}
@@ -76,8 +77,7 @@
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
-                console.log(data);
-                res.send(data);
+                res.status(response.statusCode).send(data);
             });
         }
 

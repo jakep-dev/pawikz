@@ -7,14 +7,36 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $location)
+    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $location, $translate, store, authService, logger)
     {
         var vm = this;
+
+        vm.selectedLanguage = {
+            'title'      : 'English',
+            'translation': 'TOOLBAR.ENGLISH',
+            'code'       : 'en',
+            'flag'       : 'gb'
+        };
 
         // Data
         $rootScope.global = {
             search: ''
         };
+
+        vm.languages = [
+            {
+                'title'      : 'English',
+                'translation': 'TOOLBAR.ENGLISH',
+                'code'       : 'en',
+                'flag'       : 'gb'
+            },
+            {
+                'title'      : 'Spanish',
+                'translation': 'TOOLBAR.SPANISH',
+                'code'       : 'es',
+                'flag'       : 'es'
+            }
+        ];
 
 
         // Methods
@@ -22,6 +44,7 @@
         vm.toggleNavigationSidenavFold = toggleNavigationSidenavFold;
         vm.logout = logout;
         vm.setUserStatus = setUserStatus;
+        vm.changeLanguage = changeLanguage;
 
         //////////
 
@@ -62,8 +85,26 @@
          */
         function logout()
         {
-            $location.url('/pages/auth/login');
+           authService.logout().then(function(response)
+           {
+               store.remove('x-session-token');
+               store.remove('userFullName');
+               $location.url('/pages/auth/login');
+               logger.simpleToast('Successfully logged out!', 'LogOut', 'info');
+           })
         }
+
+        /**
+         * Change Language
+         */
+        function changeLanguage(lang)
+        {
+            vm.selectedLanguage = lang;
+            //Change the language
+            $translate.use(lang.code);
+            logger.simpleToast('Language changed to ' + lang.title + '!', 'Language', 'info');
+        }
+
 
 
     }

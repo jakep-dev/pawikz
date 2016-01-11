@@ -32,6 +32,8 @@
                 'backTop',
                 'ksSwiper',
                 'angularSoap',
-                'angular-underscore'
+                'angular-underscore',
+                'angular-storage',
+                'disableAll'
             ]);
 })();

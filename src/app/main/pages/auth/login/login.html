@@ -78,14 +78,11 @@
 
             <form name="loginForm" novalidate>
                 <md-input-container class="md-block md-accent" md-no-float>
-                    <input type="email" name="email" ng-model="vm.form.email" placeholder="Email"
-                           ng-pattern="/^.+@.+\..+$/" required />
-                    <div ng-messages="loginForm.email.$error" ng-show="loginForm.email.$touched" role="alert" multiple>
+                    <input type="text" name="userName" ng-model="vm.form.userName" placeholder="User Name"
+                           required />
+                    <div ng-messages="loginForm.userName.$error" ng-show="loginForm.userName.$touched" role="alert" multiple>
                         <div ng-message="required">
-                            <span>Email field is required</span>
-                        </div>
-                        <div ng-message="pattern">
-                            <span>Email must be a valid e-mail address</span>
+                            <span>User Name field is required</span>
                         </div>
                     </div>
                 </md-input-container>
@@ -111,7 +108,7 @@
                 </div>
 
                 <md-button type="submit" class="md-raised md-primary" aria-label="LOG IN"
-                           ng-click="vm.LogIn(vm.form.email, vm.form.password)"
+                           ng-click="vm.LogIn(vm.form.userName, vm.form.password)"
                            ng-disabled="loginForm.$invalid || loginForm.$pristine">
                     LOG IN
                 </md-button>

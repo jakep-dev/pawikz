@@ -4,9 +4,12 @@
 
     angular
         .module('fuse')
-        .config(function($httpProvider)
+        .config(function($httpProvider, cfpLoadingBarProvider)
         {
             $httpProvider.interceptors.push('interceptor');
+            //cfpLoadingBarProvider.spinnerTemplate =  '<div><span class="fa fa-spinner">Loading...</div>';
+            //cfpLoadingBarProvider.latencyThreshold = 1;
+            cfpLoadingBarProvider.includeSpinner = false;
         });
 
     /** @ngInject */

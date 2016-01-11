@@ -13,7 +13,7 @@
 
        // $urlRouterProvider.otherwise('/dashboard-project/{userId}/{token}');
 
-        //$urlRouterProvider.otherwise('/overview/100145066');
+        $urlRouterProvider.otherwise('/pages/auth/login');
 
         $stateProvider
             .state('app', {

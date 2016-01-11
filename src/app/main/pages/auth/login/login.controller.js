@@ -11,13 +11,13 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, authService)
+    function LoginController($window, $location, $rootScope, authService, logger, store)
     {
         var vm = this;
 
+        $rootScope.isOperation = false;
         vm.LogIn = LogIn;
         vm.goUrl = goUrl;
-
 
         function goUrl(url)
         {
@@ -34,18 +34,26 @@
 
                 if(angular.isDefined(response) && angular.isDefined(response.responseInfo))
                 {
-                    if(response.responseInfo.code === 401)
+                    if(response.responseInfo.code === 200 && angular.isDefined(response.userinfo))
                     {
-                        $location.url('/dashboard-project/25357/testToken');
+                        var token = response.userinfo.token;
+                        var userId = response.userinfo.userId;
+                        $rootScope.userFullName = response.userinfo.fullName;
+
+                        store.set('x-session-token', token);
+                        var url = ('/dashboard-project/').concat(userId, '/', token, '/', false);
+                        $location.url(url);
+                        logger.simpleToast('Successfully logged in!', 'Login', 'info');
+                    }
+                    else {
+                        logger.actionToast('Invalid UserName or Password!', 'Authenticate', 'error');
                     }
                 }
                 else {
-
+                    logger.actionToast('Invalid UserName or Password!', 'Authenticate', 'error');
                 }
-            });
 
-            console.log(userName);
-            console.log(password);
+            });
         }
     }
 })();
