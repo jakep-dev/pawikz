@@ -170,7 +170,7 @@
         // Initialize
         function initialize(isNav, token)
         {
-            if(isNav === 'true')
+            if(isNav)
             {
                 store.set('x-session-token', token);
                 authService.getUserInfo().then(function(response)

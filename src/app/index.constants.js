@@ -30,6 +30,10 @@
                     auth:'/api/authenticate/',
                     logout: '/api/logout',
                     getUser: '/api/userInfo'
+                },
+                templateEndPoint:
+                {
+                    schema: '/api/schema'
                 }
             },
             appSettings:

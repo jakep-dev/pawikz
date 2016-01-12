@@ -74,7 +74,6 @@
                 logger.simpleToast('AutoSave Enabled');
                 vm.isOverviewLoaded = true;
             });
-
         }
 
 
@@ -93,7 +92,6 @@
                         {
                             saveAll();
                         }, clientConfig.appSettings.autoSaveTimeOut);
-
                     }
                 },
                 true);

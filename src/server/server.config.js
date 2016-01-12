@@ -24,7 +24,8 @@ exports.restcall =
                    auth:'authenticate',
                    saveOverview: 'updateTemplateOverview',
                    logout: 'deleteSession',
-                   userInfo: 'getUserInfo'
+                   userInfo: 'getUserInfo',
+                   saveMnemonics: 'updateTemplateMnemonics'
                 }
               },
             {
@@ -33,7 +34,9 @@ exports.restcall =
                     templateList: 'getTemplateList',
                     userLookUp: 'getUserLookup',
                     companyLookUp: 'getCompanyLookup',
-                    overView: 'getTemplateOverview'
+                    overView: 'getTemplateOverview',
+                    templateSchema: 'getTemplateUIStructure',
+                    templateMnemonics: 'getTemplateMnemonics'
                 }
             }]
 }

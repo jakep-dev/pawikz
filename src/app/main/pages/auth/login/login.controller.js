@@ -41,7 +41,7 @@
                         $rootScope.userFullName = response.userinfo.fullName;
 
                         store.set('x-session-token', token);
-                        var url = ('/dashboard-project/').concat(userId, '/', token, '/', false);
+                        var url = ('/dashboard-project/').concat(userId, '/', token, '/');
                         $location.url(url);
                         logger.simpleToast('Successfully logged in!', 'Login', 'info');
                     }
