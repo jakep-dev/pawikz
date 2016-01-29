@@ -24,7 +24,7 @@
         return service;
 
         //Get Dashboard Details
-        function get(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder, sortFilter) {
+        function get(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder, sortFilter, searchFilter) {
 
             var input =  {
                 userId: userId,
@@ -33,7 +33,8 @@
                 rowNum: rowNum,
                 perPage: perPage,
                 sortOrder: sortOrder,
-                sortFilter: sortFilter
+                sortFilter: sortFilter,
+				searchFilter: searchFilter
             };
 
             return $http.post(clientConfig.endpoints.dashboardEndPoint.get, input)

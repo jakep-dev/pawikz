@@ -81,16 +81,18 @@
             var sortFilter = columns[sortFilterIndex].data;
             var start = aoData[3].value;
             var length = aoData[4].value;
+			var searchFilter = aoData[5].value.value;
 
             console.log('Draw='+ draw + ' sortOrder=' + sortOrder +' sortFilterIndex=' + sortFilterIndex +
                 ' sortFilter=' + sortFilter +
-                ' start=' + start + ' length=' + length);
+                ' start=' + start + ' length=' + length + 
+				' searchFilter=' + searchFilter);
 
             console.log('searchCompanyId = ' + vm.companyId);
             console.log('userId = ' + vm.userId);
 
             dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
-                start, length, sortOrder, sortFilter).then(function(data)
+                start, length, sortOrder, sortFilter, searchFilter).then(function(data)
             {
 
                 var blankData = {

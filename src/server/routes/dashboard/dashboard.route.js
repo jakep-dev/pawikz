@@ -32,7 +32,6 @@
                 methodName = service.methods.templateList;
             }
 
-
             var args =
             {
                 parameters: {
@@ -43,6 +42,7 @@
                     results_per_page:req.body.perPage,
                     sort_order:req.body.sortOrder,
                     sort_filter:req.body.sortFilter,
+					srch_filter:req.body.searchFilter,
                     ssnid: req.headers['x-session-token']
                 },
                 headers:{
