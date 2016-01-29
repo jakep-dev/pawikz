@@ -7,9 +7,11 @@
             </md-button>
         </md-list-item>
         <md-list-item>
-            <md-button class="md-grid-item-content" ng-click="vm.flipView()">
-                <md-icon md-font-icon="icon-tablet-ipad"></md-icon>
-                <div class="md-grid-text" hide-sm> Tablet Mode </div>
+            <md-button class="md-grid-item-content md-button-extend" ng-click="vm.flipView()">
+                <md-icon md-font-icon="icon-tablet-ipad" ng-show="!vm.isTabletMode"></md-icon>
+                <div class="md-grid-text" ng-show="!vm.isTabletMode" hide-sm> Tablet Mode </div>
+                <md-icon md-font-icon="icon-desktop-mac" ng-show="vm.isTabletMode"></md-icon>
+                <div class="md-grid-text" ng-show="vm.isTabletMode" hide-sm> Desktop </div>
             </md-button>
         </md-list-item>
         <md-list-item>
