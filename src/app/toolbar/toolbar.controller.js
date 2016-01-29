@@ -7,7 +7,8 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $location, $translate, store, authService, logger)
+    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $location,
+                               $translate, store, authService, authBusiness, logger)
     {
         var vm = this;
 
@@ -17,6 +18,8 @@
             'code'       : 'en',
             'flag'       : 'gb'
         };
+        vm.userFullName = '';
+
 
         // Data
         $rootScope.global = {
@@ -48,7 +51,7 @@
 
         //////////
 
-
+        setUserFullName();
 
         /**
          * Toggle sidenav
@@ -105,7 +108,15 @@
             logger.simpleToast('Language changed to ' + lang.title + '!', 'Language', 'info');
         }
 
-
+        function setUserFullName()
+        {
+            console.log('--Set UserFullName --');
+            if(authBusiness.userFullName !== null)
+            {
+                console.log('--Setting UserFullName --');
+                vm.userFullName = authBusiness.userFullName;
+            }
+        }
 
     }
 

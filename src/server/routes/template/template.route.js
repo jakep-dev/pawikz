@@ -10,7 +10,8 @@
         var config = config;
 
         config.parallel([
-            app.post('/api/schema', schema)
+            app.post('/api/schema', schema),
+            app.post('/api/mnemonics', mnemonics)
         ]);
 
         //Schema for the templates
@@ -44,7 +45,7 @@
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
-                res.status(response.statusCode).send(data);
+                res.status(response.statusCode).send(setSchemaVariations(data));
             });
         }
 
@@ -118,6 +119,22 @@
 
         function getServiceDetails(serviceName) {
             return u.find(config.restcall.service, {name: serviceName});
+        }
+
+        //S et the schema variations.
+        function setSchemaVariations(data){
+            var templateData = null;
+
+            if(!u.isUndefined(data.UIStructure) &&
+               !u.isUndefined(data.UIStructure.data) &&
+               !u.isUndefined(data.UIStructure.data.TearSheetStep) &&
+               !u.isUndefined(data.UIStructure.data.TearSheetStep.Component))
+            {
+                templateData = data.UIStructure.data.TearSheetStep.Component;
+                //templateData = variationLogic1(data.UIStructure.data.TearSheetStep.Component);
+            }
+
+            return templateData;
         }
     };
 

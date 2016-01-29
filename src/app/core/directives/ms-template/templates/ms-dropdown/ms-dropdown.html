@@ -1,0 +1,8 @@
+<md-input-container class="md-accent" flex>
+    <label class="font-size-20"><strong>{{tearsheet.label}}</strong></label>
+    <md-select ng-disabled="tearsheet.isdisabled" aria-label="Select Field"  ng-model="tearsheet.selectedValue" class="md-accent">
+        <md-option layout-padding ng-repeat="value in tearsheet.values" value="{{value.value}}">
+            {{value.name}}
+        </md-option>
+    </md-select>
+</md-input-container>

@@ -1,0 +1,7 @@
+<md-radio-group ng-model="detail.selectedValue">
+    <md-radio-button ng-repeat="value in detail.values"
+                     ng-value="value.id"
+                     aria-label="{{value.shortName}}">
+        {{value.shortName}}
+    </md-radio-button>
+</md-radio-group>

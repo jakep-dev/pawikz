@@ -1,0 +1,14 @@
+<div id="ms-accordion" class="step-table-title md-amber-A200-bg">
+    {{ title }}
+    <md-button class="md-icon-button" aria-label="expand/collapse"
+               ng-click="collapse()" style="float:right">
+        <md-tooltip md-direction="top">
+            expand/collapse
+        </md-tooltip>
+        <md-icon md-font-icon="icon-backburger" ng-class="collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+    </md-button>
+</div>
+<md-divider></md-divider>
+<md-content id="ms-accordion-content" ng-transclude ng-show="!collapsed" layout-padding>
+
+</md-content>

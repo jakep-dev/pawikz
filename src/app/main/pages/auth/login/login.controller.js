@@ -11,13 +11,18 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, $rootScope, authService, logger, store)
+    function LoginController($window, $location, $rootScope, authService, authBusiness, logger, store)
     {
         var vm = this;
 
         $rootScope.isOperation = false;
         vm.LogIn = LogIn;
         vm.goUrl = goUrl;
+
+        vm.textDetail = {
+            value:'Html Variables',
+            isdisabled:false
+        };
 
         function goUrl(url)
         {
@@ -38,8 +43,8 @@
                     {
                         var token = response.userinfo.token;
                         var userId = response.userinfo.userId;
-                        $rootScope.userFullName = response.userinfo.fullName;
-
+                        authBusiness.userInfo = response.userinfo;
+                        authBusiness.userFullName = response.userinfo.fullName;
                         store.set('x-session-token', token);
                         var url = ('/dashboard-project/').concat(userId, '/', token, '/');
                         $location.url(url);

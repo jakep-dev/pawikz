@@ -64,7 +64,9 @@
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({
-                            stepName: step.stepName
+                            stepName: step.stepName,
+                            stepId: step.stepId,
+                            projectId: $stateParams.projectId
                         });
                     });
 

@@ -33,7 +33,8 @@
                 },
                 templateEndPoint:
                 {
-                    schema: '/api/schema'
+                    schema: '/api/schema',
+                    mnemonics: '/api/mnemonics'
                 }
             },
             appSettings:

@@ -14,6 +14,9 @@
             // Core
             'app.core',
 
+            // Business
+            'app.business',
+
             // Data
             'app.data',
 
@@ -34,6 +37,9 @@
 
             // Overview
             'app.overview',
+
+            // Steps
+            'app.steps',
 
             // Pages
             'app.pages',

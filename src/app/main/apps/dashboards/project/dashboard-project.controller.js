@@ -10,7 +10,7 @@
     function DashboardProjectController($rootScope, $mdSidenav, $stateParams,
                                         DTColumnDefBuilder, DTColumnBuilder,
                                         DTOptionsBuilder, dashboardService,
-                                        authService, store)
+                                        authService, authBusiness, store)
     {
         $rootScope.title = 'Dashboard';
         $rootScope.passedUserId = $stateParams.userId;
@@ -175,8 +175,7 @@
                 store.set('x-session-token', token);
                 authService.getUserInfo().then(function(response)
                 {
-                    console.log('----Additional User Info----');
-                    $rootScope.userFullName = response.fullName;
+                    authBusiness.userFullName = response.fullName;
                 });
             }
 
