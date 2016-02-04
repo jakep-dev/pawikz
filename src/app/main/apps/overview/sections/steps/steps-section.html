@@ -22,14 +22,6 @@
 
                         <md-menu-content flex layout-padding center>
                             <md-menu-item>
-                                <md-button  aria-label="Reload widget" ng-click="vm.reload()">
-                                                      <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-reload"></md-icon>
-                                                        <span hide-sm>Reload</span>
-                                                      </span>
-                                </md-button>
-                            </md-menu-item>
-                            <md-menu-item>
                                 <md-button  aria-label="Expand/Collapse widget" ng-click="vm.toggleSidenav('quick-panel')">
                                                           <span layout="row" layout-align="start center">
                                                                 <md-icon md-font-icon="icon-backburger"></md-icon>
@@ -48,18 +40,6 @@
                                                               <md-icon md-font-icon="icon-select"></md-icon>
                                                             <span hide-sm>Select All</span>
                                                         </span>
-                                </md-button>
-                            </md-menu-item>
-                            <md-menu-item>
-                                <md-button  aria-label="Tab widget" ng-click="vm.flipStepView()">
-                                    <span layout="row" layout-align="start center" ng-if="!vm.isStepTabletMode">
-                                         <md-icon md-font-icon="icon-cellphone-iphone"></md-icon>
-                                        <span hide-sm>Tab mode</span>
-                                    </span>
-                                    <span layout="row" layout-align="start center" ng-if="vm.isStepTabletMode">
-                                         <md-icon md-font-icon="icon-desktop-mac"></md-icon>
-                                        <span hide-sm>Desktop mode</span>
-                                    </span>
                                 </md-button>
                             </md-menu-item>
                         </md-menu-content>
