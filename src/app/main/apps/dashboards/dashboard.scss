@@ -7,10 +7,13 @@
     width: 98%;
     thead tr:first-child
     {
-      background-color: darkorange;
+      background-color: #0fb9ff;
     };
     tr:hover {
       background-color: #0fb9ff;
+      color: white;
+    }
+	tr:hover a{
       color: white;
     }
   }
