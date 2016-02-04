@@ -70,10 +70,25 @@
             oTable.fnClearTable();
             oTable.fnDraw();
         }
+		
+		//search only when hitting enter key
+		function searchOnEnter()
+		{	
+			$('#dashBoardDetails_filter input').unbind();
+			$('#dashBoardDetails_filter input').bind('keyup', function(e) {
+				if(e.keyCode == 13) {
+					var oTable = $('#dashBoardDetails').dataTable();
+					oTable.fnFilter(this.value);   
+				}
+			});    
+		}
 
         // Server Data callback for pagination
         function serverData(sSource, aoData, fnCallback, oSettings)
         {
+			
+			searchOnEnter();
+			
             var draw = aoData[0].value;
             var columns = aoData[1].value;
             var sortOrder = aoData[2].value[0].dir;
