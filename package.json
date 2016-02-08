@@ -6,6 +6,8 @@
     "compression": "^1.6.0",
     "cors": "^2.7.1",
     "express": "^4.13.3",
+    "minilog": "^3.0.0",
+    "moment": "^2.11.2",
     "morgan": "^1.6.1",
     "node-rest-client": "^1.5.1",
     "serve-favicon": "^2.3.0",

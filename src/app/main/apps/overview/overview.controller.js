@@ -14,10 +14,10 @@
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope, $interval,
                                 overviewService, clientConfig, bottomSheetConfig,
-                                navConfig, logger)
+                                navConfig, breadcrumbBusiness, commonBusiness, toast)
     {
         $rootScope.projectId = $stateParams.projectId;
-        $rootScope.title = 'Overview';
+        breadcrumbBusiness.title = 'Overview';
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
@@ -73,8 +73,7 @@
                     autoSave();
 
                 }
-                logger.simpleToast('AutoSave Enabled');
-                vm.isOverviewLoaded = true;
+                toast.simpleToast('AutoSave Enabled');
             });
         }
 
@@ -87,7 +86,7 @@
                     console.log('Watching .... Data changed');
                     console.log(_.size(promise));
 
-                    if(_.size(promise) === 0)
+                    if(_.size(promise) === 0 && vm.isOverviewLoaded)
                     {
                         console.log('Creating Promise');
                         promise = $interval(function()
@@ -95,6 +94,7 @@
                             saveAll();
                         }, clientConfig.appSettings.autoSaveTimeOut);
                     }
+                    vm.isOverviewLoaded = true;
                 },
                 true);
         }
@@ -109,7 +109,6 @@
         //Save all the changes to database
         function saveAll()
         {
-            console.log('Saving....');
             var userId = $rootScope.passedUserId;
             var projectId = $rootScope.projectId;
             var projectName = vm.templateOverview.projectName;
@@ -118,7 +117,7 @@
 
             if(angular.isDefined(vm.templateOverview.steps))
             {
-                _.each(vm.templateOverview.steps, function(step)
+                angular.forEach(vm.templateOverview.steps, function(step)
                 {
                     var stepId = step.stepId;
                     var stepName = step.stepName;
@@ -149,7 +148,7 @@
             {
                 console.log('Inside saveOverview');
                 console.log(data);
-                logger.simpleToast('Saved successfully');
+                toast.simpleToast('Saved successfully');
             });
 
             cancelPromise();

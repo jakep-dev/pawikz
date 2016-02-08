@@ -7,10 +7,17 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $location,
-                               $translate, store, authService, authBusiness, logger)
+    function ToolbarController($rootScope, $scope, $mdSidenav, msNavFoldService, $location,
+                               $translate, store, authService, commonBusiness, authBusiness, toast)
     {
         var vm = this;
+        vm.userName = '';
+
+        //Set user-name
+        commonBusiness.onMsg('UserName', $scope, function() {
+            console.log('UserName Emit');
+            vm.userName = authBusiness.userName;
+        });
 
         vm.selectedLanguage = {
             'title'      : 'English',
@@ -18,8 +25,6 @@
             'code'       : 'en',
             'flag'       : 'gb'
         };
-        vm.userFullName = '';
-
 
         // Data
         $rootScope.global = {
@@ -50,8 +55,6 @@
         vm.changeLanguage = changeLanguage;
 
         //////////
-
-        setUserFullName();
 
         /**
          * Toggle sidenav
@@ -91,9 +94,9 @@
            authService.logout().then(function(response)
            {
                store.remove('x-session-token');
-               store.remove('userFullName');
+               store.remove('x-session-user');
                $location.url('/pages/auth/login');
-               logger.simpleToast('Successfully logged out!', 'LogOut', 'info');
+               toast.simpleToast('Successfully logged out!');
            })
         }
 
@@ -105,19 +108,8 @@
             vm.selectedLanguage = lang;
             //Change the language
             $translate.use(lang.code);
-            logger.simpleToast('Language changed to ' + lang.title + '!', 'Language', 'info');
+            toast.simpleToast('Language changed to ' + lang.title + '!');
         }
-
-        function setUserFullName()
-        {
-            console.log('--Set UserFullName --');
-            if(authBusiness.userFullName !== null)
-            {
-                console.log('--Setting UserFullName --');
-                vm.userFullName = authBusiness.userFullName;
-            }
-        }
-
     }
 
 })();

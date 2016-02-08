@@ -6,16 +6,26 @@
 
     angular
         .module('app.business')
-        .factory('authBusiness', authBusiness);
+        .service('authBusiness', authBusiness);
 
     /* @ngInject */
-    function authBusiness() {
+    function authBusiness(commonBusiness, store) {
+        this.userInfo = null;
+        var userName = null;
 
-        var business = {
-            userInfo: null,
-            userFullName: null
-        };
-
-        return business;
+        Object.defineProperty(this, 'userName', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                console.log('auth get!');
+                return userName || store.get('x-session-user');;
+            },
+            set: function(value) {
+                userName = value;
+                store.set('x-session-user', userName);
+                commonBusiness.emitMsg('UserName');
+                console.log('auth set!');
+            }
+        });
     }
 })();

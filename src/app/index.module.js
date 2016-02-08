@@ -33,7 +33,7 @@
             'app.bottomsheet',
 
             // Dashboards
-            'app.dashboards',
+            'app.dashboard',
 
             // Overview
             'app.overview',

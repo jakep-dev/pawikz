@@ -13,7 +13,7 @@
 
 
     /** @ngInject */
-    function ConfigInterceptor($q, $location, $rootScope, store){
+    function ConfigInterceptor($q, $location, $rootScope, store, logger){
         return {
             response: function(response){
                 $rootScope.isOperation = false;
@@ -21,44 +21,41 @@
             },
             request: function(request)
             {
-                console.log('Request ---');
                 $rootScope.isOperation = true;
                 request.headers['x-session-token'] = store.get('x-session-token');
                 return request || $q.when(request);
             },
             requestError: function(rejection)
             {
-                //store.remove('x-session-token');
-                //if(rejection.status == 401)
-                //{
-                //    $location.url('/pages/auth/login');
-                //}
-
-
                 return rejection || $q.when(rejection);
             },
             responseError: function(rejection)
             {
                 console.log('Response Error');
                 $rootScope.isOperation = false;
-
                 store.remove('x-session-token');
+                store.remove('x-session-user');
 
-                if(rejection.status === 401)
-                {
-                    console.log('Inside -- 401');
-                    $location.url('/pages/auth/login');
-                }
-                else if(rejection.status === 500)
-                {
-                    $location.url('/pages/errors/error-500')
-                }
-                else if(rejection.status === 404)
-                {
-                    $location.url('/pages/errors/error-404')
-                }
-                else {
+                var error = {
+                    method: rejection.config.method,
+                    url: rejection.config.url,
+                    message: rejection.data || rejection.config.data,
+                    status: rejection.status
+                };
 
+                logger.error(JSON.stringify(error));
+
+                switch (rejection.status)
+                {
+                    case 401:
+                        $location.url('/pages/auth/login');
+                        break;
+                    case 404:
+                        $location.url('/pages/errors/error-404')
+                        break;
+                    case 500:
+                        $location.url('/pages/errors/error-500')
+                        break;
                 }
 
                 return rejection || $q.when(rejection);

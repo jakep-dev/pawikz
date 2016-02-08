@@ -1,7 +1,7 @@
-<md-radio-group ng-model="detail.selectedValue">
-    <md-radio-button ng-repeat="value in detail.values"
-                     ng-value="value.id"
-                     aria-label="{{value.shortName}}">
-        {{value.shortName}}
+<md-radio-group ng-model="tearsheet.value" layout="row">
+    <md-radio-button ng-repeat="value in tearsheet.values"
+                     ng-value="value.value"
+                     aria-label="{{value.name}}">
+        {{value.name}}
     </md-radio-button>
 </md-radio-group>

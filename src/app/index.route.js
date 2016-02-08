@@ -11,8 +11,6 @@
     {
         $locationProvider.html5Mode(true);
 
-       // $urlRouterProvider.otherwise('/dashboard-project/{userId}/{token}');
-
         $urlRouterProvider.otherwise('/pages/auth/login');
 
         $stateProvider

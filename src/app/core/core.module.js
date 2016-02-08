@@ -31,9 +31,10 @@
                 'ng-sortable',
                 'backTop',
                 'ksSwiper',
+                'ngLodash',
                 'angularSoap',
-                'angular-underscore',
                 'angular-storage',
-                'disableAll'
+                'disableAll',
+                'froala'
             ]);
 })();

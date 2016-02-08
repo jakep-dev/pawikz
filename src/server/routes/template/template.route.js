@@ -11,7 +11,8 @@
 
         config.parallel([
             app.post('/api/schema', schema),
-            app.post('/api/mnemonics', mnemonics)
+            app.post('/api/mnemonics', mnemonics),
+            app.post('/api/saveTemplate', saveMnemonics)
         ]);
 
         //Schema for the templates
@@ -104,7 +105,11 @@
             var args =
             {
                 data: {
-                    input: req.body.data
+                    projectId: req.body.projectId,
+                    stepId: req.body.stepId,
+                    userId: req.body.userId,
+                    ssnid: req.headers['x-session-token'],
+                    mnemonics: req.body.mnemonics
                 },
                 headers:{'Content-Type':'application/json'}
             };

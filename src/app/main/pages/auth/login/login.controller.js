@@ -11,7 +11,7 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, $rootScope, authService, authBusiness, logger, store)
+    function LoginController($window, $location, $rootScope, authService, authBusiness, toast, store)
     {
         var vm = this;
 
@@ -43,19 +43,21 @@
                     {
                         var token = response.userinfo.token;
                         var userId = response.userinfo.userId;
+
                         authBusiness.userInfo = response.userinfo;
-                        authBusiness.userFullName = response.userinfo.fullName;
+                        authBusiness.userName = response.userinfo.fullName;
+
                         store.set('x-session-token', token);
-                        var url = ('/dashboard-project/').concat(userId, '/', token, '/');
+                        var url = ('/dashboard/').concat(userId, '/', token, '/');
                         $location.url(url);
-                        logger.simpleToast('Successfully logged in!', 'Login', 'info');
+                        toast.simpleToast('Successfully logged in!');
                     }
                     else {
-                        logger.actionToast('Invalid UserName or Password!', 'Authenticate', 'error');
+                        toast.actionToast('Invalid UserName or Password!');
                     }
                 }
                 else {
-                    logger.actionToast('Invalid UserName or Password!', 'Authenticate', 'error');
+                    toast.actionToast('Invalid UserName or Password!');
                 }
 
             });

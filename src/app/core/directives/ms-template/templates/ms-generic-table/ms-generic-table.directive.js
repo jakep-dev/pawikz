@@ -4,19 +4,11 @@
 
     angular
         .module('app.core')
-        .controller('msGenericController', msGenericController)
         .directive('msGenericTable', msGenericTableDirective);
 
 
-    function msGenericController($scope)
-    {
-        var vm = this;
-
-
-    }
-
     /** @ngInject */
-    function msGenericTableDirective($compile)
+    function msGenericTableDirective($compile, templateBusiness, $document)
     {
         return {
             restrict: 'E',
@@ -24,20 +16,18 @@
                 tearsheet: '='
             },
             templateUrl: 'app/core/directives/ms-template/templates/ms-generic-table/ms-generic-table.html',
-            controller:'msGenericController',
             link:function(scope, el, attrs)
             {
-                console.log('---Inside Generic Table Start---');
-                console.log(scope);
-                console.log('---Inside Generic Table End---');
                 var newScope = null;
                 var html = '';
+
+                //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)
                 {
                     if(angular.isUndefined(row.id) || row.id !== 'toolbar_links') {
                         html = '';
                         newScope = null;
-                        html += '<div class="row" layout-align="center center"  layout="row" flex>';
+                        html += '<div class="row" layout-align="center center"  layout="row" layout-sm="column" flex>';
 
                         var columns = null;
 
@@ -49,29 +39,104 @@
                             columns = row.col;
                         }
 
-
+                        //Creating Columns for Generic-Table
                         angular.forEach(columns, function (col) {
                             html += '<div flex>';
                             var tearSheetItem = col.TearSheetItem;
 
                             if (!angular.isUndefined(tearSheetItem) &&
-                                 typeof(tearSheetItem.Label) !== 'object') {
+                                typeof(tearSheetItem.Label) !== 'object') {
 
                                 switch (tearSheetItem.id) {
                                     case 'LabelItem':
-                                        console.log('---Inserting Label Element ' + tearSheetItem.Label);
+                                        newScope = scope.$new();
                                         html += '<ms-label value="' + tearSheetItem.Label + '"></ms-label>';
                                         break;
                                     case 'LinkItemNoWord':
+                                        newScope = scope.$new();
                                         html += '<ms-link value="' + tearSheetItem.Label + '"></ms-link>';
                                         break;
                                     case 'LinkItem':
-                                        html += '<ms-link value="www.3m.com"></ms-link>';
+                                        newScope = scope.$new();
+                                        var value = '';
+                                        var link = ''
+                                        if(angular.isDefined(tearSheetItem.Label))
+                                        {
+                                            value = tearSheetItem.Label;
+                                            link = tearSheetItem.Link;
+                                        }
+                                        else {
+                                            var itemId = tearSheetItem.ItemId;
+                                            var mnemonicId = tearSheetItem.Mnemonic;
+                                            var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+                                            link = value;
+                                        }
+                                        html += '<ms-link value="'+value+'" href="'+link+'" isdisabled="false"></ms-link>';
                                         break;
                                     case 'GenericTextItem':
-                                        html += '<ms-text value="" isdisabled="false"></ms-text>';
-                                        break
+                                        newScope = scope.$new();
+
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+
+                                        html += '<ms-text value="'+ value +'" ' +
+                                            'itemid="'+ itemId +'" ' +
+                                            'mnemonicid="'+ mnemonicId +'"  ' +
+                                            'isdisabled="false"></ms-text>';
+                                        break;
                                     case 'SingleDropDownItem':
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+
+                                        newScope = scope.$new();
+                                        var values = [];
+                                        var selectedValue = '';
+                                        angular.forEach(tearSheetItem.param, function(each)
+                                        {
+                                            if(each.checked === 'yes')
+                                            {
+                                                selectedValue = each.content;
+                                            }
+
+                                            values.push({
+                                                value: each.content,
+                                                name: each.content
+                                            });
+                                        });
+
+                                        newScope.tearsheet = {
+                                            label: '',
+                                            values: values,
+                                            isdisabled: false,
+                                            selectedValue: value || selectedValue
+                                        };
+
+                                        html += '<ms-dropdown tearsheet="tearsheet"' +
+                                            'itemid="'+ itemId +'" ' +
+                                            'mnemonicid="'+ mnemonicId +'"  ></ms-dropdown>';
+                                        break;
+
+                                    case 'DateItem':
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+
+                                        newScope = scope.$new();
+                                        newScope.tearsheet = {
+                                            value: value,
+                                            isdisabled: false
+                                        };
+
+                                        html += '<ms-calendar tearsheet="tearsheet"' +
+                                            'itemid="'+ itemId +'" ' +
+                                            'mnemonicid="'+ mnemonicId +'"></ms-calendar>';
+                                        break;
+                                    case 'GenericRadioGroup':
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
 
                                         newScope = scope.$new();
                                         var values = [];
@@ -89,23 +154,21 @@
                                             });
                                         });
                                         newScope.tearsheet = {
-                                            label: '',
                                             values: values,
                                             isdisabled: false,
-                                            selectedValue: selectedValue
-
+                                            value: value || selectedValue
                                         };
 
-                                        html += '<ms-dropdown tearsheet="tearsheet"></ms-dropdown>';
-                                        break;
-
-                                    case 'DateItem':
-                                        html += '<ms-calendar></ms-calendar>';
+                                        html += '<ms-radio-button tearsheet="tearsheet"' +
+                                            'itemid="'+ itemId +'" ' +
+                                            'mnemonicid="'+ mnemonicId +'"  ></ms-radio-button>';
                                         break;
                                 }
                             }
                             html += '</div>';
                         });
+
+
                         html += '</div>'
                         if(newScope !== null)
                         {
@@ -114,10 +177,8 @@
                         else {
                             el.find('#generic-table-layout').append($compile(html)(scope));
                         }
-                        console.log(html);
-
                     }
-                })
+                });
             }
         };
     }

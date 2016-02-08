@@ -12,13 +12,12 @@
         return {
             restrict: 'E',
             scope   : {
-                detail: '='
+                itemid: '@',
+                mnemonicid: '@',
+                prompt: '@',
+                value: '@'
             },
-            templateUrl: 'app/core/directives/ms-template/templates/ms-text-editor/ms-text-editor.html',
-            compile: function(el, attr)
-            {
-
-            }
+            templateUrl: 'app/core/directives/ms-template/templates/ms-text-editor/ms-text-editor.html'
         };
     }
 

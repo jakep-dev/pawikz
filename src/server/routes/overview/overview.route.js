@@ -93,20 +93,15 @@
            {
                var steps = data.templateOverview.steps;
 
-
                u.each(steps, function(step)
                {
-                   //console.log(step.stepName);
                    u.each(step.sections, function(section)
                    {
-                       //console.log('sections Before - ' + section.value);
                       section.value = (section.value === 'true');
-                       //console.log('sections After - ' + section.value);
                    });
 
                    step.value = (u.size(step.sections) !== 0 &&
                                  u.every(step.sections, u.identity({value: true})));
-                   console.log('After Manipulation = ' + step.value);
                });
            }
            return data;

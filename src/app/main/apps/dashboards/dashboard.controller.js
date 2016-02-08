@@ -3,23 +3,25 @@
     'use strict';
 
     angular
-        .module('app.dashboard-project')
-        .controller('DashboardProjectController', DashboardProjectController);
+        .module('app.dashboard')
+        .controller('DashboardController', DashboardController);
 
     /** @ngInject */
-    function DashboardProjectController($rootScope, $mdSidenav, $stateParams,
+    function DashboardController($rootScope, $mdSidenav, $stateParams,
                                         DTColumnDefBuilder, DTColumnBuilder,
                                         DTOptionsBuilder, dashboardService,
-                                        authService, authBusiness, store)
+                                        authService, authBusiness, commonBusiness,
+                                        breadcrumbBusiness, store)
     {
-        $rootScope.title = 'Dashboard';
         $rootScope.passedUserId = $stateParams.userId;
+        breadcrumbBusiness.title = 'Dashboard';
         $rootScope.projectOverview = [];
         $rootScope.isBottomSheet = false;
         $rootScope.companyId = 0;
         $rootScope.userId = 0;
         $rootScope.isSearching = false;
         $rootScope.isOperation = false;
+        commonBusiness.userId = $stateParams.userId;
 
         var vm = this;
         vm.companyNames = [{ id: 0,  name: 'All', shortName:'All' }];
@@ -175,8 +177,11 @@
                 store.set('x-session-token', token);
                 authService.getUserInfo().then(function(response)
                 {
-                    authBusiness.userFullName = response.fullName;
+                    authBusiness.userName = response.fullName;;
                 });
+            }
+            else {
+                authBusiness.userName  = authBusiness.userName
             }
 
             dataTableConfiguration();

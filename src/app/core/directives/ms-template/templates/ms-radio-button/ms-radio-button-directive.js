@@ -4,7 +4,26 @@
 
     angular
         .module('app.core')
+        .controller('MsRadioButtonController', MsRadioButtonController)
         .directive('msRadioButton', msRadioButtonDirective);
+
+    /** @ngInject */
+    function MsRadioButtonController($scope, templateBusiness)
+    {
+        var isAutoSaveEnabled = false;
+        $scope.$watch(
+            "tearsheet.value",
+            function handleAutoSave(value) {
+                if(isAutoSaveEnabled)
+                {
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, value);
+                    //console.log( "$watch() -- Radio Button Outer: ", value);
+                }
+                isAutoSaveEnabled = true;
+            }
+        );
+
+    }
 
     /** @ngInject */
     function msRadioButtonDirective()
@@ -12,18 +31,17 @@
         return {
             restrict: 'E',
             scope   : {
-                detail: '='
+                itemid: '@',
+                mnemonicid: '@',
+                tearsheet: '='
             },
+            controller: 'MsRadioButtonController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-radio-button/ms-radio-button.html',
-            compile: function(el, attr)
+            link:function(scope)
             {
-                angular.extend({
-                    values: [{
-                        id: 0,
-                        shortName: 'All'
-                    }],
-                    isdisabled:false
-                }, detail);
+                console.log('Radio Button Scope');
+                console.log(scope);
+                console.log('Radio Button Scope End');
             }
         };
     }

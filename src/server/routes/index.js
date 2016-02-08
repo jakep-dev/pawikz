@@ -7,6 +7,7 @@
     var overviewRoute = require('./overview/overview.route');
     var authenticateRoute = require('./authenticate/authenticate.route');
     var templateRoute = require('./template/template.route');
+    var loggingRoute = require('./logging/logging.route');
 
     var config = require('../server.config');
 
@@ -16,6 +17,7 @@
         overviewRoute.init(app, config);
         authenticateRoute.init(app, config);
         templateRoute.init(app, config);
+        loggingRoute.init(app, config);
     }
 
 })(module.exports);

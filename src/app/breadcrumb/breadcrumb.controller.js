@@ -10,10 +10,13 @@
     .controller('BreadcrumbController', BreadcrumbController);
 
   /** @ngInject */
-  function BreadcrumbController($rootScope)
+  function BreadcrumbController($rootScope, $scope, commonBusiness, breadcrumbBusiness)
   {
     var vm = this;
-    //vm.path = $rootScope.title;
+
+    commonBusiness.onMsg('Dashboard', $scope, function() {
+       vm.title = breadcrumbBusiness.title;
+    });
   }
 
 })();

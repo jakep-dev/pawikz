@@ -34,7 +34,13 @@
                 templateEndPoint:
                 {
                     schema: '/api/schema',
-                    mnemonics: '/api/mnemonics'
+                    mnemonics: '/api/mnemonics',
+                    save: '/api/saveTemplate'
+                },
+                loggerEndPoint:
+                {
+                    error: '/api/errorLog',
+                    debug: '/api/debugLog'
                 }
             },
             appSettings:

@@ -19,6 +19,7 @@
             switch (tearSheetItem.id)
             {
                 case 'LabelItem':
+                    var newScope  = scope.$new();
                     if(typeof(tearSheetItem.Label) !== 'object')
                     {
                         var splitType = tearSheetItem.type.split(' ');
@@ -54,7 +55,7 @@
                         html += '<ms-blank></ms-blank>';
                         html += '</div>';
                     }
-                    el.find('#template-content').append($compile(html)(scope));
+                    el.find('#template-content').append($compile(html)(newScope));
                     break;
                 case 'GenericTableItem':
                         var newScope  = scope.$new();
@@ -70,15 +71,10 @@
                         var tearcontent = [];
                         var tearSheet = [];
 
-                        console.log('TearSheetItem--');
-                        console.log(tearSheetItem);
-
                         angular.forEach(tearSheetItem, function(each)
                         {
                             contentCompId = each.comId;
                         })
-
-                        console.log('Choosen Component Id - ' + contentCompId);
 
                         if(!angular.isUndefined(contentCompId))
                         {
@@ -104,6 +100,24 @@
                        html += '</div>';
                        el.find('#template-content').append($compile(html)(newScope));
                     break;
+                case 'LinkItem':
+                    var newScope = scope.$new();
+                    var value = '';
+                    var link = ''
+                    if(angular.isDefined(tearSheetItem.Label))
+                    {
+                        value = tearSheetItem.Label;
+                        link = tearSheetItem.Link;
+                    }
+                    else {
+                        var itemId = tearSheetItem.ItemId;
+                        var mnemonicId = tearSheetItem.Mnemonic;
+                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+                        link = value;
+                    }
+                    html += '<ms-link value="'+value+'" href="'+link+'" isdisabled="false"></ms-link>';
+                    el.find('#template-content').append($compile(html)(newScope));
+                    break;
             }
         }
 
@@ -111,27 +125,22 @@
         return {
             restrict: 'E',
             scope   : {
-                components: '=',
-                mnemonics: '='
+                components: '='
             },
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
             link:function(scope, el, attrs)
             {
                 console.log('Template component creation initiated - ');
-
                 console.log(scope.components);
 
                 var compCount = 0;
                 var processingComp = scope.components;
 
-                console.log('Template mnemonics values are - ');
-                console.log(scope.mnemonics);
-
                 angular.forEach(processingComp, function(component)
                 {
                     var tearSheetItem = component.TearSheetItem;
 
-                    if(compCount > 2) //Remove this check
+                    if(compCount > 1) //Remove this check
                     {
                         if(tearSheetItem.length > 0)
                         {

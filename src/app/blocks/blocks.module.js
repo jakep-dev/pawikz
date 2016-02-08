@@ -8,8 +8,11 @@
     angular
         .module('app.blocks',
             [
-               'blocks.interceptor',
                'blocks.logger',
-               'blocks.dialog'
+               'blocks.toast',
+               'blocks.dialog',
+               'blocks.trace',
+               'blocks.exception',
+               'blocks.interceptor'
             ]);
 })();

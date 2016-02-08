@@ -9,50 +9,55 @@
 
 
     /** @ngInject */
-    function StepController($rootScope, $stateParams, templateService)
+    function StepController($rootScope, $stateParams, templateService,
+                            templateBusiness, breadcrumbBusiness, commonBusiness, toast)
     {
         var vm = this;
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+
+        commonBusiness.stepId = stepId;
+        commonBusiness.projectId = projectId;
+
         vm.TearSheetStep = null;
         vm.TearSheetData = null;
 
-        $rootScope.title = stepName;
+        breadcrumbBusiness.title = stepName;
 
         console.log('--Steps Input - ', projectId, ' - ', stepId);
 
-        vm.getSchema = getSchema;
-        vm.getSchemaData = getSchemaData;
-
         initialize();
 
-        //Get Schema Data
-        function getSchemaData()
-        {
-            templateService.getData(projectId, stepId).then(function(response)
-            {
-                if(angular.isUndefined(response.list))
-                {
-                    vm.TearSheetData = response.list;
-                }
-            });
-        }
 
         //Get Schema
-        function getSchema()
+        function getSchemaAndData()
         {
-            // Data
-            templateService.getSchema(projectId, stepId).then(function(response)
+            templateService.getSchemaAndData(projectId, stepId).then(function(response)
             {
-                vm.TearSheetStep = response;
+                console.log('Defer Response Data ---');
+                console.log(response);
+                if(angular.isDefined(response))
+                {
+                    angular.forEach(response, function(data)
+                    {
+                       if(angular.isDefined(data.list))
+                       {
+                           vm.TearSheetData = data.list;
+                           templateBusiness.mnemonics = data.list;
+                       }
+                        else {
+                           vm.TearSheetStep = data;
+                       }
+                    });
+                }
             });
         }
 
         function initialize()
         {
-            getSchema();
-           // getSchemaData();
+            toast.simpleToast('AutoSave Enabled');
+            getSchemaAndData();
         }
 
     }
