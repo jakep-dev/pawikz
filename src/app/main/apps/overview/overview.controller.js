@@ -16,7 +16,7 @@
                                 overviewService, clientConfig, bottomSheetConfig,
                                 navConfig, breadcrumbBusiness, commonBusiness, toast)
     {
-        $rootScope.projectId = $stateParams.projectId;
+        commonBusiness.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
@@ -109,8 +109,8 @@
         //Save all the changes to database
         function saveAll()
         {
-            var userId = $rootScope.passedUserId;
-            var projectId = $rootScope.projectId;
+            var userId = commonBusiness.userId;
+            var projectId = commonBusiness.projectId;
             var projectName = vm.templateOverview.projectName;
             var steps = [];
 

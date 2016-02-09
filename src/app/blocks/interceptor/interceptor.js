@@ -21,6 +21,8 @@
             },
             request: function(request)
             {
+
+
                 $rootScope.isOperation = true;
                 request.headers['x-session-token'] = store.get('x-session-token');
                 return request || $q.when(request);

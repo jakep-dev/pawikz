@@ -7,43 +7,41 @@
         .controller('DashboardController', DashboardController);
 
     /** @ngInject */
-    function DashboardController($rootScope, $mdSidenav, $stateParams,
+    function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
                                         DTColumnDefBuilder, DTColumnBuilder,
                                         DTOptionsBuilder, dashboardService,
                                         authService, authBusiness, commonBusiness,
-                                        breadcrumbBusiness, store)
+                                        breadcrumbBusiness, dashboardBusiness, store)
     {
+        var vm = this;
+        vm.companyId = 0;
+        vm.userId = 0;
+
         $rootScope.passedUserId = $stateParams.userId;
         breadcrumbBusiness.title = 'Dashboard';
         $rootScope.projectOverview = [];
         $rootScope.isBottomSheet = false;
-        $rootScope.companyId = 0;
-        $rootScope.userId = 0;
-        $rootScope.isSearching = false;
-        $rootScope.isOperation = false;
+
         commonBusiness.userId = $stateParams.userId;
 
-        var vm = this;
-        vm.companyNames = [{ id: 0,  name: 'All', shortName:'All' }];
-        vm.users = [{ id: 0,  name: 'All' }];
-
         // Methods
-        vm.filterDashboard = filterDashboard;
-        vm.searchClear = searchClear;
-        vm.loadCompanyNames = loadCompanyNames;
-        vm.loadUserNames = loadUserNames;
+        vm.reload = reload;
         vm.initialize = initialize;
 
         // Make Initial call
         vm.initialize($stateParams.isNav, $stateParams.token);
 
-        // Methods
-        vm.toggleSidenav = toggleSidenav;
-
-        //Toggle Sidenav
-        function toggleSidenav(sidenavId) {
-            $mdSidenav(sidenavId).toggle();
-        }
+        commonBusiness.onMsg('FilterDashboard', $scope, function() {
+          if(dashboardBusiness.isFilterDasboard){
+              vm.companyId = dashboardBusiness.searchCompanyId;
+              vm.userId = dashboardBusiness.searchUserId;
+          }
+          else {
+              vm.companyId = 0;
+              vm.userId = 0;
+          }
+          redrawDataTable();
+        });
 
         // Action Html
         function actionHtml(data, type, full, meta)
@@ -51,60 +49,11 @@
             return '<a ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
         }
 
-        // Load User Names
-        function loadUserNames() {
-            if (_.size(vm.users) === 1) {
-                $rootScope.isSearching = true;
-                dashboardService.getUsers($rootScope.passedUserId).then(function(data)
-                {
-                    if(angular.isDefined(data))
-                    {
-                        var result = data.list;
-
-                        angular.forEach(result, function(row)
-                        {
-                            vm.users.push(row);
-                        });
-                    }
-
-                    $rootScope.isSearching = false;
-
-                });
-            }
-        }
-
-        // Load Company Names
-        function loadCompanyNames() {
-            if (_.size(vm.companyNames) === 1) {
-                $rootScope.isSearching = true;
-                dashboardService.getCompanies($rootScope.passedUserId).then(function(data)
-                {
-                    if(angular.isDefined(data))
-                    {
-                        var result = data.list;
-
-                        angular.forEach(result, function(row)
-                        {
-                            vm.companyNames.push(row);
-                        });
-                    }
-
-                    $rootScope.isSearching = false;
-                });
-            }
-        }
-
-        //Filter Dashboard
-        function filterDashboard() {
-            $rootScope.isSearching = true;
-            redrawDataTable();
-        }
-
         // Clear search
-        function searchClear() {
-            $rootScope.isSearching = true;
-            $rootScope.companyId = 0;
-            $rootScope.userId = 0;
+        function reload() {
+            vm.companyId = 0;
+            vm.userId = 0;
+            dashboardBusiness.isClearDashboard = true;
             redrawDataTable();
         }
 
@@ -131,10 +80,10 @@
                 ' sortFilter=' + sortFilter +
                 ' start=' + start + ' length=' + length);
 
-            console.log('searchCompanyId = ' + $rootScope.companyId);
-            console.log('userId = ' + $rootScope.userId);
+            console.log('searchCompanyId = ' + vm.companyId);
+            console.log('userId = ' + vm.userId);
 
-            dashboardService.get($stateParams.userId, $rootScope.userId, $rootScope.companyId,
+            dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
                 start, length, sortOrder, sortFilter).then(function(data)
             {
 
@@ -162,9 +111,6 @@
                 console.log(records);
 
                 fnCallback(records);
-
-                $rootScope.isSearching = false;
-
             });
         }
 
