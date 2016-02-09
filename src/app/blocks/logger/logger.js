@@ -6,7 +6,7 @@
         .factory('logger', logger);
 
     /* @ngInject */
-    function logger($log, $window) {
+    function logger($log, $window, $location) {
         var service = {
             error: error,
             debug: debug
@@ -16,6 +16,7 @@
 
         function error(message)
         {
+            $location.url('/');
             // preserve default behaviour
             $log.error.apply($log, arguments);
             // send server side

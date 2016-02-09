@@ -12,7 +12,7 @@
     dashboardService.$inject = ['$http', '$location', '$q', 'clientConfig'];
 
     /* @ngInject */
-    function dashboardService($http, $location, $q, clientConfig) {
+    function dashboardService($http, $location, $q, clientConfig, logger) {
         var readyPromise;
 
         var service = {
@@ -40,7 +40,7 @@
                 .then(function(data, status, headers, config) {
                     return data.data;
                 },function(error) {
-                    console.log('error while saving ' + error);
+                    logger.error(JSON.stringify(error));
                 });
         }
 
@@ -54,8 +54,8 @@
                 {
                     return data.data;
                 })
-                .catch(function(message) {
-                    $location.url('/');
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
                 });
         }
 
@@ -69,8 +69,8 @@
                 {
                     return data.data;
                 })
-                .catch(function(message) {
-                    $location.url('/');
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
                 });
         }
     }

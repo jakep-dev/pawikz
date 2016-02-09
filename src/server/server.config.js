@@ -11,13 +11,13 @@ exports.webservice =
 }
 
 var Client = require('node-rest-client').Client;
+var moment = require('moment');
 
 exports.restcall =
 {
     client: new Client(),
     url: exports.webservice.protocol.concat('://', exports.webservice.url, ':', exports.webservice.port,
          '/',exports.webservice.service),
-
     service: [{
                 name: 'templateManager',
                 methods:{
@@ -39,6 +39,13 @@ exports.restcall =
                     templateMnemonics: 'getTemplateMnemonics'
                 }
             }]
+}
+
+exports.log =
+{
+    directory: './advisen-template',
+    fileDirectory: '/' + moment().format('MM-DD-YYYY'),
+    fileName: '/log.' + moment().format('MM-DD-YYYY') + '.txt'
 }
 
 

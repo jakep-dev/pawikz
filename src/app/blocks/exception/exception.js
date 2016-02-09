@@ -30,7 +30,7 @@
                 // an angular service such as $http
                 $.ajax({
                     type: "POST",
-                    url: "/logger",
+                    url: "/api/errorLog",
                     contentType: "application/json",
                     data: angular.toJson({
                         url: $window.location.href,

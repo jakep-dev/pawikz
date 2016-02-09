@@ -27,6 +27,7 @@
         // Methods
         vm.reload = reload;
         vm.initialize = initialize;
+        vm.toggleSidenav = toggleSidenav;
 
         // Make Initial call
         vm.initialize($stateParams.isNav, $stateParams.token);
@@ -42,6 +43,11 @@
           }
           redrawDataTable();
         });
+
+        //Toggle Sidenav
+        function toggleSidenav(sidenavId) {
+            $mdSidenav(sidenavId).toggle();
+        }
 
         // Action Html
         function actionHtml(data, type, full, meta)

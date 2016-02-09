@@ -8,7 +8,7 @@
     templateService.$inject = ['$http', '$location', '$q', 'clientConfig'];
 
     /* @ngInject */
-    function templateService($http, $location, $q, clientConfig) {
+    function templateService($http, $location, $q, clientConfig, logger) {
         var readyPromise;
 
         var service = {
@@ -34,7 +34,7 @@
                     return data;
                 })
                 .catch(function(error) {
-                    console.log('error while saving ' + error);
+                    logger.error(JSON.stringify(error));
                 });
         }
 
@@ -57,7 +57,7 @@
                     return data.data;
                 })
                 .catch(function(error) {
-                    console.log('error while saving ' + error);
+                    logger.error(JSON.stringify(error));
                 });
         }
 
@@ -80,7 +80,7 @@
                     return data.data;
                 })
                 .catch(function(error) {
-                    console.log('error while saving ' + error);
+                    logger.error(JSON.stringify(error));
                 });
         }
 
@@ -106,6 +106,7 @@
                 })
                 .catch(function(error) {
                     deffered.reject();
+                    logger.error(JSON.stringify(error));
                 });
 
             return deffered;
@@ -133,6 +134,7 @@
                 })
                 .catch(function(error) {
                     deffered.reject();
+                    logger.error(JSON.stringify(error));
                 });
 
             return deffered;
