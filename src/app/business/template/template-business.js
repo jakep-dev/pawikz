@@ -82,6 +82,7 @@
                 business.autoSavePromise = $interval(function()
                 {
                     save();
+                    business.saveMnemonics = [];
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
