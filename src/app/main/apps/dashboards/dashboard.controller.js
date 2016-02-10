@@ -78,7 +78,7 @@
 			$('#dashBoardDetails_filter input').bind('keyup', function(e) {
 				if(e.keyCode == 13) {
 					var oTable = $('#dashBoardDetails').dataTable();
-					oTable.fnFilter(this.value);   
+					oTable.fnFilter(this.value);
 				}
 			});    
 		}
@@ -130,8 +130,6 @@
                     data: angular.isDefined(data) && angular.isDefined(data.projects)
                     && data.projects !== null ? data.projects : blankData
                 };
-
-                console.log(records);
 
                 fnCallback(records);
             });
