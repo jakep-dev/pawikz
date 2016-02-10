@@ -19,7 +19,10 @@
             $location.url('/');
             // preserve default behaviour
             $log.error.apply($log, arguments);
-            // send server side
+
+
+            // use AJAX (in this example jQuery) and NOT
+            // an angular service such as $http
             $.ajax({
                 type: "POST",
                 url: "/api/errorLog",
@@ -35,6 +38,9 @@
         function debug(message)
         {
             $log.log.apply($log, arguments);
+
+            // use AJAX (in this example jQuery) and NOT
+            // an angular service such as $http
             $.ajax({
                 type: "POST",
                 url: "/api/debugLog",
