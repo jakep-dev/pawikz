@@ -13,7 +13,7 @@
 
 
     /** @ngInject */
-    function ConfigInterceptor($q, $location, $rootScope, store, logger){
+    function ConfigInterceptor($q, $location, $injector, $interval, $rootScope, store, logger){
         return {
             response: function(response){
                 $rootScope.isOperation = false;
@@ -21,6 +21,19 @@
             },
             request: function(request)
             {
+
+
+
+                if(request.url.indexOf('.json') === -1 && request.url.indexOf('.html') === -1 &&
+                   request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1)
+                {
+                    console.log('Reqest Url - ' + request.url);
+                    var str = request.url.split('/');
+                    var message = str[2] || '';
+                    var toast =  $injector.get("toast");
+                    toast.simpleToast('Processing ' + message + ' request!', '1000');
+                }
+
 
 
                 $rootScope.isOperation = true;

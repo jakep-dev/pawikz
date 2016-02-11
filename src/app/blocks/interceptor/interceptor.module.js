@@ -6,5 +6,5 @@
     'use strict';
 
     console.log('Registering Interceptor');
-    angular.module('blocks.interceptor', []);
+    angular.module('blocks.interceptor', ['blocks.dialog']);
 })();

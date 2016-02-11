@@ -72,12 +72,19 @@
 
     <div id="login-form-wrapper" class="md-whiteframe-8dp">
         <div id="login-form">
-            <div class="title">Log in to your account</div>
+            <div class="title" layout="row" layout-sm="column">
+                <div hide-gt-lg hide-gt-md hide-gt-sm>
+                    <img md-menu-align-target  src="assets/images/logos/advisen-logo-short.png">
+                </div>
+                <div style="padding-left: 15px">
+                    Log in to your account</div>
+            </div>
             <div class="description">
             </div>
 
             <form name="loginForm" novalidate>
                 <md-input-container class="md-block md-accent" md-no-float>
+                    <md-icon md-font-icon="icon-account" class="name"></md-icon>
                     <input type="text" name="userName" ng-model="vm.form.userName" placeholder="User Name"
                            required />
                     <div ng-messages="loginForm.userName.$error" ng-show="loginForm.userName.$touched" role="alert" multiple>
@@ -88,6 +95,7 @@
                 </md-input-container>
 
                 <md-input-container class="md-block md-accent" md-no-float>
+                    <md-icon md-font-icon="icon-account-key" class="name"></md-icon>
                     <input type="password" name="password" ng-model="vm.form.password" placeholder="Password"
                            required>
                     <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">

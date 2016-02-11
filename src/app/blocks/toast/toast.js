@@ -17,14 +17,14 @@
 
 
         //Simple Toast
-        function simpleToast(message)
+        function simpleToast(message, duration)
         {
             var getToastPosition = configureToast();
             $mdToast.show(
                 $mdToast.simple()
                     .content(message)
                     .position(getToastPosition)
-                    .hideDelay(3000)
+                    .hideDelay(duration || 3000)
             );
         }
 
