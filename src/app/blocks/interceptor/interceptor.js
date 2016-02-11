@@ -25,13 +25,14 @@
 
 
                 if(request.url.indexOf('.json') === -1 && request.url.indexOf('.html') === -1 &&
-                   request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1)
+                   request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1 &&
+                   request.url.indexOf('authenticate') === -1 && request.url.indexOf('logout') === -1)
                 {
                     console.log('Reqest Url - ' + request.url);
                     var str = request.url.split('/');
                     var message = str[2] || '';
                     var toast =  $injector.get("toast");
-                    toast.simpleToast('Processing ' + message + ' request!', '1000');
+                    toast.simpleToast('Processing ' + message + ' request!');
                 }
 
 
