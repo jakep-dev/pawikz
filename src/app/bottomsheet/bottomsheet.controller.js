@@ -7,7 +7,7 @@
         .controller('BottomsheetController', BottomsheetController);
 
     /** @ngInject */
-    function BottomsheetController($mdBottomSheet, $mdToast, bottomSheetConfig)
+    function BottomsheetController($mdBottomSheet, $mdToast, toast, bottomSheetConfig)
     {
         var vm = this;
 
@@ -19,12 +19,8 @@
                 scope: bottomSheetConfig.controller.$new(),
                 targetEvent: $event
             }).then(function(clickedItem) {
-                $mdToast.show(
-                    $mdToast.simple()
-                        .content(clickedItem['name'] + ' clicked!')
-                        .position('top right')
-                        .hideDelay(1500)
-                )});
+                toast.simpleToast(clickedItem['name'] + ' clicked!');
+               });
         }
     }
 
