@@ -35,6 +35,7 @@
                 'angularSoap',
                 'angular-storage',
                 'disableAll',
-                'froala'
+                'froala',
+                'highcharts-ng'
             ]);
 })();

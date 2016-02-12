@@ -42,8 +42,9 @@
                 promise = $interval(function()
                 {
                     var toast =  $injector.get("toast");
-                    toast.simpleToast('Hang on. Still processing!');
-                }, 5000);
+                    toast.simpleToast('Hang on. Still processing!', 4000);
+                    cancelPromise();
+                }, 8000);
             }
 
             $rootScope.isOperation = true;
