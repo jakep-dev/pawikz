@@ -44,9 +44,14 @@
                     earnings: earnings,
                     start_date: start_date,
                     end_date : end_date
-                },
-                transformResponse: stockAPIResponseTransformer
-            });
+                }
+            }).then(function(data, status, headers, config)
+                {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
         }
 
         function getSavedChartData(projectId, stepId, mnemonic, itemId) {
@@ -58,9 +63,14 @@
                     stepId:stepId,
                     mnemonic:mnemonic,
                     itemId:itemId
-                },
-                transformResponse: stockAPIResponseTransformer
-            });
+                }
+            }).then(function(data, status, headers, config)
+            {
+                return data.data;
+            })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
         }
 
         function findTickers(keyword) {
@@ -69,18 +79,28 @@
                 url:"/api/findTickers",
                 data: {
                     keyword : keyword
-                },
-                transformResponse: stockAPIResponseTransformer
-            });
+                }
+            }).then(function(data, status, headers, config)
+            {
+                return data.data;
+            })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
         }
 
         function getIndices(keyword) {
             return $http({
                 method: "POST",
                 url: "/api/getIndices",
-                data: {},
-                transformResponse: stockAPIResponseTransformer
-            });
+                data: {}
+            }).then(function(data, status, headers, config)
+            {
+                return data.data;
+            })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
         }
     }
 

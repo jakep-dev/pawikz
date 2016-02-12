@@ -36,9 +36,18 @@ exports.restcall =
                     companyLookUp: 'getCompanyLookup',
                     overView: 'getTemplateOverview',
                     templateSchema: 'getTemplateUIStructure',
-                    templateMnemonics: 'getTemplateMnemonics'
+                    templateMnemonics: 'getTemplateMnemonics',
+                    findTickers : 'findTickers'
                 }
-            }]
+            },
+        {
+            name: 'charts',
+            methods:{
+                getStockData:'getStockData',
+                getIndices:'getIndices',
+                getSavedChartData : 'getSavedChartData'
+            }
+        }]
 }
 
 exports.log =

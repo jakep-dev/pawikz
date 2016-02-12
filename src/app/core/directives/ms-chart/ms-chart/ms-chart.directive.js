@@ -127,7 +127,7 @@
             //hard coded for now
             stockService
                 .getSavedChartData(100168041, 3, 'WU_STOCK_CHART_3YR', 'WU_STOCK_CHART_3YR_EM')
-                .success(function(data) {
+                .then(function(data) {
                     if(data  && data.savedChartList) {
                         data.savedChartList.forEach(function (savedChart) {
                             if (savedChart.chartType  === 'IMGURL'){
