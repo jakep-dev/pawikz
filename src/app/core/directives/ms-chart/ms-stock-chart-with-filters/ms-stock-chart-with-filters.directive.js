@@ -212,7 +212,7 @@
 
             stockService
                 .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date)
-                .success(function(data) {
+                .then(function(data) {
                     vm.stockDataSet=convServiceResptoChartFormat(data);
                     if(data.stockChartPeerData && data.stockChartPeerData.length){
                         vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
@@ -274,7 +274,7 @@
 
                 stockService
                     .stockData(stockString, vm.chartFilterState.selectedPeriod, splits, earnings, dividends, start_date, end_date)
-                    .success(function(data) {
+                    .then(function(data) {
                         vm.stockDataSet=convServiceResptoChartFormat(data);
                         if(data.stockChartPeerData && data.stockChartPeerData.length){
                             vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;

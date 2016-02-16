@@ -148,7 +148,7 @@
 
             stockService
                 .findTickers(keyword)
-                .success(function(data) {
+                .then(function(data) {
                     //console.log('found data from server for tickers ',data);
                     if(data.tickerResp) {
                         vm.searchedStocks = data.tickerResp;
@@ -253,7 +253,7 @@
         function getIndicesFromServer(keyword) {
             stockService
                 .getIndices(keyword,vm.selectedPeriod)
-                .success(function(data) {
+                .then(function(data) {
                     console.log('found data from server for getIndices---------------------> ',data);
                     if(data.indicesResp) {
                         vm.Indexes = data.indicesResp;

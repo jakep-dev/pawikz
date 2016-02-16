@@ -114,8 +114,6 @@
             var  mnemonic= req.body.mnemonic;
             var  itemId= req.body.itemId;
 
-            console.log('service.name  + methodName------------------->',config.restcall.url + '/' + service.name + '/' + methodName
-                +'?project_id='+projectId+'&step_id='+stepId+ '&mnemonic='+mnemonic+ '&item_id='+ itemId + '&ssnid=' +ssnid);
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
                 +'?project_id='+projectId+'&step_id='+stepId+ '&mnemonic='+mnemonic+ '&item_id='+ itemId + '&ssnid=' +ssnid, function (data, response) {
                 res.send(data);
