@@ -29,6 +29,7 @@
 
         function response(response)
         {
+
             cancelPromise();
             $rootScope.isOperation = false;
             return response || $q.when(response);
@@ -37,8 +38,11 @@
         function request(request)
         {
             if(request.url.indexOf('.json') === -1 && request.url.indexOf('.html') === -1 &&
-                request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1)
+                request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1 &&
+                request.url.indexOf('getIndices') === -1)
             {
+                console.log('Request Url :- ');
+                console.log(request.url);
                 promise = $interval(function()
                 {
                     var toast =  $injector.get("toast");
@@ -98,6 +102,7 @@
 
         function cancelPromise()
         {
+            console.log('Cancel Promise--');
             $interval.cancel(promise);
             promise = [];
         }
