@@ -8,11 +8,11 @@
     angular
         .module('fuse', [
 
-            // Blocks
-            'app.blocks',
-
             // Core
             'app.core',
+
+            // Blocks
+            'app.blocks',
 
             // Business
             'app.business',

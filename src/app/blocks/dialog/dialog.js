@@ -18,6 +18,17 @@
 
         return service;
 
+        function status(title, content, event)
+        {
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .title(title)
+                    .content(content)
+                    .targetEvent(event)
+            );
+        }
+
+
         /*
          Title:
          Content:

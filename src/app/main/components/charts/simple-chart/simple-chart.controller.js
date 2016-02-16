@@ -9,28 +9,15 @@
         .module('app.components.charts.simple-chart')
         .controller('SimpleChartController', SimpleChartController);
 
-    function SimpleChartController($rootScope, templateService)
+    function SimpleChartController($rootScope)
     {
         var vm = this;
-        $rootScope.title = 'Simple Chart';
 
 
-        // Data
-        templateService.getSchema(100162482, 1).then(function(response)
-        {
-           console.log('----Schema Structure UI----');
-           console.log(response);
-        });
+        // DataR
 
 
-
-        templateService.getData(100162482, 1).then(function(response)
-        {
-            console.log('----Schema Data Structure UI----');
-            console.log(response);
-        });
-
-        // Methods
+        // R
 
         //////////
 

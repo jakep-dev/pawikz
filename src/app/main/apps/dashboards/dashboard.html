@@ -41,28 +41,28 @@
                                             </md-button>
                                         </md-menu-item>
                                         <md-menu-item hide-sm hide-md>
-                                            <md-button  aria-label="Excel widget">
+                                            <md-button  aria-label="Excel widget" ng-click="vm.exportAction('excel')">
                                                         <span layout="row" layout-align="start center">
                                                              <md-icon md-font-icon="icon-file-excel"></md-icon>
                                                             <span>Excel</span>
                                                         </span>
                                             </md-button>
                                         </md-menu-item>
-                                        <md-menu-item hide-sm hide-md>
-                                            <md-button  aria-label="PDF widget">
-                                                       <span layout="row" layout-align="start center">
-                                                            <md-icon md-font-icon="icon-file-pdf"></md-icon>
-                                                             <span>Pdf</span>
-                                                       </span>
-                                            </md-button>
-                                        </md-menu-item>
+                                        <!--<md-menu-item hide-sm hide-md>-->
+                                            <!--<md-button  aria-label="PDF widget" ng-click="vm.exportAction('pdf')">-->
+                                                       <!--<span layout="row" layout-align="start center">-->
+                                                            <!--<md-icon md-font-icon="icon-file-pdf"></md-icon>-->
+                                                             <!--<span>Pdf</span>-->
+                                                       <!--</span>-->
+                                            <!--</md-button>-->
+                                        <!--</md-menu-item>-->
                                     </md-menu-content>
                                 </md-menu>
                             </div>
 
                             <md-divider></md-divider>
 
-                            <table class="row-border cell-border" width="100%"
+                            <table class="row-border cell-border" ms-export width="100%"
                                    id="dashBoardDetails" layout-padding datatable="" dt-options="vm.dtOptions"
                                    dt-column-defs="vm.dtColumnDefs" dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">
 

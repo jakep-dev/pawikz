@@ -1,0 +1,35 @@
+<md-menu align="left" id="dashBoard-Menu" md-position-mode="target-right target">
+    <md-button class="md-icon-button" ng-mouseover="$mdOpenMenu()" aria-label="more">
+        <md-tooltip md-direction="top">
+            All widgets are here
+        </md-tooltip>
+        <md-icon md-font-icon="icon-dots-vertical"></md-icon>
+    </md-button>
+
+    <md-menu-content flex layout-padding center>
+        <md-menu-item>
+            <md-button  aria-label="Events widget" ng-click="vm.maximizeChart(vm.chartFilterState);">
+                      <span layout="row" layout-align="start center">
+                            <md-icon md-font-icon="icon-magnify"></md-icon>
+                            <span hide-sm>Maximize</span>
+                      </span>
+            </md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button  aria-label="Refresh widget" ng-click="vm.searchClear();">
+                      <span layout="row" layout-align="start center">
+                        <md-icon md-font-icon="icon-delete"></md-icon>
+                        <span hide-sm>Delete</span>
+                      </span>
+            </md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button  aria-label="Refresh widget" ng-click="vm.saveChart();">
+                      <span layout="row" layout-align="start center">
+                        <md-icon md-font-icon="icon-plus"></md-icon>
+                        <span hide-sm>Add</span>
+                      </span>
+            </md-button>
+        </md-menu-item>
+    </md-menu-content>
+</md-menu>

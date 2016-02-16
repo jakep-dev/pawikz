@@ -35,6 +35,7 @@
         {
             templateService.getSchemaAndData(projectId, stepId).then(function(response)
             {
+                toast.simpleToast('AutoSave Enabled');
                 console.log('Defer Response Data ---');
                 console.log(response);
                 if(angular.isDefined(response))
@@ -56,7 +57,7 @@
 
         function initialize()
         {
-            toast.simpleToast('AutoSave Enabled');
+
             getSchemaAndData();
         }
 
