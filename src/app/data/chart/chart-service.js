@@ -6,21 +6,10 @@
 
     angular
         .module('app.data')
-        .factory('stockAPIResponseTransformer', stockAPIResponseTransformer)
         .factory('stockService', stockService);
 
-    stockService.$inject = ['$http', 'stockAPIResponseTransformer'];
-
-    function stockAPIResponseTransformer()
-    {
-        return function (data) {
-            data = JSON.parse(data);
-            return data;
-        };
-    }
-
     /* @ngInject */
-    function stockService($http, stockAPIResponseTransformer)
+    function stockService($http, logger)
     {
         var service = {
             stockData: stockData,

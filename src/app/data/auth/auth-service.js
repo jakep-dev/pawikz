@@ -8,7 +8,6 @@
         .module('app.data')
         .factory('authService', authService);
 
-    authService.$inject = ['$http', '$location', '$q', 'clientConfig'];
 
     /* @ngInject */
     function authService($http, $location, $q, clientConfig, logger) {
@@ -32,7 +31,7 @@
                 dataType: "json",
             })
                 .then(function(data, status, headers, config) {
-                    return data;
+                    return data.data;
                 })
                 .catch(function(error) {
                     logger.error(JSON.stringify(error));
@@ -58,7 +57,7 @@
                     return data.data;
                 })
                 .catch(function(error) {
-                    console.log('error while saving ' + error);
+                   logger.error(JSON.stringify(error));
                 });
         }
 
@@ -75,7 +74,7 @@
                 return data.data;
             })
             .catch(function(error) {
-                console.log('error while saving ' + error);
+                logger.error(JSON.stringify(error));
             });
         }
 

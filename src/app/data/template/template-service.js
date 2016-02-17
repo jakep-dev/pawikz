@@ -5,10 +5,8 @@
         .module('app.data')
         .factory('templateService', templateService);
 
-    templateService.$inject = ['$http', '$location', '$q', 'clientConfig'];
-
     /* @ngInject */
-    function templateService($http, $location, $q, clientConfig, logger) {
+    function templateService($http, $q, clientConfig, logger) {
         var readyPromise;
 
         var service = {

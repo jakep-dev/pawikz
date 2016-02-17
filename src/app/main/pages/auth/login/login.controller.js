@@ -37,29 +37,21 @@
                 console.log('Response of Authenticate --- ');
                 console.log(response);
 
-                if(angular.isDefined(response) && angular.isDefined(response.responseInfo))
+                if(angular.isDefined(response) &&
+                   angular.isDefined(response.responseInfo) &&
+                   angular.isDefined(response.userinfo))
                 {
-                    if(response.responseInfo.code === 200 && angular.isDefined(response.userinfo))
-                    {
-                        var token = response.userinfo.token;
-                        var userId = response.userinfo.userId;
+                    var token = response.userinfo.token;
+                    var userId = response.userinfo.userId;
 
-                        authBusiness.userInfo = response.userinfo;
-                        authBusiness.userName = response.userinfo.fullName;
+                    authBusiness.userInfo = response.userinfo;
+                    authBusiness.userName = response.userinfo.fullName;
 
-                        store.set('x-session-token', token);
-                        var url = ('/dashboard/').concat(userId, '/', token, '/');
-                        $location.url(url);
-                        toast.simpleToast('Successfully logged in!');
-                    }
-                    else {
-                        toast.actionToast('Invalid UserName or Password!');
-                    }
+                    store.set('x-session-token', token);
+                    var url = ('/dashboard/').concat(userId, '/', token, '/');
+                    $location.url(url);
+                    toast.simpleToast('Successfully logged in!');
                 }
-                else {
-                    toast.actionToast('Invalid UserName or Password!');
-                }
-
             });
         }
     }

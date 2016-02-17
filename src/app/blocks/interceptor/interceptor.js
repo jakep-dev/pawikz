@@ -29,7 +29,6 @@
 
         function response(response)
         {
-
             cancelPromise();
             $rootScope.isOperation = false;
             return response || $q.when(response);
@@ -41,8 +40,6 @@
                 request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1 &&
                 request.url.indexOf('getIndices') === -1)
             {
-                console.log('Request Url :- ');
-                console.log(request.url);
                 promise = $interval(function()
                 {
                     var toast =  $injector.get("toast");
@@ -73,7 +70,7 @@
             store.remove('x-session-user');
 
             var toast =  $injector.get("toast");
-            toast.simpleToast('Oops!. Response error.');
+            toast.simpleToast('Oops!. ' + rejection.statusText);
 
             var error = {
                 method: rejection.config.method,
@@ -89,15 +86,15 @@
                 case 401:
                     $location.url('/pages/auth/login');
                     break;
-                case 404:
-                    $location.url('/pages/errors/error-404')
-                    break;
+                //case 404:
+                //    $location.url('/pages/errors/error-404')
+                //    break;
                 case 500:
                     $location.url('/pages/errors/error-500')
                     break;
             }
 
-            return rejection || $q.when(rejection);
+            return $q.reject(rejection);
         }
 
         function cancelPromise()

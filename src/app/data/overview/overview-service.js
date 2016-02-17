@@ -8,10 +8,8 @@
         .module('app.data')
         .factory('overviewService', overviewService);
 
-    overviewService.$inject = ['$http', '$location', '$q', 'clientConfig'];
-
     /* @ngInject */
-    function overviewService($http, $location, $q, clientConfig, logger) {
+    function overviewService($http, clientConfig, logger) {
         var readyPromise;
 
         var service = {

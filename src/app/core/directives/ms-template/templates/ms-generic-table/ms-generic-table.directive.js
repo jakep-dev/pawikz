@@ -21,6 +21,8 @@
                 var newScope = null;
                 var html = '';
 
+                el.append('</br>');
+
                 //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)
                 {
@@ -169,7 +171,7 @@
                         });
 
 
-                        html += '</div>'
+                        html += '</div>';
                         if(newScope !== null)
                         {
                             el.find('#generic-table-layout').append($compile(html)(newScope));
@@ -179,6 +181,8 @@
                         }
                     }
                 });
+
+
             }
         };
     }

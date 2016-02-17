@@ -9,10 +9,8 @@
         .module('app.data')
         .factory('dashboardService', dashboardService);
 
-    dashboardService.$inject = ['$http', '$location', '$q', 'clientConfig'];
-
     /* @ngInject */
-    function dashboardService($http, $location, $q, clientConfig, logger) {
+    function dashboardService($http, clientConfig, logger) {
         var readyPromise;
 
         var service = {
