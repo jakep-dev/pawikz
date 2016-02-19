@@ -1,18 +1,22 @@
 <div style="padding-bottom: 10px">
     <div class="md-whiteframe-2dp" >
         <div id="ms-accordion" class="step-table-title md-amber-A200-bg">
-            <div>
-                {{ title }}
-            </div>
-            <div>
-                <md-button class="md-icon-button" aria-label="expand/collapse"
-                           ng-click="collapse()">
-                    <md-tooltip md-direction="top">
-                        expand/collapse
-                    </md-tooltip>
-                    <md-icon md-font-icon="icon-backburger" ng-class="collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
-                </md-button>
-            </div>
+            {{ title }}
+            <md-button class="md-icon-button" aria-label="expand/collapse"
+                       ng-if="iscollapse"
+                       ng-click="collapse()" style="float:right">
+                <md-tooltip md-direction="top">
+                    Expand/Collapse
+                </md-tooltip>
+                <md-icon md-font-icon="icon-backburger" ng-class="collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+            </md-button>
+            <!--<md-button class="md-icon-button" aria-label="fullscreen"-->
+            <!--style="float:right">-->
+            <!--<md-tooltip md-direction="top">-->
+            <!--Full screen-->
+            <!--</md-tooltip>-->
+            <!--<md-icon md-font-icon="icon-fullscreen"></md-icon>-->
+            <!--</md-button>-->
         </div>
         <md-divider></md-divider>
         <md-content id="ms-accordion-content" ng-show="!collapsed" layout-padding>

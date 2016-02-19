@@ -62,6 +62,9 @@
                             break;
                         case 'TableLayOut':
                             var newScope  = scope.$new();
+
+
+
                             html += '<ms-message message="Under Contruction"></ms-message>';
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
