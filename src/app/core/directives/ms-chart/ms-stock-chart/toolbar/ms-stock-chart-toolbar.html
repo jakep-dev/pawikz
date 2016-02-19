@@ -1,0 +1,110 @@
+<ms-content>
+    <div layout="row" layout-sm="column" layout-align="center center">
+        <div flex>
+            <md-menu>
+                <md-button aria-label="Events Menu" class="md-raised" ng-mouseenter="$mdOpenMenu($event)">
+                    <md-icon md-menu-origin md-font-icon="icon-library-plus">
+                    </md-icon>
+                    Events
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item>
+                        <md-switch ng-model="vm.splits" aria-label="Splits">
+                            Splits
+                        </md-switch>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-switch ng-model="vm.earnings" aria-label="Earnings">
+                            Earnings
+                        </md-switch>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-switch ng-model="vm.dividends" aria-label="Dividends">
+                            Dividends
+                        </md-switch>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </div>
+        <div flex>
+            <md-menu>
+                <md-button aria-label="Comparison Menu" class="md-raised" ng-mouseenter="$mdOpenMenu($event)">
+                    <md-icon md-menu-origin md-font-icon="icon-compare">
+                    </md-icon>
+                    Comparison
+                </md-button>
+                <md-menu-content width="6">
+                    <md-menu-item>
+                        <md-autocomplete
+                                md-no-cache="vm.noCache"
+                                md-search-text-change="vm.searchTextChange(vm.searchText)"
+                                md-search-text="vm.searchIndText"
+                                md-selected-item-change="vm.selectedItemChange(item)"
+                                md-items="item in vm.queryIndiceSearch(vm.searchIndText)"
+                                md-item-text="item.display"
+                                md-min-length="0"
+                                placeholder="Search Indices">
+                            <md-item-template>
+                                <span md-highlight-text="vm.searchIndText" md-highlight-flags="^i">{{item.display}}</span>
+                                <div layout="row">
+                                    <md-button>
+                                        <md-icon md-font-icon="icon-delete"></md-icon>
+                                    </md-button>
+                                </div>
+
+
+                            </md-item-template>
+                            <md-not-found>
+                                No matches found for "{{vm.searchIndText}}".
+                            </md-not-found>
+                        </md-autocomplete>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-divider></md-divider>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-autocomplete
+                                md-no-cache="vm.noCache"
+                                md-search-text-change="vm.searchTextChange(vm.searchText)"
+                                md-search-text="vm.searchPeerText"
+                                md-selected-item-change="vm.selectedItemChange(item)"
+                                md-items="item in vm.queryPeerSearch(vm.searchPeerText)"
+                                md-item-text="item.display"
+                                md-min-length="0"
+                                placeholder="Search Peers">
+                            <md-item-template>
+                                <span md-highlight-text="vm.searchPeerText" md-highlight-flags="^i">{{item.display}}</span>
+                            </md-item-template>
+                            <md-not-found>
+                                No matches found for "{{vm.searchPeerText}}".
+                            </md-not-found>
+                        </md-autocomplete>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </div>
+        <div flex>
+            <md-button aria-label="Calendar Menu" class="md-fab md-mini md-raised">
+                <md-icon md-font-icon="icon-calendar">
+                </md-icon>
+            </md-button>
+        </div>
+        <div flex>
+            <md-radio-group ng-model="vm.range" layout="row">
+                <md-radio-button value="1W">1W</md-radio-button>
+                <md-radio-button value="1M"> 1M </md-radio-button>
+                <md-radio-button value="3M"> 3M </md-radio-button>
+                <md-radio-button value="18M"> 18M </md-radio-button>
+                <md-radio-button value="1Y"> 1Y </md-radio-button>
+                <md-radio-button value="2Y"> 2Y </md-radio-button>
+                <md-radio-button value="3Y"> 3Y </md-radio-button>
+                <md-radio-button value="5Y"> 5Y </md-radio-button>
+                <md-radio-button value="10Y"> 10Y </md-radio-button>
+            </md-radio-group>
+        </div>
+    </div>
+</ms-content>

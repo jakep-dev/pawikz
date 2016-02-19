@@ -57,9 +57,9 @@
             {
                 return data.data;
             })
-                .catch(function(error) {
-                    logger.error(JSON.stringify(error));
-                });
+            .catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function findTickers(keyword) {

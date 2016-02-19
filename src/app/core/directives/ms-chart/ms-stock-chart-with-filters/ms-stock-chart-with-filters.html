@@ -1,8 +1,0 @@
-<div  class="graph-content">
-    <div  ng-if="!vm.hideFilters" class="current-stock-details"><input class="company-name" type="text" ng-model="vm.chartFilterState.companyName" ></div>
-    <ms-stock-chart-filter ng-show="!vm.hideFilters" fetch-data="vm.fetchChartData" selected-period="vm.chartFilterState.selectedPeriod" selected-indices-list="vm.chartFilterState.selectedIndicesList"
-              is-splits="vm.chartFilterState.isSplits" is-earnings="vm.chartFilterState.isEarnings" is-dividents="vm.chartFilterState.isDividents"
-                           main-stock="vm.chartFilterState.mainStock" to="vm.chartFilterState.to" from="vm.chartFilterState.from" selected-peer-list="vm.chartFilterState.selectedPeerList">
-    </ms-stock-chart-filter>
-    <div id = "stock-chart" stock-report config ="vm.stockDataSet" on-peer-remove="vm.onPeerRemove"></div>
-</div>

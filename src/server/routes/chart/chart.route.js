@@ -115,9 +115,77 @@
             var  itemId= req.body.itemId;
 
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?project_id='+projectId+'&step_id='+stepId+ '&mnemonic='+mnemonic+ '&item_id='+ itemId + '&ssnid=' +ssnid, function (data, response) {
-                res.send(data);
+                +'?project_id='+projectId+'&step_id='+stepId+ '&mnemonic='+mnemonic+ '&item_id='+ itemId + '&ssnid=' +ssnid, function (data, response)
+            {
+                res.status(response.statusCode).send(getChartSettings(data));
             });
+
+        }
+
+        function getChartSettings(data)
+        {
+            var result = {
+                newCharts: [],
+                legacyCharts: []
+            }
+
+            if(data && data.savedChartList)
+            {
+                u.each(data.savedChartList, function(savedChart)
+                {
+                    if (savedChart.chartType  === 'IMGURL'){
+                        result.legacyCharts.push(savedChart);
+                    }
+                    else  if (savedChart.chartType  === 'JSCHART'){
+                        var chart = {};
+                        chart.chartType = 'JSCHART';
+                        chart.settings = {
+                            mainStock : "",
+                            companyName : savedChart.chartSetting.chart_title,
+                            selectedPeriod : savedChart.chartSetting.period.toUpperCase(),
+                            selectedIndicesList : [],
+                            selectedPeerList : [],
+                            searchedStocks : [],
+                            to: {},
+                            from: {},
+                            isSplits : (savedChart.chartSetting.dividends === 'Y')? true : false,
+                            isEarnings : (savedChart.chartSetting.earnings === 'Y')? true : false,
+                            isDividents : (savedChart.chartSetting.splits === 'Y')? true : false,
+                            eventOptionVisibility : false,
+                            dateOptionVisibility : false,
+                            comparisonOptionVisibility : false
+                        };
+                        var peers = savedChart.chartSetting.peers.split(',');
+                        for (var i = 0; i < peers.length;  i++) {
+                            var peer = peers[i].trim();
+                            if(peer.charAt(0) === '^') {
+                                chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
+                            }
+                            else {
+                                chart.settings.selectedPeerList.push(peer);
+                            }
+                        }
+                        if (savedChart.chartSetting.date_start) {
+                            var dateStart = savedChart.chartSetting.date_start.split('-');
+                            chart.settings.from = {
+                                year : dateStart[0],
+                                month : dateStart[1],
+                                date : dateStart[2]
+                            };
+                        }
+                        if (savedChart.chartSetting.date_end) {
+                            var dateEnd = savedChart.chartSetting.date_end.split('-');
+                            chart.settings.to = {
+                                year : dateEnd[0],
+                                month : dateEnd[1],
+                                date : dateEnd[2]
+                            };
+                        }
+                        result.newCharts.push(chart);
+                    }
+                });
+            }
+            return result;
 
         }
 

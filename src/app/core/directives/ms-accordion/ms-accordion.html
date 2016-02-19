@@ -1,14 +1,41 @@
-<div id="ms-accordion" class="step-table-title md-amber-A200-bg">
-    {{ title }}
-    <md-button class="md-icon-button" aria-label="expand/collapse"
-               ng-click="collapse()" style="float:right">
-        <md-tooltip md-direction="top">
-            expand/collapse
-        </md-tooltip>
-        <md-icon md-font-icon="icon-backburger" ng-class="collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
-    </md-button>
+<div id="ms-accordion" class="step-table-title  md-whiteframe-2dp" ng-class="titleClass">
+    <div layout="row" layout-align="space-between center" >
+        <div>
+            {{ title }}
+        </div>
+        <div>
+            <md-button class="md-icon-button" aria-label="add-chart">
+                <md-tooltip md-direction="top">
+                    Add
+                </md-tooltip>
+                <md-icon md-font-icon="icon-plus"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="delete-chart">
+                <md-tooltip md-direction="top">
+                    Delete
+                </md-tooltip>
+                <md-icon md-font-icon="icon-minus"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="full-screen">
+                <md-tooltip md-direction="top">
+                    Maximize
+                </md-tooltip>
+                <md-icon md-font-icon="icon-fullscreen"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="expand/collapse"
+                       ng-click="collapse()" ng-if="isExpandable">
+                <md-tooltip md-direction="top">
+                    expand/collapse
+                </md-tooltip>
+                <md-icon md-font-icon="icon-backburger" ng-class="collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+            </md-button>
+        </div>
+    </div>
 </div>
 <md-divider></md-divider>
-<md-content id="ms-accordion-content" ng-transclude ng-show="!collapsed" layout-padding>
+<md-content id="ms-accordion-content" class="md-whiteframe-1dp" ng-transclude ng-show="!collapsed" layout-padding>
 
 </md-content>

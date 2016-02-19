@@ -17,6 +17,8 @@
 
         $scope.collapse = collapse;
 
+        $scope.titleClass =  $scope.titlebg || 'md-amber-A200-bg';
+
         //Toggle the collapse
         function collapse()
         {
@@ -31,7 +33,9 @@
             restrict  : 'E',
             scope     : {
                 title: '@',
-                initialCollapsed: '=?collapsed'
+                initialCollapsed: '=?collapsed',
+                titlebg: '@',
+                isExpandable: '=?'
             },
             controller: 'MsAccordionController',
             templateUrl: 'app/core/directives/ms-accordion/ms-accordion.html',
