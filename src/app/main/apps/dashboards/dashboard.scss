@@ -16,6 +16,9 @@
 	tr:hover a{
       color: white;
     }
+	thead .sorting:after{
+		display: none;
+	}
   }
 
 
