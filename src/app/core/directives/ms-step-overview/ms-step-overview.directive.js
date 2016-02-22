@@ -71,6 +71,7 @@
             restrict: 'E',
             scope: {
                 step: '=',
+				projectId: '=',
                 expandable: '=?'
             },
             transclude: true,

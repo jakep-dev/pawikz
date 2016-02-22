@@ -29,6 +29,7 @@
         vm.isStepTabletMode = false;
         vm.isAllSelected = false;
         vm.templateOverview = [];
+		vm.projectId = $stateParams.projectId;
 
         vm.flipView = flipView;
         vm.expandCollapseToggle = expandCollapseToggle;
