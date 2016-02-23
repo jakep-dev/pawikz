@@ -12,6 +12,8 @@
     {
         var vm = this;
 
+
+
         /* Indices Logic Start */
         vm.indices = [];
         vm.queryIndiceSearch = queryIndiceSearch;
@@ -104,7 +106,11 @@
             },
             controller: 'msStockChartToolBarController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/toolbar/ms-stock-chart-toolbar.html'
+            templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/toolbar/ms-stock-chart-toolbar.html',
+            link: function(scope, el, attr)
+            {
+                console.log(el);
+            }
         };
     }
 

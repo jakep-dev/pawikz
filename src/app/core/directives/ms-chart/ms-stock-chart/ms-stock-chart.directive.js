@@ -11,6 +11,7 @@
     {
         return {
             restrict: 'E',
+            require: 'msStockChartToolBar',
             scope   : {
 
             },

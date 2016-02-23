@@ -13,16 +13,18 @@
 
     function MsAccordionController($scope)
     {
-        $scope.collapsed = $scope.initialCollapsed;
+        var vm = this;
 
-        $scope.collapse = collapse;
+        vm.collapsed = $scope.initialCollapsed;
 
-        $scope.titleClass =  $scope.titlebg || 'md-amber-A200-bg';
+        vm.collapse = collapse;
+
+        vm.titleClass =  $scope.titlebg || 'md-amber-A200-bg';
 
         //Toggle the collapse
         function collapse()
         {
-            $scope.collapsed = !$scope.collapsed;
+            vm.collapsed = !$scope.collapsed;
         }
     }
 
@@ -35,9 +37,11 @@
                 title: '@',
                 initialCollapsed: '=?collapsed',
                 titlebg: '@',
-                isExpandable: '=?'
+                isExpandable: '=?',
+                actions: "="
             },
             controller: 'MsAccordionController',
+            controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-accordion/ms-accordion.html',
             transclude: true
         };

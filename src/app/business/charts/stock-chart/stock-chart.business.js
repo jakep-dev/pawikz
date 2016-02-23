@@ -9,7 +9,7 @@
         .service('stockChartBusiness', stockChartBusiness);
 
     /* @ngInject */
-    function stockChartBusiness() {
+    function stockChartBusiness(commonBusiness) {
 
     }
 

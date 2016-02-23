@@ -7,13 +7,66 @@
         .controller('msChartPlaceHolderController', msChartPlaceHolderController)
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
-
-    function msChartPlaceHolderController($scope)
+    /** @ngInject */
+    function msChartPlaceHolderController($scope, $element, $compile, dialog)
     {
         var vm = this;
+        var type = $scope.$parent.type;
         vm.title = $scope.title;
+        vm.id = $scope.id;
 
-        //Need to have watch to save title auto-save feature.
+        console.log('Placeholder Scope');
+        console.log($scope);
+
+        vm.addChart = addChart;
+        vm.removeChart = removeChart;
+        vm.maximizeChart = maximizeChart;
+        vm.ResetChart = resetChart;
+
+        //Reset the chart functionality.
+        function resetChart()
+        {
+
+        }
+
+        //Maximize the chart
+        function maximizeChart(id, event)
+        {
+            var action = {
+              ok:{
+                  name: 'Close',
+                  callBack: ''
+              }
+            };
+            console.log('Dialog')
+            console.log($('#' +id));
+
+            dialog.custom($scope.title, $('#' + id)[0].innerHTML, event, action);
+        }
+
+        //Add new chart.
+        function addChart() {
+            switch (angular.lowercase(type)) {
+                case 'stock':
+                    var ele = $('#ms-chart-container');
+                    var newScope = $scope.$parent.$new();
+                    var html = '<ms-chart-placeholder id="stock-2" title="Chart Name 2  "></ms-chart-placeholder>';
+                    ele.append($compile(html)(newScope));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        ///Remove selected chart.
+        function removeChart(id)
+        {
+            console.log(id);
+            $('#' + id).remove();
+        }
+
+
+        //Need to have watch to sa~ve title auto-save feature.
         //Code should go into ms-chart-business.
     }
 
@@ -23,7 +76,8 @@
         return {
             restrict: 'E',
             scope: {
-                title: '@'
+                title: '@',
+                id: '@'
             },
             controller: 'msChartPlaceHolderController',
             controllerAs: 'vm',
