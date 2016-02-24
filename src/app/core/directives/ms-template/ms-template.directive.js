@@ -40,14 +40,14 @@
                                 };
                                 html += '<ms-header tearsheet="tearsheet"></ms-header>';
                                 html += '</div>';
-                                el.find('#template-content').append($compile(html)(newScope));
+                                //el.find('#template-content').append($compile(html)(newScope));
 
                                 break;
 
                             case 'fieldLabel':
                                 html += '<ms-label value="'+ tearSheetItem.Label +'"></ms-label>';
                                 html += '</div>';
-                                el.find('#template-content').append($compile(html)(scope));
+                                //el.find('#template-content').append($compile(html)(scope));
                                 break;
                         }
                     }
