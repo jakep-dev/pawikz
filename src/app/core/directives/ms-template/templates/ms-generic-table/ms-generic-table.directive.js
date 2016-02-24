@@ -124,6 +124,7 @@
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+										var parseFormat = 'DD-MMM-YY'; //assume that the webservice returns this date format
 
                                         newScope = scope.$new();
                                         newScope.tearsheet = {
@@ -133,7 +134,7 @@
 
                                         html += '<ms-calendar tearsheet="tearsheet"' +
                                             'itemid="'+ itemId +'" ' +
-                                            'mnemonicid="'+ mnemonicId +'"></ms-calendar>';
+                                            'mnemonicid="'+ mnemonicId +'" parse-format="'+parseFormat+'"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
                                         var itemId = tearSheetItem.ItemId;
