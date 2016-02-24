@@ -1,6 +1,6 @@
 <ms-content>
-    <div layout="row" layout-sm="column" layout-align="center center">
-        <div flex>
+    <div layout="row" layout-sm="column" layout-align="start center" layout-margin>
+        <div flex="15">
             <md-menu>
                 <md-button aria-label="Events Menu" class="md-raised" ng-mouseenter="$mdOpenMenu($event)">
                     <md-icon md-menu-origin md-font-icon="icon-library-plus">
@@ -28,7 +28,7 @@
                 </md-menu-content>
             </md-menu>
         </div>
-        <div flex>
+        <div flex="15">
             <md-menu>
                 <md-button aria-label="Comparison Menu" class="md-raised" ng-mouseenter="$mdOpenMenu($event)">
                     <md-icon md-menu-origin md-font-icon="icon-compare">
@@ -87,23 +87,23 @@
                 </md-menu-content>
             </md-menu>
         </div>
-        <div flex>
+        <div flex="5">
             <md-button aria-label="Calendar Menu" class="md-fab md-mini md-raised">
                 <md-icon md-font-icon="icon-calendar">
                 </md-icon>
             </md-button>
         </div>
-        <div flex>
+        <div id="toolbar-date" flex>
             <md-radio-group ng-model="vm.range" layout="row">
-                <md-radio-button value="1W">1W</md-radio-button>
-                <md-radio-button value="1M"> 1M </md-radio-button>
-                <md-radio-button value="3M"> 3M </md-radio-button>
-                <md-radio-button value="18M"> 18M </md-radio-button>
-                <md-radio-button value="1Y"> 1Y </md-radio-button>
-                <md-radio-button value="2Y"> 2Y </md-radio-button>
-                <md-radio-button value="3Y"> 3Y </md-radio-button>
-                <md-radio-button value="5Y"> 5Y </md-radio-button>
-                <md-radio-button value="10Y"> 10Y </md-radio-button>
+                <md-button class="md-icon-button">1W</md-button>
+                <md-button class="md-icon-button"> 1M </md-button>
+                <md-button class="md-icon-button"> 3M </md-button>
+                <md-button class="md-icon-button"> 18M </md-button>
+                <md-button class="md-icon-button"> 1Y </md-button>
+                <md-button class="md-icon-button"> 2Y </md-button>
+                <md-button class="md-icon-button"> 3Y </md-button>
+                <md-button class="md-icon-button"> 5Y </md-button>
+                <md-button class="md-icon-button"> 10Y </md-button>
             </md-radio-group>
         </div>
     </div>

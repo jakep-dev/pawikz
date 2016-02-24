@@ -8,8 +8,10 @@
         .directive('msChart', msChartDirective);
 
     /** @ngInject */
-    function msChartController() {
+    function msChartController($scope) {
         var vm = this;
+
+
 
 
     }
@@ -35,13 +37,13 @@
                         //We have to call the stockservice and get the result.
                         //Whether we should inject stockchart // Imagechart.
 
-
                             newScope = scope.$new();
-                            html += '<ms-chart-placeholder title="Chart Name"></ms-chart-placeholder>';
+                            html += '<ms-chart-placeholder id="stock-1" title="Chart Name"></ms-chart-placeholder>';
                             el.find('#ms-chart-container').append($compile(html)(newScope));
 
                         break;
                     case 'bar':
+
                         break;
 
                     default:break;

@@ -53,7 +53,7 @@
                     <div layout="column" layout-align="start top">
                         <div flex ng-repeat="step in vm.templateOverview.steps"
                               class="md-whiteframe-2dp" style="margin: 5px">
-                            <ms-step-overview step="step" expandable="true"></ms-step-overview>
+                            <ms-step-overview step="step" project-Id="vm.projectId" expandable="true"></ms-step-overview>
                         </div>
                     </div>
                 </md-content>
@@ -63,7 +63,7 @@
                         <md-tab ng-repeat="step in vm.templateOverview.steps">
                             <md-tab-label>{{ step.stepName }}</md-tab-label>
                             <md-content>
-                                <ms-step-overview step="step" expandable="false"></ms-step-overview>
+                                <ms-step-overview step="step" project-Id="vm.projectId" expandable="false" ></ms-step-overview>
                             </md-content>
                         </md-tab>
                     </md-tabs>

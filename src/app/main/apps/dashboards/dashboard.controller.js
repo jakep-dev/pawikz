@@ -19,7 +19,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
     vm.companyId = 0;
     vm.userId = 0;
     $rootScope.passedUserId = $stateParams.userId;
-    breadcrumbBusiness.title = 'My Work-up';
+    breadcrumbBusiness.title = 'My Workups';
     $rootScope.projectOverview = [];
     $rootScope.isBottomSheet = false;
 

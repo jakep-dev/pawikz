@@ -5,8 +5,6 @@
         .module('blocks.dialog')
         .factory('dialog', dialog);
 
-    dialog.$inject = ['$mdDialog', '$mdMedia'];
-
     /* @ngInject */
     function dialog($mdDialog, $mdMedia) {
         var service = {
@@ -54,12 +52,11 @@
         }
 
         //Alert
-        function alert(title, content, event, element, action)
+        function alert(title, content, event, action)
         {
-            var parentElement = angular.element(document.querySelector('#'+element));
             $mdDialog.show(
                 $mdDialog.alert()
-                    .parent(parentElement)
+                   // .parent(parentElement)
                     .clickOutsideToClose(true)
                     .title(title)
                     .content(content)
@@ -70,20 +67,19 @@
 
         function custom(title, content, event, action, customFullscreen)
         {
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && customFullscreen;
+          var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && customFullscreen;
 
-          function customDialogController()
+          function customDialogController($scope, $compile)
           {
               console.log('Inside CustomDialog Controller');
               var vm = this;
               vm.title = title;
               vm.content = content;
               vm.event = event;
-              vm.cancelName = action.cancel.name;
-              vm.okName = action.ok.name;
+              vm.cancelName = action.cancel && action.cancel.name;
+              vm.okName = action.ok && action.ok.name;
               vm.cancelCallBack = cancelCallBack;
               vm.okCallBack = okCallBack;
-
 
               function cancelCallBack()
               {
@@ -104,7 +100,7 @@
                 parent: angular.element(document.body),
                 targetEvent: event,
                 controller: customDialogController,
-                controllerAs: 'ctrl',
+                controllerAs: 'vm',
                 bindToController: true,
                 clickOutsideToClose:false,
                 fullscreen: useFullScreen
