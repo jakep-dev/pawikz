@@ -15,11 +15,6 @@
         $scope.singleSelection = singleSelection;
         $scope.setStepSelection = setStepSelection;
 
-
-        console.log('Inside StepOverview Directive = ' + $scope.isExpanded);
-
-        console.log($scope.step);
-
         //set the step select and unselect feature.
         function setStepSelection()
         {

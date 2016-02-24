@@ -31,6 +31,7 @@
         vm.templateOverview = [];
 		vm.projectId = $stateParams.projectId;
 
+        //Methods
         vm.flipView = flipView;
         vm.expandCollapseToggle = expandCollapseToggle;
         vm.flipStepView = flipStepView;
