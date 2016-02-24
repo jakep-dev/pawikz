@@ -1,6 +1,7 @@
 <div id="step-header" class="step-table-title md-amber-A200-bg" md-swipe-up="expandCollapseToggle()">
-    {{ step.stepName }}
-
+    <a ui-sref="app.steps({projectId:projectId, stepId:step.stepId, stepName:step.stepName})">
+			{{ step.stepName }}
+    </a>
     <md-button class="md-icon-button" aria-label="expand/collapse"
                ng-disabled="!expandable"
                ng-click="expandCollapseToggle()" style="float:right">
