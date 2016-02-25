@@ -4,7 +4,7 @@
 (function () {
     'use strict';
     angular.module('app.core')
-        .directive('msLineBarChart', [function () {
+        .directive('msStockChartFeature', [function () {
             return {
                 restrict: 'EA',
                 scope: {

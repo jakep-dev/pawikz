@@ -16,7 +16,7 @@
 
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
-            controller : ['$mdSidenav','stockService','$rootScope','dialog',  function ($mdSidenav, stockService, $rootScope, dialog) {
+            controller : ['$mdSidenav','stockService','$rootScope','dialog', 'stockChartBusiness',  function ($mdSidenav, stockService, $rootScope, dialog, stockChartBusiness) {
                 var vm = this;
                 vm.selectedPeriod =  '3Y';
                 vm.selectedIndex ="";
@@ -25,6 +25,17 @@
                 vm.selectedStockCount = 1;
                 //variables
                 //hard coded break grounds
+
+                $rootScope.$on('chartDataChanged', function() {
+
+                    var splitsValue = stockChartBusiness.splits == true ? 'Y': 'N';
+                    var earningsValue = stockChartBusiness.earnings == true ? 'Y': 'N';
+                    var dividendsValue = stockChartBusiness.dividends == true ? 'Y': 'N';
+                    var periodValue = stockChartBusiness.interval;
+
+                    vm.fetchChartData("TSLA",periodValue, splitsValue, earningsValue, dividendsValue, null, null);
+                });
+
                 function convServiceResptoChartFormat(data) {
                     var results = data;
                     if (results && results.stockChartPrimaryData)
