@@ -61,10 +61,10 @@
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
                         case 'TableLayOut':
-                            var newScope  = scope.$new();
-                            html += '<ms-message message="Under Construction"></ms-message>';
-                            html += '</div>';
-                            el.find('#ms-accordion-content').append($compile(html)(newScope));
+                            //var newScope  = scope.$new();
+                            //html += '<ms-message message="Under Construction"></ms-message>';
+                            //html += '</div>';
+                            //el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
                         case 'RTFTextAreaItem':
                             var itemId = content.ItemId;

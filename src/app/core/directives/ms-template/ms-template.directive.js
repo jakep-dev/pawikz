@@ -182,7 +182,7 @@
                                     }
                                 }
                                 countTearSheetItem++;
-                            })
+                            });
 
                             var newScope = scope.$new();
                             newScope.tearsheet = tearSheet;

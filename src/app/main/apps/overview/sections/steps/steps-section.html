@@ -48,15 +48,10 @@
                 </div>
                 <md-divider ng-if="!vm.isTabletMode"></md-divider>
 
-
-                <md-content layout-padding ng-if="!vm.isStepTabletMode">
-                    <div layout="column" layout-align="start top">
-                        <div flex ng-repeat="step in vm.templateOverview.steps"
-                              class="md-whiteframe-2dp" style="margin: 5px">
-                            <ms-step-overview step="step" project-Id="vm.projectId" expandable="true"></ms-step-overview>
-                        </div>
-                    </div>
-                </md-content>
+                <div flex ng-repeat="step in vm.templateOverview.steps"
+                      class="md-whiteframe-2dp" style="margin: 5px">
+                    <ms-step-overview step="step" project-Id="vm.projectId" expandable="true"></ms-step-overview>
+                </div>
 
                 <md-content layout-padding ng-if="vm.isStepTabletMode">
                     <md-tabs md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
