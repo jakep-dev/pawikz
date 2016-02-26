@@ -17,7 +17,7 @@
 
         this.emitMsg = function(msg) {
             console.log("Emitting changed event");
-            $rootScope.$emit("chartDataChanged");
+            $rootScope.$emit(msg);
         };
 
         this.onMsg = function(msg, scope, func) {

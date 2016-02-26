@@ -14,21 +14,58 @@
         var splits = false;
         var earnings = false;
         var dividends = false;
-        var interval = '1W';
+        var interval = '3Y';
+        var mainStock = 'TSLA';
+        var selectedIndices = [];
+        var selectedPeers = [];
+        var startDate;
+        var endDate;
 
-        var isChartsEvents = false;
+        Object.defineProperty(this, 'mainStock', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return mainStock;
+            },
+            set: function(mainStock) {
+                mainStock = mainStock;
+                commonBusiness.emitMsg('chartDataChanged');
+            }
+        });
+
+        Object.defineProperty(this, 'selectedIndices', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return selectedIndices;
+            },
+            set: function(value) {
+                selectedIndices = value;
+                commonBusiness.emitMsg('chartDataChanged');
+            }
+        });
+
+        Object.defineProperty(this, 'selectedPeers', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return selectedPeers;
+            },
+            set: function(value) {
+                selectedPeers = value;
+                commonBusiness.emitMsg('chartDataChanged');
+            }
+        });
 
         Object.defineProperty(this, 'splits', {
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('get!');
                 return splits;
             },
             set: function(value) {
-                console.log('set split value!' + value);
                 splits = value;
-                commonBusiness.emitMsg('chartsEvents');
+                commonBusiness.emitMsg('chartDataChanged');
             }
         });
 
@@ -36,13 +73,11 @@
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('get!');
                 return earnings;
             },
             set: function(value) {
-                console.log('set earnings value!' + value);
                 earnings = value;
-                commonBusiness.emitMsg('chartsEvents');
+                commonBusiness.emitMsg('chartDataChanged');
             }
         });
 
@@ -50,13 +85,11 @@
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('get!');
                 return dividends;
             },
             set: function(value) {
-                console.log('set dividends value!' + value);
                 dividends = value;
-                commonBusiness.emitMsg('chartsEvents');
+                commonBusiness.emitMsg('chartDataChanged');
             }
         });
 
@@ -64,19 +97,41 @@
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('get!');
                 return interval;
             },
             set: function(value) {
-                console.log('set interval value!' + value);
                 interval = value;
-                commonBusiness.emitMsg('chartsEvents');
+                commonBusiness.emitMsg('chartDataChanged');
             }
         });
 
-
-
-
+        Object.defineProperty(this, 'startDate', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return startDate;
+            },
+            set: function(value) {
+                startDate = value;
+                if(this.interval ==='CUSTOM'){
+                    //commonBusiness.emitMsg('chartDataChanged');
+                }
+            }
+        });
+        Object.defineProperty(this, 'endDate', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return endDate;
+            },
+            set: function(value) {
+                endDate = value;
+                console.log('set end date ');
+                if(this.interval ==='CUSTOM'){
+                    //commonBusiness.emitMsg('chartDataChanged');
+                }
+            }
+        });
     }
 
 })();

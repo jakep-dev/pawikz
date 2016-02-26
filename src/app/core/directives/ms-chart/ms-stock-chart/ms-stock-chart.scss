@@ -27,6 +27,52 @@ position: relative;
   max-width: 400px !important;
 }
 
+
+.ms-stock-chart .highcharts-legend-box{
+  border: 2px solid #7a7a7a;
+  border-radius: 5px;
+  color: rgb(85, 85, 85);
+  font-family: "Lucida Grande","Lucida Sans Unicode",Arial,Helvetica,sans-serif;
+  font-size: 12px;
+  left: 100px;
+  margin-left: 0;
+  margin-top: 0;
+  padding: 5px;
+  position: absolute;
+  top: 40px;
+  white-space: nowrap;
+  width:150px;
+  box-sizing:border-box;
+  background:#ffffff;
+}
+
+.ms-stock-chart  .highcharts-legend-box *{
+  box-sizing:border-box;
+}
+.ms-stock-chart .highcharts-legend-box  .name,.ms-stock-chart .highcharts-legend-box  .size{
+  width:80%;
+  float:left;
+  padding:5px;
+  white-space: normal;
+}
+.ms-stock-chart .highcharts-legend-box  .delete,.ms-stock-chart .highcharts-legend-box  .view{
+  width:20%;
+  padding:5px;
+  float:left;
+}
+
+.ms-stock-chart .highcharts-legend-box  .view .fa-eye{
+  display: table-cell;
+  vertical-align: bottom;
+}
+
+.ms-stock-chart .highcharts-legend-box  .size .size-val{
+  width:25%;
+  float:left;
+  border:1px solid black;
+  cursor:pointer;
+  text-align:center;
+}
 .ms-stock-chart {
   &.icon-dots-vertical{
     font-size:30px !important;
@@ -228,55 +274,6 @@ position: relative;
   a {position: relative;}
   a:hover chart-legend{display: block; text-align: center;}
 
-
-  &.highcharts-legend-box{
-    border: 2px solid #7a7a7a;
-    border-radius: 5px;
-    color: rgb(85, 85, 85);
-    font-family: "Lucida Grande","Lucida Sans Unicode",Arial,Helvetica,sans-serif;
-    font-size: 12px;
-    left: 100px;
-    margin-left: 0;
-    margin-top: 0;
-    padding: 5px;
-    position: absolute;
-    top: 40px;
-    white-space: nowrap;
-    width:150px;
-    box-sizing:border-box;
-    background:#ffffff;
-  }
-
-  &.highcharts-legend-box *{
-    box-sizing:border-box;
-  }
-  &.pointer{
-    cursor:pointer;
-  }
-  &.highcharts-legend-box  .name,.highcharts-legend-box  .size{
-    width:80%;
-    float:left;
-    padding:5px;
-    white-space: normal;
-  }
-  &.highcharts-legend-box  .delete,.highcharts-legend-box  .view{
-    width:20%;
-    padding:5px;
-    float:left;
-  }
-
-  &.highcharts-legend-box  .view .fa-eye{
-    display: table-cell;
-    vertical-align: bottom;
-  }
-
-  &.highcharts-legend-box  .size .size-val{
-    width:25%;
-    float:left;
-    border:1px solid black;
-    cursor:pointer;
-    text-align:center;
-  }
 
   button.default {
     -webkit-appearance: button;

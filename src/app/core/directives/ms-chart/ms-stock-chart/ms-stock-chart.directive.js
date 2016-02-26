@@ -18,7 +18,6 @@
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
             controller : ['$mdSidenav','stockService','$rootScope','dialog', 'stockChartBusiness',  function ($mdSidenav, stockService, $rootScope, dialog, stockChartBusiness) {
                 var vm = this;
-                vm.selectedPeriod =  '3Y';
                 vm.selectedIndex ="";
                 vm.searchVal = '';
                 vm.searchedStocks = [];
@@ -27,14 +26,43 @@
                 //hard coded break grounds
 
                 $rootScope.$on('chartDataChanged', function() {
+                    loadChartData();
+                });
 
+                function loadChartData() {
                     var splitsValue = stockChartBusiness.splits == true ? 'Y': 'N';
                     var earningsValue = stockChartBusiness.earnings == true ? 'Y': 'N';
                     var dividendsValue = stockChartBusiness.dividends == true ? 'Y': 'N';
                     var periodValue = stockChartBusiness.interval;
+                    var mainStock = stockChartBusiness.mainStock;
+                    var selectedPeerList = stockChartBusiness.selectedPeers;
+                    var selectedIndicesList =  stockChartBusiness.selectedIndices;
+                    var stockString = '';
+                    if (mainStock)  {
+                        stockString = mainStock + ',';
+                    }
 
-                    vm.fetchChartData("TSLA",periodValue, splitsValue, earningsValue, dividendsValue, null, null);
-                });
+                    selectedPeerList.forEach( function(stock) {
+                        stockString =stockString + stock + ',';
+                    });
+
+                    selectedIndicesList.forEach( function(indics) {
+                        stockString = stockString + '^'+indics + ',';
+                    });
+
+
+                    if(stockString !=='') {
+                        stockString = stockString.slice(0, -1);
+                    }
+                    var start_date, end_date;
+                    var from = stockChartBusiness.startDate;
+                    var to = stockChartBusiness.endDate;
+                    if (periodValue ==='CUSTOM') {
+                        start_date = from.getFullYear() + '-' + (from.getMonth()+1) + '-' + from.getDate();
+                        end_date = to.getFullYear() + '-' + (to.getMonth()+1) + '-' + to.getDate();
+                    }
+                    vm.fetchChartData(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date);
+                }
 
                 function convServiceResptoChartFormat(data) {
                     var results = data;
@@ -227,10 +255,6 @@
                     }
                 }
                 vm.fetchChartData = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date) {
-                    //vm.chartFilterState.selectedPeriod = selectedPeriod;
-                    //vm.selectedIndicesList = vm.chartFilterState.selectedIndicesList;
-                    //vm.selectedPeerList = vm.chartFilterState.selectedPeerList;
-                    //vm.searchedStocks = vm.chartFilterState.searchedStocks;
                     stockService
                         .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date)
                         .then(function(data) {
@@ -241,91 +265,19 @@
                         });
                 };
 
-                vm.fetchChartData("TSLA",vm.selectedPeriod, 'N', 'N','N', null, null);
-
-                /*vm.fetchChartDataFromServer = function () {
-                    //find selcected stocks comma seprated
-                    var length = 1 + vm.chartFilterState.selectedIndicesList.length+vm.chartFilterState.selectedPeerList.length;
-                    if(length < 5) {
-                        if (vm.selectedIndex) {
-                            var index = vm.chartFilterState.selectedIndicesList.indexOf(vm.selectedIndex);
-                            if(index === -1 ) {
-                                vm.chartFilterState.selectedIndicesList.push(vm.selectedIndex);
-                            }
-                        }
-                        vm.chartFilterState.searchedStocks.forEach( function(stock) {
-                            if (stock.selected)  {
-                                var index = vm.chartFilterState.selectedPeerList.indexOf(stock.ticker);
-                                if(index === -1 ) {
-                                    vm.chartFilterState.selectedPeerList.push(stock.ticker);
-                                }
-                            }
-
-                        });
-                        vm.chartFilterState.searchedStocks = [];
-                        vm.searchVal = '';
-                        vm.selectedIndex = '';
-                        var stockString = '';
-                        if (vm.chartFilterState.mainStock)  {
-                            stockString = vm.chartFilterState.mainStock + ',';
-                        }
-
-                        vm.chartFilterState.selectedPeerList.forEach( function(stock) {
-                            stockString =stockString + stock + ',';
-                        });
-
-                        vm.chartFilterState.selectedIndicesList.forEach( function(indics) {
-                            stockString = stockString + '^'+indics + ',';
-                        });
-
-
-                        if(stockString !=='') {
-                            stockString = stockString.slice(0, -1);
-                        }
-                        var splits = (vm.chartFilterState.isSplits)?'Y':'N';
-                        var earnings = (vm.chartFilterState.isEarnings)?'Y':'N';
-                        var dividends = (vm.chartFilterState.isDividents)?'Y':'N';
-
-                        var start_date, end_date;
-                        console.log('vm.chartFilterState.to', vm.chartFilterState.to);
-                        if (vm.chartFilterState.selectedPeriod.toUpperCase() ==='CUSTOM') {
-                            start_date = vm.chartFilterState.from.year + '-' + vm.chartFilterState.from.month + '-' + vm.chartFilterState.from.date;
-                            end_date = vm.chartFilterState.to.year + '-' + vm.chartFilterState.to.month + '-' + vm.chartFilterState.to.date;
-                        }
-
-                        stockService
-                            .stockData(stockString, vm.chartFilterState.selectedPeriod, splits, earnings, dividends, start_date, end_date)
-                            .success(function(data) {
-                                vm.stockDataSet=convServiceResptoChartFormat(data);
-                                if(data.stockChartPeerData && data.stockChartPeerData.length){
-                                    vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
-                                }
-
-
-                            });
-                    }
-                    else
-                    {
-                        dialog.alert( 'Error',"Max5 Stock allow to compare!",null,'alertId',{ok:{name:'ok',callBack:function(){
-                            console.log('cliked ok');
-                        }}});
-                        vm.selectedIndex = '';
-                    }
-
-                };
-
-                vm.fetchChartDataFromServer(); */
+                loadChartData();
 
                 vm.onPeerRemove = function (peer) {
-                    var index = vm.chartFilterState.selectedIndicesList.indexOf(peer);
+                    var index = stockChartBusiness.selectedIndices.indexOf(peer);
                     if (index !== -1 ) {
-                        vm.chartFilterState.selectedIndicesList.splice(index,1);
+                        var selectedIndices = stockChartBusiness.selectedIndices;
+                        selectedIndices.splice(index,1);
+                        stockChartBusiness.selectedIndices = selectedIndices;
                     }
-                    var peerIndex = vm.chartFilterState.selectedPeerList.indexOf(peer);
+                    var peerIndex = stockChartBusiness.selectedPeers.indexOf(peer);
                     if (peerIndex !== -1 ) {
-                        vm.chartFilterState.selectedPeerList.splice(peerIndex,1);
+                        stockChartBusiness.selectedPeers.splice(peerIndex,1);
                     }
-                    vm.fetchChartDataFromServer();
                 };
 
             }],
