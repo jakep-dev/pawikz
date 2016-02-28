@@ -8,7 +8,7 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($scope, $element, $compile, dialog)
+    function msChartPlaceHolderController($scope, $element, $compile, dialog, $mdDialog)
     {
         var vm = this;
         var type = $scope.$parent.type;
@@ -30,7 +30,7 @@
         }
 
         //Maximize the chart
-        function maximizeChart(id, event)
+       /* function maximizeChart(id, event)
         {
             var action = {
               ok:{
@@ -41,8 +41,39 @@
             console.log('Dialog')
             console.log($('#' +id));
 
-            dialog.custom($scope.title, $('#' + id)[0].innerHTML, event, action);
-        }
+            dialog.custom($scope.title, $compile('<ms-stock-chart></ms-stock-chart>')($scope), event, action);
+        }*/
+        function maximizeChart() {
+            var elementWrapper = {};
+            elementWrapper.target = document.getElementById('content');
+            var position = $('#content').position();
+            var width = $('#content').width();
+            $mdDialog.show({
+                targetEvent: elementWrapper,
+                locals:{
+                },
+                template:
+                '<md-dialog flex="100" style="position: absolute; top: '+ position.top+'px; left: '+ position.left+'px; min-width:'+width+'px">' +
+                '<md-dialog-actions>' +
+                '    <md-button ng-click="closeDialog()" class="md-primary pull-right" > X' +
+                '    </md-button>' +
+                '  </md-dialog-actions>' +
+                '  <md-dialog-content><ms-stock-chart></ms-stock-chart></md-dialog-content>'+
+                '</md-dialog>',
+                onComplete: afterShowAnimation,
+                animate: 'full-screen-dialog',
+                controller: function DialogController($scope, $mdDialog) {
+                    $scope.closeDialog = function() {
+                        $mdDialog.hide();
+                    };
+                    $scope.hideFilter = true;
+                }
+            });
+            // When the 'enter' animation finishes...
+            function afterShowAnimation(scope, element, options) {
+                // post-show code here: DOM element focus, etc.
+            }
+        };
 
         //Add new chart.
         function addChart() {
