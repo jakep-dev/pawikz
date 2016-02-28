@@ -16,6 +16,7 @@
 
 
         this.emitMsg = function(msg) {
+            console.log("Emitting changed event");
             $rootScope.$emit(msg);
         };
 
