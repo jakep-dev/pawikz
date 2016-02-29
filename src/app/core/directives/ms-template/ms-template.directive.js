@@ -57,6 +57,11 @@
                     }
                     el.find('#template-content').append($compile(html)(newScope));
                     break;
+                case "ScrapedItem":
+                    var newScope  = scope.$new();
+                    html += '<ms-chart type="Stock"></ms-chart>';
+                    el.find('#template-content').append($compile(html)(newScope));
+                    break;
                 case 'GenericTableItem':
                         var newScope  = scope.$new();
                         newScope.tearsheet = {
