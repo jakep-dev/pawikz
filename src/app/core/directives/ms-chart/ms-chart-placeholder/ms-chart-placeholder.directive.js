@@ -130,6 +130,11 @@
                     switch (scope.tearsheet.type)
                     {
                         case 'stock':
+
+                            newScope.chartsetting = scope.tearsheet.chartSetting;
+                            newScope.mnemonicid = scope.tearsheet.mnemonicId;
+                            newScope.itemid = scope.tearsheet.itemId;
+
                             html = '<ms-stock-chart></ms-stock-chart>';
                             break;
 

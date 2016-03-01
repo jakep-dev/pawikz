@@ -38,13 +38,16 @@
                     switch (angular.lowercase(scope.type))
                     {
                         case 'stock':
-                            stockService.getSavedChartData(commonBusiness.projectId,
+                            stockService.getSavedChartData(
+                                commonBusiness.projectId,
                                 commonBusiness.stepId,
-                                scope.mnemonicid, scope.itemid)
+                                scope.mnemonicid,
+                                scope.itemid)
                                 .then(function(data)
                                 {
                                     var idCount = 1;
 
+                                    //Creating Legacy Charts
                                     if(data.legacyCharts)
                                     {
                                         angular.forEach(data.legacyCharts, function(chart)
@@ -55,7 +58,7 @@
                                             newScope.tearsheet = {
                                                 type: 'image',
                                                 url: chart.url,
-                                                isChartTitle: false
+                                                isChartTitle: true
                                             };
 
                                             html += '<ms-chart-placeholder id="'+msChartPlaceHolderId+'" title="" tearsheet="tearsheet"></ms-chart-placeholder>';
@@ -63,15 +66,20 @@
                                         });
                                     }
 
+                                    //Creating new charts
                                     if(data.newCharts)
                                     {
                                         angular.forEach(data.newCharts, function(chart)
                                         {
                                             var msChartPlaceHolderId = 'chart-'.concat(++idCount);
                                             newScope = scope.$new();
+
                                             newScope.tearsheet = {
                                                 type: 'stock',
-                                                isChartTitle: true
+                                                isChartTitle: true,
+                                                chartSetting: '',
+                                                mnemonicId: scope.mnemonicid,
+                                                itemId: scope.itemId
                                             };
 
                                             html += '<ms-chart-placeholder id="'+ msChartPlaceHolderId +' title="'+ chart.chartTitle +'" tearsheet="tearsheet"></ms-chart-placeholder>';

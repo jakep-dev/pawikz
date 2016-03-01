@@ -8,7 +8,7 @@
         .directive('msStockChart', msStockChartDirective);
 
 
-    function msStockChartController(stockService, $rootScope, stockChartBusiness)
+    function msStockChartController($rootScope, $scope, stockService,stockChartBusiness, commonBusiness)
     {
         var vm = this;
         vm.selectedIndex ="";
@@ -281,7 +281,9 @@
             restrict: 'E',
             require: 'msStockChartToolBar',
             scope   : {
-
+                chartsetting: '=',
+                mnemonicid: '@',
+                itemid: '@'
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
             controller : 'msStockChartController',
