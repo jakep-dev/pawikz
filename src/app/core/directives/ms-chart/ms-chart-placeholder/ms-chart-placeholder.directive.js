@@ -14,6 +14,7 @@
         var type = $scope.$parent.type;
         vm.title = $scope.title;
         vm.id = $scope.id;
+        vm.isChartTitle = $scope.tearsheet.isChartTitle;
 
         console.log('Placeholder Scope');
         console.log($scope);
@@ -30,7 +31,7 @@
         }
 
         //Maximize the chart
-       /* function maximizeChart(id, event)
+        function maximizeChart(id, event)
         {
             var action = {
               ok:{
@@ -41,8 +42,10 @@
             console.log('Dialog')
             console.log($('#' +id));
 
-            dialog.custom($scope.title, $compile('<ms-stock-chart></ms-stock-chart>')($scope), event, action);
-        }*/
+            dialog.custom($scope.title, 'Inject Dynamic Chart', event, action);
+        }
+
+        /*
         function maximizeChart() {
             var elementWrapper = {};
             elementWrapper.target = document.getElementById('content');
@@ -53,27 +56,28 @@
                 locals:{
                 },
                 template:
-                '<md-dialog flex="100" style="position: absolute; top: '+ position.top+'px; left: '+ position.left+'px; min-width:'+width+'px">' +
-                '<md-dialog-actions>' +
-                '    <md-button ng-click="closeDialog()" class="md-primary pull-right" > X' +
-                '    </md-button>' +
-                '  </md-dialog-actions>' +
-                '  <md-dialog-content><ms-stock-chart></ms-stock-chart></md-dialog-content>'+
+                '<md-dialog flex style="width: 100%; height: 100%">' +
+                '<md-toolbar>'+
+                '<div class="md-toolbar-tools">'+
+                '<h2>Chart Details</h2>'+
+                '<span flex></span>'+
+                '<md-button class="md-icon-button" ng-click="cancel()">'+
+                '<md-icon md-font-icon="icon-close">'+
+                '</md-button>'+
+                '</div>'+
+                '</md-toolbar>'+
+                '<md-dialog-content><ms-stock-chart></ms-stock-chart></md-dialog-content>'+
                 '</md-dialog>',
-                onComplete: afterShowAnimation,
-                animate: 'full-screen-dialog',
                 controller: function DialogController($scope, $mdDialog) {
-                    $scope.closeDialog = function() {
+                    $scope.cancel = function() {
                         $mdDialog.hide();
                     };
                     $scope.hideFilter = true;
+
                 }
             });
-            // When the 'enter' animation finishes...
-            function afterShowAnimation(scope, element, options) {
-                // post-show code here: DOM element focus, etc.
-            }
         };
+        */
 
         //Add new chart.
         function addChart() {
@@ -102,17 +106,50 @@
     }
 
     /** @ngInject */
-    function msChartPlaceholderDirective()
+    function msChartPlaceholderDirective($compile)
     {
         return {
             restrict: 'E',
             scope: {
                 title: '@',
-                id: '@'
+                id: '@',
+                tearsheet: '='
             },
             controller: 'msChartPlaceHolderController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-chart/ms-chart-placeholder/ms-chart-placeholder.html'
+            templateUrl: 'app/core/directives/ms-chart/ms-chart-placeholder/ms-chart-placeholder.html',
+            link:function(scope, el)
+            {
+                console.log('Inside Chart Place Holder');
+                console.log(scope);
+                if(scope.tearsheet)
+                {
+                    var html = '';
+                    var newScope = scope.$new();
+
+                    switch (scope.tearsheet.type)
+                    {
+                        case 'stock':
+
+                            newScope.chartsetting = scope.tearsheet.chartSetting;
+                            newScope.mnemonicid = scope.tearsheet.mnemonicId;
+                            newScope.itemid = scope.tearsheet.itemId;
+
+                            html = '<ms-stock-chart></ms-stock-chart>';
+                            break;
+
+                        case 'image':
+                            html = '<ms-image-chart url="'+ scope.tearsheet.url +'"></ms-image-chart>';
+                            break;
+
+                        case 'bar':
+                            break;
+                    }
+
+                    el.find('#ms-chart-placeholder-content').append($compile(html)(newScope));
+                }
+
+            }
         };
     }
 

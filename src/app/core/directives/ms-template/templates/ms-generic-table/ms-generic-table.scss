@@ -11,7 +11,7 @@ $generic-table-input-height: 25px;
 
   md-input-container
   {
-    height: $generic-table-input-height;
+    //height: $generic-table-input-height;
   }
 
   //md-input-container:hover{
@@ -22,7 +22,6 @@ $generic-table-input-height: 25px;
   {
     padding-left: $generic-table-padding-left;
     font-weight: bold;
-    height: 30px;
   }
 
   .row:nth-child(odd) {

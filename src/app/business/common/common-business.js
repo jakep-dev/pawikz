@@ -13,6 +13,7 @@
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
+        this.companyId = null;
 
 
         this.emitMsg = function(msg) {

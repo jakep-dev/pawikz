@@ -21,8 +21,6 @@
                 var newScope = null;
                 var html = '';
 
-                el.append('</br>');
-
                 //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)
                 {

@@ -3,7 +3,7 @@
     <div id="template-header" ng-if="!!templateName"  flex>
         <h2>{{templateName}}</h2>
     </div>
-    <ms-widget  layout="column" flex style="padding-top: -50px">
+    <ms-widget flex>
         <!-- Front -->
         <ms-widget-front class="white-bg">
             <div class="simple-table-container">
@@ -12,43 +12,12 @@
                     <div class="table-title">
                        <i class="icon-menu s18"></i>
                         {{stepName}}
-
-                        <md-menu id="template-Menu" style="float:right" md-position-mode="target-right target">
-                            <md-button class="md-icon-button" ng-mouseover="$mdOpenMenu()"
-                                       aria-label="more">
-                                <md-icon md-font-icon="icon-dots-vertical" ></md-icon>
-                            </md-button>
-
-                            <md-menu-content flex layout-padding center>
-                                <md-menu-item>
-                                    <md-button  aria-label="Reload widget">
-                                                      <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-reload"></md-icon>
-                                                        <span hide-sm>Reload</span>
-                                                      </span>
-                                    </md-button>
-                                </md-menu-item>
-
-                                <md-menu-item>
-                                    <md-button  aria-label="Reload widget">
-                                                      <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-link"></md-icon>
-                                                        <span hide-sm>Links</span>
-                                                      </span>
-                                    </md-button>
-                                </md-menu-item>
-                            </md-menu-content>
-                        </md-menu>
                     </div>
                     <md-divider></md-divider>
+                    <div id="template-content" layout-padding>
 
+                    </div>
 
-                    <md-content id="template-content" layout-padding>
-                        <!--<div id="" layout="column" layout-align="start top">-->
-                            <!--&lt;!&ndash;<div id flex class="md-whiteframe-2dp">&ndash;&gt;-->
-                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                        <!--</div>-->
-                    </md-content>
                 </div>
             </div>
         </ms-widget-front>
