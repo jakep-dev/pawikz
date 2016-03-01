@@ -59,10 +59,12 @@
                 if(angular.isDefined(data.templateOverview))
                 {
                     vm.templateOverview = data.templateOverview;
+                    console.log('TemplateOverview Data-');
                     console.log(vm.templateOverview);
 
-                    navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+                    commonBusiness.companyId = vm.templateOverview.companyId;
 
+                    navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({

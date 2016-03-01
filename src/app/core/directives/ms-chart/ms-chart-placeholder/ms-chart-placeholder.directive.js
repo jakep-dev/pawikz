@@ -14,6 +14,7 @@
         var type = $scope.$parent.type;
         vm.title = $scope.title;
         vm.id = $scope.id;
+        vm.isChartTitle = $scope.tearsheet.isChartTitle;
 
         console.log('Placeholder Scope');
         console.log($scope);
@@ -30,7 +31,7 @@
         }
 
         //Maximize the chart
-       /* function maximizeChart(id, event)
+        function maximizeChart(id, event)
         {
             var action = {
               ok:{
@@ -41,8 +42,10 @@
             console.log('Dialog')
             console.log($('#' +id));
 
-            dialog.custom($scope.title, $compile('<ms-stock-chart></ms-stock-chart>')($scope), event, action);
-        }*/
+            dialog.custom($scope.title, 'Inject Dynamic Chart', event, action);
+        }
+
+        /*
         function maximizeChart() {
             var elementWrapper = {};
             elementWrapper.target = document.getElementById('content');
@@ -74,6 +77,7 @@
                 }
             });
         };
+        */
 
         //Add new chart.
         function addChart() {
@@ -102,17 +106,45 @@
     }
 
     /** @ngInject */
-    function msChartPlaceholderDirective()
+    function msChartPlaceholderDirective($compile)
     {
         return {
             restrict: 'E',
             scope: {
                 title: '@',
-                id: '@'
+                id: '@',
+                tearsheet: '='
             },
             controller: 'msChartPlaceHolderController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-chart/ms-chart-placeholder/ms-chart-placeholder.html'
+            templateUrl: 'app/core/directives/ms-chart/ms-chart-placeholder/ms-chart-placeholder.html',
+            link:function(scope, el)
+            {
+                console.log('Inside Chart Place Holder');
+                console.log(scope);
+                if(scope.tearsheet)
+                {
+                    var html = '';
+                    var newScope = scope.$new();
+
+                    switch (scope.tearsheet.type)
+                    {
+                        case 'stock':
+                            html = '<ms-stock-chart></ms-stock-chart>';
+                            break;
+
+                        case 'image':
+                            html = '<ms-image-chart url="'+ scope.tearsheet.url +'"></ms-image-chart>';
+                            break;
+
+                        case 'bar':
+                            break;
+                    }
+
+                    el.find('#ms-chart-placeholder-content').append($compile(html)(newScope));
+                }
+
+            }
         };
     }
 

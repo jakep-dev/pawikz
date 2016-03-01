@@ -45,11 +45,7 @@
                 isdisabled: '=?'
             },
             controller: 'MsRichTextEditorController',
-            templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/ms-rich-text-editor.html',
-            link:function(scope, el, atts)
-            {
-
-            }
+            templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/ms-rich-text-editor.html'
         };
     }
 

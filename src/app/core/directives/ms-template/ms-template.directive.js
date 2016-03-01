@@ -59,7 +59,10 @@
                     break;
                 case "ScrapedItem":
                     var newScope  = scope.$new();
-                    html += '<ms-chart type="Stock"></ms-chart>';
+                    var mnemonicid = tearSheetItem.Mnemonic;
+                    var itemid = tearSheetItem.ItemId;
+
+                    html += '<ms-chart type="Stock" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
                     el.find('#template-content').append($compile(html)(newScope));
                     break;
                 case 'GenericTableItem':
