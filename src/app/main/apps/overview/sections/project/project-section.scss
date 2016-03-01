@@ -10,6 +10,7 @@ $expandHeight: 64px;
   md-icon {
     transition: transform 0.3s ease-in-out 0.1s;
     transform: rotate(0deg);
+	color: #ffffff;
   }
 }
 
@@ -35,4 +36,9 @@ $expandHeight: 64px;
 
 #overviewGrid table tr td:nth-child(2) span {
   float:right;
+}
+  
+// add class
+.section-bg {
+  background-color: #A5C4D6 !important; 
 }

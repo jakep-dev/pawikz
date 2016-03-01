@@ -104,7 +104,7 @@
           }
         },
         accent    : {
-          name: 'light-blue',
+          name: 'orange',
           hues: {
             'default': '500',
             'hue-1'  : '400',
