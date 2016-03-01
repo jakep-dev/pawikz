@@ -29,24 +29,24 @@
 
         function response(response)
         {
-            cancelPromise();
+           // cancelPromise();
             $rootScope.isOperation = false;
             return response || $q.when(response);
         }
 
         function request(request)
         {
-            if(request.url.indexOf('.json') === -1 && request.url.indexOf('.html') === -1 &&
-                request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1 &&
-                request.url.indexOf('getIndices') === -1)
-            {
-                promise = $interval(function()
-                {
-                    var toast =  $injector.get("toast");
-                    toast.simpleToast('Hang on. Still processing!', 4000);
-                    cancelPromise();
-                }, 8000);
-            }
+            //if(request.url.indexOf('.json') === -1 && request.url.indexOf('.html') === -1 &&
+            //    request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1 &&
+            //    request.url.indexOf('getIndices') === -1)
+            //{
+            //    promise = $interval(function()
+            //    {
+            //        var toast =  $injector.get("toast");
+            //        toast.simpleToast('Hang on. Still processing!', 4000);
+            //        cancelPromise();
+            //    }, 8000);
+            //}
 
             $rootScope.isOperation = true;
             request.headers['x-session-token'] = store.get('x-session-token');
