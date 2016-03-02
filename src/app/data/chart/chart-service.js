@@ -15,13 +15,42 @@
             stockData: stockData,
             getSavedChartData: getSavedChartData,
             findTickers: findTickers,
-            getIndices: getIndices
+            getIndices: getIndices,
+            saveChartSettings : saveChartSettings
         };
 
         return service;
 
+        function saveChartSettings(tickers, timeFrame,splits, dividends, earnings, start_date, end_date, companyId, chartTitle, mnemonic, itemId, stepId, projectId) {
+            console.log('itemId--------------------------------',itemId  );
+            return $http({
+                method: "POST",
+                url:"/api/saveChartSettings",
+                data: {
+                    tickers : tickers,
+                    period:timeFrame,
+                    splits:splits,
+                    dividends:dividends,
+                    earnings: earnings,
+                    start_date: start_date,
+                    end_date : end_date,
+                    companyId : companyId,
+                    chartTitle : chartTitle,
+                    mnemonic : mnemonic,
+                    itemId : itemId,
+                    stepId : stepId,
+                    projectId : projectId
+                }
+            }).then(function(data, status, headers, config)
+            {
+                return data.data;
+            })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
 
-        function stockData(tickers, timeFrame,splits, dividends, earnings, start_date, end_date) {
+        function stockData(tickers, timeFrame,splits, dividends, earnings, start_date, end_date, companyId) {
             return $http({
                 method: "POST",
                 url:"/api/getChartData",
@@ -32,7 +61,8 @@
                     dividends:dividends,
                     earnings: earnings,
                     start_date: start_date,
-                    end_date : end_date
+                    end_date : end_date,
+                    companyId : companyId
                 }
             }).then(function(data, status, headers, config)
                 {

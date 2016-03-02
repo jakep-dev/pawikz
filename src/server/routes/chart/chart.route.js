@@ -8,11 +8,13 @@
         var client = config.restcall.client;
         var config = config;
 
+        console.log('bootstrapping chart settings apis ');
         config.parallel([
             app.post('/api/getChartData', getChartData),
             app.post('/api/findTickers', findTickers),
             app.post('/api/getIndices', findIndices),
-            app.post('/api/getSavedChartData', getSavedChartData)
+            app.post('/api/getSavedChartData', getSavedChartData),
+            app.post('/api/saveChartSettings', saveChartSettings)
         ]);
 
         function getChartData(req, res, next) {
@@ -30,22 +32,15 @@
             var  tickers= req.body.tickers,
                 period= req.body.period,
                 ssnid= req.headers['x-session-token'],
+                companyId = req.body.companyId,
                 splits= req.body.splits,
                 dividends= req.body.dividends,
                 earnings= req.body.earnings,
                 end_date = req.body.end_date,
                 start_date = req.body.start_date;
-             console.log('------------',config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id=3009774&peers='+encodeURIComponent(tickers)
-                + '&period=' +period
-                + '&ssnid=' +ssnid
-                +'&splits='+splits
-                +'&dividends='+dividends
-                +'&earnings='+earnings
-                +'&date_start='+start_date
-                +'&date_end='+end_date);
+
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id=3009774&peers='+encodeURIComponent(tickers)
+                +'?company_id='+companyId+'&peers='+encodeURIComponent(tickers)
                 + '&period=' +period
                 + '&ssnid=' +ssnid
                 +'&splits='+splits
@@ -57,6 +52,58 @@
                     res.send(data);
                 });
         }
+
+        function saveChartSettings(req, res, next) {
+            var service = getServiceDetails('charts');
+            console.log('saveChartSettings Parameters ----------------------------------');
+            console.log(req.body);
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                console.log(service.name);
+                methodName = service.methods.saveChartSettings;
+            }
+
+            var  tickers= req.body.tickers,
+                period= req.body.period,
+                ssnid= req.headers['x-session-token'],
+                companyId = req.body.companyId,
+                splits= req.body.splits,
+                dividends= req.body.dividends,
+                earnings= req.body.earnings,
+                end_date = req.body.end_date,
+                start_date = req.body.start_date,
+                chart_title = req.body.chartTitle,
+                mnemonic = req.body.mnemonic,
+                item_id = req.body.itemId,
+                stepId = req.body.stepId,
+                projectId = req.body.projectId;
+
+            var args = {
+                project_id: parseInt(projectId),
+                company_id: parseInt(companyId),
+                step_id: parseInt(stepId),
+                ssnid:ssnid,
+                data : [{
+                    chart_title: chart_title,
+                    peers: tickers,
+                    period:period,
+                    date_start:start_date,
+                    date_end:end_date,
+                    dividends: dividends,
+                    earnings: earnings,
+                    splits:splits,
+                    mnemonic:mnemonic,
+                    item_id:item_id
+                }]
+            };
+            console.log('args----------------------------->',args);
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+                    res.send(data);
+            });
+        }
+
 
         function findTickers(req, res, next) {
             var service = getServiceDetails('templateSearch');

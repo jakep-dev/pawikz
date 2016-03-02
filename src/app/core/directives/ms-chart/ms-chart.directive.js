@@ -47,7 +47,34 @@
                                 {
                                     var idCount = 1;
 
+                                    //Creating new charts
+                                    if(data.newCharts)
+                                    {
+                                        //mock chart
+                                        data.newCharts.push({
+                                            chartTitle :'Mock chart'
+                                        });
+                                        angular.forEach(data.newCharts, function(chart)
+                                        {
+                                            var msChartPlaceHolderId = 'chart-'.concat(++idCount);
+                                            newScope = scope.$new();
+
+                                            newScope.tearsheet = {
+                                                type: 'stock',
+                                                isChartTitle: true,
+                                                chartSetting: {
+                                                    chartTitle : chart.chartTitle
+                                                },
+                                                mnemonicId: scope.mnemonicid,
+                                                itemId: scope.itemid
+                                            };
+
+                                            html += '<ms-chart-placeholder id="'+ msChartPlaceHolderId +' title="'+ chart.chartTitle +'" tearsheet="tearsheet"></ms-chart-placeholder>';
+                                            el.find('#ms-chart-container').append($compile(html)(newScope));
+                                        });
+                                    }
                                     //Creating Legacy Charts
+                                    console.log('data-------------------------->>',data);
                                     if(data.legacyCharts)
                                     {
                                         angular.forEach(data.legacyCharts, function(chart)
@@ -66,26 +93,6 @@
                                         });
                                     }
 
-                                    //Creating new charts
-                                    if(data.newCharts)
-                                    {
-                                        angular.forEach(data.newCharts, function(chart)
-                                        {
-                                            var msChartPlaceHolderId = 'chart-'.concat(++idCount);
-                                            newScope = scope.$new();
-
-                                            newScope.tearsheet = {
-                                                type: 'stock',
-                                                isChartTitle: true,
-                                                chartSetting: '',
-                                                mnemonicId: scope.mnemonicid,
-                                                itemId: scope.itemId
-                                            };
-
-                                            html += '<ms-chart-placeholder id="'+ msChartPlaceHolderId +' title="'+ chart.chartTitle +'" tearsheet="tearsheet"></ms-chart-placeholder>';
-                                            el.find('#ms-chart-container').append($compile(html)(newScope));
-                                        });
-                                    }
                                 });
                             break;
                         case 'bar':

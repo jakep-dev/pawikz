@@ -45,7 +45,8 @@ exports.restcall =
             methods:{
                 getStockData:'getStockData',
                 getIndices:'getIndices',
-                getSavedChartData : 'getSavedChartData'
+                getSavedChartData : 'getSavedChartData',
+                saveChartSettings : 'saveChartSettings'
             }
         }]
 }
