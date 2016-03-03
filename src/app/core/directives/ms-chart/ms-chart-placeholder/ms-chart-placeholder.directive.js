@@ -8,11 +8,11 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($scope, $element, $compile, dialog, $mdDialog)
+    function msChartPlaceHolderController($scope, $element, $compile, dialog, $mdDialog, stockChartBusiness, stockService, commonBusiness)
     {
         var vm = this;
         var type = $scope.$parent.type;
-        vm.title = $scope.title;
+        vm.title = $scope.tearsheet.chartSetting ? $scope.tearsheet.chartSetting.chartTitle: '';
         vm.id = $scope.id;
         vm.isChartTitle = $scope.tearsheet.isChartTitle;
 
@@ -23,12 +23,66 @@
         vm.removeChart = removeChart;
         vm.maximizeChart = maximizeChart;
         vm.ResetChart = resetChart;
+        vm.saveChart = saveChart;
 
         //Reset the chart functionality.
         function resetChart()
         {
 
         }
+        //save chart function
+        function saveChart(){
+            console.log('save chart');
+            var splitsValue = stockChartBusiness.splits == true ? 'Y': 'N';
+            var earningsValue = stockChartBusiness.earnings == true ? 'Y': 'N';
+            var dividendsValue = stockChartBusiness.dividends == true ? 'Y': 'N';
+            var periodValue = stockChartBusiness.interval;
+            var mainStock = stockChartBusiness.mainStock;
+            var selectedPeerList = stockChartBusiness.selectedPeers;
+            var selectedIndicesList =  stockChartBusiness.selectedIndices;
+            var stockString = '';
+            if (mainStock)  {
+                stockString = mainStock + ',';
+            }
+
+            selectedPeerList.forEach( function(stock) {
+                stockString =stockString + stock + ',';
+            });
+
+            selectedIndicesList.forEach( function(indics) {
+                stockString = stockString + '^'+indics + ',';
+            });
+
+
+            if(stockString !=='') {
+                stockString = stockString.slice(0, -1);
+            }
+            var start_date, end_date;
+            var from = stockChartBusiness.startDate;
+            var to = stockChartBusiness.endDate;
+            if (periodValue ==='CUSTOM') {
+                start_date = from.getFullYear() + '-' + (from.getMonth()+1) + '-' + from.getDate();
+                end_date = to.getFullYear() + '-' + (to.getMonth()+1) + '-' + to.getDate();
+            }
+            var chartTitle = $scope.tearsheet.chartSetting.chartTitle;
+            var mnemonic = $scope.tearsheet.mnemonicId;
+            var itemId = $scope.tearsheet.itemId;
+            var companyId = commonBusiness.companyId;
+            var projectId = commonBusiness.projectId;
+            var stepId = commonBusiness.stepId;
+            console.log('itemId--------------------------------',$scope.tearsheet,itemId);
+            vm.saveChartSettings(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId);
+
+        }
+
+        vm.saveChartSettings = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId) {
+            stockService
+                .saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId)
+                .then(function(data) {
+                    //chart saved;
+                    console.log('chart saved ');
+                });
+        };
 
         //Maximize the chart
         function maximizeChart(id, event)
@@ -44,40 +98,6 @@
 
             dialog.custom($scope.title, 'Inject Dynamic Chart', event, action);
         }
-
-        /*
-        function maximizeChart() {
-            var elementWrapper = {};
-            elementWrapper.target = document.getElementById('content');
-            var position = $('#content').position();
-            var width = $('#content').width();
-            $mdDialog.show({
-                targetEvent: elementWrapper,
-                locals:{
-                },
-                template:
-                '<md-dialog flex style="width: 100%; height: 100%">' +
-                '<md-toolbar>'+
-                '<div class="md-toolbar-tools">'+
-                '<h2>Chart Details</h2>'+
-                '<span flex></span>'+
-                '<md-button class="md-icon-button" ng-click="cancel()">'+
-                '<md-icon md-font-icon="icon-close">'+
-                '</md-button>'+
-                '</div>'+
-                '</md-toolbar>'+
-                '<md-dialog-content><ms-stock-chart></ms-stock-chart></md-dialog-content>'+
-                '</md-dialog>',
-                controller: function DialogController($scope, $mdDialog) {
-                    $scope.cancel = function() {
-                        $mdDialog.hide();
-                    };
-                    $scope.hideFilter = true;
-
-                }
-            });
-        };
-        */
 
         //Add new chart.
         function addChart() {
@@ -120,8 +140,7 @@
             templateUrl: 'app/core/directives/ms-chart/ms-chart-placeholder/ms-chart-placeholder.html',
             link:function(scope, el)
             {
-                console.log('Inside Chart Place Holder');
-                console.log(scope);
+                console.log('Inside Chart Place Holder-----------',scope.tearsheet);
                 if(scope.tearsheet)
                 {
                     var html = '';

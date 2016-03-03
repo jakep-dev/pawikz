@@ -15,6 +15,7 @@
         vm.searchVal = '';
         vm.searchedStocks = [];
         vm.selectedStockCount = 1;
+        vm.companyId = commonBusiness.companyId;
         //variables
         //hard coded break grounds
 
@@ -54,7 +55,7 @@
                 start_date = from.getFullYear() + '-' + (from.getMonth()+1) + '-' + from.getDate();
                 end_date = to.getFullYear() + '-' + (to.getMonth()+1) + '-' + to.getDate();
             }
-            vm.fetchChartData(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date);
+            vm.fetchChartData(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, vm.companyId);
         }
 
         function convServiceResptoChartFormat(data) {
@@ -247,9 +248,9 @@
                 //return outArr;
             }
         }
-        vm.fetchChartData = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date) {
+        vm.fetchChartData = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
             stockService
-                .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date)
+                .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId)
                 .then(function(data) {
                     vm.stockDataSet=convServiceResptoChartFormat(data);
                     if(data.stockChartPeerData && data.stockChartPeerData.length){
