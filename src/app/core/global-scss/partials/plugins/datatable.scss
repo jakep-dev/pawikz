@@ -11,8 +11,8 @@ table.dataTable {
         }
 
         th {
-            text-align: left;
             vertical-align: middle;
+            text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
             padding: 16px 8px;
 
@@ -1188,19 +1188,3 @@ table.dataTable thead .sorting
 
     }
 }
-
-
-//
-//table.dataTable thead .sorting::before {
-//    opacity: 0.2;
-//    content: "\f0dc";
-//    /* sort */
-//}
-//table.dataTable thead .sorting_asc::before {
-//    content: "\f0de";
-//    /* sort-by-attributes */
-//}
-//table.dataTable thead .sorting_desc::before {
-//    content: "\f0dd";
-//    /* sort-by-attributes-alt */
-//}

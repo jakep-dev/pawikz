@@ -13,14 +13,20 @@ animation:*/
 
 .collapse
 {
-	-webkit-transform: rotate(90deg);  
+	-webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transition: transform 0.2s ease-in-out 0.1s;
     transform: rotate(90deg); 
 }
 
 .expand
 {
-	-webkit-transform: rotate(270deg);  
-	transform: rotate(270deg); 
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transition: transform 0.2s ease-in-out 0.1s;
+	transform: rotate(270deg);
 }
 
 #step-header
@@ -28,26 +34,7 @@ animation:*/
 	background-color : #464646 !important;
 }
 
-
-
-.expandCollapse-leave, .expandCollapse-enter {
-  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-}
-
-.expandCollapse-enter {
-  opacity:0;
-}
-.expandCollapse-enter.expandCollapse-enter-active {
-  opacity:1;
-}
-
-.expandCollapse-leave {
-  opacity:1;
-}
-.expandCollapse-leave.expandCollapse-leave-active {
-  opacity:0;
+#step-content
+{
+  border-bottom: 1px solid #e7e7e7;
 }

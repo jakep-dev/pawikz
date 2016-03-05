@@ -13,7 +13,7 @@
     {
         $scope.myHtml = "";
         $scope.froalaOptions = {
-            toolbarButtons : ["fullscreen","bold","italic","underline","strikeThrough","subscript","superscript","fontFamily","fontSize","color","emoticons","inlineStyle","paragraphStyle","paragraphFormat","align","formatOL","formatUL","outdent","indent","quote","insertHR","insertLink","insertImage","insertVideo","insertFile","insertTable","undo","redo","clearFormatting","selectAll","html"],
+            toolbarButtons : ["fullscreen","bold","italic","underline"],
             toolbarInline: false,
             placeholderText: $scope.prompt || 'Enter text here',
             key: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='

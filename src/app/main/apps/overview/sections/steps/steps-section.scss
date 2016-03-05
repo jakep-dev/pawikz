@@ -1,6 +1,8 @@
-#steps-Menu
+#step-overview
 {
-  float:right;
+  md-icon {
+    color: rgba(255, 255, 255, 0.70);
+  }
 }
 
 .step-table-title
@@ -11,16 +13,8 @@
 
 
 
-//md-grid-list {
-//  height: 100px;
-//}
-
 md-grid-tile
 {
   //height: 100%;
 }
-
-/*
-animation:*/
-
 

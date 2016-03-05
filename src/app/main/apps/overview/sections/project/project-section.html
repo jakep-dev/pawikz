@@ -1,72 +1,64 @@
-<ms-widget  layout="column" flex>
+<div>
+    <md-content layout-padding>
+        </br>
+        <md-input-container md-no-float class="md-accent">
+            <input id="workUpName" placeholder="Work Up Name" ng-model="vm.templateOverview.projectName" class="font-size-24"/>
+        </md-input-container>
+    </md-content>
 
-    <!-- Front -->
-    <ms-widget-front class="white-bg">
+    <md-content layout-padding class="section-bg">
 
-        <md-content layout-padding>
-            </br>
-            <md-input-container md-no-float class="md-accent">
-                <input id="workUpName" placeholder="Work Up Name" ng-model="vm.templateOverview.projectName" class="font-size-24"/>
-            </md-input-container>
-        </md-content>
-
-        <md-content layout-padding class="section-bg">
-
-            <div id="overviewGrid" layout="row" layout-sm="column">
-                <div  flex>
-                    <table class="simple" width="100%">
-                        <tbody>
-                        <tr>
-                            <td>Currency</td>
-                            <td>
-                                <span>{{vm.templateOverview.defaultCurrency}}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Entity Type</td>
-                            <td>
-                                <span>{{ vm.templateOverview.organizationType }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Created</td>
-                            <td>
-                                <span>{{ vm.templateOverview.createdDate }}&nbsp;&nbsp;{{ vm.templateOverview.createdBy }}</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <md-divider></md-divider>
-                <div  flex>
-                    <table class="simple" width="100%">
-                        <tbody>
-                        <tr>
-                            <td>Company</td>
-                            <td>
-                                <span>{{ vm.templateOverview.companyName }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> GICS Industry </td>
-                            <td>
-                                <span>{{ vm.templateOverview.industry }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Modified</td>
-                            <td>
-                                <span>{{ vm.templateOverview.lastModifiedDate }}&nbsp;&nbsp;{{ vm.templateOverview.lastModifiedBy }}</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div id="overviewGrid" layout="row" layout-sm="column">
+            <div  flex>
+                <table class="simple" width="100%">
+                    <tbody>
+                    <tr>
+                        <td>Currency</td>
+                        <td>
+                            <span>{{vm.templateOverview.defaultCurrency}}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Entity Type</td>
+                        <td>
+                            <span>{{ vm.templateOverview.organizationType }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Created</td>
+                        <td>
+                            <span>{{ vm.templateOverview.createdDate }}&nbsp;&nbsp;{{ vm.templateOverview.createdBy }}</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
+            <md-divider></md-divider>
+            <div  flex>
+                <table class="simple" width="100%">
+                    <tbody>
+                    <tr>
+                        <td>Company</td>
+                        <td>
+                            <span>{{ vm.templateOverview.companyName }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> GICS Industry </td>
+                        <td>
+                            <span>{{ vm.templateOverview.industry }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Modified</td>
+                        <td>
+                            <span>{{ vm.templateOverview.lastModifiedDate }}&nbsp;&nbsp;{{ vm.templateOverview.lastModifiedBy }}</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        </md-content>
-
-    </ms-widget-front>
-    <!-- / Front -->
-
-</ms-widget>
+    </md-content>
+</div>

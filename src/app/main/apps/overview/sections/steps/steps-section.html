@@ -1,72 +1,21 @@
+<div id="step-overview">
+    <div>
+        <ms-step-overview ng-if="!vm.isStepTabletMode"
+                          ng-repeat="step in vm.templateOverview.steps" step="step"
+                          project-Id="vm.projectId" expandable="true">
+        </ms-step-overview>
+    </div>
 
-<div class="widget-group" layout="row" flex layout-wrap>
-    <ms-widget  layout="column" flex>
+    <div layout-padding ng-if="vm.isStepTabletMode">
+        <md-tabs md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
+            <md-tab ng-repeat="step in vm.templateOverview.steps">
+                <md-tab-label>{{ step.stepName }}</md-tab-label>
+                <md-content>
+                    <ms-step-overview step="step" project-Id="vm.projectId" expandable="false" >
 
-    <!-- Front -->
-    <ms-widget-front class="white-bg">
-        <div class="simple-table-container">
-            <div>
-
-                <div class="table-title" ng-if="!vm.isTabletMode">
-                    <i class="icon-book-multiple s18"></i>
-                    Steps
-
-                    <md-menu id="steps-Menu" md-position-mode="target-right target">
-                        <md-button class="md-icon-button" ng-mouseover="$mdOpenMenu()"
-                                   aria-label="more">
-                            <md-tooltip md-direction="top">
-                                All widgets are here
-                            </md-tooltip>
-                            <md-icon md-font-icon="icon-dots-vertical" ></md-icon>
-                        </md-button>
-
-                        <md-menu-content flex layout-padding center>
-                            <md-menu-item>
-                                <md-button  aria-label="Expand/Collapse widget" ng-click="vm.toggleSidenav('quick-panel')">
-                                                          <span layout="row" layout-align="start center">
-                                                                <md-icon md-font-icon="icon-backburger"></md-icon>
-                                                                <span hide-sm>Expand All</span>
-                                                          </span>
-                                </md-button>
-                            </md-menu-item>
-                            <md-menu-item>
-                                <md-button  aria-label="Select/UnSelect widget" ng-click="vm.flipSelectionView()">
-                                                        <span layout="row" layout-align="start center" ng-if="vm.isAllSelected">
-                                                            <md-icon md-font-icon="icon-select-inverse"></md-icon>
-                                                            <span hide-sm>UnSelect All</span>
-                                                        </span>
-
-                                                        <span layout="row" layout-align="start center" ng-if="!vm.isAllSelected">
-                                                              <md-icon md-font-icon="icon-select"></md-icon>
-                                                            <span hide-sm>Select All</span>
-                                                        </span>
-                                </md-button>
-                            </md-menu-item>
-                        </md-menu-content>
-                    </md-menu>
-
-                </div>
-                <md-divider ng-if="!vm.isTabletMode"></md-divider>
-
-                <div flex ng-repeat="step in vm.templateOverview.steps"
-                      class="md-whiteframe-2dp" style="margin: 5px">
-                    <ms-step-overview step="step" project-Id="vm.projectId" expandable="true"></ms-step-overview>
-                </div>
-
-                <md-content layout-padding ng-if="vm.isStepTabletMode">
-                    <md-tabs md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
-                        <md-tab ng-repeat="step in vm.templateOverview.steps">
-                            <md-tab-label>{{ step.stepName }}</md-tab-label>
-                            <md-content>
-                                <ms-step-overview step="step" project-Id="vm.projectId" expandable="false" ></ms-step-overview>
-                            </md-content>
-                        </md-tab>
-                    </md-tabs>
+                    </ms-step-overview>
                 </md-content>
-            </div>
-        </div>
-    </ms-widget-front>
-    <!-- / Front -->
-
-</ms-widget>
+            </md-tab>
+        </md-tabs>
+    </div>
 </div>

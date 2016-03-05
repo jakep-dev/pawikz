@@ -5,9 +5,6 @@
     <md-button class="md-icon-button" aria-label="expand/collapse"
                ng-disabled="!expandable"
                ng-click="expandCollapseToggle()" style="float:right">
-        <md-tooltip md-direction="top">
-            expand/collapse
-        </md-tooltip>
         <md-icon md-font-icon="icon-backburger"
         ng-class="{'expand': isExpanded, 'collapse': !isExpanded}"></md-icon>
     </md-button>
@@ -15,23 +12,11 @@
     <md-button class="md-icon-button"
                aria-label="select/unselect"
                ng-disabled="(step.sections.length === 0)"
-               ng-if="!step.value"
-               ng-click="setStepSelection()"
-               style="float:right">
-        <md-tooltip md-direction="top">
-            Select all
-        </md-tooltip>
-        <md-icon md-font-icon="icon-select"></md-icon>
-    </md-button>
 
-    <md-button class="md-icon-button" aria-label="select/unselect"
                ng-click="setStepSelection()"
-               ng-if="step.value"
                style="float:right">
-        <md-tooltip md-direction="top">
-            Unselect all
-        </md-tooltip>
-        <md-icon md-font-icon="icon-select-inverse"></md-icon>
+        <md-icon ng-if="!step.value" md-font-icon="icon-select"></md-icon>
+        <md-icon ng-if="step.value" md-font-icon="icon-select-inverse"></md-icon>
     </md-button>
 </div>
 

@@ -10,7 +10,9 @@
 
     function MsStepOverviewController($scope)
     {
-        $scope.isExpanded = false;
+        console.log('Scope of each overview - ');
+        console.log($scope);
+
         $scope.expandCollapseToggle = expandCollapseToggle;
         $scope.singleSelection = singleSelection;
         $scope.setStepSelection = setStepSelection;
@@ -43,8 +45,6 @@
 
         function recalculateSelection()
         {
-            console.log('Enter recalculate selection');
-
             if(angular.isDefined($scope.step) &&
                angular.isDefined($scope.step.sections))
             {
@@ -69,11 +69,8 @@
 				projectId: '=',
                 expandable: '=?'
             },
-            transclude: true,
             controller: 'MsStepOverviewController',
             templateUrl: 'app/core/directives/ms-step-overview/ms-step-overview.html'
         };
-
-
     }
 })();

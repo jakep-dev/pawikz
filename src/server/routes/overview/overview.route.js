@@ -89,8 +89,6 @@
         function setOverViewDetails(data)
         {
             if(data && data.templateOverview && data.templateOverview.steps)
-           //if(!u.isUndefined(data) && !u.isUndefined(data.templateOverview) &&
-           //   !u.isUndefined(data.templateOverview.steps) && data.templateOverview.steps != null)
            {
                var steps = data.templateOverview.steps;
 

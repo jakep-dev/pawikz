@@ -24,15 +24,16 @@
 
         var vm = this;
         vm.isExpanded = true;
+        vm.expandClass = 'expand';
         vm.isOverviewLoaded = false;
         vm.isTabletMode = false;
         vm.isStepTabletMode = false;
+        vm.isAllExpanded = false;
         vm.isAllSelected = false;
         vm.templateOverview = [];
 		vm.projectId = $stateParams.projectId;
 
         //Methods
-        vm.flipView = flipView;
         vm.expandCollapseToggle = expandCollapseToggle;
         vm.flipStepView = flipStepView;
         vm.flipSelectionView = flipSelectionView;
@@ -72,10 +73,11 @@
                             stepId: step.stepId,
                             projectId: $stateParams.projectId
                         });
+
+                        step.isExpanded = false;
                     });
 
                     autoSave();
-
                 }
                 toast.simpleToast('AutoSave Enabled');
             });
@@ -137,6 +139,7 @@
                             });
                         });
                     }
+
                     steps.push({
                         stepId: stepId,
                         stepName: stepName,
@@ -145,25 +148,12 @@
                 });
             }
 
-            console.log(steps);
-            console.log(projectName);
-
             overviewService.save(userId, projectId, projectName, steps).then(function(data)
             {
-                console.log('Inside saveOverview');
-                console.log(data);
                 toast.simpleToast('Saved successfully');
             });
 
             cancelPromise();
-        }
-
-        //Flip the entire view to tab and vice-versa
-        function flipView()
-        {
-            console.log('Flipping - ' + vm.isTabletMode);
-            vm.isTabletMode = !vm.isTabletMode;
-            flipStepView();
         }
 
         //Flip only the step view to tab and vice-versa
@@ -178,6 +168,11 @@
             vm.isAllSelected = !vm.isAllSelected;
             selectionProcess(vm.isAllSelected);
             console.log($scope);
+        }
+
+        function expandAll()
+        {
+            vm.isAllExpanded = !vm.isAllExpanded;
         }
 
         //Select the steps
@@ -204,6 +199,17 @@
         function expandCollapseToggle()
         {
             vm.isExpanded = !vm.isExpanded;
+
+            console.log('--Expand Collapse Toggle');
+            console.log(vm.isExpanded);
+
+            if(angular.isDefined(vm.templateOverview)) {
+
+                angular.forEach(vm.templateOverview.steps, function(step)
+                {
+                    step.isExpanded = vm.isExpanded;
+                });
+            }
         }
 
     }
