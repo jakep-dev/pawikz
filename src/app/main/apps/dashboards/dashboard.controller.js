@@ -19,6 +19,9 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
     vm.companyId = 0;
     vm.userId = 0;
     $rootScope.passedUserId = $stateParams.userId;
+    if ($stateParams.token != '') {
+        $rootScope.passedToken = $stateParams.token;
+    }
     breadcrumbBusiness.title = 'My Workups';
     $rootScope.projectOverview = [];
     $rootScope.isBottomSheet = false;
