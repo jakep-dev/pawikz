@@ -14,15 +14,15 @@ table.dataTable {
             vertical-align: middle;
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-            padding: 16px 8px;
+            padding: 8px 8px;
 
             &:first-child {
-                padding-left: 24px;
+                padding-left: 12px;
             }
 
             &:last-child {
                 border-right: none;
-                padding-right: 24px;
+                padding-right: 12px;
             }
 
             &:active {
@@ -311,15 +311,15 @@ table.dataTable {
         }
 
         td {
-            padding: 16px 8px;
+            padding: 8px 8px;
             vertical-align: middle;
 
             &:first-child {
-                padding-left: 24px;
+                padding-left: 12px;
             }
 
             &:last-child {
-                padding-right: 24px;
+                padding-right: 12px;
             }
 
             &.dt-body-left {
@@ -471,7 +471,7 @@ table.dataTable {
                 border-right: 1px solid rgba(0, 0, 0, 0.12);
 
                 &:last-child {
-                    border-right: none;
+                    border-right: 1px solid rgba(0, 0, 0, 0.12);
                 }
             }
 
@@ -1125,6 +1125,13 @@ table.dataTable.dtr-inline.collapsed {
     }
 
     > tbody {
+
+        td.child {
+            &:hover {
+                background-color: #0fb9ff;
+                color: white;
+            }
+        }
 
         > tr {
 
