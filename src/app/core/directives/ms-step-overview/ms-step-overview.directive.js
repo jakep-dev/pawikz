@@ -40,7 +40,7 @@
 
         function expandCollapseToggle()
         {
-            $scope.isExpanded = !$scope.isExpanded;
+            $scope.step.isExpanded = !$scope.step.isExpanded;
         }
 
         function recalculateSelection()

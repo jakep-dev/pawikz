@@ -12,123 +12,172 @@
     function msTemplateDirective($compile, $rootScope)
     {
 
-        function setElement(scope, el, tearSheetItem)
+        function firstVariation(contentComponents, comp)
         {
-            var html = '<div>';
+            var sectionId = null;
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
 
-            switch (tearSheetItem.id)
+            if(!comp.id && tearSheetItem.length &&
+                tearSheetItem.length > 0)
             {
-                case 'LabelItem':
-                    var newScope  = scope.$new();
-                    if(typeof(tearSheetItem.Label) !== 'object')
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                _.each(tearSheetItem, function(item)
+                {
+                    if(item.Label &&
+                        item.comId)
                     {
-                        var splitType = tearSheetItem.type.split(' ');
-                        switch (splitType[0])
-                        {
-                            case 'header1':
-                            case 'header2':
-                            case 'header3':
-                            case 'header4':
-                            case 'header5':
-                            case 'header6':
-
-                                var newScope  = scope.$new();
-                                newScope.tearsheet = {
-                                    type: tearSheetItem.type,
-                                    value: tearSheetItem.Label,
-                                    mnemonics: tearSheetItem.id
-                                };
-                                html += '<ms-header tearsheet="tearsheet"></ms-header>';
-                                html += '</div>';
-                                //el.find('#template-content').append($compile(html)(newScope));
-
-                                break;
-
-                            case 'fieldLabel':
-                                html += '<ms-label value="'+ tearSheetItem.Label +'"></ms-label>';
-                                html += '</div>';
-                                //el.find('#template-content').append($compile(html)(scope));
-                                break;
+                        sectionId = item.comId;
+                        component.header = {
+                            label: item.Label,
+                            id: item.id,
+                            itemid: item.ItemId,
+                            mnemonicid: item.Mnemonic,
+                            variation: 'first'
                         }
                     }
-                    else {
-                        html += '<ms-blank></ms-blank>';
-                        html += '</div>';
-                    }
-                    el.find('#template-content').append($compile(html)(newScope));
-                    break;
-                case "ScrapedItem":
-                    var newScope  = scope.$new();
-                    var mnemonicid = tearSheetItem.Mnemonic;
-                    var itemid = tearSheetItem.ItemId;
+                });
 
-                    html += '<ms-chart type="Stock" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
-                    el.find('#template-content').append($compile(html)(newScope));
-                    break;
-                case 'GenericTableItem':
-                        var newScope  = scope.$new();
-                        newScope.tearsheet = {
-                            rows: tearSheetItem.row
-                        };
-                        html += '<ms-generic-table tearsheet="tearsheet"></ms-generic-table>';
-                        html += '</div>';
-                        el.find('#template-content').append($compile(html)(newScope));
-                    break;
-                case 'Component':
-                        var contentCompId = 0;
-                        var tearcontent = [];
-                        var tearSheet = [];
-
-                        angular.forEach(tearSheetItem, function(each)
-                        {
-                            contentCompId = each.comId;
-                        })
-
-                        if(!angular.isUndefined(contentCompId))
-                        {
-                            tearSheet = tearSheetItem;
-                            angular.forEach(scope.steps.Component, function(step)
-                            {
-                                if(step.id === contentCompId)
-                                {
-                                    tearcontent.push(step);
-                                }
-                            });
-                        }
-                        else {
-                            tearSheet.push(tearSheetItem[0]);
-                            tearcontent.push(tearSheetItem[1]);
-                        }
-
-
-                       var newScope = scope.$new();
-                       newScope.tearsheet = tearSheet;
-                       newScope.tearcontent = tearcontent;
-                       html += '<ms-component tearsheet="tearsheet" tearcontent="tearcontent"></ms-component>';
-                       html += '</div>';
-                       el.find('#template-content').append($compile(html)(newScope));
-                    break;
-                case 'LinkItem':
-                    var newScope = scope.$new();
-                    var value = '';
-                    var link = ''
-                    if(angular.isDefined(tearSheetItem.Label))
+                //Find section based on sectionId
+                if(sectionId)
+                {
+                    var sectionTearSheetItem = _.filter(contentComponents, function(section)
                     {
-                        value = tearSheetItem.Label;
-                        link = tearSheetItem.Link;
+                        if(section.id &&
+                            section.id === sectionId &&
+                            section.TearSheetItem)
+                        {
+                            return section;
+                        }
+                    });
+
+                    if(sectionTearSheetItem &&
+                        sectionTearSheetItem.length &&
+                        sectionTearSheetItem.length > 0)
+                    {
+                        component.sections.push(sectionTearSheetItem[0]);
                     }
-                    else {
-                        var itemId = tearSheetItem.ItemId;
-                        var mnemonicId = tearSheetItem.Mnemonic;
-                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-                        link = value;
-                    }
-                    html += '<ms-link value="'+value+'" href="'+link+'" isdisabled="false"></ms-link>';
-                    el.find('#template-content').append($compile(html)(newScope));
-                    break;
+                }
             }
+
+            return component;
         }
 
+        function secondVariation(contentComponents, comp)
+        {
+            var sectionId = null;
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
+
+            if(tearSheetItem.Label &&
+               typeof(tearSheetItem.Label) !== 'object' &&
+               tearSheetItem.id &&
+               tearSheetItem.id === 'LabelItem')
+            {
+                var startIndex = _.findIndex(contentComponents, comp);
+                var endIndex = startIndex + 1;
+
+                var foundIndex = false;
+                _.each(contentComponents.slice(startIndex + 1, contentComponents.length - 1),
+                    function(each)
+                {
+                   if(each.TearSheetItem.Label &&
+                      typeof(each.TearSheetItem.Label) === 'object' &&
+                      each.TearSheetItem.id &&
+                      each.TearSheetItem.id === 'LabelItem')
+                   {
+                       foundIndex = true;
+                   }
+                    if(!foundIndex)
+                        endIndex++;
+                });
+
+                var fullGroupComponents = contentComponents.slice(startIndex, endIndex);
+
+                if(fullGroupComponents)
+                {
+                    component = {
+                        header: {},
+                        sections: []
+                    };
+
+                    _.each(fullGroupComponents, function(grpComp)
+                    {
+                        var item = grpComp.TearSheetItem;
+
+                        if(item.Label)
+                        {
+                            component.header = {
+                                label: item.Label,
+                                id: item.id,
+                                itemid: item.ItemId || '',
+                                mnemonicid: item.Mnemonic || '',
+                                variation: 'second'
+                            }
+                        }
+                        else if(grpComp.id)
+                        {
+                            sectionId = grpComp.id;
+                        }
+                    });
+
+                    //Find section based on sectionId
+                    if(sectionId)
+                    {
+                        var sectionTearSheetItem = _.filter(fullGroupComponents, function(section)
+                        {
+                            if(section.TearSheetItem &&
+                               section.id &&
+                               section.id === sectionId)
+                            {
+                                return section;
+                            }
+                        });
+
+                        if(sectionTearSheetItem &&
+                           sectionTearSheetItem.length &&
+                           sectionTearSheetItem.length > 0)
+                        {
+                            component.sections.push(sectionTearSheetItem[0]);
+                        }
+                    }
+                }
+            }
+
+            return component;
+        }
+
+        function thirdVariation(contentComponents, comp)
+        {
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
+
+            if(comp.id &&
+               tearSheetItem &&
+               tearSheetItem.ItemId &&
+               tearSheetItem.Mnemonic) {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                component.header = {
+                    label: tearSheetItem.prompt,
+                    id: comp.id,
+                    itemid: tearSheetItem.ItemId || '',
+                    mnemonicid: tearSheetItem.Mnemonic || '',
+                    variation: 'third'
+                };
+
+                component.sections.push(comp);
+            }
+
+            return component;
+        }
 
         return {
             restrict: 'E',
@@ -139,79 +188,142 @@
             link:function(scope, el, attrs)
             {
                 console.log('Template component creation initiated - ');
-                console.log(scope.components);
+                console.log(scope);
 
-                var compCount = 0;
-                var processingComp = scope.components;
+                var components = scope.components;
 
-                angular.forEach(processingComp, function(component)
+                var headerComponents = [];
+                var contentComponents =  [];
+                var templateData = {
+                    header: {},
+                    content: []
+                };
+
+                headerComponents.push.apply(headerComponents, components.slice(0,2));
+                contentComponents.push.apply(contentComponents, components.slice(2, components.length - 1));
+
+
+                console.log('Body Componenets');
+                console.log(contentComponents);
+
+                //Build Headers
+                _.each(headerComponents, function(component)
                 {
                     var tearSheetItem = component.TearSheetItem;
 
-                    if(compCount > 1) //Remove this check
+                    if(!tearSheetItem.id)
+                        return;
+
+                    if(tearSheetItem.id === 'GenericTableItem')
                     {
-                        if(tearSheetItem.length > 0)
+                        //Tool Bar Code
+                    }
+                    else if(tearSheetItem.id === 'LabelItem') {
+                        templateData.header.label = tearSheetItem.Label;
+                        templateData.header.id = tearSheetItem.id;
+                        templateData.header.type = tearSheetItem.type;
+                    }
+                });
+
+                //Build Components.
+                var processedComp = [];
+
+
+                //Build Content
+                _.each(contentComponents, function(comp)
+                {
+                    var component = null;
+                    var sectionId = null;
+                    var tearSheetItem = comp;
+                    var isReadyToProcess = true;
+
+                    if(comp.TearSheetItem.Label &&
+                        typeof(comp.TearSheetItem.Label) === 'object')
+                    {
+                        isReadyToProcess = false;
+                    }
+                    else if(comp.id) {
+                        isReadyToProcess =  (_.findIndex(processedComp, {compId: comp.id}) === -1);
+                    }
+
+                    if(isReadyToProcess)
+                    {
+                        //Finding First Variation.
+                        component = firstVariation(contentComponents, comp);
+
+                        if(!component)
                         {
-                            var html = '<div>';
-                            var tearSheet = [];
-                            var tearContent = [];
-                            var isCollapse = false;
-
-                            var countTearSheetItem = 0;
-                            angular.forEach(tearSheetItem, function(eachItem)
-                            {
-                                if(countTearSheetItem === 0)
-                                {
-                                    tearSheet.push(eachItem);
-                                }
-                                else {
-                                    tearContent.push(eachItem);
-                                }
-
-                                if(eachItem.id === 'SectionItem')
-                                {
-                                    isCollapse = true;
-                                    tearContent = [];
-                                    var indexOfComponent = -1;
-                                    var findCompCount = 0;
-                                    angular.forEach(processingComp, function(findComp)
-                                    {
-                                        if(findComp.id === eachItem.comId)
-                                        {
-                                            tearContent = findComp.TearSheetItem;
-                                            indexOfComponent = findCompCount;
-                                        }
-                                        findCompCount++;
-                                    });
-
-                                    if(indexOfComponent > -1)
-                                    {
-                                        processingComp.splice(indexOfComponent, 1);
-                                    }
-                                }
-                                countTearSheetItem++;
-                            });
-
-                            var newScope = scope.$new();
-                            newScope.tearsheet = tearSheet;
-                            newScope.tearcontent = tearContent;
-                            newScope.iscollapse = isCollapse;
-
-                            html += '<ms-component tearsheet="tearsheet" tearcontent="tearcontent" iscollapse="iscollapse"></ms-component>';
-                            html += '</div>';
-                            el.find('#template-content').append($compile(html)(newScope));
+                            component = secondVariation(contentComponents, comp);
                         }
-                        else
+
+                        if(!component)
                         {
-                            console.log(tearSheetItem);
-                            setElement(scope, el, tearSheetItem);
+                            component = thirdVariation(contentComponents, comp);
                         }
                     }
 
-                    compCount++;
+                    if(component)
+                    {
+                        _.each(component.sections, function(section)
+                        {
+                            if(section.id)
+                            {
+                                processedComp.push({
+                                    compId: section.id
+                                });
+                            }
+                        });
+
+                        templateData.content.push(component);
+                    }
+
                 });
 
+                console.log('Template Data - ');
+                console.log(templateData);
+                console.log(processedComp);
                 console.log('Template component creation ended - ');
+
+
+                //Render the header for the step
+                if(templateData.header)
+                {
+                    scope.stepName = templateData.header.label;
+                }
+
+                //Render the content for the step
+                if(templateData.content)
+                {
+                    angular.forEach(templateData.content, function(renderContent)
+                    {
+                        if(renderContent.header &&
+                           renderContent.sections &&
+                           renderContent.sections.length > 0)
+                        {
+                            var newScope = scope.$new();
+                            newScope.tearheader = renderContent.header;
+                            newScope.tearcontent = [];
+
+                            angular.forEach(renderContent.sections, function(section)
+                            {
+                                if(section.TearSheetItem &&
+                                   section.TearSheetItem.length)
+                                {
+                                    newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
+                                }
+                                else if(section.TearSheetItem) {
+                                    newScope.tearcontent.push(section.TearSheetItem);
+                                }
+                            });
+
+                            if(newScope.tearcontent)
+                            {
+                                var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent"></ms-component>';
+                                el.find('#template-content').append($compile(html)(newScope));
+                            }
+                        }
+                    });
+                }
             }
         };
     }

@@ -24,7 +24,7 @@
         return {
             restrict: 'E',
             scope   : {
-                tearsheet: '=',
+                tearheader: '=',
                 tearcontent: '=',
                 iscollapse: '=?'
             },
@@ -32,24 +32,21 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-component/ms-component.html',
             link: function(scope, el, attrs)
             {
-                console.log('Component Scope :- ');
-                console.log(scope);
                 scope.collapsed = false;
-
-                angular.forEach(scope.tearsheet, function(eachSheet)
-                {
-                    if(eachSheet.id === 'LabelItem')
-                    {
-                        scope.title = eachSheet.Label;
-                    }
-                });
-
+                scope.title = scope.tearheader.label;
                 var html = '';
                 angular.forEach(scope.tearcontent, function(content)
                 {
                     html = '<div>';
                     switch (content.id)
                     {
+                        case 'LabelItem':
+                            var newScope  = scope.$new();
+                            html += '<ms-label value="Sherin"></ms-label>';
+                            html += '</div>';
+                            el.find('#ms-accordion-content').append($compile(html)(newScope));
+                            break;
+
                         case 'GenericTableItem':
                             var newScope  = scope.$new();
                             newScope.tearsheet = {
@@ -86,6 +83,7 @@
                             break;
                     }
                 });
+
             }
         };
     }

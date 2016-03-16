@@ -14,13 +14,17 @@
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope, $interval,
                                 overviewService, clientConfig, bottomSheetConfig,
-                                navConfig, breadcrumbBusiness, commonBusiness, toast)
+                                navConfig, breadcrumbBusiness, commonBusiness,
+                                overviewBusiness, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
+
+        var undoData = [];
+        var redoData = [];
 
         var vm = this;
         vm.isExpanded = true;
@@ -32,6 +36,8 @@
         vm.isAllSelected = false;
         vm.templateOverview = [];
 		vm.projectId = $stateParams.projectId;
+        vm.isUndo = false;
+        vm.isRedo = false;
 
         //Methods
         vm.expandCollapseToggle = expandCollapseToggle;
@@ -40,6 +46,8 @@
         vm.saveAll = saveAll;
         vm.reload = loadData;
         vm.goTop = goTop;
+        vm.undo = undo;
+        vm.redo = redo;
         var promise = [];
 
         //Data
@@ -51,6 +59,33 @@
 
         }
 
+        //Undo overview data
+        function undo()
+        {
+           if(undoData)
+           {
+               console.log('-Undo-');
+               console.log(undoData);
+               var templateData = _.last(undoData);
+               vm.templateOverview = templateData;
+               undoData.splice(_.size(undoData),1);
+
+           }
+        }
+
+        //Redo overview data
+        function redo()
+        {
+            if(redoData)
+            {
+                console.log('-Undo-');
+                console.log(redoData);
+                var templateData = _.first(redoData);
+                vm.templateOverview = templateData;
+                redoData.splice(0,1);
+            }
+        }
+
         //Load data for project-section and step-section
         function loadData()
         {
@@ -60,8 +95,6 @@
                 if(angular.isDefined(data.templateOverview))
                 {
                     vm.templateOverview = data.templateOverview;
-                    console.log('TemplateOverview Data-');
-                    console.log(vm.templateOverview);
 
                     commonBusiness.companyId = vm.templateOverview.companyId;
 
@@ -74,7 +107,7 @@
                             projectId: $stateParams.projectId
                         });
 
-                        step.isExpanded = false;
+                        step.isExpanded = true;
                     });
 
                     autoSave();
@@ -87,11 +120,8 @@
         //Auto save the data change based on timeout set
         function autoSave()
         {
-            $scope.$watch('vm.templateOverview',function()
+            $scope.$watch('vm.templateOverview.steps',function()
                 {
-                    console.log('Watching .... Data changed');
-                    console.log(_.size(promise));
-
                     if(_.size(promise) === 0 && vm.isOverviewLoaded)
                     {
                         console.log('Creating Promise');

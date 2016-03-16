@@ -59,7 +59,7 @@
                                     case 'LinkItem':
                                         newScope = scope.$new();
                                         var value = '';
-                                        var link = ''
+                                        var link = '';
                                         if(angular.isDefined(tearSheetItem.Label))
                                         {
                                             value = tearSheetItem.Label;

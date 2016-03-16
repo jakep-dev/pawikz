@@ -3,6 +3,8 @@
  */
 (function(routes)
 {
+    delete require.cache[require.resolve('./template/template.route')];
+
     var dashboardRoute = require('./dashboard/dashboard.route');
     var overviewRoute = require('./overview/overview.route');
     var authenticateRoute = require('./authenticate/authenticate.route');

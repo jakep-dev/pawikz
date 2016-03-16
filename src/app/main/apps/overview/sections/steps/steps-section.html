@@ -6,8 +6,9 @@
         </ms-step-overview>
     </div>
 
-    <div layout-padding ng-if="vm.isStepTabletMode">
-        <md-tabs md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
+    <div layout-padding ng-if="vm.isStepTabletMode" >
+        <md-tabs id="step-overview-steps" style="border:1px solid #e1e1e1; background: #f6f6f6"
+                 md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
             <md-tab ng-repeat="step in vm.templateOverview.steps">
                 <md-tab-label>{{ step.stepName }}</md-tab-label>
                 <md-content>
