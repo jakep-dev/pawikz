@@ -49,6 +49,10 @@ $navigationFoldedWidth: 64px;
         user-select: none;
         z-index: 70;
 
+        ms-nav-item.ms-nav-subitem {
+            padding-left: 1em;
+        }
+
         ms-nav-item {
             display: block;
             position: relative;

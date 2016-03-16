@@ -18,6 +18,7 @@
                                 overviewBusiness, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
+        $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';

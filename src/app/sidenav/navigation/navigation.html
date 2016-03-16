@@ -16,22 +16,17 @@
         </a>
     </ms-nav-item>
 
-    <ms-nav-item ms-nav-toggle ng-if="(!!vm.sideNavItems && vm.sideNavItems.length > 0)">
-        <a ms-nav-button md-ink-ripple>
-            <i class="icon-view-agenda s16"></i>
+    <ms-nav-item ng-if="(!!vm.sideNavItems && vm.sideNavItems.length > 0)">
+        <a ms-nav-button ui-sref="app.overview({projectId:$root.projectId})" ui-sref-active="active md-accent-bg" md-ink-ripple>
             <span class="ms-nav-label">Project Overview</span>
-            <i class="icon-chevron-down s16 arrow"></i>
         </a>
-
-        <ms-nav-toggle-items>
-            <ms-nav-item ng-repeat="step in vm.sideNavItems">
-                <a ms-nav-button ui-sref="app.steps({projectId:step.projectId, stepId:step.stepId, stepName:step.stepName})"
-                   ui-sref-active="active md-accent-bg" md-ink-ripple>
-                    <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>
-                    <span class="ms-nav-label">{{ step.stepName }}</span>
-                </a>
-            </ms-nav-item>
-        </ms-nav-toggle-items>
+    </ms-nav-item>
+    <ms-nav-item ng-repeat="step in vm.sideNavItems" class="ms-nav-subitem" >
+            <a ms-nav-button ui-sref="app.steps({projectId:step.projectId, stepId:step.stepId, stepName:step.stepName})"
+               ui-sref-active="active md-accent-bg" md-ink-ripple>
+                <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>
+                <span class="ms-nav-label">{{ step.stepId + ". " + step.stepName }}</span>
+            </a>
     </ms-nav-item>
 
     <!--<ms-nav-item ms-nav-toggle>-->
