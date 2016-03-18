@@ -75,10 +75,8 @@
             controller: 'MsRichTextEditorController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/ms-rich-text-editor.html',
             link: function (scope, element, attibutes) {
-                var id = scope.mnemonicid + '__' + scope.itemid;
-                element[0].firstChild.id = id;
-                $('#' + id).each(function (index, value) {
-                    $(this).on('froalaEditor.commands.before', function (e, editor, cmd, param1, param2) {
+                element.find('#textEditor')
+                    .on('froalaEditor.commands.before', function (e, editor, cmd, param1, param2) {
                         if (cmd == 'fullscreen') {
                             console.log('Before Full Screen button.');
                             var obj = $(this).parent();
@@ -92,7 +90,8 @@
                             }
                         }
                     });
-                    $(this).on('froalaEditor.commands.after', function (e, editor, cmd, param1, param2) {
+                element.find('#textEditor')
+                    .on('froalaEditor.commands.after', function (e, editor, cmd, param1, param2) {
                         if (cmd == 'fullscreen') {
                             console.log('After Full Screen button.');
                             var obj = $(this).parent();
@@ -105,7 +104,6 @@
                             }
                         }
                     });
-                });
             }
         };
     }
