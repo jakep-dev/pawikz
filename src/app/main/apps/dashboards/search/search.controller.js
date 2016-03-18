@@ -16,6 +16,7 @@
         vm.isSearching = false;
         vm.companyId = 0;
         vm.userId = 0;
+        $scope.isTooltipVisible = false;
 
         vm.filterDashboard = filterDashboard;
         vm.loadCompanyNames = loadCompanyNames;

@@ -18,7 +18,7 @@
                 <label class="font-size-20"><strong>Company Name </strong></label>
                 <md-select ng-model="vm.companyId" class="md-accent" md-on-open="vm.loadCompanyNames()">
                     <md-option layout-padding ng-repeat="company in vm.companyNames" value="{{company.id}}" close-tooltips>
-                        <md-tooltip md-direction="left" md-autohide="true">
+                        <md-tooltip md-direction="left" md-visible="isTooltipVisible">
                             {{company.name}}
                         </md-tooltip>
                         {{company.shortName}}
