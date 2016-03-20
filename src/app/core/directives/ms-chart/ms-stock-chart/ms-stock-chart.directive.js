@@ -94,10 +94,12 @@
                         lengthDiff = true;
                     }
                 }
+
                 if(peerData)
                 {
                     firstChartTitle='Percent Change';
                 }
+
                 for (var i = 0; i < results.stockChartPrimaryData.length; i++) {
 
                     var stock = results.stockChartPrimaryData[i];

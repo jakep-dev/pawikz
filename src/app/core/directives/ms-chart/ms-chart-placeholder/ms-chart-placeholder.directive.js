@@ -96,7 +96,7 @@
 
         }
 
-        function saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId, chart_id) {
+         function saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId, chart_id) {
             stockService
                 .saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, vm.title, mnemonic, itemId,stepId, projectId, chart_id)
                 .then(function(response) {
@@ -169,23 +169,25 @@
                 case 'stock':
                     if (chartIndex < 5){ //limit the chart count
                         var ele = $('#ms-chart-container');
-                        var newScope = $scope.$parent.$new();
 
-                        $scope.tearsheet.chartSetting.selectedPeriod = $scope.filterState.interval;
-                        $scope.tearsheet.chartSetting.date_start = $scope.filterState.startDate;
-                        $scope.tearsheet.chartSetting.date_end = $scope.filterState.endDate;
-                        newScope.tearsheet = {
-                            type: 'stock',
-                            isChartTitle: true,
-                            chartSetting: angular.copy($scope.tearsheet.chartSetting),
-                            mnemonicId: $scope.tearsheet.mnemonicId,
-                            itemId: $scope.tearsheet.itemId
-                        };
-                        newScope.title = vm.title;
-                        var msChartPlaceHolderId = '1';
-                        var html = '<ms-chart-placeholder id="chart-' + chartIndex + '" class="chart" title="title" tearsheet="tearsheet"></ms-chart-placeholder>';
+                            var newScope = $scope.$parent.$new();
 
-                        ele.find('#chart-0').after($compile(html)(newScope));
+                            $scope.tearsheet.chartSetting.selectedPeriod = $scope.filterState.interval;
+                            $scope.tearsheet.chartSetting.date_start = $scope.filterState.startDate;
+                            $scope.tearsheet.chartSetting.date_end = $scope.filterState.endDate;
+                            newScope.tearsheet = {
+                                type: 'stock',
+                                isChartTitle: true,
+                                chartSetting: angular.copy($scope.tearsheet.chartSetting),
+                                mnemonicId: $scope.tearsheet.mnemonicId,
+                                itemId: $scope.tearsheet.itemId
+                            };
+                            newScope.title = vm.title;
+                            var msChartPlaceHolderId = '1';
+                            var html = '<ms-chart-placeholder id="chart-' + chartIndex + '" class="chart" title="title" tearsheet="tearsheet"></ms-chart-placeholder>';
+
+                            ele.find('#chart-0').after($compile(html)(newScope));
+
                     }else
                         dialog.alert( 'Error',"Max5 charts could be added!",null, {ok:{name:'ok',callBack:function(){
                             console.warn('excess chart tried to be added');
