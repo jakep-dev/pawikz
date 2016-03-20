@@ -16,13 +16,32 @@
             getSavedChartData: getSavedChartData,
             findTickers: findTickers,
             getIndices: getIndices,
-            saveChartSettings : saveChartSettings
+            saveChartSettings : saveChartSettings,
+            saveChartAllSettings : saveChartAllSettings
         };
 
         return service;
 
-        function saveChartSettings(tickers, timeFrame,splits, dividends, earnings, start_date, end_date, companyId, chartTitle, mnemonic, itemId, stepId, projectId) {
-            console.log('itemId--------------------------------',itemId  );
+        function saveChartAllSettings(companyId, stepId, projectId, chartSettings) {
+            return $http({
+                method: "POST",
+                url:"/api/saveChartAllSettings",
+                data: {
+                    companyId : companyId,
+                    stepId : stepId,
+                    projectId : projectId,
+                    chartSettings : chartSettings
+                }
+            }).then(function(data, status, headers, config)
+            {
+                return data.data;
+            })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function saveChartSettings(tickers, timeFrame,splits, dividends, earnings, start_date, end_date, companyId, chartTitle, mnemonic, itemId, stepId, projectId, chart_id) {
             return $http({
                 method: "POST",
                 url:"/api/saveChartSettings",

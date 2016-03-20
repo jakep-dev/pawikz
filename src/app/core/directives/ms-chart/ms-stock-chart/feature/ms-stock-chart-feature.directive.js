@@ -4,7 +4,8 @@
 (function () {
     'use strict';
     angular.module('app.core')
-        .directive('msStockChartFeature', [function () {
+        .directive('msStockChartFeature', ['$timeout', function ($timeout) {
+
             return {
                 restrict: 'EA',
                 scope: {
@@ -12,14 +13,63 @@
                     'onPeerRemove': '='
                 },
                 link: function (scope, elem, attr) {
-                    console.log('ms line bar chart ------------');
                     scope.$watch('config', function (newVal, oldVal) {
                         if(newVal) {
-                            initializeChart();
+                            console.log('ms line bar chart initializeChart method------------');
+                            $timeout(function(){
+                                initializeChart(elem);
+                            }, 1000);
+
                         }
                     });
 
-                    function initializeChart () {
+                    var hoveredChart = '';
+                    var hoveredChartIndex = 0;
+                    function initializeChart (elem) {
+                        Highcharts.each(Highcharts.charts, function(p, i) {
+                            var chart,
+                                point,
+                                i;
+                            //console.log(p);
+                            //p.renderTo.getAttribute('data-highcharts-chart')
+                            //$(p.renderTo).mouseover(function(e) {
+                            //$(elem).bind('mousemove touchmove', function (e) {
+                            $(elem).bind('mouseover', function (e) {
+
+                                console.log('chartIndex: ' + p.index);
+                                console.log('Attr: ' + p.renderTo.getAttribute('data-highcharts-chart'));
+                                //console.log('hoveredChartIndex in mouseover before: ' + hoveredChartIndex);
+                                hoveredChartIndex= p.index;
+                                //console.log('hoveredChartIndex in mouseover after: ' + hoveredChartIndex);
+
+                                chart = Highcharts.charts[hoveredChartIndex];
+                                if(chart.series[0]){
+                                    e = chart.pointer.normalize(e); // Find coordinates within the chart
+                                    point = chart.series[0].searchPoint(e, true); // Get the hovered point
+                                    if (point) {
+                                        point.onMouseOver(); // Show the hover marker
+                                        chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                    }
+
+                                    if(hoveredChartIndex%2==0)
+                                    {
+                                        chart = Highcharts.charts[hoveredChartIndex+1];
+                                    }
+                                    else
+                                    {
+                                        chart = Highcharts.charts[hoveredChartIndex-1];
+                                    }
+
+                                    e = chart.pointer.normalize(e); // Find coordinates within the chart
+                                    point = chart.series[0].searchPoint(e, true); // Get the hovered point
+                                    if (point) {
+                                        point.onMouseOver(); // Show the hover marker
+                                        chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                    }
+                                }
+                            })
+                        });
+
                         /**
                          * In order to synchronize tooltips and crosshairs, override the
                          * built-in events with handlers defined on the parent element.
@@ -248,7 +298,7 @@
                                             marker: {enabled: false}
                                             ,point: {
                                                 events: {
-                                                    mouseOver: function() {
+                                                    mouseOver: function(e) {
                                                         /*var xIndex = this.x;
                                                          var legendText='';
                                                          var seriesCnt = primarystockresp.stockChartPeerData.length/primarystockresp.stockChartPrimaryData.length;
@@ -293,9 +343,33 @@
                                                                 //($('.highcharts-legend-item')[n]).children[1].innerHTML = p.name + ' ' + yValue.toFixed(2);
                                                                 //legendItem.innerHTML = p.name + ' ' + yValue.toFixed(2);
                                                                 legendItem.attr({ text: (p.name + ' ' + yValue.toFixed(2))})
+
                                                             }
                                                         });
+                                                        //Write cross hair logic here
+                                                        /*chart = Highcharts.charts[hoveredChartIndex];
+                                                        e = chart.pointer.normalize(e); // Find coordinates within the chart
+                                                        point = chart.series[0].searchPoint(e, true); // Get the hovered point
+                                                        if (point) {
+                                                            point.onMouseOver(); // Show the hover marker
+                                                            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                                        }
 
+                                                        if(hoveredChartIndex%2==0)
+                                                        {
+                                                            chart = Highcharts.charts[hoveredChartIndex+1];
+                                                        }
+                                                        else
+                                                        {
+                                                            chart = Highcharts.charts[hoveredChartIndex-1];
+                                                        }
+
+                                                        e = chart.pointer.normalize(e); // Find coordinates within the chart
+                                                        point = chart.series[0].searchPoint(e, true); // Get the hovered point
+                                                        if (point) {
+                                                            point.onMouseOver(); // Show the hover marker
+                                                            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                                        }*/
                                                     }
                                                 }
                                             }

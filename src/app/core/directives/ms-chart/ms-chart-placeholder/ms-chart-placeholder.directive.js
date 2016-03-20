@@ -12,18 +12,23 @@
     {
         var vm = this;
         var type = $scope.$parent.type;
-        vm.title = $scope.tearsheet.chartSetting ? $scope.tearsheet.chartSetting.chartTitle: '';
-        vm.id = $scope.id;
-        vm.isChartTitle = $scope.tearsheet.isChartTitle;
 
-        console.log('Placeholder Scope');
-        console.log($scope);
+        vm.title = $scope.title;
+        console.log(' vm.title--------------------->', vm.title);
+        vm.id = $scope.id;
+        vm.isChartTitle = vm.title ? true :  false;
+        vm.isMainChart = ($scope.tearsheet && $scope.tearsheet.isMainChart) ? true :  false;
+
 
         vm.addChart = addChart;
         vm.removeChart = removeChart;
         vm.maximizeChart = maximizeChart;
         vm.ResetChart = resetChart;
         vm.saveChart = saveChart;
+
+        vm.swapChart = swapChart;
+        vm.saveChartSettings = saveChartSettings;
+
 
         //Reset the chart functionality.
         function resetChart()
@@ -70,15 +75,16 @@
             var companyId = commonBusiness.companyId;
             var projectId = commonBusiness.projectId;
             var stepId = commonBusiness.stepId;
-            console.log('itemId--------------------------------',$scope.tearsheet,itemId);
-            vm.saveChartSettings(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId);
+
+            vm.saveChartSettings(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date,
+                end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId, chart_id);
 
         }
 
-        vm.saveChartSettings = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId) {
+         function saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId, chart_id) {
             stockService
-                .saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, chartTitle, mnemonic, itemId,stepId, projectId)
-                .then(function(data) {
+                .saveChartSettings(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, vm.title, mnemonic, itemId,stepId, projectId, chart_id)
+                .then(function(response) {
                     //chart saved;
                     console.log('chart saved ');
                 });
@@ -103,10 +109,30 @@
         function addChart() {
             switch (angular.lowercase(type)) {
                 case 'stock':
-                    var ele = $('#ms-chart-container');
-                    var newScope = $scope.$parent.$new();
-                    var html = '<ms-chart-placeholder id="stock-2" title="Chart Name 2  "></ms-chart-placeholder>';
-                    ele.append($compile(html)(newScope));
+
+                    if (chartIndex < 5){ //limit the chart count
+                        var ele = $('#ms-chart-container');
+                            var newScope = $scope.$parent.$new();
+
+                            $scope.tearsheet.chartSetting.selectedPeriod = $scope.filterState.interval;
+                            $scope.tearsheet.chartSetting.date_start = $scope.filterState.startDate;
+                            $scope.tearsheet.chartSetting.date_end = $scope.filterState.endDate;
+                            newScope.tearsheet = {
+                                type: 'stock',
+                                isChartTitle: true,
+                                chartSetting: angular.copy($scope.tearsheet.chartSetting),
+                                mnemonicId: $scope.tearsheet.mnemonicId,
+                                itemId: $scope.tearsheet.itemId
+                            };
+                            newScope.title = vm.title;
+                            var msChartPlaceHolderId = '1';
+                            var html = '<ms-chart-placeholder id="chart-' + chartIndex + '" class="chart" title="title" tearsheet="tearsheet"></ms-chart-placeholder>';
+
+                            ele.find('#chart-0').after($compile(html)(newScope));
+                    }else
+                        dialog.alert( 'Error',"Max5 charts could be added!",null, {ok:{name:'ok',callBack:function(){
+                            console.warn('excess chart tried to be added');
+                        }}});
                     break;
                 default:
                     break;
@@ -131,7 +157,7 @@
         return {
             restrict: 'E',
             scope: {
-                title: '@',
+                title: '=',
                 id: '@',
                 tearsheet: '='
             },
@@ -149,12 +175,20 @@
                     switch (scope.tearsheet.type)
                     {
                         case 'stock':
-
-                            newScope.chartsetting = scope.tearsheet.chartSetting;
-                            newScope.mnemonicid = scope.tearsheet.mnemonicId;
-                            newScope.itemid = scope.tearsheet.itemId;
-
-                            html = '<ms-stock-chart></ms-stock-chart>';
+                            scope.filterState = {};
+                            scope.filterState.splits = scope.tearsheet.chartSetting.isSplits;
+                            scope.filterState.earnings = scope.tearsheet.chartSetting.isEarnings;
+                            scope.filterState.dividends = scope.tearsheet.chartSetting.isDividents;
+                            scope.filterState.interval = scope.tearsheet.chartSetting.selectedPeriod;
+                            scope.filterState.mainStock = '';
+                            scope.filterState.selectedIndices = scope.tearsheet.chartSetting.selectedIndicesList;
+                            scope.filterState.selectedPeers = scope.tearsheet.chartSetting.selectedPeerList;
+                            scope.filterState.chart_id = scope.tearsheet.chartSetting.chart_id;
+                            scope.filterState.chart_date = scope.tearsheet.chartSetting.chart_date;
+                            scope.filterState.date_start = scope.tearsheet.chartSetting.date_start;
+                            scope.filterState.date_end = scope.tearsheet.chartSetting.date_end;
+                            scope.filterState.title = scope.title;
+                            html = '<ms-stock-chart chart-id="id" item-id="tearsheet.itemId" mnemonic-id="tearsheet.mnemonicId" filter-state="filterState"></ms-stock-chart>';
                             break;
 
                         case 'image':

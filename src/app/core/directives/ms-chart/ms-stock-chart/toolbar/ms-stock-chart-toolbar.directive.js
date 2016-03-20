@@ -10,6 +10,7 @@
     function msStockChartToolBarController($scope, $log, stockService, stockChartBusiness, $mdMenu, dialog)
     {
         var vm = this;
+        console.log('vm.filterState.title',vm.filterState.title);
         vm.splits = false;
         vm.earnings = false;
         vm.dividends = false;
@@ -158,44 +159,52 @@
 
         function selectedItemChange(item) {
             $log.info('Item changed to ' + JSON.stringify(item));
-            var count = 1+ stockChartBusiness.selectedIndices.length + stockChartBusiness.selectedPeers.length;
-            if(count <5) {
-                if(item && item.value && stockChartBusiness.selectedIndices.indexOf(item.value) === -1) {
-                    var selected = stockChartBusiness.selectedIndices;
-                    selected.push(item.value);
-                    stockChartBusiness.selectedIndices = selected;
+
+            if(item){
+                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
+                if(count <5) {
+                    if(item && item.value && vm.filterState.selectedIndices.indexOf(item.value) === -1) {
+                        var selected = vm.filterState.selectedIndices;
+                        selected.push(item.value);
+                        vm.filterState.selectedIndices = selected;
+                        vm.onFilterStateUpdate();
+                    }
+
                 }
-                vm.selectedItem = null;
-                vm.searchIndText = "";
+                else {
+                    dialog.alert( 'Error',"Max5 Stock allow to compare!",null,{ok:{name:'ok',callBack:function(){
+                        console.log('cliked ok');
+                    }}});
+                }
             }
-            else {
-                console.log('more then 5 stocks are not allowed');
-                dialog.alert( 'Error',"Max5 Stock allow to compare!",null,{ok:{name:'ok',callBack:function(){
-                    console.log('cliked ok');
-                }}});
-            }
+            vm.selectedItem = null;
+            vm.searchIndText = "";
             $mdMenu.hide();
         }
 
         function selectedPeerChange(item) {
-            $log.info('Item changed to ' + JSON.stringify(item));
-            var count = 1+ stockChartBusiness.selectedIndices.length + stockChartBusiness.selectedPeers.length;
-            if(count <5){
-                if(item && item.display && stockChartBusiness.selectedPeers.indexOf(item.display) === -1 ) {
-                    var selected = stockChartBusiness.selectedPeers;
-                    selected.push(item.display);
-                    stockChartBusiness.selectedPeers = selected;
-                    $mdMenu.hide();
+
+            if(item){
+                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
+                if(count <5){
+                    if(item && item.display && vm.filterState.selectedPeers.indexOf(item.display) === -1 ) {
+                        var selected = vm.filterState.selectedPeers;
+                        selected.push(item.value);
+                        vm.filterState.selectedPeers = selected;
+                        $mdMenu.hide();
+                        vm.onFilterStateUpdate();
+                    }
+
                 }
-                vm.selectedPeerItem = null;
-                vm.searchPeerText = "";
+                else {
+                    //show pop up
+                    dialog.alert( 'Error',"Max5 Stock allow to compare!",null, {ok:{name:'ok',callBack:function(){
+                        console.log('cliked ok');
+                    }}});
+                }
             }
-            else {
-                //show pop up
-                dialog.alert( 'Error',"Max5 Stock allow to compare!",null, {ok:{name:'ok',callBack:function(){
-                    console.log('cliked ok');
-                }}});
-            }
+            vm.selectedPeerItem = null;
+            vm.searchPeerText = "";
             $mdMenu.hide();
 
         }

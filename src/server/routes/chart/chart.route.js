@@ -14,7 +14,8 @@
             app.post('/api/findTickers', findTickers),
             app.post('/api/getIndices', findIndices),
             app.post('/api/getSavedChartData', getSavedChartData),
-            app.post('/api/saveChartSettings', saveChartSettings)
+            app.post('/api/saveChartSettings', saveChartSettings),
+            app.post('/api/saveChartAllSettings', saveChartAllSettings)
         ]);
 
         function getChartData(req, res, next) {
@@ -53,6 +54,41 @@
                 });
         }
 
+        //this creates new charts or remove not iterated ones
+        function saveChartAllSettings(req, res, next) {
+            var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.saveChartSettings;
+            }
+
+            var ssnid= req.headers['x-session-token'],
+                companyId = req.body.companyId,
+                stepId = req.body.stepId,
+                projectId = req.body.projectId,
+                chartSettings = req.body.chartSettings;
+            //chartsettings should be a array and and defined
+            var args = {
+                data : {
+                    project_id: parseInt(projectId),
+                    company_id: parseInt(companyId),
+                    step_id: parseInt(stepId),
+                    ssnid : ssnid,
+                    delete_ignored:true,
+                    data : chartSettings
+                },
+                headers: { "Content-Type": "application/json" }
+            };
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+                res.send(data);
+            });
+        }
+
+
+
+        //this ceates a single chart
         function saveChartSettings(req, res, next) {
             var service = getServiceDetails('charts');
             console.log('saveChartSettings Parameters ----------------------------------');
@@ -81,22 +117,15 @@
                 projectId = req.body.projectId;
 
             var args = {
-                project_id: parseInt(projectId),
-                company_id: parseInt(companyId),
-                step_id: parseInt(stepId),
-                ssnid:ssnid,
-                data : [{
-                    chart_title: chart_title,
-                    peers: tickers,
-                    period:period,
-                    date_start:start_date,
-                    date_end:end_date,
-                    dividends: dividends,
-                    earnings: earnings,
-                    splits:splits,
-                    mnemonic:mnemonic,
-                    item_id:item_id
-                }]
+                data : {
+                    project_id: parseInt(projectId),
+                    company_id: parseInt(companyId),
+                    step_id: parseInt(stepId),
+                    ssnid:ssnid,
+                    data : [chartSetting],
+                    delete_ignored: false
+                },
+                headers: { "Content-Type": "application/json" }
             };
             console.log('args----------------------------->',args);
             client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {

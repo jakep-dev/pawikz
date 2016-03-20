@@ -12,6 +12,7 @@
     {
         var vm = this;
         vm.selectedIndex ="";
+        console.log('vm.filterState.title',vm.filterState.title);
         vm.searchVal = '';
         vm.searchedStocks = [];
         vm.selectedStockCount = 1;
@@ -73,6 +74,7 @@
                 var seriesByTickers = {};
                 var secondchartSerArr = [];
                 var primarTickerName = '';
+                var firstChartTitle = 'Price';
                 if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0)
                     primarTickerName = results.stockChartPrimaryData[0].ticker;
                 var peerData = null;
@@ -84,8 +86,11 @@
                         lengthDiff = true;
                     }
                 }
-                //console.log('peerData after assigned: ' + peerData);
 
+                if(peerData)
+                {
+                    firstChartTitle='Percent Change';
+                }
 
                 for (var i = 0; i < results.stockChartPrimaryData.length; i++) {
 
@@ -210,9 +215,11 @@
                 }
                 //console.log('seriesSet----->',seriesSet);
                 // firstchartSerArr[firstchartSerArr.length] = {"name":stockName, "data": firstDatasetArr};
+                //console.log('peerData: ' + peerData);
+
                 datasetArr[datasetArr.length] = {
                     "name": "",
-                    "yaxisTitle": "Percent Change",
+                    "yaxisTitle": firstChartTitle,
                     "xaxisTitle": "",
                     "series": seriesSet,
                     "data": dataSet,
@@ -244,6 +251,7 @@
                 };
                 //console.log(JSON.stringify(data));
                 //console.log(JSON.stringify(outArr).slice(1,-1));
+                //console.log('secondchartSerArr.length after: ' + secondchartSerArr.length);
                 return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
                 //return outArr;
             }
@@ -262,7 +270,10 @@
         loadChartData();
 
         vm.onPeerRemove = function (peer) {
-            var index = stockChartBusiness.selectedIndices.indexOf(peer);
+
+            console.log('On Peer remove');
+            var index = vm.filterState.selectedIndices.indexOf(peer);
+
             if (index !== -1 ) {
                 var selectedIndices = stockChartBusiness.selectedIndices;
                 selectedIndices.splice(index,1);
