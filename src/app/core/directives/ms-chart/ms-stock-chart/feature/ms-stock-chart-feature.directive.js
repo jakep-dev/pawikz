@@ -365,28 +365,30 @@
                                                         });
                                                         //Write cross hair logic here
                                                         /*chart = Highcharts.charts[hoveredChartIndex];
-                                                         e = chart.pointer.normalize(e); // Find coordinates within the chart
-                                                         point = chart.series[0].searchPoint(e, true); // Get the hovered point
-                                                         if (point) {
-                                                         point.onMouseOver(); // Show the hover marker
-                                                         chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                                                         }
 
-                                                         if(hoveredChartIndex%2==0)
-                                                         {
-                                                         chart = Highcharts.charts[hoveredChartIndex+1];
-                                                         }
-                                                         else
-                                                         {
-                                                         chart = Highcharts.charts[hoveredChartIndex-1];
-                                                         }
+                                                        e = chart.pointer.normalize(e); // Find coordinates within the chart
+                                                        point = chart.series[0].searchPoint(e, true); // Get the hovered point
+                                                        if (point) {
+                                                            point.onMouseOver(); // Show the hover marker
+                                                            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                                        }
 
-                                                         e = chart.pointer.normalize(e); // Find coordinates within the chart
-                                                         point = chart.series[0].searchPoint(e, true); // Get the hovered point
-                                                         if (point) {
-                                                         point.onMouseOver(); // Show the hover marker
-                                                         chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                                                         }*/
+                                                        if(hoveredChartIndex%2==0)
+                                                        {
+                                                            chart = Highcharts.charts[hoveredChartIndex+1];
+                                                        }
+                                                        else
+                                                        {
+                                                            chart = Highcharts.charts[hoveredChartIndex-1];
+                                                        }
+
+                                                        e = chart.pointer.normalize(e); // Find coordinates within the chart
+                                                        point = chart.series[0].searchPoint(e, true); // Get the hovered point
+                                                        if (point) {
+                                                            point.onMouseOver(); // Show the hover marker
+                                                            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                                        }*/
+
                                                     }
                                                 }
                                             }

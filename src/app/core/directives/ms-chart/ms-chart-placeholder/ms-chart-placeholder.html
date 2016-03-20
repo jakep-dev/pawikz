@@ -16,10 +16,47 @@
                 <md-menu-content flex layout-padding center>
 
                     <md-menu-item>
+                        <md-button  aria-label="add" ng-click="vm.addChart()">
+                          <span layout="row" layout-align="start center">
+                                <md-icon md-font-icon="icon-plus"></md-icon>
+                                <span>Add</span>
+                          </span>
+                        </md-button>
+                    </md-menu-item>
+
+
+                    <md-menu-item>
                         <md-button  aria-label="delete" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
                           <span layout="row" layout-align="start center">
                                 <md-icon md-font-icon="icon-minus"></md-icon>
                                 <span>Delete</span>
+                          </span>
+                        </md-button>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-button  aria-label="reset" ng-click="vm.ResetChart()">
+                          <span layout="row" layout-align="start center">
+                                <md-icon md-font-icon="icon-refresh"></md-icon>
+                                <span>Reset</span>
+                          </span>
+                        </md-button>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-button  aria-label="reset" ng-click="vm.swapChart('U')" ng-if="!vm.isMainChart">
+                          <span layout="row" layout-align="start center">
+                                <md-icon md-font-icon="icon-arrow-up"></md-icon>
+                                <span>Move Up</span>
+                          </span>
+                        </md-button>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-button  aria-label="reset" ng-click="vm.swapChart('D')" ng-if="!vm.isMainChart">
+                          <span layout="row" layout-align="start center">
+                                <md-icon md-font-icon="icon-arrow-down"></md-icon>
+                                <span>Move Down</span>
                           </span>
                         </md-button>
                     </md-menu-item>
