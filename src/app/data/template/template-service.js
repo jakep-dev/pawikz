@@ -12,12 +12,38 @@
         var service = {
             getSchema: getSchema,
             getData: getData,
+            getDynamicTableData: getDynamicTableData,
             getSchemaAndData: getSchemaAndData,
             save: save
         };
 
         return service;
 
+        function getDynamicTableData(projectId, stepId,
+                                     mnemonic, itemId, columns)
+        {
+            var input = {
+                project_id : projectId,
+                step_id: stepId,
+                mnemonic: mnemonic,
+                item_id: itemId,
+                columns: columns
+            }
+
+            return $http({
+                url : clientConfig.endpoints.templateEndPoint.dynamic,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+            })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
 
         function save(data)
         {

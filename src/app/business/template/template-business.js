@@ -18,10 +18,17 @@
            save: save,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
-           getReadyForAutoSave: getReadyForAutoSave
+           getReadyForAutoSave: getReadyForAutoSave,
+           getTableLayoutMnemonicValue: getTableLayoutMnemonicValue
         };
 
         return business;
+
+        //
+        function getTableLayoutMnemonicValue(itemId, mnemonic)
+        {
+
+        }
 
         //Get ready for auto save.
         function getReadyForAutoSave(itemId, mnemonic, value)

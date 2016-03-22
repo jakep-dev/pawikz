@@ -27,7 +27,7 @@
                     if(angular.isUndefined(row.id) || row.id !== 'toolbar_links') {
                         html = '';
                         newScope = null;
-                        html += '<div class="row" layout-align="center center"  layout="row" layout-sm="column" flex>';
+                        html += '<div class="row" layout-align="center center"  layout="row" flex>';
 
                         var columns = null;
 

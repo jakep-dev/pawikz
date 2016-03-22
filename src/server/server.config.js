@@ -37,7 +37,8 @@ exports.restcall =
                     overView: 'getTemplateOverview',
                     templateSchema: 'getTemplateUIStructure',
                     templateMnemonics: 'getTemplateMnemonics',
-                    findTickers : 'findTickers'
+                    findTickers : 'findTickers',
+                    dynamicTableData: 'getDynamicTableData'
                 }
             },
         {

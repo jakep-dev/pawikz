@@ -35,6 +35,10 @@
                 scope.collapsed = false;
                 scope.title = scope.tearheader.label;
                 var html = '';
+                var isTableLayout = false;
+                isTableLayout = (scope.tearcontent.length && scope.tearcontent.length > 1 &&
+                _.findIndex(scope.tearcontent, {id: 'TableLayOut'}) !== -1)
+
                 angular.forEach(scope.tearcontent, function(content)
                 {
                     html = '<div>';
@@ -42,12 +46,20 @@
                     {
                         case 'LabelItem':
                             var newScope  = scope.$new();
-                            html += '<ms-label value="Sherin"></ms-label>';
+                            newScope.tearsheet = {
+                                value: content.Label,
+                                type: 'header3'
+                            };
+
+                            html += '<ms-header tearsheet="tearsheet"></ms-header>';
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
 
                         case 'GenericTableItem':
+                            if(isTableLayout)
+                             return;
+
                             var newScope  = scope.$new();
                             newScope.tearsheet = {
                                 rows: content.row
@@ -58,10 +70,29 @@
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
                         case 'TableLayOut':
-                            //var newScope  = scope.$new();
-                            //html += '<ms-message message="Under Construction"></ms-message>';
-                            //html += '</div>';
-                            //el.find('#ms-accordion-content').append($compile(html)(newScope));
+                            var newScope  = scope.$new();
+
+                            var header = null;
+                            var col = null;
+
+                            //Get Header And Body Details
+                            if(isTableLayout)
+                            {
+                                var genericTableItemRow = _.first(scope.tearcontent);
+                                header = {};
+                                col = {};
+                                header = genericTableItemRow.row;
+                                col = content.TableRowTemplate.row;
+                            }
+
+                            newScope.tearsheet = {
+                                header: header,
+                                columns: col
+                            };
+
+                            html += '<ms-tablelayout tearsheet="tearsheet"></ms-tablelayout>';
+                            html += '</div>';
+                            el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
                         case 'RTFTextAreaItem':
                             var itemId = content.ItemId;

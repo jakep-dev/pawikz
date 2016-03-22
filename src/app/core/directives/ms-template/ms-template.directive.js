@@ -72,23 +72,35 @@
             var sectionId = null;
             var component = null;
             var tearSheetItem = comp.TearSheetItem;
+            var startIndex = _.findIndex(contentComponents, comp);
+            var isSkip = false;
 
-            if(tearSheetItem.Label &&
+            //Determine previous had Label
+            var nextComp = contentComponents[startIndex + 1];
+            if(nextComp && nextComp.TearSheetItem &&
+               !nextComp.TearSheetItem.length && !nextComp.TearSheetItem.comId)
+            {
+                isSkip = true;
+            }
+
+            if(!isSkip &&
+               tearSheetItem.Label &&
                typeof(tearSheetItem.Label) !== 'object' &&
                tearSheetItem.id &&
                tearSheetItem.id === 'LabelItem')
             {
-                var startIndex = _.findIndex(contentComponents, comp);
+
                 var endIndex = startIndex + 1;
 
                 var foundIndex = false;
-                _.each(contentComponents.slice(startIndex + 1, contentComponents.length - 1),
-                    function(each)
+                var secondVariationComp = contentComponents.slice(startIndex + 1, contentComponents.length - 1);
+
+                _.each(secondVariationComp,function(each)
                 {
-                   if(each.TearSheetItem.Label &&
-                      typeof(each.TearSheetItem.Label) === 'object' &&
+                   if((each.TearSheetItem.Label &&
+                      typeof(each.TearSheetItem.Label) !== 'object' &&
                       each.TearSheetItem.id &&
-                      each.TearSheetItem.id === 'LabelItem')
+                      each.TearSheetItem.id === 'LabelItem'))
                    {
                        foundIndex = true;
                    }
@@ -109,46 +121,93 @@
                     {
                         var item = grpComp.TearSheetItem;
 
-                        if(item.Label)
+                        if(!item.length)
                         {
-                            component.header = {
-                                label: item.Label,
-                                id: item.id,
-                                itemid: item.ItemId || '',
-                                mnemonicid: item.Mnemonic || '',
-                                variation: 'second'
+                            if(item.Label &&
+                               typeof(item.Label) !== 'object')
+                            {
+                                component.header = {
+                                    label: item.Label,
+                                    id: item.id,
+                                    itemid: item.ItemId || '',
+                                    mnemonicid: item.Mnemonic || '',
+                                    variation: 'second'
+                                }
+                                if(item.comId)
+                                {
+                                    sectionId = item.comId;
+                                }
+                            }
+                            else {
+                                sectionId = grpComp.id;
                             }
                         }
-                        else if(grpComp.id)
-                        {
-                            sectionId = grpComp.id;
+                        else if(!grpComp.id) {
+                            _.each(item, function(eachSection)
+                            {
+                                if(!eachSection.comId)
+                                {
+                                    component.sections.push(eachSection);
+                                }
+                                else if(eachSection.comId)
+                                {
+                                    sectionId = eachSection.comId;
+                                }
+
+                                if(sectionId)
+                                {
+                                    var compSection = extractSection(fullGroupComponents, sectionId);
+                                    if(compSection)
+                                    {
+                                        component.sections.push(compSection);
+                                    }
+                                    sectionId = null;
+                                }
+                            });
                         }
+
                     });
 
                     //Find section based on sectionId
                     if(sectionId)
                     {
-                        var sectionTearSheetItem = _.filter(fullGroupComponents, function(section)
-                        {
-                            if(section.TearSheetItem &&
-                               section.id &&
-                               section.id === sectionId)
-                            {
-                                return section;
-                            }
-                        });
+                        var compSection = extractSection(fullGroupComponents, sectionId);
 
-                        if(sectionTearSheetItem &&
-                           sectionTearSheetItem.length &&
-                           sectionTearSheetItem.length > 0)
+                        if(compSection)
                         {
-                            component.sections.push(sectionTearSheetItem[0]);
+                            component.sections.push(compSection);
                         }
                     }
                 }
             }
 
             return component;
+        }
+
+        function extractSection(fullGroupComponents, sectionId)
+        {
+            if(!sectionId || !fullGroupComponents ||
+                fullGroupComponents.length === 0)
+            {
+                return null;
+            }
+
+            var sectionTearSheetItem = _.filter(fullGroupComponents, function(section)
+            {
+                if(section.TearSheetItem &&
+                    section.id &&
+                    section.id === sectionId)
+                {
+                    return section;
+                }
+            });
+
+            if(sectionTearSheetItem &&
+                sectionTearSheetItem.length &&
+                sectionTearSheetItem.length > 0)
+            {
+                return sectionTearSheetItem[0];
+            }
         }
 
         function thirdVariation(contentComponents, comp)
@@ -179,6 +238,87 @@
             return component;
         }
 
+        function fourthVariation(contentComponents, comp)
+        {
+            var sectionId = null;
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
+
+            if(tearSheetItem.Label &&
+                typeof(tearSheetItem.Label) !== 'object' &&
+                tearSheetItem.id &&
+                tearSheetItem.id === 'LabelItem')
+            {
+                var startIndex = _.findIndex(contentComponents, comp);
+                var endIndex = startIndex + 1;
+
+                var foundIndex = false;
+                _.each(contentComponents.slice(startIndex + 1, contentComponents.length - 1),
+                    function(each)
+                    {
+                        if(each.TearSheetItem.Label &&
+                            typeof(each.TearSheetItem.Label) === 'object' &&
+                            each.TearSheetItem.id &&
+                            each.TearSheetItem.id === 'LabelItem')
+                        {
+                            foundIndex = true;
+                        }
+                        if(!foundIndex)
+                            endIndex++;
+                    });
+
+                var fullGroupComponents = contentComponents.slice(startIndex, endIndex);
+
+                if(fullGroupComponents)
+                {
+                    component = {
+                        header: {},
+                        sections: []
+                    };
+
+                    _.each(fullGroupComponents, function(grpComp)
+                    {
+                        var item = grpComp.TearSheetItem;
+
+                        if(!item.length)
+                        {
+                            if(item.Label &&
+                                typeof(item.Label) !== 'object')
+                            {
+                                component.header = {
+                                    label: item.Label,
+                                    id: item.id,
+                                    itemid: item.ItemId || '',
+                                    mnemonicid: item.Mnemonic || '',
+                                    variation: 'second'
+                                }
+                                if(item.comId)
+                                {
+                                    sectionId = item.comId;
+                                }
+                            }
+                            else {
+                                sectionId = grpComp.id;
+                            }
+                        }
+                    });
+
+                    //Find section based on sectionId
+                    if(sectionId)
+                    {
+                        var compSection = extractSection(fullGroupComponents, sectionId);
+
+                        if(compSection)
+                        {
+                            component.sections.push(compSection);
+                        }
+                    }
+                }
+            }
+
+            return component;
+        }
+
         return {
             restrict: 'E',
             scope   : {
@@ -199,11 +339,31 @@
                     content: []
                 };
 
-                headerComponents.push.apply(headerComponents, components.slice(0,2));
-                contentComponents.push.apply(contentComponents, components.slice(2, components.length - 1));
+                var headerEndIndex = null;
+
+                _.each(components, function(findHeader)
+                {
+                   var tearSheetItem = findHeader.TearSheetItem;
+
+                    if(tearSheetItem &&
+                       tearSheetItem.Label &&
+                       typeof(tearSheetItem.Label) !== 'object' &&
+                       !headerEndIndex)
+                    {
+                       headerEndIndex = _.findIndex(components, findHeader);
+                        return;
+                    }
+                });
 
 
-                console.log('Body Componenets');
+                headerComponents.push.apply(headerComponents, components.slice(0,headerEndIndex + 1));
+                contentComponents.push.apply(contentComponents, components.slice(headerEndIndex + 1, components.length - 1));
+
+                console.log('Header Component Index');
+                console.log(headerEndIndex);
+                console.log('Header Component');
+                console.log(headerComponents);
+                console.log('Content Componenets');
                 console.log(contentComponents);
 
                 //Build Headers
@@ -228,7 +388,6 @@
                 //Build Components.
                 var processedComp = [];
 
-
                 //Build Content
                 _.each(contentComponents, function(comp)
                 {
@@ -245,6 +404,16 @@
                     else if(comp.id) {
                         isReadyToProcess =  (_.findIndex(processedComp, {compId: comp.id}) === -1);
                     }
+                    else if(comp.TearSheetItem.length)
+                    {
+                        _.each(comp.TearSheetItem, function(tearSheet)
+                        {
+                           if(isReadyToProcess)
+                           {
+                               isReadyToProcess= (_.findIndex(processedComp, {compId: tearSheet.id}) === -1);
+                           }
+                        });
+                    }
 
                     if(isReadyToProcess)
                     {
@@ -259,6 +428,11 @@
                         if(!component)
                         {
                             component = thirdVariation(contentComponents, comp);
+                        }
+
+                        if(!component)
+                        {
+                            component = fourthVariation(contentComponents, comp);
                         }
                     }
 
@@ -313,6 +487,10 @@
                                 }
                                 else if(section.TearSheetItem) {
                                     newScope.tearcontent.push(section.TearSheetItem);
+                                }
+                                else if(section.Label)
+                                {
+                                    newScope.tearcontent.push(section);
                                 }
                             });
 
