@@ -17,7 +17,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($compile, stockService, commonBusiness)
+    function msChartDirective($rootScope, $compile, stockService, commonBusiness)
     {
         return {
             restrict: 'E',

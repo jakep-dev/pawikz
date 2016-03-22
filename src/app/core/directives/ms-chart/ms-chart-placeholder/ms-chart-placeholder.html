@@ -1,4 +1,4 @@
-<div id="vm.id" class="md-whiteframe-1dp md-light-blue-A100-bg">
+<div  class="md-whiteframe-1dp  md-light-blue-A100-bg">
     <div id="ms-chart-placeholder-header" layout="row" layout-align="space-between center">
         <div layout-padding>
             <md-input-container  md-no-float class="md-accent" style="height: 10px;width: 100%">
@@ -29,14 +29,26 @@
                 <md-icon md-font-icon="icon-plus"></md-icon>
             </md-button>
 
-            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)">
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Delete
                 </md-tooltip>
                 <md-icon md-font-icon="icon-minus"></md-icon>
             </md-button>
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.swapChart('U')" ng-if="!vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Up
+                </md-tooltip>
+                <md-icon md-font-icon="icon-arrow-up"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.swapChart('D')" ng-if="!vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Down
+                </md-tooltip>
+                <md-icon md-font-icon="icon-arrow-down"></md-icon>
+            </md-button>
 
-            <md-button class="md-icon-button" aria-label="refresh-chart">
+            <md-button class="md-icon-button" aria-label="refresh-chart" ng-click="vm.ResetChart()">
                 <md-tooltip md-direction="top">
                     Reset
                 </md-tooltip>
@@ -59,7 +71,4 @@
 
     </md-content>
 </div>
-
-
-
 

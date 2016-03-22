@@ -1,10 +1,12 @@
 <div id="ms-chart-simple" class="page-layout simple fullwidth white-bg" layout="row" ng-cloak>
     <div class="center" flex layout-padding>
         <ms-content id="ms-chart-container" class="ms-chart-container-class">
+            <ms-chart-placeholder ng-repeat="chart in jsCharts" class="chart" id="chart.msChartPlaceHolderId"
+                                  title="chart.title" tearsheet="chart.tearsheet" ></ms-chart-placeholder>
 
+
+
+            <ms-chart-placeholder ng-repeat="chart in oldCharts" class="chart"  title="chart.title" tearsheet="chart.tearsheet"></ms-chart-placeholder>
         </ms-content>
     </div>
 </div >
-
-
-

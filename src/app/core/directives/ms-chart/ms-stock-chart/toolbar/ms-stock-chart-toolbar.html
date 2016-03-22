@@ -45,7 +45,6 @@
                                 md-items="item in vm.queryIndiceSearch(vm.searchIndText)"
                                 md-item-text="item.display"
                                 md-min-length="0"
-                                md-selected-item="vm.selectedItem"
                                 placeholder="Search Indices">
                             <md-item-template>
                                 <span md-highlight-text="vm.searchIndText" md-highlight-flags="^i">{{item.display}}</span>
@@ -97,27 +96,26 @@
                 </md-button>
                 <md-menu-content>
                     <md-menu-item>
-                        <md-datepicker ng-model="vm.startDate" ng-change="vm.customDateChange();"
-                                ></md-datepicker>
+                        <md-datepicker ng-model="vm.startDate" ng-change="vm.customDateChange();"></md-datepicker>
                     </md-menu-item>
 
                     <md-menu-item>
-                        <md-datepicker ng-model="vm.endDate"></md-datepicker>
+                        <md-datepicker ng-model="vm.endDate" ng-change="vm.customDateChange();"></md-datepicker>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>
         </div>
-        <div id="toolbar-date" flex>
-            <md-radio-group ng-model="vm.range" layout="row" ng-change = "vm.changedDividendsEvents()">
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('1W')">1W</md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('1M')"> 1M </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('3M')"> 3M </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('18M')"> 18M </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('1Y')"> 1Y </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('2Y')"> 2Y </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('3Y')"> 3Y </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('5Y')"> 5Y </md-button>
-                <md-button class="md-icon-button" ng-click="vm.changedPeriod('10Y')"> 10Y </md-button>
+        <div id="toolbar-date" flex-1>
+            <md-radio-group ng-model="vm.range" layout="row">
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('1W')">1W</md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('1M')"> 1M </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('3M')"> 3M </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('18M')"> 18M </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('1Y')"> 1Y </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('2Y')"> 2Y </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('3Y')"> 3Y </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('5Y')"> 5Y </md-button>
+                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('10Y')"> 10Y </md-button>
             </md-radio-group>
         </div>
     </div>

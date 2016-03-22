@@ -8,7 +8,7 @@
         .directive('msStockChart', msStockChartDirective);
 
 
-    function msStockChartController($rootScope, $scope, stockService,stockChartBusiness, commonBusiness)
+    function msStockChartController($scope,stockService, commonBusiness)
     {
         var vm = this;
         vm.selectedIndex ="";
@@ -18,40 +18,48 @@
         vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
         //variables
-        //hard coded break grounds
 
-        $rootScope.$on('chartDataChanged', function() {
+        vm.onFilterStateUpdate = function (){
+            loadChartData();
+        };
+
+        $scope.$on('filterSateUpdate',function(event) {
+            $scope.$broadcast('resetEvents');
             loadChartData();
         });
 
         function loadChartData() {
-            var splitsValue = stockChartBusiness.splits == true ? 'Y': 'N';
-            var earningsValue = stockChartBusiness.earnings == true ? 'Y': 'N';
-            var dividendsValue = stockChartBusiness.dividends == true ? 'Y': 'N';
-            var periodValue = stockChartBusiness.interval;
-            var mainStock = stockChartBusiness.mainStock;
-            var selectedPeerList = stockChartBusiness.selectedPeers;
-            var selectedIndicesList =  stockChartBusiness.selectedIndices;
+            var splitsValue = vm.filterState.splits == true ? 'Y': 'N';
+            var earningsValue = vm.filterState.earnings == true ? 'Y': 'N';
+            var dividendsValue = vm.filterState.dividends == true ? 'Y': 'N';
+            var periodValue = vm.filterState.interval;
+            var mainStock = vm.filterState.mainStock;
+            var selectedPeerList = vm.filterState.selectedPeers;
+            var selectedIndicesList =  vm.filterState.selectedIndices;
             var stockString = '';
             if (mainStock)  {
                 stockString = mainStock + ',';
             }
 
-            selectedPeerList.forEach( function(stock) {
-                stockString =stockString + stock + ',';
-            });
+            if(selectedPeerList != null) {
+                selectedPeerList.forEach(function (stock) {
+                    stockString = stockString + stock + ',';
+                });
+            }
 
-            selectedIndicesList.forEach( function(indics) {
-                stockString = stockString + '^'+indics + ',';
-            });
+            if(selectedIndicesList != null) {
+                selectedIndicesList.forEach(function (indics) {
+                    stockString = stockString + '^' + indics + ',';
+                });
+            }
 
 
             if(stockString !=='') {
                 stockString = stockString.slice(0, -1);
             }
             var start_date, end_date;
-            var from = stockChartBusiness.startDate;
-            var to = stockChartBusiness.endDate;
+            var from = vm.filterState.startDate;
+            var to = vm.filterState.endDate;
             if (periodValue ==='CUSTOM') {
                 start_date = from.getFullYear() + '-' + (from.getMonth()+1) + '-' + from.getDate();
                 end_date = to.getFullYear() + '-' + (to.getMonth()+1) + '-' + to.getDate();
@@ -86,12 +94,10 @@
                         lengthDiff = true;
                     }
                 }
-
                 if(peerData)
                 {
                     firstChartTitle='Percent Change';
                 }
-
                 for (var i = 0; i < results.stockChartPrimaryData.length; i++) {
 
                     var stock = results.stockChartPrimaryData[i];
@@ -270,19 +276,19 @@
         loadChartData();
 
         vm.onPeerRemove = function (peer) {
-
             console.log('On Peer remove');
             var index = vm.filterState.selectedIndices.indexOf(peer);
-
             if (index !== -1 ) {
-                var selectedIndices = stockChartBusiness.selectedIndices;
+                var selectedIndices = vm.filterState.selectedIndices;
                 selectedIndices.splice(index,1);
-                stockChartBusiness.selectedIndices = selectedIndices;
+                vm.filterState.selectedIndices = selectedIndices;
             }
-            var peerIndex = stockChartBusiness.selectedPeers.indexOf(peer);
+            var peerIndex = vm.filterState.selectedPeers.indexOf(peer);
             if (peerIndex !== -1 ) {
-                stockChartBusiness.selectedPeers.splice(peerIndex,1);
+                vm.filterState.selectedPeers.splice(peerIndex,1);
             }
+
+            loadChartData();
         };
     }
 
@@ -293,9 +299,10 @@
             restrict: 'E',
             require: 'msStockChartToolBar',
             scope   : {
-                chartsetting: '=',
-                mnemonicid: '@',
-                itemid: '@'
+                filterState: '=',
+                mnemonicId: '=',
+                itemId: '=',
+                chartId: '='
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
             controller : 'msStockChartController',

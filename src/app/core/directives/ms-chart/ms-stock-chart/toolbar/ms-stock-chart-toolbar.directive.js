@@ -7,18 +7,35 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope, $log, stockService, stockChartBusiness, $mdMenu, dialog)
+    function msStockChartToolBarController($scope,$log, stockService, $mdMenu, dialog)
     {
         var vm = this;
         console.log('vm.filterState.title',vm.filterState.title);
         vm.splits = false;
         vm.earnings = false;
         vm.dividends = false;
-        vm.selectedPeriod = stockChartBusiness.interval;
+        vm.selectedPeriod = vm.filterState.interval;
         vm.customDateChange = customDateChange;
         /* Indices Logic Start */
         vm.indices = [];
         vm.queryIndiceSearch = queryIndiceSearch;
+
+        /* Peers Logic Start*/
+
+        vm.peers = [];
+        vm.queryPeerSearch   = queryPeerSearch;
+        vm.selectedItemChange = selectedItemChange;
+        vm.selectedPeerChange = selectedPeerChange;
+        vm.searchTextChange   = searchTextChange;
+        vm.changedSplitsEvents = changedSplitsEvents;
+        vm.changedEarningsEvents = changedEarningsEvents;
+        vm.changedDividendsEvents = changedDividendsEvents;
+        vm.changedPeriod = changedPeriod;
+        vm.loadPeers = loadPeers;
+
+
+        setStartEndDate(vm.selectedPeriod);
+
         loadIndices();
         function queryIndiceSearch (query) {
             var results = query ? vm.indices.filter( createFilterFor(query) ) : vm.indices;
@@ -32,6 +49,7 @@
                 .then(function(data) {
                     if(data.indicesResp)
                     {
+                        vm.indices = [];
                         angular.forEach(data.indicesResp, function(ind)
                         {
                             vm.indices.push({
@@ -39,78 +57,64 @@
                                 display: ind.description
                             }) ;
                         });
+
                     }
                 });
 
         }
 
-        /* Indices Logic End */
-
-        /* Peers Logic Start*/
-
-        vm.peers = [];
-        vm.queryPeerSearch   = queryPeerSearch;
-        vm.selectedItemChange = selectedItemChange;
-        vm.selectedPeerChange = selectedPeerChange;
-        vm.searchTextChange   = searchTextChange;
-        vm.changedEvents = changedEvents;
-        vm.changedSplitsEvents = changedSplitsEvents;
-        vm.changedEarningsEvents = changedEarningsEvents;
-        vm.changedDividendsEvents = changedDividendsEvents;
-        vm.changedPeriod = changedPeriod;
-        loadPeers();
         setStartEndDate(vm.selectedPeriod);
 
-        function loadPeers()
+        function loadPeers(keyword)
         {
-            stockService
-                .findTickers('')
+            return stockService
+                .findTickers(keyword)
                 .then(function(data) {
-                    console.log(data);
                     if(data.tickerResp)
                     {
+                        vm.peers = [];
                         angular.forEach(data.tickerResp, function(ticker)
                         {
-                           vm.peers.push({
-                               value: ticker.companyId,
-                               display: ticker.companyName
-                           });
+                            vm.peers.push({
+                                value: ticker.ticker,
+                                display: ticker.companyName
+                            });
                         });
+                        return vm.peers;
                     }
                 });
         }
 
         function customDateChange (){
-            stockChartBusiness.startDate =vm.startDate;
-            stockChartBusiness.endDate =vm.endDate;
+            vm.filterState.startDate =vm.startDate;
+            vm.filterState.endDate =vm.endDate;
             vm.changedPeriod('CUSTOM');
+            vm.onFilterStateUpdate();
         }
 
-        function changedEvents() {
-            console.log('status of events changed here');
-            stockChartBusiness.splits = vm.splits;
-            stockChartBusiness.earnings = vm.earnings;
-            stockChartBusiness.dividends = vm.dividends;
-        }
 
         function changedSplitsEvents() {
-            stockChartBusiness.splits = vm.splits;
+            vm.filterState.splits = vm.splits;
+            vm.onFilterStateUpdate();
         }
 
         function changedEarningsEvents() {
-            stockChartBusiness.earnings = vm.earnings;
+            vm.filterState.earnings = vm.earnings;
+            vm.onFilterStateUpdate();
         }
 
         function changedDividendsEvents() {
-            stockChartBusiness.dividends = vm.dividends;
+            vm.filterState.dividends = vm.dividends;
+            vm.onFilterStateUpdate();
         }
 
         function changedPeriod(periodVal) {
-            stockChartBusiness.startDate =vm.startDate;
-            stockChartBusiness.endDate =vm.endDate;
-            stockChartBusiness.interval =periodVal;
+            vm.filterState.startDate =vm.startDate;
+            vm.filterState.endDate =vm.endDate;
+            vm.filterState.interval =periodVal;
 
             setStartEndDate(periodVal);
+            vm.onFilterStateUpdate();
         }
 
         function setStartEndDate(periodVal) {
@@ -145,12 +149,21 @@
                     d.setFullYear(d.getFullYear() - 10);
                 }
                 vm.startDate = d;
+                vm.filterState.startDate =vm.startDate;
+                vm.filterState.endDate =vm.endDate;
             }
         }
 
         function queryPeerSearch (query) {
-            var results = query ? vm.peers.filter( createFilterFor(query) ) : vm.peers;
-            return results;
+            if(query) {
+                return vm.loadPeers(query);
+            }
+            else
+            {
+                vm.peers = [];
+                return vm.peers;
+            }
+            // return vm.peers;
         }
 
         function searchTextChange(text) {
@@ -159,7 +172,6 @@
 
         function selectedItemChange(item) {
             $log.info('Item changed to ' + JSON.stringify(item));
-
             if(item){
                 var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
                 if(count <5) {
@@ -183,7 +195,6 @@
         }
 
         function selectedPeerChange(item) {
-
             if(item){
                 var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
                 if(count <5){
@@ -216,6 +227,12 @@
             };
         }
 
+        $scope.$on('resetEvents',function(event) {
+            vm.splits=false;
+            vm.earnings=false;
+            vm.dividends=false;
+        });
+
         /* Peers Logic End*/
     }
 
@@ -225,15 +242,17 @@
         return {
             restrict: 'E',
             scope   : {
-
+                chartId : "=",
+                filterState : "=",
+                onFilterStateUpdate : "="
             },
             controller: 'msStockChartToolBarController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/toolbar/ms-stock-chart-toolbar.html',
             link: function(scope, el, attr)
             {
-                console.log(el);
-            }
+            },
+            bindToController :true
         };
     }
 

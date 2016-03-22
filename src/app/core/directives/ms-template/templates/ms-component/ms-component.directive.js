@@ -112,6 +112,20 @@
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
+                        case "ScrapedItem":
+                            var newScope  = scope.$new();
+                            var mnemonicid = content.Mnemonic;
+                            var itemid = content.ItemId;
+
+                            newScope.mnemonicid = mnemonicid;
+                            newScope.itemid = itemid;
+
+                            console.log('Scrapped Item');
+                            console.log(newScope);
+
+                            html += '<ms-chart type="Stock" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
+                            el.find('#ms-accordion-content').append($compile(html)(newScope));
+                            break;
                     }
                 });
 
