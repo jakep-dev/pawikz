@@ -14,7 +14,7 @@ table.dataTable {
             vertical-align: middle;
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-            padding: 8px 8px;
+            padding: 12px 12px;
 
             &:first-child {
                 padding-left: 12px;
@@ -311,7 +311,7 @@ table.dataTable {
         }
 
         td {
-            padding: 8px 8px;
+            padding: 12px 12px;
             vertical-align: middle;
 
             &:first-child {
