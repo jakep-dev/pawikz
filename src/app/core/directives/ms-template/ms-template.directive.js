@@ -480,6 +480,7 @@
 
                             angular.forEach(renderContent.sections, function(section)
                             {
+                                newScope.isnoneditable =  (section.type === 'nonEditableUnmark');
                                 if(section.TearSheetItem &&
                                    section.TearSheetItem.length)
                                 {
@@ -496,7 +497,10 @@
 
                             if(newScope.tearcontent)
                             {
-                                var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent"></ms-component>';
+                                newScope.iscollapsible = true;
+                                newScope.isprocesscomplete = true;
+
+                                var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
                                 el.find('#template-content').append($compile(html)(newScope));
                             }
                         }

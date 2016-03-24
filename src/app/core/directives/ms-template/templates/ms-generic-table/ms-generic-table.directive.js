@@ -4,8 +4,15 @@
 
     angular
         .module('app.core')
+        .controller('msGenericTableController', msGenericTableController)
         .directive('msGenericTable', msGenericTableDirective);
 
+
+    function msGenericTableController($scope)
+    {
+        var vm = this;
+        vm.isnoneditable = $scope.isnoneditable;
+    }
 
     /** @ngInject */
     function msGenericTableDirective($compile, templateBusiness, $document)
@@ -13,13 +20,18 @@
         return {
             restrict: 'E',
             scope   : {
-                tearsheet: '='
+                tearsheet: '=',
+                isnoneditable: '=?'
             },
+            controller: 'msGenericTableController',
+            controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-template/templates/ms-generic-table/ms-generic-table.html',
             link:function(scope, el, attrs)
             {
                 var newScope = null;
                 var html = '';
+                console.log('GenericTableScope');
+                console.log(scope);
 
                 //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)

@@ -2,17 +2,19 @@
     <div class="md-whiteframe-1dp">
         <div id="ms-accordion" class="step-table-title md-amber-A200-bg">
             {{ title }}
+
+            <i class="icon-lock s12" ng-if="vm.isNonEditable"></i>
+
             <md-button class="md-icon-button" aria-label="expand/collapse"
-                       ng-if="iscollapse"
-                       ng-click="collapse()" style="float:right">
-                <md-tooltip md-direction="top">
-                    Expand/Collapse
-                </md-tooltip>
-                <md-icon md-font-icon="icon-backburger" ng-class="collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+                       ng-if="vm.iscollapsible"
+                       ng-click="vm.toggleCollapse()" style="float:right">
+                <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
             </md-button>
+
         </div>
+        <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
         <md-divider></md-divider>
-        <div id="ms-accordion-content" ng-show="!collapsed" layout-padding>
+        <div id="ms-accordion-content" ng-show="!vm.collapsed" layout-padding>
 
         </div>
     </div>

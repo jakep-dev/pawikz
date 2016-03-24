@@ -47,13 +47,13 @@ $loadingBackground: #F68C20;
 }
 
 
-//md-bottom-sheet
-//{
-//  z-index: 61;
-//}
-
-
 #navigation
 {
   z-index: 70;
+}
+
+
+md-input-container.md-advisen-theme .md-input[disabled], [disabled] md-input-container.md-advisen-theme .md-input
+{
+  color:black;
 }

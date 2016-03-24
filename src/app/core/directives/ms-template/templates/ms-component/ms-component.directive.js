@@ -9,13 +9,28 @@
 
     function msComponentController($scope)
     {
-        $scope.collapse = collapse;
+        var vm = this;
+        vm.isNonEditable = $scope.isnoneditable;
+        vm.iscollapsible = $scope.iscollapsible;
+        vm.isProcessComplete = $scope.isprocesscomplete;
 
-        //Toggle the collapse
-        function collapse()
+
+        $scope.$watch(
+            "isprocesscomplete",
+            function handleProgress(value) {
+                console.log('Progress Watch Triggered');
+                vm.isProcessComplete = value;
+            }
+        );
+
+        vm.collapsed = false;
+        vm.toggleCollapse = toggleCollapse;
+
+        function toggleCollapse()
         {
-            $scope.collapsed = !$scope.collapsed;
+            vm.collapsed = !vm.collapsed;
         }
+
     }
 
     /** @ngInject */
@@ -26,13 +41,15 @@
             scope   : {
                 tearheader: '=',
                 tearcontent: '=',
-                iscollapse: '=?'
+                iscollapsible: '=?',
+                isnoneditable: '=?',
+                isprocesscomplete: '=?'
             },
             controller: 'msComponentController',
+            controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-template/templates/ms-component/ms-component.html',
             link: function(scope, el, attrs)
             {
-                scope.collapsed = false;
                 scope.title = scope.tearheader.label;
                 var html = '';
                 var isTableLayout = false;
@@ -64,8 +81,10 @@
                             newScope.tearsheet = {
                                 rows: content.row
                             };
-                            console.log(newScope);
-                            html += '<ms-generic-table tearsheet="tearsheet"></ms-generic-table>';
+
+                            newScope.isnoneditable = scope.isnoneditable;
+
+                            html += '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
@@ -85,12 +104,18 @@
                                 col = content.TableRowTemplate.row;
                             }
 
+                            newScope.itemid = content.ItemId;
+                            newScope.mnemonicid = content.Mnemonic;
+
                             newScope.tearsheet = {
                                 header: header,
                                 columns: col
                             };
 
-                            html += '<ms-tablelayout tearsheet="tearsheet"></ms-tablelayout>';
+                            console.log('TableContent');
+                            console.log(scope);
+
+                            html += '<ms-tablelayout itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout>';
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
@@ -119,9 +144,6 @@
 
                             newScope.mnemonicid = mnemonicid;
                             newScope.itemid = itemid;
-
-                            console.log('Scrapped Item');
-                            console.log(newScope);
 
                             html += '<ms-chart type="Stock" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
