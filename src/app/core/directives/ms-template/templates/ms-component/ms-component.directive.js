@@ -113,6 +113,7 @@
                             };
 
                             console.log('TableContent');
+                            console.log(newScope);
                             console.log(scope);
 
                             html += '<ms-tablelayout itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout>';

@@ -27,15 +27,22 @@
             link:function(scope, el, attrs)
             {
                 console.log('table layout');
-                console.log(scope.$parent.$parent);
+                console.log(scope);
 
-               scope.$parent.$parent.isprocesscomplete = false;
+                if(scope.tearsheet.columns)
+                {
+                    scope.$parent.$parent.isprocesscomplete = false;
+                }
 
                var html = '';
                var columns = '';
                 angular.forEach(scope.tearsheet.columns.col, function(col)
                 {
-                    columns += col.TearSheetItem.Mnemonic + ', ';
+                    if(col.TearSheetItem &&
+                        col.TearSheetItem.Mnemonic)
+                    {
+                        columns += col.TearSheetItem.Mnemonic + ', ';
+                    }
                 });
 
 
@@ -47,6 +54,10 @@
                 {
                     html = '';
                     var data = response.dynamicTableDataResp;
+
+                    console.log('Table Data');
+                    console.log(data);
+
                     if(!data)
                     {
                         html += '<div flex>';
@@ -83,31 +94,32 @@
                            html += '<div style="min-height: 25px" class="row" layout-align="center center"  layout="row" flex>';
                            angular.forEach(scope.tearsheet.columns.col, function(col)
                            {
-                             html += '<div flex>';
-                             var tearSheetItem = col.TearSheetItem;
-                             var mnemonic = tearSheetItem.Mnemonic;
+                               if(col.TearSheetItem &&
+                                  col.TearSheetItem.Mnemonic) {
+                                   html += '<div flex>';
+                                   var tearSheetItem = col.TearSheetItem;
+                                   var mnemonic = tearSheetItem.Mnemonic;
 
-                             switch(tearSheetItem.Id)
-                             {
-                                 case 'LabelItem':
+                                   switch (tearSheetItem.Id) {
+                                       case 'LabelItem':
 
-                                     break;
+                                           break;
 
-                                 case 'GenericTextItem':
+                                       case 'GenericTextItem':
 
-                                     break;
-                             }
+                                           break;
+                                   }
 
-                             var exp = "data[count]." + mnemonic;
-                             var value = eval(exp);
+                                   var exp = "data[count]." + mnemonic;
+                                   var value = eval(exp);
 
-                               if(value)
-                               {
-                                   html += '<span style="font-weight: normal">'+ value + '</span>';
+                                   if (value) {
+                                       html += '<span style="font-weight: normal">' + value + '</span>';
+                                   }
+
+
+                                   html += '</div>';
                                }
-
-
-                             html += '</div>';
                            });
                            html += '</div>';
                        }
