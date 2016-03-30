@@ -1,7 +1,7 @@
 <div  class="md-whiteframe-1dp  md-light-blue-A100-bg">
     <div id="ms-chart-placeholder-header" layout="row" layout-align="space-between center">
         <div layout-padding>
-            <md-input-container  md-no-float class="md-accent" style="height: 10px;width: 100%">
+            <md-input-container  md-no-float class="md-accent" style="height: 10px;width: 160%">
                 <input id="chartTitle" placeholder="Chart Title" ng-model="vm.title"
                        class="font-weight-700 font-size-12"/>
             </md-input-container>
@@ -13,31 +13,20 @@
                     <md-icon md-font-icon="icon-dots-vertical"></md-icon>
                 </md-button>
 
-                <md-menu-content flex layout-padding center>
 
-                    <md-menu-item>
-                        <md-button  aria-label="delete" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
-                          <span layout="row" layout-align="start center">
-                                <md-icon md-font-icon="icon-minus"></md-icon>
-                                <span>Delete</span>
-                          </span>
-                        </md-button>
-                    </md-menu-item>
+           <!-- <md-button class="md-icon-button" aria-label="drag-chart">
+                <md-tooltip md-direction="top">
+                    Drag
+                </md-tooltip>
+                <md-icon md-font-icon="icon-drag"></md-icon>
+            </md-button>-->
 
-                    <md-menu-item>
-                        <md-button  aria-label="full-screen" ng-click="vm.maximizeChart(vm.id, $event)">
-                          <span layout="row" layout-align="start center">
-                                <md-icon md-font-icon="icon-fullscreen"></md-icon>
-                                <span>Full Screen</span>
-                          </span>
-                        </md-button>
-                    </md-menu-item>
-
-                </md-menu-content>
-            </md-menu>
-
-
-
+            <md-button class="md-icon-button" aria-label="add-chart" ng-click="vm.addChart()" ng-if="vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Add as a copy
+                </md-tooltip>
+                <md-icon md-font-icon="icon-plus"></md-icon>
+            </md-button>
         </div>
     </div>
 

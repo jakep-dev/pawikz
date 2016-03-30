@@ -51,89 +51,79 @@
                                     if(data.newCharts)
                                     {
                                         //mock chart
-                                        data.newCharts.push({
-                                            chartTitle :'Mock chart'
-                                        });
-                                        angular.forEach(data.newCharts, function(chart)
-                                        {
-                                            var msChartPlaceHolderId = 'chart-'.concat(++idCount);
-                                            newScope = scope.$new();
 
-                                            newScope.tearsheet = {
-                                                type: 'stock',
-                                                isChartTitle: true,
-                                                chartSetting: {
-                                                    chartTitle : chart.chartTitle
-                                                },
-                                                mnemonicId: scope.mnemonicid,
-                                                itemId: scope.itemid
-                                            };
-
-                                            html += '<ms-chart-placeholder id="'+ msChartPlaceHolderId +' title="'+ chart.chartTitle +'" tearsheet="tearsheet"></ms-chart-placeholder>';
-                                            el.find('#ms-chart-container').append($compile(html)(newScope));
+                                        data.newCharts.unshift({
+                                            chartType: "JSCHART",
+                                            isMainChart : true,
+                                            settings : {
+                                                companyName: commonBusiness.companyName,
+                                                date_end: "",
+                                                date_start: "",
+                                                isDividents: false,
+                                                isEarnings: false,
+                                                isSplits: false,
+                                                item_id: "WU_STOCK_CHART_3YR_EM",
+                                                mainStock: "",
+                                                mnemonic: "WU_STOCK_CHART_3YR",
+                                                searchedStocks: [],
+                                                selectedIndicesList: [],
+                                                selectedPeerList: [],
+                                                selectedPeriod: "3Y",
+                                                step_id: 3
+                                            }
                                         });
 
                                         var saveAllCharts = function saveAllCharts() {
                                             var startArr = [];
                                             scope.jsCharts.forEach(function(chart){
                                                 var stockString = '';
-                                                var jsChart = chart.tearsheet;
-                                                jsChart.chartSetting.selectedPeerList.forEach( function(stock) {
-                                                    stockString =stockString + stock + ',';
-                                                });
-
-                                                jsChart.chartSetting.selectedIndicesList.forEach( function(indics) {
-                                                    stockString = stockString + '^'+indics + ',';
-                                                });
-                                                if(stockString !=='') {
-                                                    stockString = stockString.slice(0, -1);
-                                                }
-                                                console.log('jsChart.chartSetting.chart_id---->',jsChart.chartSetting.chart_id);
-                                                if(jsChart.chartSetting.chart_id){
-                                                    startArr.push({
-                                                        chart_title: jsChart.chartSetting.companyName,
-                                                        peers: stockString,
-                                                        period:jsChart.chartSetting.selectedPeriod,
-                                                        date_start:jsChart.chartSetting.date_start,
-                                                        date_end:jsChart.chartSetting.date_end,
-                                                        dividends: jsChart.chartSetting.isDividents,
-                                                        earnings: jsChart.chartSetting.isEarnings,
-                                                        splits:jsChart.chartSetting.isSplits,
-                                                        mnemonic:jsChart.chartSetting.mnemonic,
-                                                        item_id:jsChart.chartSetting.item_id,
-                                                        chartId : parseInt(jsChart.chartSetting.chart_id)
+                                                var jsChart = chart.filterState;
+                                                var tearsheet = chart.tearsheet;
+                                                if(!tearsheet.isMainChart){
+                                                    jsChart.selectedPeers.forEach( function(stock) {
+                                                        stockString =stockString + stock + ',';
                                                     });
+
+                                                    jsChart.selectedIndices.forEach( function(indics) {
+                                                        stockString = stockString + '^'+indics + ',';
+                                                    });
+                                                    if(stockString !=='') {
+                                                        stockString = stockString.slice(0, -1);
+                                                    }
+                                                    var obj = {
+                                                        chart_title: jsChart.title,
+                                                        peers: stockString,
+                                                        period:jsChart.interval,
+                                                        date_start:jsChart.date_start,
+                                                        date_end:jsChart.date_end,
+                                                        dividends: jsChart.dividends ? "Y" : "N",
+                                                        earnings: jsChart.earnings  ? "Y" : "N",
+                                                        splits:jsChart.splits ? "Y" : "N",
+                                                        mnemonic: tearsheet.mnemonicId,
+                                                        item_id: tearsheet.itemId
+                                                    };
+                                                    if(jsChart.chart_id){
+                                                        obj.chartId = parseInt(jsChart.chart_id)
+                                                    }
+
+                                                    startArr.push(obj);
                                                 }
 
                                             });
                                             stockService.saveChartAllSettings(commonBusiness.companyId,
                                                 commonBusiness.stepId, commonBusiness.projectId, startArr);
                                         };
-                                        $rootScope.$on(
-                                            "jsChart.removed",
-                                            function(event,order) {
-                                                if(order){
-                                                    console.log('charts removed ');
-                                                    scope.jsCharts.splice(order, 1);
-                                                    //chart remove chart the charts on server ..
-                                                    console.log('chart removed ------------------', scope.jsCharts);
-                                                    saveAllCharts();
-                                                }
-                                            }
-                                        );
 
-                                        $rootScope.$on(
-                                            "jsChart.moved",
-                                            function(event,data) {
-                                                console.log( "Responding to event ---------",data );
-                                                if(data.direction = 'U'){
-                                                    scope.moveSavedChartUp(data.chartOrder);
-                                                }
-                                                else if(data.direction = 'D'){
-                                                    scope.moveSavedChartDown(data.chartOrder);
-                                                }
+                                        scope.saveAllCharts = saveAllCharts;
+                                        scope.chartMoved = function (direction, index) {
+                                            if(direction === 'U'){
+                                                scope.moveSavedChartUp(index);
                                             }
-                                        );
+                                            else if(direction === 'D'){
+                                                scope.moveSavedChartDown(index);
+                                            }
+                                        };
+
 
                                         scope.moveSavedChartUp = function (index){
                                             //item is not at first index so we can re arrenge it
@@ -155,33 +145,50 @@
                                             }
                                         };
 
+                                        scope.onChartRemove = function (index){
+                                            scope.jsCharts.splice(index, 1);
+                                            //chart remove chart the charts on server ..
+                                            saveAllCharts();
+                                        };
+
+                                        scope.addNewChart = function (chart, index){
+                                             //add new chart to array
+                                            scope.jsCharts.splice(index+1, 0, chart);
+                                        };
+
 
                                         var  renderJSCharts  = function (){
                                             scope.jsCharts = [];
                                             for(var i=0; i < data.newCharts.length ; i++){
                                                 var chart = data.newCharts[i];
-
-                                                console.log('chart----------------------------->',chart);
                                                 var msChartPlaceHolderId = 'chart-'.concat(i);
-                                                //newScope = scope.$new();
-
                                                 var tearsheet = {
                                                     type: 'stock',
                                                     isChartTitle: true,
                                                     isMainChart : chart.isMainChart,
-                                                    chartSetting: chart.settings,
                                                     mnemonicId: scope.mnemonicid,
                                                     itemId: scope.itemid,
                                                     chartOrder : i
                                                 };
+                                                var filterState = {};
+                                                filterState.splits =chart.settings.isSplits;
+                                                filterState.earnings = chart.settings.isEarnings;
+                                                filterState.dividends = chart.settings.isDividents;
+                                                filterState.interval = chart.settings.selectedPeriod;
+                                                filterState.mainStock = '';
+                                                filterState.selectedIndices = chart.settings.selectedIndicesList;
+                                                filterState.selectedPeers = chart.settings.selectedPeerList;
+                                                filterState.chart_id = chart.settings.chart_id;
+                                                filterState.chart_date = chart.settings.chart_date;
+                                                filterState.date_start = chart.settings.date_start;
+                                                filterState.date_end = chart.settings.date_end;
+                                                filterState.title = chart.settings.companyName;
                                                 scope.jsCharts.push({
                                                     tearsheet : tearsheet,
+                                                    filterState : filterState,
                                                     msChartPlaceHolderId : msChartPlaceHolderId,
                                                     title : chart.settings.companyName
                                                 });
-                                                //html = '<ms-chart-placeholder class="chart" id="' + msChartPlaceHolderId + '" title="' + chart.settings.companyName + '" tearsheet="tearsheet" ></ms-chart-placeholder>';
-
-                                                //el.find('#ms-chart-container').append($compile(html)(newScope));
 
                                             }
                                         }
@@ -193,17 +200,23 @@
                                     {
                                         angular.forEach(data.legacyCharts, function(chart)
                                         {
-                                            var msChartPlaceHolderId = 'chart-'.concat(++idCount);
 
-                                            newScope = scope.$new();
-                                            newScope.tearsheet = {
-                                                type: 'image',
-                                                url: chart.url,
-                                                isChartTitle: true
-                                            };
+                                            ++idCount;
+                                            console.log('idCount',idCount);
+                                            if(idCount<4) {
 
-                                            html += '<ms-chart-placeholder id="'+msChartPlaceHolderId+'" title="" tearsheet="tearsheet"></ms-chart-placeholder>';
-                                            el.find('#ms-chart-container').append($compile(html)(newScope));
+                                                var tearsheet = {
+                                                    type: 'image',
+                                                    url: chart.url,
+                                                    isChartTitle: true
+                                                };
+                                                scope.oldCharts.push({
+                                                    tearsheet : tearsheet,
+                                                    title : ""
+                                                });
+                                            }else{
+                                                console.warn('Excess chart tried to be added')
+                                            }
                                         });
                                     }
 

@@ -12,7 +12,6 @@
     {
         var vm = this;
         vm.selectedIndex ="";
-        console.log('vm.filterState.title',vm.filterState.title);
         vm.searchVal = '';
         vm.searchedStocks = [];
         vm.selectedStockCount = 1;
@@ -268,17 +267,19 @@
             stockService
                 .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId)
                 .then(function(data) {
+                    console.log('seriesdata',data)
+                    //@todo call logic for remove legend item on empty series data
                     vm.stockDataSet=convServiceResptoChartFormat(data);
                     if(data.stockChartPeerData && data.stockChartPeerData.length){
                         vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
                     }
+                    console.log('selected stock', vm.selectedStockCount);
                 });
         };
 
         loadChartData();
 
         vm.onPeerRemove = function (peer) {
-            console.log('On Peer remove');
             var index = vm.filterState.selectedIndices.indexOf(peer);
             if (index !== -1 ) {
                 var selectedIndices = vm.filterState.selectedIndices;

@@ -15,7 +15,6 @@
                 link: function (scope, elem, attr) {
                     scope.$watch('config', function (newVal, oldVal) {
                         if(newVal) {
-                            console.log('ms line bar chart initializeChart method------------');
                             $timeout(function(){
                                 initializeChart(elem);
                             }, 1000);
@@ -26,20 +25,26 @@
                     var hoveredChart = '';
                     var hoveredChartIndex = 0;
                     function initializeChart (elem) {
-                        Highcharts.each(Highcharts.charts, function(p, i) {
+                       /* $(elem).bind('mousemove', function (e) {
                             var chart,
                                 point,
                                 i;
+
+
+
+
+                        Highcharts.each(Highcharts.charts, function(p, i) {
+
                             //console.log(p);
                             //p.renderTo.getAttribute('data-highcharts-chart')
                             //$(p.renderTo).mouseover(function(e) {
                             //$(elem).bind('mousemove touchmove', function (e) {
-                            $(elem).bind('mouseover', function (e) {
 
-                                console.log('chartIndex: ' + p.index);
+                                console.log('chartIndex: ' + p.index + ' i: ' + i);
                                 console.log('Attr: ' + p.renderTo.getAttribute('data-highcharts-chart'));
                                 //console.log('hoveredChartIndex in mouseover before: ' + hoveredChartIndex);
-                                hoveredChartIndex= p.index;
+                                //hoveredChartIndex= p.index;
+                            hoveredChartIndex = i;
                                 //console.log('hoveredChartIndex in mouseover after: ' + hoveredChartIndex);
 
                                 chart = Highcharts.charts[hoveredChartIndex];
@@ -66,9 +71,32 @@
                                         point.onMouseOver(); // Show the hover marker
                                         chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
                                     }
+
+                                    return;
                                 }
                             })
-                        });
+                        });*/
+$timeout(function(){
+                        Highcharts.each(Highcharts.charts, function(p, i) {
+
+                            $(p.renderTo).bind('mousemove touchmove touchstart', function(e) {
+                                var point, ind = 0;
+                                ind = i % 2 ? i - 1 : (i + 1 < Highcharts.charts.length ? i + 1 : i);
+
+                                //ind = i % 2 ? i - 1 : (i < Highcharts.charts.length ? i + 1 : i);
+                                //ind = i % 2 ? i - 1 : (i < Highcharts.charts.length ? i + 1 : i);
+                                Array(i,ind).forEach(function(index){
+                                    e = Highcharts.charts[index].pointer.normalize(e.originalEvent);
+                                    point = Highcharts.charts[index].series[0].searchPoint(e, true);
+                                    if (point) {
+                                        point.onMouseOver(); // Show the hover marker
+                                        //Highcharts.charts[ind].tooltip.refresh(point); // Show the tooltip
+                                        Highcharts.charts[index].xAxis[0].drawCrosshair(e, point); // Show the crosshair
+                                    }
+                                })
+                            });
+                        })},5000);
+
 
                         /**
                          * In order to synchronize tooltips and crosshairs, override the
@@ -294,7 +322,8 @@
                                     },
                                     xAxis: {
                                         title: {
-                                            text: dataset.xaxisTitle
+                                           text: dataset.xaxisTitle
+                                            //text: 'Period'
                                         },
                                         categories: activity.xData,
                                         //crosshair: true,

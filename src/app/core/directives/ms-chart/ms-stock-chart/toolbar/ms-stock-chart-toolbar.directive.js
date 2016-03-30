@@ -173,6 +173,8 @@
         function selectedItemChange(item) {
             $log.info('Item changed to ' + JSON.stringify(item));
             if(item){
+
+                console.log('legend1',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
                 var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
                 if(count <5) {
                     if(item && item.value && vm.filterState.selectedIndices.indexOf(item.value) === -1) {
@@ -196,6 +198,7 @@
 
         function selectedPeerChange(item) {
             if(item){
+                console.log('legend',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
                 var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
                 if(count <5){
                     if(item && item.display && vm.filterState.selectedPeers.indexOf(item.display) === -1 ) {

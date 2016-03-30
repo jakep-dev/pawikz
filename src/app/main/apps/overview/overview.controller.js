@@ -105,7 +105,7 @@
                     vm.templateOverview = data.templateOverview;
 
                     commonBusiness.companyId = vm.templateOverview.companyId;
-
+                    commonBusiness.companyName = vm.templateOverview.companyName;
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
