@@ -13,6 +13,19 @@
         var vm = this;
         vm.userName = '';
 
+        var userDetails = store.get('user-info');
+        console.log('Toolbar-User-Info');
+        console.log(userDetails);
+
+        if(userDetails)
+        {
+            vm.userName = userDetails.fullName;
+        }
+
+        console.log('commonBusiness-Details-');
+        console.log('projectId - ' + commonBusiness.projectId);
+        console.log('userId - ' + commonBusiness.userId);
+
         //Set user-name
         commonBusiness.onMsg('UserName', $scope, function() {
             console.log('UserName Emit');
@@ -94,7 +107,7 @@
            authService.logout().then(function(response)
            {
                store.remove('x-session-token');
-               store.remove('x-session-user');
+               store.remove('user-info');
                $location.url('/pages/auth/login');
                toast.simpleToast('Successfully logged out!');
            })

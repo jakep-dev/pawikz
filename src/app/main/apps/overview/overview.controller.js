@@ -49,10 +49,17 @@
         vm.goTop = goTop;
         vm.undo = undo;
         vm.redo = redo;
+        vm.showOverviewDetails =showOverviewDetails;
         var promise = [];
 
         //Data
         loadData();
+
+        function showOverviewDetails(step)
+        {
+            console.log('Overview Details');
+            console.log(step);
+        }
 
         //Go to top
         function goTop()

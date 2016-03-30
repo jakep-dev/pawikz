@@ -1,0 +1,36 @@
+
+.ms-collapse
+{
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transition: transform 0.2s ease-in-out 0.1s;
+  transform: rotate(90deg);
+}
+
+.ms-expand
+{
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transition: transform 0.2s ease-in-out 0.1s;
+  transform: rotate(270deg);
+}
+
+
+.msAccordionContent
+{
+
+}
+
+
+#ms-chart-accordion
+{
+  background-color : #464646 !important;
+  color: #f68c20;
+  border-top-right-radius: 2px;
+  border-top-left-radius: 2px;
+  md-icon {
+    color: rgba(255, 255, 255, 0.70);
+  }
+}

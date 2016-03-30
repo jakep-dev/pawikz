@@ -41,17 +41,21 @@
                     if(col.TearSheetItem &&
                         col.TearSheetItem.Mnemonic)
                     {
-                        columns += col.TearSheetItem.Mnemonic + ', ';
+                        columns += col.TearSheetItem.Mnemonic + ',';
                     }
                 });
 
-
+                console.log('Table Layout Columns - ');
+                console.log(columns);
 
                el.find('#ms-table-layout').append($compile(html)(scope));
 
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                     scope.mnemonicid, scope.itemid, columns).then(function(response)
                 {
+                    console.log('Table Layout Response - ');
+                    console.log(response);
+
                     html = '';
                     var data = response.dynamicTableDataResp;
 

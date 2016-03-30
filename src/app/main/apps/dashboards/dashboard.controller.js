@@ -28,6 +28,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
 
     commonBusiness.userId = $stateParams.userId;
 
+    console.log('Common Business UserId -' + commonBusiness.userId);
+
     // Methods
     vm.reload = reload;
     vm.initialize = initialize;
@@ -70,7 +72,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
     // Action Html
     function actionHtml(data, type, full, meta)
     {
-        return '<a ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
+        return '<a  ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
     }
 
     // Clear search
@@ -162,7 +164,9 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
             store.set('x-session-token', token);
             authService.getUserInfo().then(function(response)
             {
-                authBusiness.userName = response.fullName;;
+                console.log('User Details - ');
+                console.log(response);
+                authBusiness.userName = response.fullName;
             });
         }
         else {

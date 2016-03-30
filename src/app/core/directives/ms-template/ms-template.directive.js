@@ -9,7 +9,7 @@
 
 
     /** @ngInject */
-    function msTemplateDirective($compile, $rootScope)
+    function msTemplateDirective($compile, $templateCache, commonBusiness)
     {
 
         function firstVariation(contentComponents, comp)
@@ -499,12 +499,39 @@
                             {
                                 newScope.iscollapsible = true;
                                 newScope.isprocesscomplete = true;
+                                var isChartComp = false;
 
-                                var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
+                                //Check for chart component
+                                angular.forEach(newScope.tearcontent, function(each)
+                                {
+                                    if(each.id === 'ScrapedItem')
+                                    {
+                                        isChartComp = true;
+                                    }
+                                });
+
+                                if(isChartComp)
+                                {
+                                    var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
+                                }else {
+                                    var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
+                                }
+
+
                                 el.find('#template-content').append($compile(html)(newScope));
                             }
                         }
                     });
+
+
+                    console.log('Step HTML');
+                    console.log(el.find('#template-content'));
+
+                    //var templateCacheKey = commonBusiness.projectId.concat('-', commonBusiness.stepId);
+                    //console.log(templateCacheKey);
+                    //
+                    //$templateCache.put(templateCacheKey, el.find('#template-content')[0].innerHTML);
+
                 }
             }
         };
