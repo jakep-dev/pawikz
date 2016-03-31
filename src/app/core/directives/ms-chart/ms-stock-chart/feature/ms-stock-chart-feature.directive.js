@@ -322,8 +322,8 @@ $timeout(function(){
                                     },
                                     xAxis: {
                                         title: {
-                                           text: dataset.xaxisTitle
-                                            //text: 'Period'
+                                           //text: dataset.xaxisTitle
+                                            text: (i%2==0)?'':'Period'
                                         },
                                         categories: activity.xData,
                                         //crosshair: true,
@@ -440,11 +440,11 @@ $timeout(function(){
                                             $.each(primarystockresp.stockChartPrimaryData, function(i, v) {
 
                                                 if (v.dataDate.substring(0,10) == xPoint) {
-                                                    tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume;
+                                                    tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
                                                 }
                                             });
 
-                                            return tooltipText;
+                                           return tooltipText;
                                         },
                                         valueDecimals: dataset.valueDecimals,
                                         positioner: function () {

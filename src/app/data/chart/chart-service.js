@@ -69,7 +69,8 @@
                 });
         }
 
-        function stockData(tickers, timeFrame,splits, dividends, earnings, start_date, end_date, companyId) {
+        function stockData(tickers, timeFrame,splits,earnings, dividends, start_date, end_date, companyId) {
+
             return $http({
                 method: "POST",
                 url:"/api/getChartData",
