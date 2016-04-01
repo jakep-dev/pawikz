@@ -39,6 +39,7 @@
             $scope.filterState.mainStock = '';
             $scope.filterState.selectedPeers = [];
             $scope.filterState.selectedIndices = [];
+            $scope.filterState.selectedCompetitors = [];
 
             $scope.$broadcast('filterSateUpdate');
         }

@@ -7,10 +7,9 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope,$log, stockService, $mdMenu, dialog)
+    function msStockChartToolBarController($scope,$log, stockService, $mdMenu, dialog, commonBusiness)
     {
         var vm = this;
-        console.log('vm.filterState.title',vm.filterState.title);
         vm.splits = false;
         vm.earnings = false;
         vm.dividends = false;
@@ -18,7 +17,6 @@
         vm.customDateChange = customDateChange;
         /* Indices Logic Start */
         vm.indices = [];
-        vm.queryIndiceSearch = queryIndiceSearch;
 
         /* Peers Logic Start*/
 
@@ -26,21 +24,20 @@
         vm.queryPeerSearch   = queryPeerSearch;
         vm.selectedItemChange = selectedItemChange;
         vm.selectedPeerChange = selectedPeerChange;
-        vm.searchTextChange   = searchTextChange;
+        vm.selectedCompetitorChange = selectedCompetitorChange;
         vm.changedSplitsEvents = changedSplitsEvents;
         vm.changedEarningsEvents = changedEarningsEvents;
         vm.changedDividendsEvents = changedDividendsEvents;
         vm.changedPeriod = changedPeriod;
         vm.loadPeers = loadPeers;
+        vm.loadIndices = loadIndices;
+        vm.loadCompetitors = loadCompetitors;
+
 
 
         setStartEndDate(vm.selectedPeriod);
 
-        loadIndices();
-        function queryIndiceSearch (query) {
-            var results = query ? vm.indices.filter( createFilterFor(query) ) : vm.indices;
-            return results;
-        }
+
 
         //Loads Indices.
         function loadIndices() {
@@ -49,7 +46,7 @@
                 .then(function(data) {
                     if(data.indicesResp)
                     {
-                        vm.indices = [];
+                        vm.indices =[];
                         angular.forEach(data.indicesResp, function(ind)
                         {
                             vm.indices.push({
@@ -57,7 +54,27 @@
                                 display: ind.description
                             }) ;
                         });
+                    }
+                });
 
+        }
+
+        setStartEndDate(vm.selectedPeriod);
+
+        function loadCompetitors() {
+            stockService
+                .getCompetitors(commonBusiness.companyId)
+                .then(function(data) {
+                    if(data.competitors)
+                    {
+                        vm.competitors =[];
+                        angular.forEach(data.competitors, function(comp)
+                        {
+                            vm.competitors.push({
+                                value: comp.ticker,
+                                display: comp.companyName
+                            }) ;
+                        });
                     }
                 });
 
@@ -84,7 +101,24 @@
                     }
                 });
         }
+   /*     function loadIndices() {
+            stockService
+                .getIndices('', '1W')
+                .then(function(data) {
+                    if(data.indicesResp)
+                    {
+                        vm.indices =[];
+                        angular.forEach(data.indicesResp, function(ind)
+                        {
+                            vm.indices.push({
+                                value: ind.value,
+                                display: ind.description
+                            }) ;
+                        });
+                    }
+                });
 
+        }*/
         function customDateChange (){
             vm.filterState.startDate =vm.startDate;
             vm.filterState.endDate =vm.endDate;
@@ -166,17 +200,17 @@
             // return vm.peers;
         }
 
-        function searchTextChange(text) {
-            $log.info('Text changed to ' + text);
-        }
+
 
         function selectedItemChange(item) {
-            $log.info('Item changed to ' + JSON.stringify(item));
+            $log.info('Item changed to ' + item);
             if(item){
-
-                console.log('legend1',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
-                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
+                //considering all the possible legends(indices and peers)
+                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length+ vm.filterState.selectedCompetitors.length;
                 if(count <5) {
+                    item = JSON.parse(item);
+                    console.log('legend1',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
+                    console.log('item', item.value,vm.filterState.selectedIndices.indexOf(item.value))
                     if(item && item.value && vm.filterState.selectedIndices.indexOf(item.value) === -1) {
                         var selected = vm.filterState.selectedIndices;
                         selected.push(item.value);
@@ -190,6 +224,7 @@
                         console.log('cliked ok');
                     }}});
                 }
+                vm.selectedIndice = null;
             }
             vm.selectedItem = null;
             vm.searchIndText = "";
@@ -199,7 +234,7 @@
         function selectedPeerChange(item) {
             if(item){
                 console.log('legend',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
-                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length;
+                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length+ vm.filterState.selectedCompetitors.length;
                 if(count <5){
                     if(item && item.display && vm.filterState.selectedPeers.indexOf(item.display) === -1 ) {
                         var selected = vm.filterState.selectedPeers;
@@ -221,6 +256,35 @@
             vm.searchPeerText = "";
             $mdMenu.hide();
 
+        }
+
+        function selectedCompetitorChange(item) {
+            $log.info('Item changed to ' + item);
+            if(item){
+                //considering all the possible legends(indices and peers)
+                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
+                if(count <5) {
+                    item = JSON.parse(item);
+                    console.log('legend1',vm.filterState.selectedIndices,vm.filterState.selectedPeers,vm.filterState.selectedCompetitors,item);
+                    console.log('item', item.value,vm.filterState.selectedCompetitors.indexOf(item.value))
+                    if(item && item.value && vm.filterState.selectedCompetitors.indexOf(item.value) === -1) {
+                        var selected = vm.filterState.selectedCompetitors;
+                        selected.push(item.value);
+                        vm.filterState.selectedCompetitors = selected;
+                        vm.onFilterStateUpdate();
+                    }
+
+                }
+                else {
+                    dialog.alert( 'Error',"Max5 Stock allow to compare!",null,{ok:{name:'ok',callBack:function(){
+                        console.log('cliked ok');
+                    }}});
+                }
+                vm.selectedCompetitor = null;
+            }
+            vm.selectedItem = null;
+            vm.searchIndText = "";
+            $mdMenu.hide();
         }
 
         function createFilterFor(query) {

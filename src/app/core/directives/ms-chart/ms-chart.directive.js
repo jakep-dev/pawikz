@@ -68,6 +68,7 @@
                                                 searchedStocks: [],
                                                 selectedIndicesList: [],
                                                 selectedPeerList: [],
+                                                selectedCompetitorsList:[],
                                                 selectedPeriod: "3Y",
                                                 step_id: 3
                                             }
@@ -86,6 +87,9 @@
 
                                                     jsChart.selectedIndices.forEach( function(indics) {
                                                         stockString = stockString + '^'+indics + ',';
+                                                    });
+                                                    jsChart.selectedCompetitors.forEach( function(competitors){
+                                                        stockString = stockString + '^'+competitors + ',';
                                                     });
                                                     if(stockString !=='') {
                                                         stockString = stockString.slice(0, -1);
@@ -178,6 +182,7 @@
                                                 filterState.mainStock = '';
                                                 filterState.selectedIndices = chart.settings.selectedIndicesList;
                                                 filterState.selectedPeers = chart.settings.selectedPeerList;
+                                                filterState.selectedCompetitors = chart.settings.selectedCompetitorsList;
                                                 filterState.chart_id = chart.settings.chart_id;
                                                 filterState.chart_date = chart.settings.chart_date;
                                                 filterState.date_start = chart.settings.date_start;

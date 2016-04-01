@@ -16,6 +16,7 @@
             getSavedChartData: getSavedChartData,
             findTickers: findTickers,
             getIndices: getIndices,
+            getCompetitors: getCompetitors,
             saveChartSettings : saveChartSettings,
             saveChartAllSettings : saveChartAllSettings
         };
@@ -133,6 +134,22 @@
                 method: "POST",
                 url: "/api/getIndices",
                 data: {}
+            }).then(function(data, status, headers, config)
+            {
+                return data.data;
+            })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function getCompetitors(companyId) {
+            return $http({
+                method: "POST",
+                url: "/api/getCompetitors",
+                data: {
+                    companyId : companyId
+                }
             }).then(function(data, status, headers, config)
             {
                 return data.data;

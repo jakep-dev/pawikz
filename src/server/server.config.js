@@ -38,7 +38,8 @@ exports.restcall =
                     templateSchema: 'getTemplateUIStructure',
                     templateMnemonics: 'getTemplateMnemonics',
                     findTickers : 'findTickers',
-                    dynamicTableData: 'getDynamicTableData'
+                    dynamicTableData: 'getDynamicTableData',
+                    getCompetitors:'getCompetitors'
                 }
             },
         {

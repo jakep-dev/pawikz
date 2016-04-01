@@ -13,6 +13,7 @@
             app.post('/api/getChartData', getChartData),
             app.post('/api/findTickers', findTickers),
             app.post('/api/getIndices', findIndices),
+            app.post('/api/getCompetitors', findCompetitors),
             app.post('/api/getSavedChartData', getSavedChartData),
             app.post('/api/saveChartSettings', saveChartSettings),
             app.post('/api/saveChartAllSettings', saveChartAllSettings)
@@ -176,6 +177,25 @@
 
         }
 
+        function findCompetitors (req, res , next ) {
+            var service = getServiceDetails('templateSearch');
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getCompetitors;
+            }
+
+            var  ssnid= req.headers['x-session-token'];
+            var companyId = req.body.companyId;
+            console.log(config.restcall.url + '/' + service.name + '/' + methodName
+                +'?company_id=' + companyId + '&ssnid=' +ssnid);
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName
+                +'?company_id=' + companyId + '&ssnid=' +ssnid, function (data, response) {
+                res.send(data);
+            });
+
+        }
+
         function getSavedChartData  (req, res , next ) {
             var service = getServiceDetails('charts');
             var methodName = '';
@@ -221,6 +241,7 @@
                             selectedPeriod : savedChart.chartSetting.period.toUpperCase(),
                             selectedIndicesList : [],
                             selectedPeerList : [],
+                            selectedCompetitorsList : [],
                             searchedStocks : [],
                             to: {},
                             from: {},
@@ -231,14 +252,19 @@
                             dateOptionVisibility : false,
                             comparisonOptionVisibility : false
                         };
-                        var peers = savedChart.chartSetting.peers.split(',');
-                        for (var i = 0; i < peers.length;  i++) {
-                            var peer = peers[i].trim();
-                            if(peer.charAt(0) === '^') {
-                                chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
-                            }
-                            else {
-                                chart.settings.selectedPeerList.push(peer);
+
+                        if(savedChart.chartSetting.peers){
+                            var peers = savedChart.chartSetting.peers.split(',');
+                            for (var i = 0; i < peers.length;  i++) {
+                                var peer = peers[i].trim();
+                                if(peer.charAt(0) === '^') {
+                                    chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
+                                    chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
+
+                                }
+                                else {
+                                    chart.settings.selectedPeerList.push(peer);
+                                }
                             }
                         }
                         if (savedChart.chartSetting.date_start) {

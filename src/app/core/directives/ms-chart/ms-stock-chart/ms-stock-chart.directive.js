@@ -35,6 +35,7 @@
             var mainStock = vm.filterState.mainStock;
             var selectedPeerList = vm.filterState.selectedPeers;
             var selectedIndicesList =  vm.filterState.selectedIndices;
+            var selectedCompetitors = vm.filterState.selectedCompetitors;
             var stockString = '';
             if (mainStock)  {
                 stockString = mainStock + ',';
@@ -42,6 +43,11 @@
 
             if(selectedPeerList != null) {
                 selectedPeerList.forEach(function (stock) {
+                    stockString = stockString + stock + ',';
+                });
+            }
+            if(selectedCompetitors != null) {
+                selectedCompetitors.forEach(function (stock) {
                     stockString = stockString + stock + ',';
                 });
             }
@@ -285,6 +291,12 @@
                 var selectedIndices = vm.filterState.selectedIndices;
                 selectedIndices.splice(index,1);
                 vm.filterState.selectedIndices = selectedIndices;
+            }
+            var indexCom = vm.filterState.selectedCompetitors.indexOf(peer);
+            if (indexCom !== -1 ) {
+                var selected = vm.filterState.selectedCompetitors;
+                selected.splice(indexCom,1);
+                vm.filterState.selectedCompetitors = selected;
             }
             var peerIndex = vm.filterState.selectedPeers.indexOf(peer);
             if (peerIndex !== -1 ) {

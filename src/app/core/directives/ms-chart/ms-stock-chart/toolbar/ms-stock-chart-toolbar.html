@@ -36,7 +36,17 @@
                     Comparison
                 </md-button>
                 <md-menu-content width="6">
-                    <md-menu-item>
+                    <md-menu-item style="margin-top: 15px;">
+                        <md-input-container>
+                            <md-select class="comparison-text" placeholder="Search Indices" ng-change="vm.selectedItemChange(vm.selectedIndice)"  ng-model="vm.selectedIndice" md-on-open="vm.loadIndices()">
+
+                                <md-option ng-repeat="item in vm.indices" value="{{item}}" >
+                                    {{item.display}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-menu-item>
+                   <!-- <md-menu-item>
                         <md-autocomplete
                                 md-no-cache="vm.noCache"
                                 md-search-text-change="vm.searchTextChange(vm.searchText)"
@@ -60,11 +70,11 @@
                                 No matches found for "{{vm.searchIndText}}".
                             </md-not-found>
                         </md-autocomplete>
-                    </md-menu-item>
+                    </md-menu-item>-->
 
-                    <md-menu-item>
+                   <!-- <md-menu-item>
                         <md-divider></md-divider>
-                    </md-menu-item>
+                    </md-menu-item>-->
 
                     <md-menu-item>
                         <md-autocomplete
@@ -85,6 +95,23 @@
                             </md-not-found>
                         </md-autocomplete>
                     </md-menu-item>
+
+                 <!--   <md-menu-item>
+                        <md-divider></md-divider>
+                    </md-menu-item>-->
+
+                    <md-menu-item style="margin-top: 15px;">
+                        <md-input-container style="padding-bottom: 24px;">
+                            <md-select class="comparison-text" placeholder="Search Competitors" ng-change="vm.selectedCompetitorChange(vm.selectedCompetitor)"  ng-model="vm.selectedCompetitor" md-on-open="vm.loadCompetitors()">
+
+                                <md-option ng-repeat="item in vm.competitors" value="{{item}}" >
+                                    {{item.display}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-menu-item>
+
+
                 </md-menu-content>
             </md-menu>
         </div>
