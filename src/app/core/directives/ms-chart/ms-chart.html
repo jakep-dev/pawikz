@@ -8,7 +8,8 @@
 
 
 
-            <ms-chart-placeholder ng-repeat="chart in oldCharts" class="chart" chart="chart" tearsheet="chart.tearsheet"></ms-chart-placeholder>
+            <!--@todo generate some unique index -->
+            <ms-chart-placeholder ng-repeat="chart in oldCharts" class="chart" chart="chart" on-chart-remove="onChartRemove"  tearsheet="chart.tearsheet" index="$index"></ms-chart-placeholder>
         </ms-content>
     </div>
 </div >

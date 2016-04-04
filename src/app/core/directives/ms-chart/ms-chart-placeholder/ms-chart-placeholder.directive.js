@@ -7,14 +7,14 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($rootScope, $scope, $element, $compile, dialog, $mdDialog, stockChartBusiness, stockService, commonBusiness) {
+    function msChartPlaceHolderController($rootScope, $scope, $element, $compile, dialog, $mdDialog, stockChartBusiness, stockService, commonBusiness,$state,$stateParams) {
         var vm = this;
         var type = $scope.$parent.type;
         vm.title = $scope.chartTitle;
         vm.id = $scope.id;
         vm.isChartTitle = vm.title ? true : false;
         vm.isMainChart = ($scope.chart && $scope.chart.tearsheet && $scope.chart.tearsheet.isMainChart) ? true : false;
-
+        $scope.filterState = {};
         vm.addChart = addChart;
         vm.removeChart = removeChart;
         vm.maximizeChart = maximizeChart;
@@ -25,6 +25,10 @@
 
         //Reset the chart functionality.
         function resetChart() {
+           // $state.reload();
+            //console.log($state.current);
+            $state.go($state.current, {reloadCount:($stateParams.reloadCount+1)});
+            /**
             $scope.filterState.endDate = new Date();
             $scope.filterState.interval = '3Y';
 
@@ -42,6 +46,7 @@
             $scope.filterState.selectedCompetitors = [];
 
             $scope.$broadcast('filterSateUpdate');
+             **/
         }
 
         //swap chart position
@@ -139,8 +144,9 @@
 
         ///Remove selected chart.
         function removeChart(id) {
-            if ($scope.chart && $scope.chart.tearsheet.type === 'stock') {
-                $scope.onChartRemove($scope.index);
+            console.log(id);
+            if ($scope.chart) {
+                $scope.onChartRemove($scope.index,$scope.chart.tearsheet.type);
             }
             else {
                 $('#' + id).remove();
