@@ -13,16 +13,10 @@
             url    : '/steps/{projectId}/{stepId}',
             views  : {
                 'content@app': {
-                    templateUrl: 'app/main/apps/steps/steps.html'
+                    templateUrl: 'app/main/apps/steps/steps.html',
+                    controller : 'StepController as vm'
                 }
             }
-        });
-
-        $stateProvider.state('app.steps.stepName', {
-            url    : '/{stepName}',
-            params : {reloadCount:1},
-            templateUrl: 'app/main/apps/steps/step-name.html',
-            controller : 'StepController as vm'
         });
     }
 })();
