@@ -402,6 +402,7 @@ $timeout(function(){
                                                             chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
                                                         }
 
+
                                                         if(hoveredChartIndex%2==0)
                                                         {
                                                             chart = Highcharts.charts[hoveredChartIndex+1];
@@ -417,6 +418,7 @@ $timeout(function(){
                                                             point.onMouseOver(); // Show the hover marker
                                                             chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
                                                         }*/
+
                                                     }
                                                 }
                                             }

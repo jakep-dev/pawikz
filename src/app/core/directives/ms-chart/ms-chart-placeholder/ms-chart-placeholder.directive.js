@@ -60,7 +60,6 @@
             vm.onChartSave();
         }
 
-
         //Maximize the chart
         function maximizeChart() {
             var elementWrapper = {};
@@ -136,6 +135,7 @@
                                 }
                             }
                         });
+
                     break;
                 default:
                     break;

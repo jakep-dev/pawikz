@@ -377,6 +377,25 @@
                     if(tearSheetItem.id === 'GenericTableItem')
                     {
                         //Tool Bar Code
+
+                        var newScope = scope.$new();
+                        newScope.tearheader = {};
+                        newScope.tearcontent = [];
+                        newScope.iscollapsible = true;
+                        newScope.isprocesscomplete = true;
+                        newScope.isnoneditable = false;
+
+                        newScope.tearheader = {
+                            label: 'Available Links',
+                            id: 'avalLink',
+                            itemid: '',
+                            mnemonicid: ''
+                        }
+
+                        newScope.tearcontent.push(component.TearSheetItem);
+
+                        var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
+                        el.find('#template-content').append($compile(html)(newScope));
                     }
                     else if(tearSheetItem.id === 'LabelItem') {
                         templateData.header.label = tearSheetItem.Label;
@@ -450,6 +469,11 @@
 
                         templateData.content.push(component);
                     }
+                    else if(comp.TearSheetItem &&
+                            comp.TearSheetItem.id === 'LinkItem')
+                    {
+                        templateData.content.push(comp.TearSheetItem);
+                    }
 
                 });
 
@@ -521,17 +545,20 @@
                                 el.find('#template-content').append($compile(html)(newScope));
                             }
                         }
+                        else {
+                            switch(renderContent.id)
+                            {
+                                case 'LinkItem':
+                                    var newScope = scope.$new();
+                                    var html = '<div layout-padding>';
+                                    html += '<ms-link value="' + renderContent.Label + '" href="'+ renderContent.url +'"></ms-link>';
+                                    html += '</div>';
+                                    el.find('#template-content').append($compile(html)(newScope));
+                                    break;
+                            }
+
+                        }
                     });
-
-
-                    console.log('Step HTML');
-                    console.log(el.find('#template-content'));
-
-                    //var templateCacheKey = commonBusiness.projectId.concat('-', commonBusiness.stepId);
-                    //console.log(templateCacheKey);
-                    //
-                    //$templateCache.put(templateCacheKey, el.find('#template-content')[0].innerHTML);
-
                 }
             }
         };

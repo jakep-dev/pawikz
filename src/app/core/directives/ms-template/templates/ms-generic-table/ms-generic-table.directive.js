@@ -36,14 +36,14 @@
                 //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)
                 {
-                    if(angular.isUndefined(row.id) || row.id !== 'toolbar_links') {
+                    if(!row.id || row.id === 'toolbar_links') {
                         html = '';
                         newScope = null;
                         html += '<div class="row" layout-align="center center"  layout="row" flex>';
 
                         var columns = null;
 
-                        if(angular.isUndefined(row.col))
+                        if(!row.col)
                         {
                             columns = row;
                         }
@@ -51,12 +51,15 @@
                             columns = row.col;
                         }
 
+                        console.log('RowValues - ');
+                        console.log(scope.tearsheet.rows);
                         //Creating Columns for Generic-Table
                         angular.forEach(columns, function (col) {
+
                             html += '<div flex>';
                             var tearSheetItem = col.TearSheetItem;
 
-                            if (!angular.isUndefined(tearSheetItem) &&
+                            if (tearSheetItem &&
                                 typeof(tearSheetItem.Label) !== 'object') {
 
                                 switch (tearSheetItem.id) {
@@ -66,7 +69,7 @@
                                         break;
                                     case 'LinkItemNoWord':
                                         newScope = scope.$new();
-                                        html += '<ms-link value="' + tearSheetItem.Label + '"></ms-link>';
+                                        html += '<ms-link value="' + tearSheetItem.Label + '" href="'+ tearSheetItem.url +'"></ms-link>';
                                         break;
                                     case 'LinkItem':
                                         newScope = scope.$new();
