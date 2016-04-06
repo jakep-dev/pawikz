@@ -36,7 +36,7 @@
                 //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)
                 {
-                    if(!row.id || row.id === 'toolbar_links') {
+                    if(!row.id || row.id !== 'toolbar_links') {
                         html = '';
                         newScope = null;
                         html += '<div class="row" layout-align="center center"  layout="row" flex>';

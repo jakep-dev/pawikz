@@ -403,24 +403,24 @@
                     {
                         //Tool Bar Code
 
-                        var newScope = scope.$new();
-                        newScope.tearheader = {};
-                        newScope.tearcontent = [];
-                        newScope.iscollapsible = true;
-                        newScope.isprocesscomplete = true;
-                        newScope.isnoneditable = false;
-
-                        newScope.tearheader = {
-                            label: 'Available Links',
-                            id: 'avalLink',
-                            itemid: '',
-                            mnemonicid: ''
-                        }
-
-                        newScope.tearcontent.push(component.TearSheetItem);
-
-                        var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
-                        el.find('#template-content').append($compile(html)(newScope));
+                        //var newScope = scope.$new();
+                        //newScope.tearheader = {};
+                        //newScope.tearcontent = [];
+                        //newScope.iscollapsible = true;
+                        //newScope.isprocesscomplete = true;
+                        //newScope.isnoneditable = false;
+                        //
+                        //newScope.tearheader = {
+                        //    label: 'Available Links',
+                        //    id: 'avalLink',
+                        //    itemid: '',
+                        //    mnemonicid: ''
+                        //}
+                        //
+                        //newScope.tearcontent.push(component.TearSheetItem);
+                        //
+                        //var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
+                        //el.find('#template-content').append($compile(html)(newScope));
                     }
                     else if(tearSheetItem.id === 'LabelItem') {
                         templateData.header.label = tearSheetItem.Label;
