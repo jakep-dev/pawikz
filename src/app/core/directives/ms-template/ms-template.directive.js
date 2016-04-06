@@ -8,17 +8,26 @@
         .directive('msTemplate', msTemplateDirective);
 
 
-    function msTemplateController($scope, templateBusiness)
+    function msTemplateController($scope, templateBusiness, commonBusiness)
     {
         var vm = this;
 
+        vm.isExpandAll = templateBusiness.isTemplateExpandAll;
         vm.saveAll = saveAll;
+        vm.toggleExpand = toggleExpand;
 
         //Save the entire template data.
         function saveAll()
         {
             templateBusiness.save();
             templateBusiness.cancelPromise();
+        }
+
+        //Toggle expand or collapse
+        function toggleExpand()
+        {
+            vm.isExpandAll = !vm.isExpandAll;
+            commonBusiness.isTemplateExpandAll = !commonBusiness.isTemplateExpandAll;
         }
     }
 

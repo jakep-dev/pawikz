@@ -124,6 +124,9 @@
                             projectId: $stateParams.projectId
                         });
 
+                        console.log('NavConfig - ');
+                        console.log(navConfig);
+
                         step.isExpanded = true;
                     });
 

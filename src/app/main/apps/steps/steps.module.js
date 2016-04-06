@@ -10,7 +10,7 @@
     function config($stateProvider)
     {
         $stateProvider.state('app.steps', {
-            url    : '/steps/{projectId}/{stepId}',
+            url    : '/steps/{projectId}/{stepId}/{stepName}',
             views  : {
                 'content@app': {
                     templateUrl: 'app/main/apps/steps/steps.html',

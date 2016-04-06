@@ -41,10 +41,12 @@
                                     </md-menu-item>
 
                                     <md-menu-item>
-                                        <md-button  aria-label="expand all">
+                                        <md-button  aria-label="expand all" ng-click="vm.toggleExpand()">
                                                   <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-backburger" ng-class="{'collapse': true, 'expand': false}"></md-icon>
-                                                        <span>Collpase All</span>
+                                                        <md-icon md-font-icon="icon-backburger"
+                                                                 ng-class="!vm.isExpandAll ? 'collapse' : 'expand'"></md-icon>
+                                                        <span ng-if="!vm.isExpandAll">Collpase All</span>
+                                                       <span ng-if="vm.isExpandAll">Expand All</span>
                                                   </span>
                                         </md-button>
                                     </md-menu-item>
