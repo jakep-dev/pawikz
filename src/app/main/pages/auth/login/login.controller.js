@@ -47,6 +47,9 @@
                     authBusiness.userInfo = response.userinfo;
                     authBusiness.userName = response.userinfo.fullName;
 
+                    console.log('authBusiness.userInfo');
+                    console.log(authBusiness.userInfo);
+
                     store.set('user-info', authBusiness.userInfo);
                     store.set('x-session-token', token);
                     var url = ('/dashboard/').concat(userId, '/', token, '/');
