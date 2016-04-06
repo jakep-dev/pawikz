@@ -4,12 +4,26 @@
 
     angular
         .module('app.core')
+        .controller('msTemplateController', msTemplateController)
         .directive('msTemplate', msTemplateDirective);
 
 
+    function msTemplateController($scope, templateBusiness)
+    {
+        var vm = this;
+
+        vm.saveAll = saveAll;
+
+        //Save the entire template data.
+        function saveAll()
+        {
+            templateBusiness.save();
+            templateBusiness.cancelPromise();
+        }
+    }
 
     /** @ngInject */
-    function msTemplateDirective($compile, $templateCache, commonBusiness)
+    function msTemplateDirective($compile)
     {
 
         function firstVariation(contentComponents, comp)
@@ -324,6 +338,8 @@
             scope   : {
                 components: '='
             },
+            controller: 'msTemplateController',
+            controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
             link:function(scope, el, attrs)
             {
