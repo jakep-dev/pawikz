@@ -7,7 +7,7 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope)
+    function msComponentController($scope, commonBusiness, templateBusiness)
     {
         var vm = this;
         vm.isNonEditable = $scope.isnoneditable;
@@ -22,6 +22,10 @@
                 vm.isProcessComplete = value;
             }
         );
+
+        commonBusiness.onMsg('IsTemplateExpanded', $scope, function() {
+            toggleCollapse();
+        });
 
         vm.collapsed = false;
         vm.toggleCollapse = toggleCollapse;
@@ -50,6 +54,9 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-component/ms-component.html',
             link: function(scope, el, attrs)
             {
+                console.log('Component Scope');
+                console.log(scope);
+
                 scope.title = scope.tearheader.label;
                 var html = '';
                 var isTableLayout = false;

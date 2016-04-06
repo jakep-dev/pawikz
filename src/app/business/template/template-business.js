@@ -6,15 +6,15 @@
 
     angular
         .module('app.business')
-        .factory('templateBusiness', templateBusiness);
+        .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
     function templateBusiness($interval, toast, clientConfig, commonBusiness, templateService) {
-
         var business = {
            mnemonics: null,
            saveMnemonics: [],
            autoSavePromise: [],
+           isExpandAll: false,
            save: save,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
@@ -24,6 +24,7 @@
         };
 
         return business;
+
 
         //
         function getTableLayoutMnemonicValue(itemId, mnemonic)
