@@ -374,7 +374,7 @@ $timeout(function(){
                                                             yValue,
                                                             value;
                                                         Highcharts.each(series, function(p, n) {
-                                                            yValue = p.data[pointIndex].y
+                                                            yValue = p.data[pointIndex] ? p.data[pointIndex].y : ''
                                                             //console.log('yValue: ' + yValue);
                                                             if(legendItems && legendItems[n])
                                                             {

@@ -76,9 +76,6 @@
 
                                         var saveAllCharts = function saveAllCharts() {
                                             var startArr = [];
-                                            scope.oldCharts.forEach(function(chart) {
-                                                startArr.push(chart);
-                                            });
                                             scope.jsCharts.forEach(function(chart){
                                                 var stockString = '';
                                                 var jsChart = chart.filterState;
@@ -209,6 +206,8 @@
                                     console.log('data-------------------------->>',data);
                                     if(data.legacyCharts)
                                     {
+                                        idCount=0;
+                                        scope.oldCharts = [];
                                         angular.forEach(data.legacyCharts, function(chart)
                                         {
 

@@ -317,7 +317,8 @@
                 filterState: '=',
                 mnemonicId: '=',
                 itemId: '=',
-                chartId: '='
+                chartId: '=',
+                hideFilters : '='
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
             controller : 'msStockChartController',

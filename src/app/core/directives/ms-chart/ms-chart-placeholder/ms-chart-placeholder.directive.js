@@ -7,7 +7,7 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($rootScope, $scope, $element, $compile, dialog, $mdDialog, stockChartBusiness, stockService, commonBusiness,$state,$stateParams) {
+    function msChartPlaceHolderController($rootScope, $scope, $element, $compile, dialog, $mdDialog, stockChartBusiness, stockService, commonBusiness, $state, $stateParams) {
         var vm = this;
         var type = $scope.$parent.type;
         vm.title = $scope.chartTitle;
@@ -22,30 +22,33 @@
         vm.saveChart = saveChart;
         vm.swapChart = swapChart;
         vm.onChartSave = $scope.onChartSave;
+        //@@TODO - For Testing
+        vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&
+                $scope.chart.tearsheet.type=="image") ? true : false;
 
         //Reset the chart functionality.
         function resetChart() {
-           // $state.reload();
+            // $state.reload();
             //console.log($state.current);
-            $state.go($state.current, {reloadCount:($stateParams.reloadCount+1)});
+            $state.go($state.current, {reloadCount: ($stateParams.reloadCount + 1)});
             /**
-            $scope.filterState.endDate = new Date();
-            $scope.filterState.interval = '3Y';
+             $scope.filterState.endDate = new Date();
+             $scope.filterState.interval = '3Y';
 
-            var d = new Date();
-            d.setFullYear(d.getFullYear() - 3);
-            $scope.filterState.startDate = d;
-            //$scope.onFilterStateUpdate();
+             var d = new Date();
+             d.setFullYear(d.getFullYear() - 3);
+             $scope.filterState.startDate = d;
+             //$scope.onFilterStateUpdate();
 
-            $scope.filterState.splits = 'N';
-            $scope.filterState.earnings = 'N';
-            $scope.filterState.dividends = 'N';
-            $scope.filterState.mainStock = '';
-            $scope.filterState.selectedPeers = [];
-            $scope.filterState.selectedIndices = [];
-            $scope.filterState.selectedCompetitors = [];
+             $scope.filterState.splits = 'N';
+             $scope.filterState.earnings = 'N';
+             $scope.filterState.dividends = 'N';
+             $scope.filterState.mainStock = '';
+             $scope.filterState.selectedPeers = [];
+             $scope.filterState.selectedIndices = [];
+             $scope.filterState.selectedCompetitors = [];
 
-            $scope.$broadcast('filterSateUpdate');
+             $scope.$broadcast('filterSateUpdate');
              **/
         }
 
@@ -66,11 +69,13 @@
             elementWrapper.target = document.getElementById('content');
             var position = $('#content').position();
             var width = $('#content').width();
+            var filterState = $scope.chart.filterState;
             var html;
-            console.log('$scope.chart.tearsheet.type------->',$scope.chart.tearsheet.type);
+            console.log('$scope.chart.tearsheet.type------->', $scope.chart.tearsheet.type);
+            $scope.hideFilters = true;
             switch ($scope.chart.tearsheet.type) {
                 case 'stock':
-                    html = '<ms-stock-chart chart-id="id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="filterState"></ms-stock-chart>';
+                    html = '<ms-stock-chart chart-id="id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" hide-filters="hideFilters"></ms-stock-chart>';
                     break;
 
                 case 'image':
@@ -97,6 +102,7 @@
                     $scope.closeDialog = function () {
                         $mdDialog.hide();
                     };
+                    $scope.hideFiltters = true;
                 }
             });
             // When the 'enter' animation finishes...
@@ -116,15 +122,15 @@
 
                         var msChartPlaceHolderId = '1';
                         var chartToBeAdded = {
-                            tearsheet : {
+                            tearsheet: {
                                 type: 'stock',
                                 isChartTitle: true,
                                 mnemonicId: $scope.chart.tearsheet.mnemonicId,
                                 itemId: $scope.chart.tearsheet.itemId
                             },
-                            filterState : angular.copy($scope.chart.filterState),
-                            msChartPlaceHolderId : msChartPlaceHolderId,
-                            title : $scope.chartTitle
+                            filterState: angular.copy($scope.chart.filterState),
+                            msChartPlaceHolderId: msChartPlaceHolderId,
+                            title: $scope.chartTitle
                         }
                         $scope.addNewChart(chartToBeAdded, $scope.index);
                     } else
@@ -146,7 +152,7 @@
         function removeChart(id) {
             console.log(id);
             if ($scope.chart) {
-                $scope.onChartRemove($scope.index,$scope.chart.tearsheet.type);
+                $scope.onChartRemove($scope.index, $scope.chart.tearsheet.type);
             }
             else {
                 $('#' + id).remove();
@@ -168,11 +174,11 @@
                 id: '@',
                 tearsheet: '=',
                 addNewChart: '=',
-                index : '=',
-                chart : '=',
-                chartMoved : '=',
-                onChartRemove : '=',
-                onChartSave : '='
+                index: '=',
+                chart: '=',
+                chartMoved: '=',
+                onChartRemove: '=',
+                onChartSave: '='
             },
             controller: 'msChartPlaceHolderController',
             controllerAs: 'vm',
