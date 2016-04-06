@@ -76,9 +76,6 @@
 
                                         var saveAllCharts = function saveAllCharts() {
                                             var startArr = [];
-                                            scope.oldCharts.forEach(function(chart) {
-                                                startArr.push(chart);
-                                            });
                                             scope.jsCharts.forEach(function(chart){
                                                 var stockString = '';
                                                 var jsChart = chart.filterState;
@@ -151,12 +148,8 @@
                                             }
                                         };
 
-                                        scope.onChartRemove = function (index,type){
-                                            if(type=="stock")
-                                                scope.jsCharts.splice(index, 1);
-                                            else if (type=="image"){
-                                                scope.oldCharts.splice(index, 1);
-                                            }
+                                        scope.onChartRemove = function (index){
+                                            scope.jsCharts.splice(index, 1);
                                             //chart remove chart the charts on server ..
                                             saveAllCharts();
                                         };
@@ -206,12 +199,12 @@
                                         renderJSCharts();
                                     }
                                     //Creating Legacy Charts
-                                    console.log('data-------------------------->>',data);
                                     if(data.legacyCharts)
                                     {
+                                        idCount=0;
+                                        scope.oldCharts = [];
                                         angular.forEach(data.legacyCharts, function(chart)
                                         {
-
                                             ++idCount;
                                             console.log('idCount',idCount);
                                             if(idCount<4) {

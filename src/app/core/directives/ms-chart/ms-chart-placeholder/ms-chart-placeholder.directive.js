@@ -67,10 +67,12 @@
             var position = $('#content').position();
             var width = $('#content').width();
             var html;
-            console.log('$scope.chart.tearsheet.type------->',$scope.chart.tearsheet.type);
+           console.log('$scope.chart.tearsheet.type------->',$scope.chart.tearsheet.type);
+            $scope.hideFilters = true;
             switch ($scope.chart.tearsheet.type) {
                 case 'stock':
-                    html = '<ms-stock-chart chart-id="id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="filterState"></ms-stock-chart>';
+                    html = '<ms-stock-chart chart-id="id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="filterState" ' +
+                        'hide-filters="hideFiltters"></ms-stock-chart>';
                     break;
 
                 case 'image':
@@ -97,6 +99,7 @@
                     $scope.closeDialog = function () {
                         $mdDialog.hide();
                     };
+                    $scope.hideFiltters = true;
                 }
             });
             // When the 'enter' animation finishes...

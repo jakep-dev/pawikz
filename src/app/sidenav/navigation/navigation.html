@@ -22,11 +22,12 @@
             <span class="ms-nav-label">Project Overview</span>
         </a>
     </ms-nav-item>
-    <ms-nav-item ng-repeat="step in vm.sideNavItems" class="ms-nav-subitem" >
-            <a ms-nav-button ui-sref="app.steps({projectId:step.projectId, stepId:step.stepId, stepName:step.stepName})"
-               ui-sref-active="active md-accent-bg" md-ink-ripple>
-                <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>
-                <span style="padding-left: 2em" class="ms-nav-label">{{ step.stepId + ". " + step.stepName }}</span>
-            </a>
+
+    <ms-nav-item ng-repeat="step in vm.sideNavItems">
+        <a ms-nav-button ui-sref="app.steps.stepName({projectId:step.projectId, stepId:step.stepId, stepName:step.stepName})"
+           ui-sref-active="active md-accent-bg" md-ink-ripple>
+            <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>
+            <span class="ms-nav-label">{{ step.stepId + ". " + step.stepName }}</span>
+        </a>
     </ms-nav-item>
 </ms-nav>

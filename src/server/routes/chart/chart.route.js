@@ -115,7 +115,28 @@
                 mnemonic = req.body.mnemonic,
                 item_id = req.body.itemId,
                 stepId = req.body.stepId,
-                projectId = req.body.projectId;
+                projectId = req.body.projectId,
+                chart_id = req.body.chart_id;
+
+
+            var chartSetting = {
+                chart_title: chart_title,
+                peers: tickers,
+                period:period,
+                date_start:start_date,
+                date_end:end_date,
+                dividends: dividends,
+                earnings: earnings,
+                splits:splits,
+                mnemonic:mnemonic,
+                item_id:item_id
+            };
+
+            if(chart_id){
+                chartSetting.chartId  = parseInt(chart_id);
+            }
+
+            console.log('chartSetting tobe saved ',chartSetting);
 
             var args = {
                 data : {
@@ -250,7 +271,17 @@
                             isDividents : (savedChart.chartSetting.splits === 'Y')? true : false,
                             eventOptionVisibility : false,
                             dateOptionVisibility : false,
-                            comparisonOptionVisibility : false
+                            comparisonOptionVisibility : false,
+                            company_id : savedChart.chartSetting.company_id,
+                            mnemonic : savedChart.chartSetting.mnemonic,
+                            item_id : savedChart.chartSetting.item_id,
+                            step_id : savedChart.chartSetting.step_id,
+                            project_id : savedChart.chartSetting.project_id,
+                            chart_id : savedChart.chartSetting.chart_id,
+                            chart_date : savedChart.chartSetting.chart_date,
+                            date_start : savedChart.chartSetting.date_start,
+                            date_end : savedChart.chartSetting.date_end,
+
                         };
 
                         if(savedChart.chartSetting.peers){
