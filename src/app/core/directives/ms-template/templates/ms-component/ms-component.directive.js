@@ -146,7 +146,7 @@
                             newScope.mnemonicid = mnemonicid;
                             newScope.itemid = itemid;
 
-                            html += '<ms-chart type="Stock" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
+                            html += '<ms-message message="Under Construction"></ms-message>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
                     }

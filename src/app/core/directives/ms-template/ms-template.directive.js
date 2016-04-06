@@ -528,7 +528,7 @@
                                 //Check for chart component
                                 angular.forEach(newScope.tearcontent, function(each)
                                 {
-                                    if(each.id === 'ScrapedItem')
+                                    if(each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1)
                                     {
                                         isChartComp = true;
                                     }
