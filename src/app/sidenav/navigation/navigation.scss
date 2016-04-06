@@ -9,7 +9,7 @@ $navigationFoldedWidth: 64px;
     overflow-x: hidden;
     transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2), width 0.1s linear, min-width 0.1s linear, max-width 0.1s linear;
     box-shadow: $whiteframe-shadow-6dp;
-	background-color: #464646 !important;
+    background-color: #464646 !important;
 
     .navigation-header {
         height: 64px;
@@ -48,6 +48,10 @@ $navigationFoldedWidth: 64px;
         color: rgba(255, 255, 255, 0.70);
         user-select: none;
         z-index: 70;
+
+        ms-nav-item.ms-nav-subitem {
+            //padding-left: 1em;
+        }
 
         ms-nav-item {
             display: block;
@@ -115,7 +119,7 @@ $navigationFoldedWidth: 64px;
 
                 &.active {
                     color: #FFFFFF !important;
-					background-color: #f68c20;
+                    background-color: #f68c20;
 
                     .ms-nav-badge {
                         background: #FFFFFF !important;
