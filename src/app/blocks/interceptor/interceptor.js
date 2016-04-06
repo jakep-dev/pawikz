@@ -29,25 +29,12 @@
 
         function response(response)
         {
-           // cancelPromise();
             $rootScope.isOperation = false;
             return response || $q.when(response);
         }
 
         function request(request)
         {
-            //if(request.url.indexOf('.json') === -1 && request.url.indexOf('.html') === -1 &&
-            //    request.url.indexOf('.svg') === -1 && request.url.indexOf('/schema') === -1 &&
-            //    request.url.indexOf('getIndices') === -1)
-            //{
-            //    promise = $interval(function()
-            //    {
-            //        var toast =  $injector.get("toast");
-            //        toast.simpleToast('Hang on. Still processing!', 4000);
-            //        cancelPromise();
-            //    }, 8000);
-            //}
-
             $rootScope.isOperation = true;
             request.headers['x-session-token'] = store.get('x-session-token');
             return request || $q.when(request);
@@ -57,13 +44,13 @@
         {
             var toast =  $injector.get("toast");
             toast.simpleToast('Oops!. Request error.');
-            cancelPromise();
+            console.log('Request Error');
+            console.log(rejection);
             return rejection || $q.when(rejection);
         }
 
         function responseError(rejection)
         {
-            cancelPromise();
             console.log('Response Error');
             $rootScope.isOperation = false;
             store.remove('x-session-token');
@@ -71,6 +58,8 @@
 
             var toast =  $injector.get("toast");
             toast.simpleToast('Oops!. ' + rejection.statusText);
+            console.log('Rejection Response');
+            console.log(rejection);
 
             var error = {
                 method: rejection.config.method,
@@ -86,24 +75,14 @@
                 case 401:
                     $location.url('/pages/auth/login');
                     break;
-                //case 404:
-                //    $location.url('/pages/errors/error-404')
-                //    break;
                 case 500:
+                    console.log('Inside 500 error');
                     $location.url('/pages/errors/error-500')
                     break;
             }
 
-            return $q.reject(rejection);
+            return rejection || $q.when(rejection);
         }
-
-        function cancelPromise()
-        {
-            console.log('Cancel Promise--');
-            $interval.cancel(promise);
-            promise = [];
-        }
-
     }
 
 

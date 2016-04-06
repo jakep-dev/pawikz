@@ -16,6 +16,7 @@
            saveMnemonics: [],
            autoSavePromise: [],
            save: save,
+           cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
