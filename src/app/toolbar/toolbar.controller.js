@@ -22,10 +22,6 @@
             vm.userName = userDetails.fullName;
         }
 
-        console.log('commonBusiness-Details-');
-        console.log('projectId - ' + commonBusiness.projectId);
-        console.log('userId - ' + commonBusiness.userId);
-
         //Set user-name
         commonBusiness.onMsg('UserName', $scope, function() {
             console.log('UserName Emit');

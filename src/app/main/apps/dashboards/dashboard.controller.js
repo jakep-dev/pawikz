@@ -165,6 +165,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
             authService.getUserInfo().then(function(response)
             {
                 console.log('User Details - ');
+                response.token = token;
+                store.set('user-info', response);
                 console.log(response);
                 authBusiness.userName = response.fullName;
             });

@@ -15,7 +15,7 @@
     function OverviewController($rootScope, $stateParams, $scope, $interval,
                                 overviewService, clientConfig, bottomSheetConfig,
                                 navConfig, breadcrumbBusiness, commonBusiness,
-                                overviewBusiness, toast)
+                                store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
         $rootScope.projectId = $stateParams.projectId;
@@ -23,6 +23,15 @@
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
+
+        var userDetails = store.get('user-info');
+
+        if(userDetails)
+        {
+            $rootScope.passedUserId = userDetails.userId;
+        }
+
+        console.log('RootScope ProjectID' + $rootScope.projectId );
 
         var undoData = [];
         var redoData = [];
