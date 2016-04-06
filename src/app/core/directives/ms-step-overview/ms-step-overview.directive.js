@@ -8,12 +8,14 @@
         .directive('msStepOverview', msStepOverviewDirective);
 
 
-    function MsStepOverviewController($scope)
+    function MsStepOverviewController($scope, commonBusiness)
     {
         console.log('Scope of each overview - ');
         console.log($scope);
 
-        $scope.expandCollapseToggle = expandCollapseToggle;
+        $scope.isExpanded = false;
+
+        $scope.toggleExpanded = toggleExpanded;
         $scope.singleSelection = singleSelection;
         $scope.setStepSelection = setStepSelection;
 
@@ -38,9 +40,9 @@
             recalculateSelection();
         }
 
-        function expandCollapseToggle()
+        function toggleExpanded()
         {
-            $scope.step.isExpanded = !$scope.step.isExpanded;
+            $scope.isExpanded = !$scope.isExpanded;
         }
 
         function recalculateSelection()
@@ -57,6 +59,10 @@
         {
             return (angular.isDefined($scope.expandable) && $scope.expandable === true);
         }
+
+        commonBusiness.onMsg('IsStepExpanded', $scope, function() {
+            toggleExpanded();
+        });
     }
 
     /** @ngInject */

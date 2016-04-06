@@ -50,7 +50,7 @@
         vm.isRedo = false;
 
         //Methods
-        vm.expandCollapseToggle = expandCollapseToggle;
+        vm.toggleExpand = toggleExpand;
         vm.flipStepView = flipStepView;
         vm.flipSelectionView = flipSelectionView;
         vm.saveAll = saveAll;
@@ -223,6 +223,7 @@
         function expandAll()
         {
             vm.isAllExpanded = !vm.isAllExpanded;
+
         }
 
         //Select the steps
@@ -246,20 +247,10 @@
         }
 
         //Expand/Collapse the steps
-        function expandCollapseToggle()
+        function toggleExpand()
         {
             vm.isExpanded = !vm.isExpanded;
-
-            console.log('--Expand Collapse Toggle');
-            console.log(vm.isExpanded);
-
-            if(angular.isDefined(vm.templateOverview)) {
-
-                angular.forEach(vm.templateOverview.steps, function(step)
-                {
-                    step.isExpanded = vm.isExpanded;
-                });
-            }
+            commonBusiness.isStepExpandAll = !commonBusiness.isStepExpandAll;
         }
 
     }

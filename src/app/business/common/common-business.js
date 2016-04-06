@@ -30,6 +30,19 @@
             }
         });
 
+        var isStepExpandAll = false;
+        Object.defineProperty(this, 'isStepExpandAll', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return isStepExpandAll;
+            },
+            set: function(value) {
+                isStepExpandAll = value;
+                this.emitMsg('IsStepExpanded');
+            }
+        });
+
 
         this.emitMsg = function(msg) {
             console.log("Emitting changed event");
