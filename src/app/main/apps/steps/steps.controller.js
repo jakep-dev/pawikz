@@ -21,6 +21,7 @@
         commonBusiness.projectId = projectId;
 
         vm.TearSheetStep = null;
+        vm.TearSheetData = null;
 
         breadcrumbBusiness.title = stepName;
 
@@ -43,6 +44,7 @@
                     {
                        if(angular.isDefined(data.list))
                        {
+                           vm.TearSheetData = data.list;
                            templateBusiness.mnemonics = data.list;
                        }
                         else {

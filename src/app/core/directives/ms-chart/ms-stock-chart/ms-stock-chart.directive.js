@@ -16,6 +16,7 @@
         vm.searchedStocks = [];
         vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
+        console.log('hideFilters--------------------->',vm.hideFilters);
         //variables
 
         vm.onFilterStateUpdate = function (){
@@ -317,7 +318,8 @@
                 filterState: '=',
                 mnemonicId: '=',
                 itemId: '=',
-                chartId: '='
+                chartId: '=',
+                hideFilters : '='
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
             controller : 'msStockChartController',

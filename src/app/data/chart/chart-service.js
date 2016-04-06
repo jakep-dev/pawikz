@@ -59,7 +59,8 @@
                     mnemonic : mnemonic,
                     itemId : itemId,
                     stepId : stepId,
-                    projectId : projectId
+                    projectId : projectId,
+                    chart_id : chart_id
                 }
             }).then(function(data, status, headers, config)
             {
