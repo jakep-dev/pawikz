@@ -1,0 +1,37 @@
+
+
+/*
+animation:*/
+
+.slideDown.ng-hide {
+  height:0;
+  transition:height 0.35s ease;
+  overflow:hidden;
+  position:relative;
+}
+
+
+.collapse
+{
+	-webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transition: transform 0.2s ease-in-out 0.1s;
+    transform: rotate(90deg); 
+}
+
+.expand
+{
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transition: transform 0.2s ease-in-out 0.1s;
+	transform: rotate(270deg);
+}
+
+#step-header
+{
+	background-color : #464646 !important;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}

@@ -9,16 +9,18 @@
     /** @ngInject */
     function runBlock($rootScope, $timeout)
     {
+
+
         //$rootScope.$on('$stateChangeStart', function ()
         //{
-        //    $rootScope.loadingProgress = true;
+        //    $rootScope.loadingSearchProgress = true;
         //});
         //
         //$rootScope.$on('$stateChangeSuccess', function ()
         //{
         //    $timeout(function ()
         //    {
-        //        $rootScope.loadingProgress = false;
+        //        $rootScope.loadingSearchProgress = false;
         //    });
         //});
     }

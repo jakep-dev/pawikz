@@ -7,14 +7,57 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $mdSidenav, msNavFoldService, $translate, $mdToast)
+    function ToolbarController($rootScope, $scope, $mdSidenav, msNavFoldService, $location,
+                               $translate, store, authService, commonBusiness, authBusiness, toast)
     {
         var vm = this;
+        vm.userName = '';
+
+        var userDetails = store.get('user-info');
+        console.log('Toolbar-User-Info');
+        console.log(userDetails);
+
+        if(userDetails)
+        {
+            vm.userName = userDetails.fullName;
+        }
+
+        console.log('commonBusiness-Details-');
+        console.log('projectId - ' + commonBusiness.projectId);
+        console.log('userId - ' + commonBusiness.userId);
+
+        //Set user-name
+        commonBusiness.onMsg('UserName', $scope, function() {
+            console.log('UserName Emit');
+            vm.userName = authBusiness.userName;
+        });
+
+        vm.selectedLanguage = {
+            'title'      : 'English',
+            'translation': 'TOOLBAR.ENGLISH',
+            'code'       : 'en',
+            'flag'       : 'gb'
+        };
 
         // Data
         $rootScope.global = {
             search: ''
         };
+
+        vm.languages = [
+            {
+                'title'      : 'English',
+                'translation': 'TOOLBAR.ENGLISH',
+                'code'       : 'en',
+                'flag'       : 'gb'
+            },
+            {
+                'title'      : 'Spanish',
+                'translation': 'TOOLBAR.SPANISH',
+                'code'       : 'es',
+                'flag'       : 'es'
+            }
+        ];
 
 
         // Methods
@@ -22,10 +65,9 @@
         vm.toggleNavigationSidenavFold = toggleNavigationSidenavFold;
         vm.logout = logout;
         vm.setUserStatus = setUserStatus;
+        vm.changeLanguage = changeLanguage;
 
         //////////
-
-
 
         /**
          * Toggle sidenav
@@ -58,13 +100,29 @@
 
         /**
          * Logout Function
+         * Remove the stored token and navigate to login page
          */
         function logout()
         {
-
+           authService.logout().then(function(response)
+           {
+               store.remove('x-session-token');
+               store.remove('user-info');
+               $location.url('/pages/auth/login');
+               toast.simpleToast('Successfully logged out!');
+           })
         }
 
-
+        /**
+         * Change Language
+         */
+        function changeLanguage(lang)
+        {
+            vm.selectedLanguage = lang;
+            //Change the language
+            $translate.use(lang.code);
+            toast.simpleToast('Language changed to ' + lang.title + '!');
+        }
     }
 
 })();

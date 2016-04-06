@@ -1,4 +1,4 @@
-@import '../../../../bower_components/angular-material/angular-material';
+@import '../../../../bower_components/angular-material/angular-material.scss';
 
 @import 'partials/reset';
 @import 'partials/fixes';
@@ -12,6 +12,7 @@
 @import 'partials/material';
 @import 'partials/typography';
 @import 'partials/widgets';
+@import 'partials/accordion';
 
 @import 'partials/plugins/angular-google-map';
 @import 'partials/plugins/c3';

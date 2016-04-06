@@ -1,0 +1,36 @@
+
+$template-header-background:rgba(15, 185, 255, 0.11);
+$template-header-padding:0px 10px 0px 10px;
+$template-header-height: 40px;
+
+#template-header{
+  padding: $template-header-padding;
+  height:$template-header-height;
+
+ h2{
+   background-color: $template-header-background;
+   font-weight:bold;
+   padding-left: 10px;
+   border-radius: 2px;
+ }
+}
+
+
+
+.collapse
+{
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transition: transform 0.2s ease-in-out 0.1s;
+  transform: rotate(90deg);
+}
+
+.expand
+{
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transition: transform 0.2s ease-in-out 0.1s;
+  transform: rotate(270deg);
+}

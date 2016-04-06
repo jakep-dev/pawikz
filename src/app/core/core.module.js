@@ -17,8 +17,10 @@
                 'angular-loading-bar',
                 //'angular-chartist',
                 //'chart.js',
+                'trNgGrid',
                 'datatables',
-                'datatables.fixedheader',
+                'datatables.tabletools',
+                'datatables.bootstrap',
                 //'gridshore.c3js.chart',
                 //'nvd3',
                 'pascalprecht.translate',
@@ -27,6 +29,13 @@
                 'uiGmapgoogle-maps',
                 'textAngular',
                 'ng-sortable',
-                'backTop'
+                'backTop',
+                'ksSwiper',
+                'ngLodash',
+                'angularSoap',
+                'angular-storage',
+                'disableAll',
+                'froala',
+                'highcharts-ng'
             ]);
 })();

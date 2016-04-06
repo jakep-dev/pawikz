@@ -1,0 +1,13 @@
+{
+  "TOOLBAR": {
+    "TOGGLE_NAVIGATION": "Navegación de palanca",
+    "TOGGLE_NAVIGATION_MODE": "Activar el modo de navegación",
+    "SEARCH": "Buscar",
+    "MY_PROFILE": "Mi perfil",
+    "FEEDBACK":"Retroalimentación",
+    "LOGOUT": "Cerrar sesión",
+    "TOGGLE_QUICK_PANEL": "Panel rápida SpanishToggle",
+    "ENGLISH": "Inglés",
+    "SPANISH": "Español"
+  }
+}

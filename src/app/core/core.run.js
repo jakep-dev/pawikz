@@ -6,6 +6,8 @@
         .module('app.core')
         .run(runBlock);
 
+
+
     /** @ngInject */
     function runBlock(fuseGenerator, fuseConfig, fuseHelper)
     {

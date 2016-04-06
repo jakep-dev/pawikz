@@ -1,0 +1,7 @@
+<md-radio-group ng-model="tearsheet.value" layout="row">
+    <md-radio-button ng-repeat="value in tearsheet.values"
+                     ng-value="value.value"
+                     aria-label="{{value.name}}">
+        {{value.name}}
+    </md-radio-button>
+</md-radio-group>

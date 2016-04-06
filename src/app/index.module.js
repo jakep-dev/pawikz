@@ -11,6 +11,15 @@
             // Core
             'app.core',
 
+            // Blocks
+            'app.blocks',
+
+            // Business
+            'app.business',
+
+            // Data
+            'app.data',
+
             // Navigation
             'app.navigation',
 
@@ -20,10 +29,22 @@
             // Breadcrumb
             'app.breadcrumb',
 
-            // Dashboards
-            'app.dashboards',
+            // Bottomsheet
+            'app.bottomsheet',
 
-            // Feedback
-            'app.pages.feedback'
+            // Dashboards
+            'app.dashboard',
+
+            // Overview
+            'app.overview',
+
+            // Steps
+            'app.steps',
+
+            // Pages
+            'app.pages',
+
+            // Components
+            'app.components'
         ]);
 })();

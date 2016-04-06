@@ -1,0 +1,15 @@
+<div id="ms-chart-simple" class="page-layout simple fullwidth white-bg" layout="row" ng-cloak>
+    <div class="center" flex layout-padding>
+        <ms-content id="ms-chart-container" class="ms-chart-container-class">
+            <ms-chart-placeholder ng-repeat="chart in jsCharts" class="chart" id="chart.msChartPlaceHolderId" chart="chart"
+                                  chart-title="chart.title" tearsheet="chart.tearsheet" add-new-chart="addNewChart" index = "$index"
+                                  chart-moved="chartMoved" on-chart-remove="onChartRemove" on-chart-save="saveAllCharts">
+            </ms-chart-placeholder>
+
+
+
+            <!--@todo generate some unique index -->
+            <ms-chart-placeholder ng-repeat="chart in oldCharts" class="chart" chart="chart" on-chart-remove="onChartRemove"  tearsheet="chart.tearsheet" index="$index"></ms-chart-placeholder>
+        </ms-content>
+    </div>
+</div >

@@ -11,8 +11,10 @@
     .controller('FeedbackController', FeedbackController);
 
   /** @ngInject */
-  function FeedbackController()
+  function FeedbackController($rootScope)
   {
+
+    $rootScope.title = 'Feedback';
     var vm = this;
 
 
