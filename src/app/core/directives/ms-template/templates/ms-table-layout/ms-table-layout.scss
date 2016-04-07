@@ -13,6 +13,7 @@ $table-layout-input-height: 25px;
   {
     padding-left: $table-layout-padding-left;
     font-weight: bold;
+    min-height: 25px;
   }
 
   .row:nth-child(odd) {
