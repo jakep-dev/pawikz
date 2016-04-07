@@ -119,11 +119,16 @@
                                 columns: col
                             };
 
-                            console.log('TableContent');
-                            console.log(newScope);
-                            console.log(scope);
+                            //Variation in Table Layout.
+                            if(col && !col.length)
+                            {
+                                html += '<ms-tablelayout itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout>';
+                            }
+                            else {
+                                //Need to create a new Table Layout directive to handle the variation
+                                html += '<ms-message message="Under Construction"></ms-tablelayout>';
+                            }
 
-                            html += '<ms-tablelayout itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout>';
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;
