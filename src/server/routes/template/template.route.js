@@ -167,7 +167,8 @@
 
         //S et the schema variations.
         function setSchemaVariations(data){
-            return data.UIStructure.data.TearSheetStep.Component;
+            return (data && data.UIStructure && data.UIStructure.data &&
+                    data.UIStructure.data.TearSheetStep && data.UIStructure.data.TearSheetStep.Component )  ? data.UIStructure.data.TearSheetStep.Component : null;
         }
     };
 
