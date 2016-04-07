@@ -96,7 +96,7 @@
 
                 if (results.stockChartPeerData && results.stockChartPeerData.length) {
                     peerData = results.stockChartPeerData;
-                    if (results.stockChartPeerData.length > results.stockChartPrimaryData.length) {
+                   if (results.stockChartPeerData.length > 0) {
                         lengthDiff = true;
                     }
                 }

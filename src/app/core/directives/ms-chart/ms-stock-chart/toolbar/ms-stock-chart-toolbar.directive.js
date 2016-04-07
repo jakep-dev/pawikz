@@ -236,7 +236,7 @@
                 console.log('legend',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
                 var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length+ vm.filterState.selectedCompetitors.length;
                 if(count <5){
-                    if(item && item.display && vm.filterState.selectedPeers.indexOf(item.display) === -1 ) {
+                    if(item && item.value && vm.filterState.selectedPeers.indexOf(item.value) === -1 ) {
                         var selected = vm.filterState.selectedPeers;
                         selected.push(item.value);
                         vm.filterState.selectedPeers = selected;

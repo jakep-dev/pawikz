@@ -290,10 +290,15 @@
                                 var peer = peers[i].trim();
                                 if(peer.charAt(0) === '^') {
                                     chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
+                                    //chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
+
+                                }
+                                if(peer.charAt(0) === '@') {
+                                    //chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
                                     chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
 
                                 }
-                                else {
+                                else if(peer.charAt(0)!=='^' && peer.charAt(0)!=='@') {
                                     chart.settings.selectedPeerList.push(peer);
                                 }
                             }

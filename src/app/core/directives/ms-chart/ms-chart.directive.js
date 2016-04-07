@@ -89,7 +89,7 @@
                                                         stockString = stockString + '^'+indics + ',';
                                                     });
                                                     jsChart.selectedCompetitors.forEach( function(competitors){
-                                                        stockString = stockString + '^'+competitors + ',';
+                                                        stockString = stockString + '@'+competitors + ',';
                                                     });
                                                     if(stockString !=='') {
                                                         stockString = stockString.slice(0, -1);
