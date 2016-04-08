@@ -69,7 +69,6 @@
             elementWrapper.target = document.getElementById('content');
             var position = $('#content').position();
             var width = $('#content').width();
-            var filterState = $scope.chart.filterState;
             var html;
             console.log('$scope.chart.tearsheet.type------->', $scope.chart.tearsheet.type);
             $scope.hideFilters = true;
@@ -87,7 +86,7 @@
             }
 
             $mdDialog.show({
-                targetEvent: elementWrapper,
+                //targetEvent: elementWrapper,
                 scope: $scope,
                 template: '<md-dialog flex="100" style="position: absolute; top: ' + position.top + 'px; left: ' + position.left + 'px; min-width:' + width + 'px">' +
                 '<md-dialog-actions>' +
@@ -97,6 +96,7 @@
                 '  <md-dialog-content>' + html + '</md-dialog-content>' +
                 '</md-dialog>',
                 onComplete: afterShowAnimation,
+                preserveScope:true,
                 animate: 'full-screen-dialog',
                 controller: function DialogController($scope, $mdDialog) {
                     $scope.closeDialog = function () {
