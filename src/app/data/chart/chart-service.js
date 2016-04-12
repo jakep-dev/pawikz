@@ -95,7 +95,7 @@
                 });
         }
 
-        function getSavedChartData(projectId, stepId, mnemonic, itemId) {
+        function getSavedChartData(projectId, stepId, mnemonic, itemId,$cookies) {
             return $http({
                 method: "POST",
                 url:"/api/getSavedChartData",
@@ -107,6 +107,10 @@
                 }
             }).then(function(data, status, headers, config)
             {
+
+                angular.injector(['ngCookies']).invoke(['$cookies',function($cookies){
+                    $cookies.putObject('tempChartData',data.data);
+                }]);
                 return data.data;
             })
             .catch(function(error) {

@@ -32,19 +32,19 @@
                 <md-icon md-font-icon="icon-plus"></md-icon>
             </md-button>
 
-            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart && !vm.isStockChart">
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Delete
                 </md-tooltip>
                 <md-icon md-font-icon="icon-minus"></md-icon>
             </md-button>
-            <md-button class="md-icon-button" aria-label="up-chart" ng-click="vm.swapChart('U')" ng-if="!vm.isMainChart && !vm.isStockChart">
+            <md-button class="md-icon-button" aria-label="up-chart" ng-click="vm.swapChart('U')" ng-if="!vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Up
                 </md-tooltip>
                 <md-icon md-font-icon="icon-arrow-up"></md-icon>
             </md-button>
-            <md-button class="md-icon-button" aria-label="down-chart" ng-click="vm.swapChart('D')" ng-if="!vm.isMainChart && !vm.isStockChart">
+            <md-button class="md-icon-button" aria-label="down-chart" ng-click="vm.swapChart('D')" ng-if="!vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Down
                 </md-tooltip>

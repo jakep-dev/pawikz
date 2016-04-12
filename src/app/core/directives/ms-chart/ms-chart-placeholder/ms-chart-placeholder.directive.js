@@ -22,15 +22,17 @@
         vm.saveChart = saveChart;
         vm.swapChart = swapChart;
         vm.onChartSave = $scope.onChartSave;
+        vm.onChartReset = $scope.onChartReset;
         //@@TODO - For Testing
-        vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&
-                $scope.chart.tearsheet.type=="image") ? true : false;
+       // vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&
+                //$scope.chart.tearsheet.type=="image") ? true : false;
 
         //Reset the chart functionality.
         function resetChart() {
+            vm.onChartReset();
             // $state.reload();
             //console.log($state.current);
-            $state.go($state.current, {reloadCount: ($stateParams.reloadCount + 1)});
+           // $state.go($state.current, {reloadCount: ($stateParams.reloadCount + 1)});
             /**
              $scope.filterState.endDate = new Date();
              $scope.filterState.interval = '3Y';
@@ -54,14 +56,15 @@
 
         //swap chart position
         function swapChart(direction) {
-            if ($scope.chart.tearsheet.type === 'stock') {
+            //if ($scope.chart.tearsheet.type === 'stock') {
                 $scope.chartMoved(direction, $scope.index);
-            }
+            //}
         };
         //save chart function
         function saveChart() {
             vm.onChartSave();
         }
+
 
         //Maximize the chart
         function maximizeChart() {
@@ -178,7 +181,8 @@
                 chart: '=',
                 chartMoved: '=',
                 onChartRemove: '=',
-                onChartSave: '='
+                onChartSave: '=',
+                onChartReset:'='
             },
             controller: 'msChartPlaceHolderController',
             controllerAs: 'vm',
