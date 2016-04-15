@@ -38,12 +38,17 @@
                 <md-menu-content width="6">
                     <md-menu-item style="margin-top: 15px;">
                         <md-input-container>
-                            <md-select class="comparison-text" placeholder="Search Indices" ng-change="vm.selectedItemChange(vm.selectedIndice)"  ng-model="vm.selectedIndice" md-on-open="vm.loadIndices()">
-
-                                <md-option ng-repeat="item in vm.indices" value="{{item}}" >
-                                    {{item.display}}
+                            <!--  ng-change="vm.selectedItemChange(vm.selectedIndice)"-->
+                            <md-select class="comparison-text" placeholder="Search Indices" ng-model="vm.selectedIndice" md-on-open="vm.loadIndices()" multiple="">
+                                <md-option ng-repeat="item in vm.indices" value="{{item}}">
+                                    <md-checkbox class="md-secondary md-advisen-theme comparison" value="{{item}}" ng-change="vm.selectedItemChange(item)" ng-model="item.selectedIndicecheck" aria-label="{{item.display}}"></md-checkbox>
+                                    <span>{{item.display}}</span>
                                 </md-option>
+                                <div style="position:fixed;bottom:0px;width:95%;background:#ffffff;">
+                                    <md-button  ng-click="vm.addIndices()">Add</md-button>
+                                </div>
                             </md-select>
+
                         </md-input-container>
                     </md-menu-item>
                    <!-- <md-menu-item>
@@ -102,15 +107,19 @@
 
                     <md-menu-item style="margin-top: 15px;">
                         <md-input-container style="padding-bottom: 24px;">
-                            <md-select class="comparison-text" placeholder="Search Competitors" ng-change="vm.selectedCompetitorChange(vm.selectedCompetitor)"  ng-model="vm.selectedCompetitor" md-on-open="vm.loadCompetitors()">
-
-                                <md-option ng-repeat="item in vm.competitors" value="{{item}}" >
-                                    {{item.display}}
+                            <!--ng-change="vm.selectedCompetitorChange(vm.selectedCompetitor)"-->
+                            <md-select class="comparison-text" placeholder="Search Competitors" ng-model="vm.selectedCompetitor" md-on-open="vm.loadCompetitors()" multiple="">
+                                <md-option ng-repeat="item in vm.competitors" value="{{item}}">
+                                    <md-checkbox class="md-secondary md-advisen-theme comparison" value="{{item}}" ng-change="vm.selectedCompetitorChange(item)" ng-model="item.selectedCompetitorcheck" aria-label="{{item.display}}"></md-checkbox>
+                                    <span>{{item.display}}</span>
                                 </md-option>
+                                <div style="position:fixed;bottom:0px;width:95%;background:#ffffff;">
+                                    <md-button  ng-click="vm.addCompetitor()">Add</md-button>
+                                </div>
+
                             </md-select>
                         </md-input-container>
                     </md-menu-item>
-
 
                 </md-menu-content>
             </md-menu>

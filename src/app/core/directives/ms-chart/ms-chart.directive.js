@@ -17,7 +17,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, stockService, commonBusiness)
+    function msChartDirective($rootScope, $compile, stockService, commonBusiness, toast, $interval, clientConfig)
     {
         return {
             restrict: 'E',
@@ -34,7 +34,7 @@
                 {
                     var html = '';
                     var newScope = null;
-
+                    toast.simpleToast("Auto Save Enabled");
                     switch (angular.lowercase(scope.type))
                     {
                         case 'stock':
@@ -331,11 +331,17 @@
 
                                         });
 
-                                        stockService.saveChartAllSettings(commonBusiness.companyId,
+                                        return stockService.saveChartAllSettings(commonBusiness.companyId,
                                             commonBusiness.stepId, commonBusiness.projectId, startArr);
                                     };
 
                                     scope.saveAllCharts = saveAllCharts;
+
+                                    $interval(function(){
+                                        saveAllCharts().then(function(){
+                                            toast.simpleToast("Saved Successfully");
+                                        });
+                                    }, 360000); /*clientConfig.appSettings.autoSaveTimeOut);*/
                                 });
                             break;
                         case 'bar':
