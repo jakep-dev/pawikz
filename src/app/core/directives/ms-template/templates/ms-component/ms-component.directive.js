@@ -60,7 +60,7 @@
                 scope.title = scope.tearheader.label;
                 var html = '';
                 var isTableLayout = false;
-                isTableLayout = (scope.tearcontent.length && scope.tearcontent.length > 1 &&
+                isTableLayout = (scope.tearcontent.length && scope.tearcontent.length >= 1 &&
                 _.findIndex(scope.tearcontent, {id: 'TableLayOut'}) !== -1)
 
                 angular.forEach(scope.tearcontent, function(content)
@@ -122,11 +122,10 @@
                             //Variation in Table Layout.
                             if(col && !col.length)
                             {
-                                html += '<ms-tablelayout itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout>';
+                                html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-r>';
                             }
                             else {
-                                //Need to create a new Table Layout directive to handle the variation
-                                html += '<ms-message message="Under Construction"></ms-tablelayout>';
+                                html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';
                             }
 
                             html += '</div>';

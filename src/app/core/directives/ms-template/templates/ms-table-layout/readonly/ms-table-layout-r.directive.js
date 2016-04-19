@@ -4,11 +4,11 @@
 
     angular
         .module('app.core')
-        .directive('msTablelayout', msTablelayoutDirective);
+        .directive('msTablelayoutR', msTablelayoutRDirective);
 
 
     /** @ngInject */
-    function msTablelayoutDirective($compile, templateService, commonBusiness, DTOptionsBuilder)
+    function msTablelayoutRDirective($compile, templateService, commonBusiness, DTOptionsBuilder)
     {
         function tableLayoutFirstVariation(scope, el, header, column)
         {
@@ -24,7 +24,7 @@
                 }
             });
 
-            el.find('#ms-table-layout').append($compile(html)(scope));
+           // el.find('#ms-table-layout').append($compile(html)(scope));
 
             templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                 scope.mnemonicid, scope.itemid, columns).then(function(response)
@@ -95,7 +95,6 @@
 
                     for(var count = 0; count < data.length; count++)
                     {
-                        //html += '<tbody class="row">';
                         html += '<tr style="min-height: 25px">';
                         angular.forEach(column, function(col)
                         {
@@ -127,7 +126,6 @@
                             }
                         });
                         html += '</tr>';
-                        //html += '</tbody>';
                     }
 
                 }
@@ -147,7 +145,7 @@
                 tearsheet: '=',
                 isfulloption: '=?'
             },
-            templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/ms-table-layout.html',
+            templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/readonly/ms-table-layout-r.html',
             compile:function(el, attrs)
             {
                 return function($scope) {
@@ -160,8 +158,6 @@
                         $scope.$parent.$parent.isprocesscomplete = false;
                     }
 
-
-
                     if($scope.tearsheet.columns.col)
                     {
                         var header = $scope.tearsheet.header.col || null;
@@ -169,24 +165,23 @@
                         tableLayoutFirstVariation($scope, el, header, $scope.tearsheet.columns.col);
                     }
                     else {
-
                         //scope.$parent.$parent.isprocesscomplete = true;
-                        //if(scope.tearsheet.columns.length === 2)
-                        //{
-                        //    var column = scope.tearsheet.columns[0];
-                        //    var secondVariation = scope.tearsheet.columns[1];
-                        //
-                        //    //column.col.push(secondVariation.col);
-                        //
-                        //    var header = scope.tearsheet.header.col || null;
-                        //
-                        //    console.log('header Column');
-                        //    console.log(header);
-                        //
-                        //    tableLayoutFirstVariation(scope, el, header, column.col);
-                        //    //First Column has the table layout
-                        //    //Second Column has the Description.
-                        //}
+                        if(scope.tearsheet.columns.length === 2)
+                        {
+                            var column = scope.tearsheet.columns[0];
+                            var secondVariation = scope.tearsheet.columns[1];
+
+                            //column.col.push(secondVariation.col);
+
+                            var header = scope.tearsheet.header.col || null;
+
+                            console.log('header Column');
+                            console.log(header);
+
+                            tableLayoutFirstVariation(scope, el, header, column.col);
+                            //First Column has the table layout
+                            //Second Column has the Description.
+                        }
                     }
                 };
             }
