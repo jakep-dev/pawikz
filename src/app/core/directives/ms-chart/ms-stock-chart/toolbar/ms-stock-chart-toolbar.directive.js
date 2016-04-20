@@ -32,6 +32,7 @@
         vm.loadPeers = loadPeers;
         vm.loadIndices = loadIndices;
         vm.loadCompetitors = loadCompetitors;
+        vm.maxDate = new Date();//moment().format('DD-MM-YYYY');
 
 
         setStartEndDate(vm.selectedPeriod);

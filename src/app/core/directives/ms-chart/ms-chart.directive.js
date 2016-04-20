@@ -337,11 +337,13 @@
 
                                     scope.saveAllCharts = saveAllCharts;
 
-                                    $interval(function(){
-                                        saveAllCharts().then(function(){
-                                            toast.simpleToast("Saved Successfully");
-                                        });
-                                    }, 360000); /*clientConfig.appSettings.autoSaveTimeOut);*/
+                                    $rootScope.$on('autosave',function(){
+                                        setTimeout(function(){
+                                            saveAllCharts().then(function(){
+                                                toast.simpleToast("Saved Successfully");
+                                            });
+                                        },10000);
+                                    });/*clientConfig.appSettings.autoSaveTimeOut);*/
                                 });
                             break;
                         case 'bar':

@@ -145,11 +145,11 @@
                 </md-button>
                 <md-menu-content>
                     <md-menu-item>
-                        <md-datepicker ng-model="vm.startDate" ng-change="vm.customDateChange();"></md-datepicker>
+                        <md-datepicker ng-model="vm.startDate" md-max-date="vm.maxDate" ng-change="vm.customDateChange();"></md-datepicker>
                     </md-menu-item>
 
                     <md-menu-item>
-                        <md-datepicker ng-model="vm.endDate" ng-change="vm.customDateChange();"></md-datepicker>
+                        <md-datepicker ng-model="vm.endDate" md-max-date="vm.maxDate" ng-change="vm.customDateChange();"></md-datepicker>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>

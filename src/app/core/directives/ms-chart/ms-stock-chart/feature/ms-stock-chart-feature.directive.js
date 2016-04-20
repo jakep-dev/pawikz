@@ -4,7 +4,7 @@
 (function () {
     'use strict';
     angular.module('app.core')
-        .directive('msStockChartFeature', ['$timeout', function ($timeout) {
+        .directive('msStockChartFeature', ['$timeout','$rootScope', function ($timeout,$rootScope) {
 
             return {
                 restrict: 'EA',
@@ -163,6 +163,7 @@ $timeout(function(){
                         // Get the data. The contents of the data file can be viewed at
                         var activity = JSON.parse(scope.config.split('|')[0]);
                         var primarystockresp = JSON.parse(scope.config.split('|')[1]);
+                        console.log('primarystockresp in 166: ', primarystockresp);
                         $(elem).find('.highcharts-legend-item').off('mouseover').on('mouseover',function(evt){
                             var text = $(this).find('tspan').text();
                             $('.highcharts-legend-box').css({
@@ -204,24 +205,27 @@ $timeout(function(){
                                                                 if($(this)[0].innerHTML.indexOf(' ') > -1)
                                                                     text = $(this)[0].innerHTML.substring(0, $(this)[0].innerHTML.lastIndexOf(' '));
 
-                                                                $('.highcharts-legend-box').css({
+                                                                var tooltipBox = $(this).closest('div').closest('#stock-chart').find('.highcharts-legend-box');
+
+                                                                tooltipBox.css({
                                                                     left:$(this).position().left,
                                                                     top:$(this).position().top+17
                                                                 }).parent().css({'position':'relative'});
-                                                                $('.highcharts-legend-box').mouseover(function() {
-                                                                    $('.highcharts-legend-box').show();
+                                                                tooltipBox.mouseover(function() {
+                                                                    tooltipBox.show();
                                                                 });
 
-                                                                $('.highcharts-legend-box').mouseout(function() {
-                                                                    $('.highcharts-legend-box').hide();
+                                                                tooltipBox.mouseout(function() {
+                                                                    tooltipBox.hide();
                                                                 });
 
-                                                                $('.highcharts-legend-box .name').html(text);
-                                                                $('.highcharts-legend-box').show();
+                                                                tooltipBox.find('.name').html(text);
+                                                                tooltipBox.show();
 
                                                             }).on('mouseout', function (evt) {
+                                                                var tooltipBox = $(this).closest('div').closest('#stock-chart').find('.highcharts-legend-box');
                                                                 //hide tooltip
-                                                                $('.highcharts-legend-box').hide();
+                                                                tooltipBox.hide();
                                                             });
                                                         })(legendNum);
                                                     }
@@ -288,6 +292,9 @@ $timeout(function(){
                                                         }
                                                     }
                                                 }
+
+                                                //Auto Save functionality
+                                                $rootScope.$broadcast('autosave');
                                             }},
 
                                         //marginLeft: 80, // Keep all charts left aligned
@@ -348,21 +355,19 @@ $timeout(function(){
                                                         /*var xIndex = this.x;
                                                          var legendText='';
                                                          var seriesCnt = primarystockresp.stockChartPeerData.length/primarystockresp.stockChartPrimaryData.length;
-                                                         //console.log('seriesCnt: ' + seriesCnt);
-                                                         for(var seriesCntr = 0; seriesCntr < seriesCnt; seriesCntr++)
-                                                         {
-                                                         if($('.highcharts-legend-item') && $('.highcharts-legend-item')[seriesCntr])
-                                                         {
-                                                         if((primarystockresp.stockChartPeerData[xIndex + (seriesCntr*primarystockresp.stockChartPrimaryData.length)]) &&
-                                                         primarystockresp.stockChartPeerData[xIndex + (seriesCntr*primarystockresp.stockChartPrimaryData.length)].ticker) {
-                                                         ($('.highcharts-legend-item')[seriesCntr]).children[1].innerHTML =
-                                                         primarystockresp.stockChartPeerData[xIndex + (seriesCntr*primarystockresp.stockChartPrimaryData.length)].ticker
-                                                         + ' ' + primarystockresp.stockChartPeerData[xIndex +
-                                                         (seriesCntr*primarystockresp.stockChartPrimaryData.length)].priceClose;
 
-                                                         console.log(($('.highcharts-legend-item')[seriesCntr]).children[1].innerHTML);
-                                                         }
-                                                         }
+                                                         for(var seriesCntr = 0; seriesCntr < seriesCnt; seriesCntr++) {
+                                                             if ($('.highcharts-legend-item') && $('.highcharts-legend-item')[seriesCntr]) {
+                                                                 if ((primarystockresp.stockChartPeerData[xIndex + (seriesCntr * primarystockresp.stockChartPrimaryData.length)]) &&
+                                                                     primarystockresp.stockChartPeerData[xIndex + (seriesCntr * primarystockresp.stockChartPrimaryData.length)].ticker) {
+                                                                     ($('.highcharts-legend-item')[seriesCntr]).children[1].innerHTML =
+                                                                         primarystockresp.stockChartPeerData[xIndex + (seriesCntr * primarystockresp.stockChartPrimaryData.length)].ticker
+                                                                         + ' ' + primarystockresp.stockChartPeerData[xIndex +
+                                                                         (seriesCntr * primarystockresp.stockChartPrimaryData.length)].priceClose;
+
+                                                                     console.log(($('.highcharts-legend-item')[seriesCntr]).children[1].innerHTML);
+                                                                 }
+                                                             }
                                                          }*/
                                                         hoveredChart=this;
                                                         var legend = this.series.chart.legend,
@@ -373,51 +378,41 @@ $timeout(function(){
                                                             pointIndex = this.index,
                                                             yValue,
                                                             value;
+                                                        var xIndex = this.x;
                                                         Highcharts.each(series, function(p, n) {
                                                             yValue = p.data[pointIndex] ? p.data[pointIndex].y : ''
-                                                            //console.log('yValue: ' + yValue);
                                                             if(legendItems && legendItems[n])
                                                             {
                                                                 legendItem = legendItems[n].legendItem;
-                                                                //console.log(legendItem.innerHTML);
-                                                                //console.log('legendItem.element.innerHTML: ' + legendItem.element.innerHTML);
-                                                                //console.log('legendItem.textStr: ' + legendItem.textStr);
-                                                                //console.log('p.name: ' + p.name);
-                                                                //tspan = legendItem.element.children[0];
-                                                                //console.log('tspan: ' + tspan);
-                                                                //$(tspan)[0].innerHTML = p.name + ' ' + yValue;
-                                                                //($('.highcharts-legend-item')[n]).children[1].innerHTML = p.name + ' ' + yValue.toFixed(2);
-                                                                //legendItem.innerHTML = p.name + ' ' + yValue.toFixed(2);
-                                                                legendItem.attr({ text: (p.name + ' ' + yValue.toFixed(2))})
+                                                                console.log('legendItem: ', legendItem);
+                                                                if(n==0) {
+                                                                    $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
 
+                                                                        if (legCntr == xIndex) {
+                                                                            //console.log('v.priceClose: v.ticker');
+                                                                            //tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
+                                                                            legendItem.attr({text: (p.name + ' ' + v.priceClose)});
+                                                                        }
+                                                                    });
+                                                                }
+                                                                else
+                                                                {
+                                                                    legendItem.attr({text: (p.name + ' ' + primarystockresp.stockChartPeerData[primarystockresp.stockChartPrimaryData.length*(n-1) + xIndex].priceClose)});
+                                                                    //var legCntr=0;
+                                                                    //legendItem.attr({ text: (p.name + ' ' + yValue.toFixed(2))});
+
+                                                                    /*$.each(primarystockresp.stockChartPeerData, function (legCntr, v) {
+
+                                                                        if (legCntr == n*xIndex && p.name == v.ticker) {
+                                                                            //console.log('v.priceClose: v.ticker');
+                                                                            //tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
+                                                                            legendItem.attr({text: (p.name + ' ' + v.priceClose)});
+                                                                        }
+                                                                    });*/
+                                                                }
                                                             }
                                                         });
-                                                        //Write cross hair logic here
-                                                        /*chart = Highcharts.charts[hoveredChartIndex];
 
-                                                        e = chart.pointer.normalize(e); // Find coordinates within the chart
-                                                        point = chart.series[0].searchPoint(e, true); // Get the hovered point
-                                                        if (point) {
-                                                            point.onMouseOver(); // Show the hover marker
-                                                            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                                                        }
-
-
-                                                        if(hoveredChartIndex%2==0)
-                                                        {
-                                                            chart = Highcharts.charts[hoveredChartIndex+1];
-                                                        }
-                                                        else
-                                                        {
-                                                            chart = Highcharts.charts[hoveredChartIndex-1];
-                                                        }
-
-                                                        e = chart.pointer.normalize(e); // Find coordinates within the chart
-                                                        point = chart.series[0].searchPoint(e, true); // Get the hovered point
-                                                        if (point) {
-                                                            point.onMouseOver(); // Show the hover marker
-                                                            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                                                        }*/
 
                                                     }
                                                 }
