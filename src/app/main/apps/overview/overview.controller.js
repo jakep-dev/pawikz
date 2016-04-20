@@ -53,9 +53,11 @@
         vm.toggleExpand = toggleExpand;
         vm.flipStepView = flipStepView;
         vm.flipSelectionView = flipSelectionView;
-        vm.saveAll = saveAll;
+        $scope.saveAll = saveAll;
+        //vm.saveAll = saveAll;
         vm.reload = loadData;
-        vm.goTop = goTop;
+        $scope.goTop = goTop;
+        //vm.goTop = goTop;
         vm.undo = undo;
         vm.redo = redo;
         vm.showOverviewDetails =showOverviewDetails;
@@ -73,7 +75,11 @@
         //Go to top
         function goTop()
         {
-
+            console.log(navConfig);
+            var objScroll = $('div #overview').parents('[ms-scroll]')[0];
+            if (!(objScroll === undefined)) {
+                $(objScroll).scrollTop(0);
+            }
         }
 
         //Undo overview data
