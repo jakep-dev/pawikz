@@ -9,13 +9,21 @@
 
 
     /** @ngInject */
-    function StepController($rootScope, $stateParams, templateService, overviewService, navConfig,
+    function StepController($rootScope, $stateParams, $scope, $state, templateService, overviewService, bottomSheetConfig, navConfig,
                             templateBusiness, breadcrumbBusiness, commonBusiness, toast, store)
     {
         var vm = this;
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+        $scope.stepId = stepId;
+        bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
+        bottomSheetConfig.controller = $scope;
+
+        $scope.saveAll = saveAll;
+        $scope.goTop = goTop;
+        $scope.previousStep = previousStep;
+        $scope.nextStep = nextStep;
 
         commonBusiness.stepId = stepId;
         commonBusiness.projectId = projectId;
@@ -89,7 +97,44 @@
                     }
                 });
             }
+            $scope.lastStepNumber = navConfig.sideNavItems.length;
+        }
 
+        //Go to top
+        function goTop() {
+            var objScroll = $('div #template').parents('[ms-scroll]')[0];
+            if (!(objScroll === undefined)) {
+                $(objScroll).scrollTop(0);
+            }
+        }
+
+        //Save all the changes to database
+        function saveAll() {
+            templateBusiness.save();
+        }
+
+        //Move to the previous step
+        function previousStep() {
+            if (parseInt(stepId) > 1) {
+                var stateConfig = {
+                    projectId: $rootScope.projectId,
+                    stepId: (parseInt(stepId) - 1),
+                    stepName: navConfig.sideNavItems[parseInt(stepId) - 2].stepName
+                };
+                $state.go('app.steps', stateConfig);
+            }
+        }
+
+        //Move to the next step
+        function nextStep() {
+            if (parseInt(stepId) < navConfig.sideNavItems.length) {
+                var stateConfig = {
+                    projectId: $rootScope.projectId,
+                    stepId: (parseInt(stepId) + 1),
+                    stepName: navConfig.sideNavItems[parseInt(stepId)].stepName
+                };
+                $state.go('app.steps', stateConfig);
+            }
         }
     }
 
