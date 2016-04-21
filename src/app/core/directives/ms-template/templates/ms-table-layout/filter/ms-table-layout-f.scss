@@ -21,28 +21,3 @@ $table-layout-input-height: 25px;
     border-radius: $table-layout-border-radius;
   }
 }
-
-$tb-v2-layout-padding-left:10px;
-$tb-v2-layout-border-radius: 2px;
-$tb-v2-layout-hover-color: rgba(15, 185, 255, 0.35);
-$tb-v2-layout-input-height: 25px;
-
-
-.tb-v2-layout
-{
-  border:1px dotted lightgrey;
-  border-radius: 2px;
-
-
-
-  .row
-  {
-    padding-left: $tb-v2-layout-padding-left;
-    font-weight: bold;
-  }
-
-  .row:nth-child(odd) {
-    background-color: rgba(15, 185, 255, 0.11);
-    border-radius: $tb-v2-layout-border-radius;
-  }
-}

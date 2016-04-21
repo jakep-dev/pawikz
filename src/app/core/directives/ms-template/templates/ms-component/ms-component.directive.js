@@ -54,10 +54,12 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-component/ms-component.html',
             link: function(scope, el, attrs)
             {
-                console.log('Component Scope');
+                scope.title = scope.tearheader.label;
+
+                console.log('Component Scope of - ' + scope.title);
                 console.log(scope);
 
-                scope.title = scope.tearheader.label;
+
                 var html = '';
                 var isTableLayout = false;
                 isTableLayout = (scope.tearcontent.length && scope.tearcontent.length >= 1 &&
@@ -91,6 +93,14 @@
 
                             newScope.isnoneditable = scope.isnoneditable;
 
+                            if(content.row.col && content.row.col.TearSheetItem &&
+                                content.row.col.TearSheetItem.id === 'ScrapedItem')
+                            {
+                                html += '<ms-message message="Under Construction"></ms-message>';
+                                el.find('#ms-accordion-content').append($compile(html)(newScope));
+                                return;
+                            }
+
                             html += '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
                             html += '</div>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
@@ -119,13 +129,35 @@
                                 columns: col
                             };
 
+                            console.log(newScope);
+
                             //Variation in Table Layout.
-                            if(col && !col.length)
+                            //Filter
+                            //Edit
+                            //Readonly
+                            if((col && !col.length) || scope.isnoneditable)
                             {
-                                html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-r>';
+                                html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
                             }
                             else {
-                                html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';
+                                var descColumn = col[1];
+                                var isFilterTableLayout = false;
+                                if(descColumn && descColumn.col &&
+                                   descColumn.col.TearSheetItem &&
+                                   descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+                                {
+                                    isFilterTableLayout = true;
+                                }
+
+                                if(isFilterTableLayout)
+                                {
+                                    html += '<ms-message message="Under Construction"></ms-message>';
+                                    //html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-f>';
+                                }
+                                else {
+                                    html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';
+                                }
+
                             }
 
                             html += '</div>';
@@ -157,6 +189,10 @@
                             newScope.mnemonicid = mnemonicid;
                             newScope.itemid = itemid;
 
+                            html += '<ms-message message="Under Construction"></ms-message>';
+                            el.find('#ms-accordion-content').append($compile(html)(newScope));
+                            break;
+                        default:
                             html += '<ms-message message="Under Construction"></ms-message>';
                             el.find('#ms-accordion-content').append($compile(html)(newScope));
                             break;

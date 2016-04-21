@@ -160,19 +160,39 @@
                                     var exp = "data[count]." + mnemonic;
                                     var value = eval(exp);
 
-                                    if (value) {
-                                        html += '<span style="font-weight: normal">' + value + '</span>';
+                                    //if (value) {
+                                    //    html += '<span style="font-weight: normal">' + value + '</span>';
+                                    //}
+                                    switch (tearSheetItem.id)
+                                    {
+                                        case 'DateItem':
+                                        case 'GenericTextItem':
+
+
+
+                                            var itemId = tearSheetItem.ItemId;
+                                            var mnemonicId = tearSheetItem.Mnemonic;
+                                            if(!value)
+                                            {
+                                                value = '';
+                                            }
+
+                                            html += '<ms-text value="'+ value +'" ' +
+                                                'itemid="'+ itemId +'" ' +
+                                                'mnemonicid="'+ mnemonicId +'"  ' +
+                                                'isdisabled="false"></ms-text>';
+
+
+                                            break;
                                     }
 
 
                                     html += '</td>';
                                 });
                                 html += '</tr>';
-                                console.log('Description HTML -');
 
                                 if(descriptionHtml && descriptionHtml !== '')
                                 {
-                                    console.log(descriptionHtml);
                                     html += descriptionHtml;
                                 }
                             }
