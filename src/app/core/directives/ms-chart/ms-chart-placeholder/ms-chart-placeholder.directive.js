@@ -29,7 +29,19 @@
 
         //Reset the chart functionality.
         function resetChart() {
-            vm.onChartReset();
+            //Confirmation Popup
+            dialog.confirm('All the changes made in this session will be deleted. Please confirm', null,null, {
+                ok: {
+                    name: 'yes', callBack: function () {
+                        vm.onChartReset();
+                    }
+                },
+                cancel:{
+                    name:'no',callBack:function(){
+                        return false;
+                    }
+                }
+            });
             // $state.reload();
             //console.log($state.current);
            // $state.go($state.current, {reloadCount: ($stateParams.reloadCount + 1)});

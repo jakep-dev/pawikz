@@ -254,7 +254,7 @@
                     "type": "column",
                     "valueDecimals": 0,
                     "showlegend": false,
-                    "showxaxisLabel": false,
+                    "showxaxisLabel": true,
                     "showtooltip": false,
                     "spacingTop": 7
                 };

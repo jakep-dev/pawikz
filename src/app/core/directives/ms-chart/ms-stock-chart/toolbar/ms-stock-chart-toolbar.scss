@@ -10,4 +10,9 @@
   font-size: 14px;
   font-weight: 300;
 }
+md-checkbox{
+  &.comparison{
+    display:inline !important;
+  }
+}
 

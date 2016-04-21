@@ -1,5 +1,4 @@
-(function ()
-{
+(function () {
     'use strict';
     angular
         .module('app.core')
@@ -7,8 +6,7 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope,$log, stockService, $mdMenu, dialog, commonBusiness)
-    {
+    function msStockChartToolBarController($scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect) {
         var vm = this;
         vm.splits = false;
         vm.earnings = false;
@@ -21,10 +19,12 @@
         /* Peers Logic Start*/
 
         vm.peers = [];
-        vm.queryPeerSearch   = queryPeerSearch;
+        vm.queryPeerSearch = queryPeerSearch;
         vm.selectedItemChange = selectedItemChange;
+        vm.addIndices = addIndices;
         vm.selectedPeerChange = selectedPeerChange;
         vm.selectedCompetitorChange = selectedCompetitorChange;
+        vm.addCompetitor = addCompetitor;
         vm.changedSplitsEvents = changedSplitsEvents;
         vm.changedEarningsEvents = changedEarningsEvents;
         vm.changedDividendsEvents = changedDividendsEvents;
@@ -32,27 +32,24 @@
         vm.loadPeers = loadPeers;
         vm.loadIndices = loadIndices;
         vm.loadCompetitors = loadCompetitors;
-
+        vm.maxDate = new Date();//moment().format('DD-MM-YYYY');
 
 
         setStartEndDate(vm.selectedPeriod);
-
 
 
         //Loads Indices.
         function loadIndices() {
             stockService
                 .getIndices('', '1W')
-                .then(function(data) {
-                    if(data.indicesResp)
-                    {
-                        vm.indices =[];
-                        angular.forEach(data.indicesResp, function(ind)
-                        {
+                .then(function (data) {
+                    if (data.indicesResp) {
+                        vm.indices = [];
+                        angular.forEach(data.indicesResp, function (ind) {
                             vm.indices.push({
                                 value: ind.value,
                                 display: ind.description
-                            }) ;
+                            });
                         });
                     }
                 });
@@ -64,16 +61,14 @@
         function loadCompetitors() {
             stockService
                 .getCompetitors(commonBusiness.companyId)
-                .then(function(data) {
-                    if(data.competitors)
-                    {
-                        vm.competitors =[];
-                        angular.forEach(data.competitors, function(comp)
-                        {
+                .then(function (data) {
+                    if (data.competitors) {
+                        vm.competitors = [];
+                        angular.forEach(data.competitors, function (comp) {
                             vm.competitors.push({
                                 value: comp.ticker,
                                 display: comp.companyName
-                            }) ;
+                            });
                         });
                     }
                 });
@@ -82,16 +77,13 @@
 
         setStartEndDate(vm.selectedPeriod);
 
-        function loadPeers(keyword)
-        {
+        function loadPeers(keyword) {
             return stockService
                 .findTickers(keyword)
-                .then(function(data) {
-                    if(data.tickerResp)
-                    {
+                .then(function (data) {
+                    if (data.tickerResp) {
                         vm.peers = [];
-                        angular.forEach(data.tickerResp, function(ticker)
-                        {
+                        angular.forEach(data.tickerResp, function (ticker) {
                             vm.peers.push({
                                 value: ticker.ticker,
                                 display: ticker.companyName
@@ -101,27 +93,28 @@
                     }
                 });
         }
-   /*     function loadIndices() {
-            stockService
-                .getIndices('', '1W')
-                .then(function(data) {
-                    if(data.indicesResp)
-                    {
-                        vm.indices =[];
-                        angular.forEach(data.indicesResp, function(ind)
-                        {
-                            vm.indices.push({
-                                value: ind.value,
-                                display: ind.description
-                            }) ;
-                        });
-                    }
-                });
 
-        }*/
-        function customDateChange (){
-            vm.filterState.startDate =vm.startDate;
-            vm.filterState.endDate =vm.endDate;
+        /*     function loadIndices() {
+         stockService
+         .getIndices('', '1W')
+         .then(function(data) {
+         if(data.indicesResp)
+         {
+         vm.indices =[];
+         angular.forEach(data.indicesResp, function(ind)
+         {
+         vm.indices.push({
+         value: ind.value,
+         display: ind.description
+         }) ;
+         });
+         }
+         });
+
+         }*/
+        function customDateChange() {
+            vm.filterState.startDate = vm.startDate;
+            vm.filterState.endDate = vm.endDate;
             vm.changedPeriod('CUSTOM');
             vm.onFilterStateUpdate();
         }
@@ -143,9 +136,9 @@
         }
 
         function changedPeriod(periodVal) {
-            vm.filterState.startDate =vm.startDate;
-            vm.filterState.endDate =vm.endDate;
-            vm.filterState.interval =periodVal;
+            vm.filterState.startDate = vm.startDate;
+            vm.filterState.endDate = vm.endDate;
+            vm.filterState.interval = periodVal;
 
             setStartEndDate(periodVal);
             vm.onFilterStateUpdate();
@@ -155,45 +148,44 @@
             if (periodVal !== 'CUSTOM') {
                 var d = new Date();
                 vm.endDate = new Date();
-                if(periodVal ==='1W') {
+                if (periodVal === '1W') {
                     d.setDate(d.getDate() - 7);
                 }
-                else  if(periodVal ==='1M') {
+                else if (periodVal === '1M') {
                     d.setMonth(d.getMonth() - 1);
                 }
-                else  if(periodVal ==='3M') {
+                else if (periodVal === '3M') {
                     d.setMonth(d.getMonth() - 3);
                 }
-                else  if(periodVal ==='18M') {
+                else if (periodVal === '18M') {
                     d.setMonth(d.getMonth() - 18);
                 }
-                else  if(periodVal ==='1Y') {
+                else if (periodVal === '1Y') {
                     d.setFullYear(d.getFullYear() - 1);
                 }
-                else  if(periodVal ==='2Y') {
+                else if (periodVal === '2Y') {
                     d.setFullYear(d.getFullYear() - 2);
                 }
-                else  if(periodVal ==='3Y') {
+                else if (periodVal === '3Y') {
                     d.setFullYear(d.getFullYear() - 3);
                 }
-                else  if(periodVal ==='5Y') {
+                else if (periodVal === '5Y') {
                     d.setFullYear(d.getFullYear() - 5);
                 }
-                else  if(periodVal ==='10Y') {
+                else if (periodVal === '10Y') {
                     d.setFullYear(d.getFullYear() - 10);
                 }
                 vm.startDate = d;
-                vm.filterState.startDate =vm.startDate;
-                vm.filterState.endDate =vm.endDate;
+                vm.filterState.startDate = vm.startDate;
+                vm.filterState.endDate = vm.endDate;
             }
         }
 
-        function queryPeerSearch (query) {
-            if(query) {
+        function queryPeerSearch(query) {
+            if (query) {
                 return vm.loadPeers(query);
             }
-            else
-            {
+            else {
                 vm.peers = [];
                 return vm.peers;
             }
@@ -201,42 +193,53 @@
         }
 
 
+        var itemList = [];
 
-        function selectedItemChange(item) {
-            $log.info('Item changed to ' + item);
-            if(item){
+        function addIndices() {
+            itemList.forEach(function (item, key) {
+                console.log(item, key)
                 //considering all the possible legends(indices and peers)
-                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length+ vm.filterState.selectedCompetitors.length;
-                if(count <5) {
-                    item = JSON.parse(item);
-                    console.log('legend1',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
-                    console.log('item', item.value,vm.filterState.selectedIndices.indexOf(item.value))
-                    if(item && item.value && vm.filterState.selectedIndices.indexOf(item.value) === -1) {
+                var count = 1 + vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
+                if (count < 5) {
+                    console.log('legend1', vm.filterState.selectedIndices, vm.filterState.selectedPeers, item);
+                    console.log('item', item.value, vm.filterState.selectedIndices.indexOf(item.value))
+                    if (item && item.value && vm.filterState.selectedIndices.indexOf(item.value) === -1) {
                         var selected = vm.filterState.selectedIndices;
                         selected.push(item.value);
                         vm.filterState.selectedIndices = selected;
                         vm.onFilterStateUpdate();
                     }
-
+                    $mdSelect.hide();
+                    $mdMenu.hide();
                 }
                 else {
-                    dialog.alert( 'Error',"Max5 Stock allow to compare!",null,{ok:{name:'ok',callBack:function(){
-                        console.log('cliked ok');
-                    }}});
+                    dialog.alert('Error', "Max5 Stock allow to compare!", null, {
+                        ok: {
+                            name: 'ok', callBack: function () {
+                                console.log('cliked ok');
+                            }
+                        }
+                    });
                 }
                 vm.selectedIndice = null;
-            }
+            })
+        }
+
+        function selectedItemChange(item) {
+            $log.info('Item changed to ' + item);
+            itemList.push(item);
+
             vm.selectedItem = null;
             vm.searchIndText = "";
-            $mdMenu.hide();
+            //$mdMenu.hide();
         }
 
         function selectedPeerChange(item) {
-            if(item){
-                console.log('legend',vm.filterState.selectedIndices,vm.filterState.selectedPeers,item);
-                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length+ vm.filterState.selectedCompetitors.length;
-                if(count <5){
-                    if(item && item.value && vm.filterState.selectedPeers.indexOf(item.value) === -1 ) {
+            if (item) {
+                console.log('legend', vm.filterState.selectedIndices, vm.filterState.selectedPeers, item);
+                var count = 1 + vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
+                if (count < 5) {
+                    if (item && item.value && vm.filterState.selectedPeers.indexOf(item.value) === -1) {
                         var selected = vm.filterState.selectedPeers;
                         selected.push(item.value);
                         vm.filterState.selectedPeers = selected;
@@ -247,9 +250,13 @@
                 }
                 else {
                     //show pop up
-                    dialog.alert( 'Error',"Max5 Stock allow to compare!",null, {ok:{name:'ok',callBack:function(){
-                        console.log('cliked ok');
-                    }}});
+                    dialog.alert('Error', "Max5 Stock allow to compare!", null, {
+                        ok: {
+                            name: 'ok', callBack: function () {
+                                console.log('cliked ok');
+                            }
+                        }
+                    });
                 }
             }
             vm.selectedPeerItem = null;
@@ -258,33 +265,45 @@
 
         }
 
-        function selectedCompetitorChange(item) {
-            $log.info('Item changed to ' + item);
-            if(item){
-                //considering all the possible legends(indices and peers)
-                var count = 1+ vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
-                if(count <5) {
-                    item = JSON.parse(item);
-                    console.log('legend1',vm.filterState.selectedIndices,vm.filterState.selectedPeers,vm.filterState.selectedCompetitors,item);
-                    console.log('item', item.value,vm.filterState.selectedCompetitors.indexOf(item.value))
-                    if(item && item.value && vm.filterState.selectedCompetitors.indexOf(item.value) === -1) {
+        var competitorList = [];
+
+        function addCompetitor() {
+            competitorList.forEach(function (item, key) {
+                console.log(item, key);
+                //considering all the possible legends(indices, peers and Competitors)
+                var count = 1 + vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
+                if (count < 5) {
+                    console.log('legend1', vm.filterState.selectedIndices, vm.filterState.selectedPeers, vm.filterState.selectedCompetitors, item);
+                    console.log('item', item.value, vm.filterState.selectedCompetitors.indexOf(item.value))
+                    if (item && item.value && vm.filterState.selectedCompetitors.indexOf(item.value) === -1) {
                         var selected = vm.filterState.selectedCompetitors;
                         selected.push(item.value);
                         vm.filterState.selectedCompetitors = selected;
                         vm.onFilterStateUpdate();
                     }
+                    $mdSelect.hide();
+                    $mdMenu.hide();
 
                 }
                 else {
-                    dialog.alert( 'Error',"Max5 Stock allow to compare!",null,{ok:{name:'ok',callBack:function(){
-                        console.log('cliked ok');
-                    }}});
+                    dialog.alert('Error', "Max5 Stock allow to compare!", null, {
+                        ok: {
+                            name: 'ok', callBack: function () {
+                                console.log('cliked ok');
+                            }
+                        }
+                    });
                 }
                 vm.selectedCompetitor = null;
-            }
+
+            })
+        }
+
+        function selectedCompetitorChange(item) {
+            competitorList.push(item);
             vm.selectedItem = null;
             vm.searchIndText = "";
-            $mdMenu.hide();
+            // $mdMenu.hide();
         }
 
         function createFilterFor(query) {
@@ -294,32 +313,30 @@
             };
         }
 
-        $scope.$on('resetEvents',function(event) {
-            vm.splits=false;
-            vm.earnings=false;
-            vm.dividends=false;
+        $scope.$on('resetEvents', function (event) {
+            vm.splits = false;
+            vm.earnings = false;
+            vm.dividends = false;
         });
 
         /* Peers Logic End*/
     }
 
     /** @ngInject */
-    function msStockChartToolBarDirective()
-    {
+    function msStockChartToolBarDirective() {
         return {
             restrict: 'E',
-            scope   : {
-                chartId : "=",
-                filterState : "=",
-                onFilterStateUpdate : "="
+            scope: {
+                chartId: "=",
+                filterState: "=",
+                onFilterStateUpdate: "="
             },
             controller: 'msStockChartToolBarController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/toolbar/ms-stock-chart-toolbar.html',
-            link: function(scope, el, attr)
-            {
+            link: function (scope, el, attr) {
             },
-            bindToController :true
+            bindToController: true
         };
     }
 
