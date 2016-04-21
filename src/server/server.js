@@ -10,7 +10,7 @@ var cors = require('cors');
 var exception = require('./exception/exception')();
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 4000;
 var routes;
 
 //

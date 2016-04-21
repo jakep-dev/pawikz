@@ -20,11 +20,17 @@
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
-           getTableLayoutMnemonicValue: getTableLayoutMnemonicValue
+           getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
+           getEvalMnemonicValue: getEvalMnemonicValue
         };
 
         return business;
 
+        function getEvalMnemonicValue(mnemonic, exp)
+        {
+            var expression = exp + mnemonic;
+            return eval(expression);
+        }
 
         //
         function getTableLayoutMnemonicValue(itemId, mnemonic)

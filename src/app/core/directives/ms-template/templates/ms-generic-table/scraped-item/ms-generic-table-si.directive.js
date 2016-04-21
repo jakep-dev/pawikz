@@ -4,18 +4,18 @@
 
     angular
         .module('app.core')
-        .controller('msGenericTableController', msGenericTableController)
-        .directive('msGenericTable', msGenericTableDirective);
+        .controller('msGenericTableSiController', msGenericTableSiController)
+        .directive('msGenericTableSi', msGenericTableSiDirective);
 
 
-    function msGenericTableController($scope)
+    function msGenericTableSiController($scope)
     {
         var vm = this;
         vm.isnoneditable = $scope.isnoneditable;
     }
 
     /** @ngInject */
-    function msGenericTableDirective($compile, templateBusiness, $document)
+    function msGenericTableSiDirective($compile, templateBusiness, $document)
     {
         return {
             restrict: 'E',
@@ -23,14 +23,14 @@
                 tearsheet: '=',
                 isnoneditable: '=?'
             },
-            controller: 'msGenericTableController',
+            controller: 'msGenericTableSiController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-template/templates/ms-generic-table/ms-generic-table.html',
+            templateUrl: 'app/core/directives/ms-template/templates/ms-generic-table/scraped-item/ms-generic-table-si.html',
             link:function(scope, el, attrs)
             {
                 var newScope = null;
                 var html = '';
-                console.log('GenericTableScope');
+                console.log('Generic Table Scraped Item');
                 console.log(scope);
 
                 //Creating Rows for Generic-Table

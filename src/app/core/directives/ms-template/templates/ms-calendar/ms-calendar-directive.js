@@ -14,10 +14,10 @@
         console.log('Calendar Scope = ');
         console.log($scope);
 		
-		$scope.tearsheet.value = parseDate($scope.tearsheet.value, $scope.parseFormat); 
+		$scope.value = parseDate($scope.value, $scope.parseFormat);
 
         $scope.$watch(
-            "tearsheet.value",
+            "value",
             function handleAutoSave(value) {
                 if(isAutoSaveEnabled)
                 {
@@ -47,8 +47,9 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                tearsheet: '=',
-				parseFormat : '@'
+                value: '@',
+                isdisabled: '=?',
+				parseformat : '@'
             },
             controller: 'MsCalendarController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-calendar/ms-calendar.html'

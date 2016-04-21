@@ -31,7 +31,7 @@
 
         vm.TearSheetStep = null;
 
-        breadcrumbBusiness.title = stepName;
+        breadcrumbBusiness.title = unescape(stepName);
 
         var userDetails = store.get('user-info');
 

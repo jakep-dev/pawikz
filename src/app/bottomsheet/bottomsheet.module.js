@@ -9,6 +9,6 @@
     /** @ngInject */
     function config($translatePartialLoaderProvider)
     {
-        $translatePartialLoaderProvider.addPart('app/bottomsheet');
+        //$translatePartialLoaderProvider.addPart('app/bottomsheet');
     }
 })();
