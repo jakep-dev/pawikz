@@ -21,6 +21,16 @@ md-backdrop {
     }
 }
 
+md-bottom-sheet {
+  &.md-grid {
+    md-list-item {
+      .md-grid-item-content {
+          width: 120px;
+      }
+    }
+  }
+}
+
 // Button
 .md-button {
 
