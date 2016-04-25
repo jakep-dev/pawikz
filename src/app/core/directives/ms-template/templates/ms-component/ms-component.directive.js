@@ -150,8 +150,11 @@
                             //Filter
                             //Edit
                             //Readonly
-                            if((col && !col.length) || scope.isnoneditable)
+                            if((col && !col.length) &&
+                                scope.isnoneditable)
                             {
+                                console.log('Readonly Component');
+                                console.log(scope.isnoneditable);
                                 html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
                             }
                             else {
@@ -166,10 +169,18 @@
 
                                 if(isFilterTableLayout)
                                 {
-                                    //html += '<ms-message message="Under Construction"></ms-message>';
                                     html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
                                 }
-                                else {
+                                else if(!scope.isnoneditable) {
+                                    if(!newScope.tearsheet.header)
+                                    {
+                                        if(content.VerticalRow)
+                                        {
+                                            newScope.tearsheet.header = content.VerticalRow.row;
+                                        }
+                                    }
+
+
                                     html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';
                                 }
 

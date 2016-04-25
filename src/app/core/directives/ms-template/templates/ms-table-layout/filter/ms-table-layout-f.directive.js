@@ -192,7 +192,6 @@
                             html += '</tr>';
                         }
                         html += '</tbody>';
-                        // html += footerHtml;
                         html += '</table>';
 
                         scope.descriptionDetails = descriptionDetails;
