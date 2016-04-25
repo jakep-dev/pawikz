@@ -16,7 +16,7 @@
         vm.searchedStocks = [];
         vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
-        console.log('hideFilters--------------------->',vm.hideFilters);
+        //console.log('hideFilters--------------------->',vm.hideFilters);
         //variables
 
         vm.onFilterStateUpdate = function (){
@@ -112,7 +112,7 @@
                     var applyDividend = false;
                     var applyEarning = false;
                     var applySplit = false;
-
+                    //if(i%90 == 0)
                     xdataArr[xdataArr.length] = stock.dataDate.substring(0, 10);
 
                     firstDatasetArr[firstDatasetArr.length] = parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose);
@@ -244,7 +244,11 @@
                     "showtooltip": true,
                     "spacingTop": 30
                 };
-                secondchartSerArr[secondchartSerArr.length] = {"data": secondDatasetArr};
+                secondchartSerArr[secondchartSerArr.length] = {"data": secondDatasetArr
+                    //,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
+                    //,"pointStart": Date(xdataArr[0])
+                    //,"pointInterval": 24 * 3600 * 1000
+                };
                 datasetArr[datasetArr.length] = {
                     "name": "",
                     "yaxisTitle": "Volume (Millions)",
@@ -264,7 +268,7 @@
                     "datasets": datasetArr
                 };
                 //console.log(JSON.stringify(data));
-                //console.log(JSON.stringify(outArr).slice(1,-1));
+                //console.log('JSON.stringify(outArr).slice(1,-1): ', JSON.stringify(outArr).slice(1,-1));
                 //console.log('secondchartSerArr.length after: ' + secondchartSerArr.length);
                 return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
                 //return outArr;
@@ -274,13 +278,13 @@
             stockService
                 .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId)
                 .then(function(data) {
-                    console.log('seriesdata',data)
+                    //console.log('seriesdata',data)
                     //@todo call logic for remove legend item on empty series data
                     vm.stockDataSet=convServiceResptoChartFormat(data);
                     if(data.stockChartPeerData && data.stockChartPeerData.length){
                         vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
                     }
-                    console.log('selected stock', vm.selectedStockCount);
+                    //console.log('selected stock', vm.selectedStockCount);
                 });
         };
 
