@@ -24,7 +24,9 @@
         );
 
         commonBusiness.onMsg('IsTemplateExpanded', $scope, function () {
-            toggleCollapse();
+            if (commonBusiness.isTemplateExpandAll === vm.collapsed) {
+                toggleCollapse();
+            }
         });
 
         vm.collapsed = false;
