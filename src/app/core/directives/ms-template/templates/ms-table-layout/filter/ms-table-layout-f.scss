@@ -21,3 +21,14 @@ $table-layout-input-height: 25px;
     border-radius: $table-layout-border-radius;
   }
 }
+
+
+.row-cursor
+{
+  cursor: pointer;
+}
+
+.row-cursor:hover
+{
+  cursor: hand;
+}
