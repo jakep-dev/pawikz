@@ -13,6 +13,7 @@
         vm.isNonEditable = $scope.isnoneditable;
         vm.iscollapsible = $scope.iscollapsible;
         vm.isProcessComplete = $scope.isprocesscomplete;
+        vm.actions = null;
 
 
         $scope.$watch(
@@ -35,6 +36,19 @@
             vm.collapsed = !vm.collapsed;
         }
 
+        //Build the component actions if provided.
+        function buildActions()
+        {
+            if($scope.actions)
+            {
+                /*{
+                    icon: '',
+                    callback: '',
+                    tooltip: ''
+                }*/
+            }
+        }
+
     }
 
     /** @ngInject */
@@ -47,7 +61,8 @@
                 tearcontent: '=',
                 iscollapsible: '=?',
                 isnoneditable: '=?',
-                isprocesscomplete: '=?'
+                isprocesscomplete: '=?',
+                actions: '='
             },
             controller: 'msComponentController',
             controllerAs: 'vm',
@@ -151,8 +166,8 @@
 
                                 if(isFilterTableLayout)
                                 {
-                                    html += '<ms-message message="Under Construction"></ms-message>';
-                                    //html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-f>';
+                                    //html += '<ms-message message="Under Construction"></ms-message>';
+                                    html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
                                 }
                                 else {
                                     html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';

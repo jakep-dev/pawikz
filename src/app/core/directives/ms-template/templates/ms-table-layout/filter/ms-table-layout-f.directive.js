@@ -4,64 +4,13 @@
 
     angular
         .module('app.core')
-        .controller('msTablelayoutFController', msTablelayoutFController)
         .directive('msTablelayoutF', msTablelayoutFDirective);
 
-    function msTablelayoutFController($scope,  templateService, commonBusiness,
-                                      DTOptionsBuilder,
-                                      DTColumnBuilder)
-    {
-        var vm = this;
-        vm.dtColumns = [];
-        vm.dtOptions = [];
-
-        dtOptions();
-        dtColumns();
-
-        //Define data-table configurations
-        function dtOptions()
-        {
-            //Dashboard DataTable Configuration
-            vm.dtOptions = DTOptionsBuilder
-                .newOptions()
-                .withOption('processing', true)
-                .withOption('paging', true)
-                .withOption('autoWidth', true)
-                .withOption('responsive', true)
-                .withOption('stateSave', false)
-                .withOption('order',[])
-                .withPaginationType('full')
-                .withDOM('<"top bottom"<"left"<"length"l>><"right"f>>rt<"bottom"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
-        }
-
-        //Define data-table columns
-        function dtColumns()
-        {
-            if($scope.tearsheet.header && $scope.tearsheet.header.col)
-            {
-                angular.forEach($scope.tearsheet.header.col, function (col) {
-                    var tearSheetItem = col.TearSheetItem;
-                    if (!angular.isUndefined(tearSheetItem) &&
-                        typeof(tearSheetItem.Label) !== 'object') {
-                        switch (tearSheetItem.id) {
-                            case 'LabelItem':
-                                vm.dtColumns.push(DTColumnBuilder.newColumn(tearSheetItem.Label, tearSheetItem.Label));
-                                break;
-                        }
-                    }
-                });
-            }
-        }
-
-        //Define data-table data
-        function dtData()
-        {
-
-        }
-    }
 
     /** @ngInject */
-    function msTablelayoutFDirective($compile)
+    function msTablelayoutFDirective($compile, templateService, commonBusiness,
+                                     DTOptionsBuilder,
+                                     DTColumnDefBuilder)
     {
         return {
             restrict: 'E',
@@ -71,25 +20,212 @@
                 tearsheet: '='
             },
             templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/filter/ms-table-layout-f.html',
-            compile:function(el, attrs)
-            {
-                console.log('First Filter Compiler');
-               return function($scope)
-               {
-                   var dataTableId = $scope.itemid;
-
-                   if($scope.tearsheet.columns.length > 0)
-                   {
-                       $scope.$parent.$parent.isprocesscomplete = false;
-                       var html = '<table id="'+ dataTableId +'" dt-options="vm.dtOptions" dt-column-defs="vm.dtColumnDefs" ' +
-                           'class="row-border cell-border hover" datatable="" dt-columns="vm.dtColumns"  width="100%" cellpadding="4" cellspacing="0"></table>';
-                   }
-                   el.find('#ms-table-layout').append($compile(html)($scope));
-               };
-            },
-            controller: 'msTablelayoutFController',
-            controllerAs: 'vm'
+            link: tableLayoutFilterLink
         };
+
+        function tableLayoutFilterLink(scope, el, attrs)
+        {
+            var dataTableId = scope.itemid;
+
+            if(scope.tearsheet.columns.length > 0)
+            {
+                scope.$parent.$parent.isprocesscomplete = false;
+                var column = [];
+                var columns = '';
+                var header = null;
+
+                if(scope.tearsheet.header && scope.tearsheet.header.col)
+                {
+                    header = [];
+                    header.push.apply(header,scope.tearsheet.header.col);
+                }
+
+                column.push.apply(column, scope.tearsheet.columns[0].col);
+                column.push(scope.tearsheet.columns[1].col);
+
+                angular.forEach(column, function(col)
+                {
+                    if(col.TearSheetItem &&
+                        col.TearSheetItem.Mnemonic)
+                    {
+                        columns += col.TearSheetItem.Mnemonic + ',';
+                    }
+                });
+
+                var html = '';
+                templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+                    scope.mnemonicid, scope.itemid, columns).then(function(response) {
+
+                    var data = response.dynamicTableDataResp;
+                    if(!data)
+                    {
+                        html += '<div flex>';
+                        html += '<ms-message message="No data available"></ms-message>';
+                        html += '</div>';
+                    }
+                    else {
+
+                        dtDefineOptions(scope);
+
+                        var descriptionDetails = [];
+
+                        dtDefineColumn(scope);
+
+
+                        scope.childInfo = function(id, event)
+                        {
+                            var newScope = scope.$new(true);
+
+                            var descDetail = _.find(scope.descriptionDetails, function(detail)
+                            {
+                                return (detail.id === id);
+                            })
+
+
+                            newScope.data = {};
+                            if(descDetail)
+                            {
+                                newScope.data.description  = descDetail.value;
+                            }
+                            else {
+                                newScope.data.description = "No Data Available";
+                            }
+
+
+                            var link = angular.element(event.currentTarget),
+                                tr = link.parent(),
+                                table = scope.dtInstance.DataTable,
+                                row = table.row(tr);
+
+                            if (row.child.isShown()) {
+                                row.child.hide();
+                            }
+                            else {
+                                row.child($compile('<ms-tablelayout-f-ci></ms-tablelayout-f-ci>')(newScope)).show();
+                            }
+                        };
+
+                        scope.toggleSelection = function(value)
+                        {
+                            alert('Hi all - ' + value);
+
+                            var table = scope.dtInstance.DataTable;
+                            var rows = table.rows({ 'search': 'applied' }).nodes();
+                            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                        }
+
+                        html += '<table id="'+ dataTableId +'" dt-options="dtOptions" dt-column-defs="dtColumnDefs" ' +
+                            'dt-instance="dtInstance" class="row-border hover" datatable="" width="100%" cellpadding="1" cellspacing="0">';
+
+                        if(header)
+                        {
+                            var footerHtml = '<tfoot>';
+                            footerHtml += '<tr class="row">';
+
+                            html += '<thead>';
+                            html += '<tr class="row">';
+                            html += '<th><md-checkbox aria-label="select all" ng-model="isAllSelected" ng-change="toggleSelection(isAllSelected)"></md-checkbox></th>';
+                            angular.forEach(header, function (col) {
+                                html += '<th>';
+                                footerHtml += '<th>';
+                                var tearSheetItem = col.TearSheetItem;
+
+                                if (!angular.isUndefined(tearSheetItem) &&
+                                    typeof(tearSheetItem.Label) !== 'object') {
+
+                                    switch (tearSheetItem.id) {
+                                        case 'LabelItem':
+                                            html += '<strong>' + tearSheetItem.Label  +'</strong>';
+                                            footerHtml += '<strong>' + tearSheetItem.Label  +'</strong>';
+                                            break;
+                                    }
+                                }
+
+                                footerHtml += '</th>';
+                                html += '</th>';
+                            });
+                            html += '</tr>';
+                            html += '</thead>';
+
+                            footerHtml += '</tr>';
+                            footerHtml += '</tfoot>';
+                        }
+
+                        html += '<tbody>';
+                        for(var count = 0; count < data.length; count++)
+                        {
+                            var newDescId = descriptionDetails.length + 1;
+                            html += '<tr style="min-height: 25px" class="row-cursor">';
+                            html += '<td><md-checkbox aria-label="select"></md-checkbox></td>';
+                            angular.forEach(column, function(col)
+                            {
+
+                                if(!col.TearSheetItem ||
+                                    !col.TearSheetItem.Mnemonic ||
+                                    col.TearSheetItem.Mnemonic === 'ACTION')
+                                {
+                                    return;
+                                }
+
+                                if(col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+                                {
+                                    var exp = "data[count]." + col.TearSheetItem.Mnemonic;
+                                    var desValue = eval(exp);
+                                    descriptionDetails.push({id: newDescId, value: desValue});
+
+                                    return;
+                                }
+
+                                html += '<td ng-click="childInfo('+ newDescId +', $event)">';
+                                var tearSheetItem = col.TearSheetItem;
+                                var mnemonic = tearSheetItem.Mnemonic;
+
+                                var exp = "data[count]." + mnemonic;
+                                var value = eval(exp);
+
+                                if (value) {
+                                    html += '<span style="font-weight: normal">' + value + '</span>';
+                                }
+
+                                html += '</td>';
+                            });
+                            html += '</tr>';
+                        }
+                        html += '</tbody>';
+                        // html += footerHtml;
+                        html += '</table>';
+
+                        scope.descriptionDetails = descriptionDetails;
+                    }
+
+                    scope.$parent.$parent.isprocesscomplete = true;
+                    el.find('#ms-table-layout').append($compile(html)(scope));
+
+                });
+            }
+        }
+
+        //Define Data-Table Options
+        function dtDefineOptions(scope)
+        {
+            scope.dtOptions = DTOptionsBuilder
+                .newOptions()
+                .withOption('paging', true)
+                .withOption('filter', true)
+                .withOption('autoWidth', true)
+                .withOption('responsive', false)
+                .withOption('sorting', [])
+                .withPaginationType('full')
+                .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+        }
+
+        function dtDefineColumn(scope)
+        {
+            scope.dtColumnDefs = [
+                DTColumnDefBuilder.newColumnDef(0).notSortable()
+            ];
+            scope.dtInstance = {};
+        }
     }
 
 })();
