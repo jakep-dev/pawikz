@@ -7,7 +7,7 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope, $element, $compile,  commonBusiness, templateBusiness)
+    function msComponentController($scope, $element, $compile,  commonBusiness, templateBusiness, toast)
     {
         var vm = this;
         vm.isNonEditable = $scope.isnoneditable;
@@ -38,6 +38,14 @@
         function printer()
         {
             vm.isAvailableForPrint = !vm.isAvailableForPrint;
+            if(vm.isAvailableForPrint)
+            {
+                toast.simpleToast('Section will show on pdf download');
+            }
+            else {
+                toast.simpleToast('Section will not show on pdf download');
+            }
+
         }
 
         function toggleCollapse()

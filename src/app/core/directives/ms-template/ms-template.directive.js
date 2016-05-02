@@ -349,7 +349,8 @@
 
             if(tearSheetItem.id &&
                 tearSheetItem.row &&
-                typeof(tearSheetItem.row) === 'object')
+                tearSheetItem.col &&
+                tearSheetItem.col > 1)
             {
                 component = {
                     header: {},

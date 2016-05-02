@@ -13,7 +13,8 @@
 
             <md-button class="md-icon-button" aria-label="show in printer"
                        ng-click="vm.printer()"   style="float:right">
-                <md-icon md-font-icon="icon-printer" ng-class="vm.isAvailableForPrint ? 'orange-500-fg' : ''"></md-icon>
+                <md-icon md-font-icon="icon-select" ng-if="!vm.isAvailableForPrint"></md-icon>
+                <md-icon md-font-icon="icon-select-inverse" ng-if="vm.isAvailableForPrint"></md-icon>
             </md-button>
 
             <md-button class="md-icon-button" ng-if="!!vm.actions"
