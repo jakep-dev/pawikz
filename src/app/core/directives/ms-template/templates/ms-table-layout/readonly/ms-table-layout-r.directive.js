@@ -44,28 +44,16 @@
                 }
                 else {
 
-                    if(data.length <= 15)
-                    {
-                        scope.dtOptions = DTOptionsBuilder
-                            .newOptions()
-                            .withOption('paging', false)
-                            .withOption('filter', false)
-                            .withOption('autoWidth', true)
-                            .withOption('responsive', true)
-                            .withOption('info', false);
-                    }
-                    else {
-                        scope.dtOptions = DTOptionsBuilder
-                            .newOptions()
-                            .withOption('processing', true)
-                            .withOption('paging', true)
-                            .withOption('filter', true)
-                            .withOption('autoWidth', true)
-                            .withOption('responsive', true)
-                            .withPaginationType('full')
-                            .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
-                    }
-
+                    scope.dtOptions = DTOptionsBuilder
+                        .newOptions()
+                        .withOption('processing', true)
+                        .withOption('paging', true)
+                        .withOption('filter', true)
+                        .withOption('autoWidth', true)
+                        .withOption('sorting', [])
+                        .withOption('responsive', true)
+                        .withPaginationType('full')
+                        .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
                     html += '<table id="'+ scope.itemid +'" dt-options="dtOptions" ' +
                         'class="row-border hover" datatable="" width="100%" cellpadding="4" cellspacing="0">';
@@ -75,7 +63,7 @@
                         html += '<thead>';
                         html += '<tr class="row">';
                         angular.forEach(header, function (col) {
-                            html += '<th>';
+
                             var tearSheetItem = col.TearSheetItem;
 
                             if (!angular.isUndefined(tearSheetItem) &&
@@ -83,12 +71,14 @@
 
                                 switch (tearSheetItem.id) {
                                     case 'LabelItem':
+                                        html += '<th>';
                                         html += '<span><strong>' + tearSheetItem.Label  +'</strong></span>';
+                                        html += '</th>';
                                         break;
                                 }
                             }
 
-                            html += '</th>';
+
                         });
                         html += '</tr>';
                         html += '</thead>';

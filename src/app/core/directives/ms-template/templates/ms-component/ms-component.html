@@ -10,7 +10,13 @@
                        ng-click="vm.toggleCollapse()" style="float:right">
                 <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
             </md-button>
-
+            <md-button class="md-icon-button" ng-if="!!vm.actions"
+                       ng-repeat="action in vm.actions"
+                       ng-click="vm.applyClickEvent(action)"
+                       aria-label="filter actions"
+                       style="float:right;">
+                <md-icon md-font-icon="{{action.icon}}" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
+            </md-button>
         </div>
         <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
         <md-divider></md-divider>

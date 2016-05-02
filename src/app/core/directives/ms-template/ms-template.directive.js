@@ -548,6 +548,7 @@
                             {
                                 newScope.iscollapsible = true;
                                 newScope.isprocesscomplete = true;
+                                newScope.actions = [];
                                 var isChartComp = false;
 
                                 //Check for chart component
@@ -563,7 +564,7 @@
                                 {
                                     var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
                                 }else {
-                                    var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
+                                    var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions"></ms-component>';
                                 }
 
 

@@ -26,6 +26,8 @@
         function tableLayoutFilterLink(scope, el, attrs)
         {
             var dataTableId = scope.itemid;
+            console.log('TableLayout Filter Link');
+            console.log(scope);
 
             if(scope.tearsheet.columns.length > 0)
             {
@@ -57,6 +59,7 @@
                     scope.mnemonicid, scope.itemid, columns).then(function(response) {
 
                     var data = response.dynamicTableDataResp;
+
                     if(!data)
                     {
                         html += '<div flex>';
@@ -64,6 +67,7 @@
                         html += '</div>';
                     }
                     else {
+                        scope.tableData = data;
 
                         dtDefineOptions(scope);
 
@@ -71,6 +75,89 @@
 
                         dtDefineColumn(scope);
 
+                        var filteredTL = 'FilteredTableLayout'.concat("-", dataTableId);
+                        var unFilteredTL = 'UnFilteredTableLayout'.concat("-", dataTableId);
+
+                        scope.$parent.$parent.actions.push({
+                            id: 1,
+                            callback:filteredTL,
+                            icon: 'icon-filter',
+                            isclicked: false
+                        });
+
+                        scope.$parent.$parent.actions.push({
+                            id: 2,
+                            callback:unFilteredTL,
+                            icon: 'icon-filter-remove',
+                            isclicked: false
+                        });
+
+
+                        commonBusiness.onMsg(filteredTL, scope, function() {
+                            scope.filtered();
+                        });
+
+                        commonBusiness.onMsg(unFilteredTL, scope, function() {
+                            scope.unFiltered();
+                        });
+
+
+                        scope.filtered = function()
+                        {
+                            $.fn.dataTableExt.afnFiltering.push(
+                                function (oSettings, aData, iDataIndex) {
+
+                                    if ( oSettings.nTable.id === dataTableId ) {
+                                        var filterReturn = false;
+                                        var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
+
+                                            var filterSelection = new Array();
+                                            filterSelection.push('Y');
+
+                                            var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
+                                            if(checkboxValue){
+                                                filterReturn = filterSelection.indexOf(checkboxValue) > -1;
+                                            }
+                                        });
+
+                                        return filterReturn;
+                                    }else{
+                                        return true;
+                                    }
+                                }
+                            );
+
+                            scope.dtInstance.rerender();
+
+                        };
+
+                        scope.unFiltered = function()
+                        {
+                            $.fn.dataTableExt.afnFiltering.push(
+                                function (oSettings, aData, iDataIndex) {
+
+                                    if ( oSettings.nTable.id === dataTableId ) {
+                                        var filterReturn = false;
+                                        var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
+
+                                            var UnFilterSelection = new Array();
+                                            UnFilterSelection.push('Y');
+
+                                            var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
+                                            if(!checkboxValue){
+                                                filterReturn = UnFilterSelection.indexOf(checkboxValue) > -1;
+                                            }
+                                        });
+
+                                        return filterReturn;
+                                    }else{
+                                        return true;
+                                    }
+                                }
+                            );
+
+                            scope.dtInstance.rerender();
+                        };
 
                         scope.childInfo = function(id, event)
                         {
@@ -105,14 +192,28 @@
                             }
                         };
 
-                        scope.toggleSelection = function(value)
+                        scope.selectAll = function(value)
                         {
-                            alert('Hi all - ' + value);
-
                             var table = scope.dtInstance.DataTable;
-                            var rows = table.rows({ 'search': 'applied' }).nodes();
-                            $('input[type="checkbox"]', rows).prop('checked', this.checked);
-                        }
+                            var rows = table.rows({ page: 'current', search: 'applied' }).nodes();
+                            $('md-checkbox', rows).each(function(){
+                                var ngModel = $(this).attr('ng-model');
+                                var ngChange = $(this).attr('ng-change');
+                                var modelValue = $(this).attr('ng-'+value+'-value');
+                                eval('scope.' + ngModel + ' = ' + modelValue);
+                                eval('scope.' + ngChange.replace('tableData', 'scope.tableData'));
+                            });
+                        };
+
+                        scope.indSelection = function()
+                        {
+
+                        };
+
+                        scope.saveRow = function(row)
+                        {
+
+                        };
 
                         html += '<table id="'+ dataTableId +'" dt-options="dtOptions" dt-column-defs="dtColumnDefs" ' +
                             'dt-instance="dtInstance" class="row-border hover" datatable="" width="100%" cellpadding="1" cellspacing="0">';
@@ -124,7 +225,7 @@
 
                             html += '<thead>';
                             html += '<tr class="row">';
-                            html += '<th><md-checkbox aria-label="select all" ng-model="isAllSelected" ng-change="toggleSelection(isAllSelected)"></md-checkbox></th>';
+                            html += '<th><md-checkbox aria-label="select all" ng-model="isAllSelected" ng-change="selectAll(isAllSelected)"></md-checkbox></th>';
                             angular.forEach(header, function (col) {
                                 html += '<th>';
                                 footerHtml += '<th>';
@@ -156,7 +257,7 @@
                         {
                             var newDescId = descriptionDetails.length + 1;
                             html += '<tr style="min-height: 25px" class="row-cursor">';
-                            html += '<td><md-checkbox aria-label="select"></md-checkbox></td>';
+                            html += '<td><md-checkbox aria-label="select" ng-model="tableData['+count+'].TL_STATUS" ng-change="saveRow(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
                             angular.forEach(column, function(col)
                             {
 
@@ -202,6 +303,16 @@
 
                 });
             }
+        }
+
+        function showFiltered()
+        {
+
+        }
+
+        function showUnFiltered()
+        {
+
         }
 
         //Define Data-Table Options

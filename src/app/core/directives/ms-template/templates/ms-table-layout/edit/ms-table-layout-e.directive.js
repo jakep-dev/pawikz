@@ -82,7 +82,7 @@
                             html += '<thead>';
                             html += '<tr class="row">';
                             angular.forEach(header, function (col) {
-                                html += '<th>';
+
                                 var tearSheetItem = col.TearSheetItem;
 
                                 if (!angular.isUndefined(tearSheetItem) &&
@@ -90,11 +90,13 @@
 
                                     switch (tearSheetItem.id) {
                                         case 'LabelItem':
+                                            html += '<th>';
                                             html += '<strong>' + tearSheetItem.Label  +'</strong>';
+                                            html += '</th>';
                                             break;
                                     }
                                 }
-                                html += '</th>';
+
                             });
                             html += '</tr>';
                             html += '</thead>';
@@ -146,6 +148,7 @@
                 .withOption('paging', true)
                 .withOption('filter', true)
                 .withOption('autoWidth', true)
+                .withOption('sorting', [])
                 .withOption('responsive', false)
                 .withOption('sorting', [])
                 .withPaginationType('full')
