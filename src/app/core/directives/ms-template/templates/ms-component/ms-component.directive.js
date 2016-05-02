@@ -13,6 +13,7 @@
         vm.isNonEditable = $scope.isnoneditable;
         vm.iscollapsible = $scope.iscollapsible;
         vm.isProcessComplete = $scope.isprocesscomplete;
+        vm.isAvailableForPrint = false;
         vm.actions = null;
 
 
@@ -32,6 +33,12 @@
         vm.collapsed = false;
         vm.toggleCollapse = toggleCollapse;
         vm.applyClickEvent = applyClickEvent;
+        vm.printer = printer;
+
+        function printer()
+        {
+            vm.isAvailableForPrint = !vm.isAvailableForPrint;
+        }
 
         function toggleCollapse()
         {
@@ -117,6 +124,18 @@
                         html = '<div>';
                         switch (content.id)
                         {
+                            case 'ExpiringProgram':
+                                var newScope  = $scope.$new();
+                                html += '<ms-message message="Under Construction"></ms-message>';
+                                el.find('#ms-accordion-content').append($compile(html)(newScope));
+                                break;
+
+                            case 'ProposedProgram':
+                                var newScope  = $scope.$new();
+                                html += '<ms-message message="Under Construction"></ms-message>';
+                                el.find('#ms-accordion-content').append($compile(html)(newScope));
+                                break;
+
                             case 'LabelItem':
                                 var newScope  = $scope.$new();
                                 newScope.tearsheet = {
@@ -264,6 +283,7 @@
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;
                             default:
+                                var newScope  = $scope.$new();
                                 html += '<ms-message message="Under Construction"></ms-message>';
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;

@@ -10,6 +10,12 @@
                        ng-click="vm.toggleCollapse()" style="float:right">
                 <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
             </md-button>
+
+            <md-button class="md-icon-button" aria-label="show in printer"
+                       ng-click="vm.printer()"   style="float:right">
+                <md-icon md-font-icon="icon-printer" ng-class="vm.isAvailableForPrint ? 'orange-500-fg' : ''"></md-icon>
+            </md-button>
+
             <md-button class="md-icon-button" ng-if="!!vm.actions"
                        ng-repeat="action in vm.actions"
                        ng-click="vm.applyClickEvent(action)"

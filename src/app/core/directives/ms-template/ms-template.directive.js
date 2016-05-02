@@ -342,6 +342,81 @@
             return component;
         }
 
+        function fifthVariation(contentComponents, comp)
+        {
+            var tearSheetItem = comp.TearSheetItem;
+            var component = null;
+
+            if(tearSheetItem.id &&
+                tearSheetItem.row &&
+                typeof(tearSheetItem.row) === 'object')
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                _.each(tearSheetItem.row.col, function(eachCol)
+                {
+                   var item = eachCol.TearSheetItem;
+
+                    if(item.id === 'LabelItem')
+                    {
+                      component.header = {
+                          label: item.Label,
+                          id: item.id,
+                          itemid: '',
+                          mnemonicid: '',
+                          variation: 'fifth'
+                      }
+                    }
+                    else {
+                        component.sections.push(eachCol);
+                    }
+                });
+            }
+
+            return component;
+        }
+
+        function sixthVariation(contentComponents, comp)
+        {
+            var tearSheetItem = comp.TearSheetItem;
+            var component = null;
+
+            if(tearSheetItem &&
+               tearSheetItem.length &&
+                (comp.copyProposed || comp.copyExpiring))
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                _.each(tearSheetItem, function(item)
+                {
+                    if(item.id === 'LabelItem')
+                    {
+                        component.header = {
+                            label: item.Label,
+                            id: item.id,
+                            itemid: '',
+                            mnemonicid: '',
+                            variation: 'sixth',
+                            copyproposed: comp.copyProposed || null,
+                            copyexpiring: comp.copyExpiring || null
+                        }
+                    }
+                    else {
+                        item.id = comp.copyProposed ? 'ExpiringProgram' : 'ProposedProgram';
+                        component.sections.push(item);
+                    }
+                });
+            }
+
+            return component;
+        }
+
         return {
             restrict: 'E',
             scope   : {
@@ -478,6 +553,16 @@
                         {
                             component = fourthVariation(contentComponents, comp);
                         }
+
+                        if(!component)
+                        {
+                            component = fifthVariation(contentComponents, comp);
+                        }
+
+                        if(!component)
+                        {
+                            component = sixthVariation(contentComponents, comp);
+                        }
                     }
 
                     if(component)
@@ -539,6 +624,10 @@
                                     newScope.tearcontent.push(section.TearSheetItem);
                                 }
                                 else if(section.Label)
+                                {
+                                    newScope.tearcontent.push(section);
+                                }
+                                else if(section.row)
                                 {
                                     newScope.tearcontent.push(section);
                                 }

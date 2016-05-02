@@ -15,6 +15,7 @@
             autoSavePromise: [],
             save: save,
             get: get
+
         };
 
         return business;
