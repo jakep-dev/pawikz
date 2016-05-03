@@ -139,9 +139,6 @@
             vm.filterState.startDate = vm.startDate;
             vm.filterState.endDate = vm.endDate;
             vm.filterState.interval = periodVal;
-            console.log('periodVal',periodVal);
-            $rootScope.$broadcast('intervalUpdated',periodVal) ;
-
             setStartEndDate(periodVal);
             vm.onFilterStateUpdate();
         }
