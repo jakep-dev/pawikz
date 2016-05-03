@@ -53,6 +53,8 @@
                         columns += col.TearSheetItem.Mnemonic + ',';
                     }
                 });
+				
+				columns += 'TL_STATUS';
 
                 var html = '';
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
@@ -68,6 +70,39 @@
                     }
                     else {
                         scope.tableData = data;
+						
+						scope.dtCustomFunctionsInit = function(){
+
+							//custom filtering
+							$.fn.dataTableExt.afnFiltering.push(
+								function (oSettings, aData, iDataIndex) {
+
+									if ( oSettings.nTable.id === dataTableId ) {
+										var filterReturn = false;
+										var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
+											var filterSelection = new Array();
+											if(_.find(scope.$parent.$parent.actions, {id: 1}).isclicked === true){
+												filterSelection.push('N');
+											}
+											if(_.find(scope.$parent.$parent.actions, {id: 2}).isclicked === true){
+												filterSelection.push('Y');
+											}
+
+											var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
+											if(checkboxValue){
+												filterReturn = filterSelection.indexOf(checkboxValue) > -1;
+											}
+										});
+
+										return filterReturn;
+									}else{
+										return true;
+									}
+								}
+							);
+						}
+						
+						scope.dtCustomFunctionsInit();
 
                         dtDefineOptions(scope);
 
@@ -82,14 +117,14 @@
                             id: 1,
                             callback:filteredTL,
                             icon: 'icon-filter',
-                            isclicked: false
+                            isclicked: true
                         });
 
                         scope.$parent.$parent.actions.push({
                             id: 2,
                             callback:unFilteredTL,
                             icon: 'icon-filter-remove',
-                            isclicked: false
+                            isclicked: true
                         });
 
 
@@ -104,58 +139,12 @@
 
                         scope.filtered = function()
                         {
-                            $.fn.dataTableExt.afnFiltering.push(
-                                function (oSettings, aData, iDataIndex) {
-
-                                    if ( oSettings.nTable.id === dataTableId ) {
-                                        var filterReturn = false;
-                                        var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
-
-                                            var filterSelection = new Array();
-                                            filterSelection.push('Y');
-
-                                            var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
-                                            if(checkboxValue){
-                                                filterReturn = filterSelection.indexOf(checkboxValue) > -1;
-                                            }
-                                        });
-
-                                        return filterReturn;
-                                    }else{
-                                        return true;
-                                    }
-                                }
-                            );
-
                             scope.dtInstance.rerender();
 
                         };
 
                         scope.unFiltered = function()
                         {
-                            $.fn.dataTableExt.afnFiltering.push(
-                                function (oSettings, aData, iDataIndex) {
-
-                                    if ( oSettings.nTable.id === dataTableId ) {
-                                        var filterReturn = false;
-                                        var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
-
-                                            var UnFilterSelection = new Array();
-                                            UnFilterSelection.push('Y');
-
-                                            var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
-                                            if(!checkboxValue){
-                                                filterReturn = UnFilterSelection.indexOf(checkboxValue) > -1;
-                                            }
-                                        });
-
-                                        return filterReturn;
-                                    }else{
-                                        return true;
-                                    }
-                                }
-                            );
-
                             scope.dtInstance.rerender();
                         };
 

@@ -49,8 +49,8 @@
         {
             if(action && action.callback)
             {
+               action.isclicked = !action.isclicked;
                commonBusiness.emitMsg(action.callback);
-                action.isclicked = !action.isclicked;
             }
         }
 
