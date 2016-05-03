@@ -9,7 +9,7 @@
         <div layout-margin>
 
 
-            <md-button class="md-icon-button" aria-label="save-chart" ng-click="vm.saveChart()" ng-if="vm.isMainChart">
+            <md-button class="md-icon-button" aria-label="save-chart" ng-show="false" ng-click="vm.saveChart()" ng-if="vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Save
                 </md-tooltip>
@@ -32,7 +32,7 @@
                 <md-icon md-font-icon="icon-plus"></md-icon>
             </md-button>
 
-            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart && !vm.isStockChart">
                 <md-tooltip md-direction="top">
                     Delete
                 </md-tooltip>

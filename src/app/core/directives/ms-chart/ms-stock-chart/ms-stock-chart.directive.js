@@ -242,7 +242,12 @@
                     "showlegend": true,
                     "showxaxisLabel": false,
                     "showtooltip": true,
-                    "spacingTop": 30
+                    "spacingTop": 30,
+                    "xAxis":{
+                        labels:{
+                            step:3
+                        }
+                    }
                 };
                 secondchartSerArr[secondchartSerArr.length] = {"data": secondDatasetArr
                     //,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
@@ -267,6 +272,8 @@
                     "xData": xdataArr,
                     "datasets": datasetArr
                 };
+                //console.log('================================' +JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data))
+                console.log('==================================');
                 //console.log(JSON.stringify(data));
                 //console.log('JSON.stringify(outArr).slice(1,-1): ', JSON.stringify(outArr).slice(1,-1));
                 //console.log('secondchartSerArr.length after: ' + secondchartSerArr.length);
