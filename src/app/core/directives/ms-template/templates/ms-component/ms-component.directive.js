@@ -155,14 +155,32 @@
                                     })
                                 }
 
-
                                 html += '<ms-expiring tearsheet="tearsheet" copyproposed="'+ newScope.copyproposed +'" isnoneditable="isnoneditable"></ms-expiring>';
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;
 
                             case 'ProposedProgram':
                                 var newScope  = $scope.$new();
-                                html += '<ms-message message="Under Construction"></ms-message>';
+                                newScope.tearsheet = null;
+                                newScope.isnoneditable = $scope.isnoneditable;
+                                newScope.copyexpiring = null;
+
+                                if($scope.tearheader)
+                                {
+                                    newScope.copyexpiring =  $scope.tearheader.copyexpiring || null;
+                                }
+
+                                if($scope.tearcontent)
+                                {
+                                    //newScope.tearsheet = [];
+                                    angular.forEach($scope.tearcontent, function(content)
+                                    {
+                                        newScope.tearsheet = content;
+                                    })
+                                }
+
+
+                                html += '<ms-proposed tearsheet="tearsheet" copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed>';
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;
 

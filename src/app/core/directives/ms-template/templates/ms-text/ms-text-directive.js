@@ -10,16 +10,14 @@
     /** @ngInject */
     function MsTextController($scope, templateBusiness)
     {
-        var isAutoSaveEnabled = false;
         $scope.$watch(
             "value",
-            function handleAutoSave(value) {
-                if(isAutoSaveEnabled)
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, value);
-                    console.log( "$watch() -- Outer: ", value);
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
-                isAutoSaveEnabled = true;
             }
         );
     }
@@ -33,7 +31,8 @@
                 itemid: '@',
                 mnemonicid: '@',
                 value: '@',
-                isdisabled: '=?'
+                isdisabled: '=?',
+                type: '@'
             },
             controller: 'MsTextController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-text/ms-text.html',

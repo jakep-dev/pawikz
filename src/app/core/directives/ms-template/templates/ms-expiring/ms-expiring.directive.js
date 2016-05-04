@@ -16,7 +16,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, templateBusiness, DTOptionsBuilder)
+    function msExpiringDirective($compile, commonBusiness, templateBusiness, DTOptionsBuilder, toast)
     {
         return {
             restrict: 'E',
@@ -31,10 +31,9 @@
                 console.log('Expiring Program');
                 console.log(scope);
                 defineAction(scope);
-                defineExpiringLayout(scope, el);
-            },
-            controller: 'msExpiringController',
-            controllerAs: 'vm'
+                initializeMsg(scope);
+                defineLayout(scope, el);
+            }
         };
 
         function defineAction($scope)
@@ -50,18 +49,28 @@
                 });
 
                 $scope.$parent.$parent.actions.push({
-                    id: 1,
+                    id: 2,
                     callback: "EP-Upload",
                     icon: 'icon-upload',
                     isclicked: null,
                     tooltip: 'Upload excel sheet'
                 });
+
+                $scope.$parent.$parent.actions.push({
+                    id: 3,
+                    callback: "EP-Eraser",
+                    icon: 'icon-eraser',
+                    isclicked: null,
+                    tooltip: 'Clear data'
+                });
+
+
             }
         }
 
-        function defineExpiringLayout($scope, el)
+        function defineLayout($scope, el)
         {
-            var html = '<table width="100%" dt-options="dtOptions" class="row-border hover highlight cell-border" datatable="" cellpadding="1" cellspacing="0">';
+            var html = '<table id="expiring" width="100%" dt-options="dtOptions" class="row-border hover highlight cell-border" datatable="ng" cellpadding="1" cellspacing="0">';
 
             $scope.dtOptions = DTOptionsBuilder
                 .newOptions()
@@ -88,6 +97,7 @@
 
 
             $scope.rows = [];
+            $scope.headerItems = [];
 
             html += '<tbody>';
             html += '<tr ng-repeat="row in rows">';
@@ -96,14 +106,17 @@
                 var tearSheetItem = eachCol.TearSheetItem;
                 var itemId = tearSheetItem.ItemId;
                 var mnemonicId = tearSheetItem.Mnemonic;
-                var newItemId = getNewItemId(itemId);
+                var newItemId = templateBusiness.getNewItemId(itemId);
                 html += '<td>';
+
+                $scope.headerItems.push(newItemId);
+
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
                         html += '<ms-text itemid="{{row.'+ newItemId +'.itemid}}" ' +
                             'mnemonicid="{{row.'+ newItemId +'.mnemonicid}}" ' +
-                            'value="{{row.'+ newItemId +'.value}}"></ms-text>';
+                            'value="{{row.'+ newItemId +'.value}}" isdisabled="false"></ms-text>';
                         break;
 
                     case 'SingleDropDownItem':
@@ -139,16 +152,21 @@
                         var tearSheetItem = eachCol.TearSheetItem;
                         var itemId = tearSheetItem.ItemId;
                         var mnemonicId = tearSheetItem.Mnemonic;
+                        var newCopyItemId = templateBusiness.getCopyItemId(tearSheetItem.CopyItemId);
                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-                        var newItemId = getNewItemId(itemId);
+                        var newItemId = templateBusiness.getNewItemId(itemId);
 
                         makeColDef +=  '"' + newItemId + '":';
                         makeColDef += '{ "value":';
-                        makeColDef += '"' + itemId + '",';
+                        makeColDef += '"' + value + '",';
                         makeColDef += '"itemid":';
                         makeColDef += '"' + itemId + '",';
                         makeColDef += '"mnemonicid":';
-                        makeColDef += '"' + mnemonicId + '"';
+                        makeColDef += '"' + mnemonicId + '",';
+                        makeColDef += '"copyitemid":';
+                        makeColDef += '"' + newCopyItemId + '",';
+                        makeColDef += '"id":';
+                        makeColDef += '"' + tearSheetItem.id + '"';
 
 
                         if(tearSheetItem.id === 'SingleDropDownItem')
@@ -198,30 +216,82 @@
             el.find('#expiring-layout').append($compile(html)($scope));
         }
 
-        function defineExpiringData($scope)
+        function initializeMsg($scope)
         {
+            commonBusiness.onMsg('ExpiringProgram', $scope, function() {
+               copyProgram($scope);
+            });
 
+            commonBusiness.onMsg('EP-Upload', $scope, function() {
+                uploadExcel();
+            });
+
+            commonBusiness.onMsg('EP-Eraser', $scope, function() {
+                clearProgram($scope);
+            });
         }
 
-        function getNewItemId(itemId)
+        function clearProgram($scope)
         {
-            var newItemId = '';
-            if(itemId)
+            for(var count = 0; count < $scope.rows.length; count++)
             {
-                var splittedItem = itemId.split("_");
-                var totalCount = splittedItem.length;
-                var currentCount = 1;
+                angular.forEach($scope.headerItems, function(header) {
 
-                _.each(splittedItem, function(str)
-                {
-                    if(currentCount !== totalCount)
-                    {
-                        newItemId += str;
+                    var exp = '$scope.rows[count].' + header + '.id';
+                    var id = eval(exp);
+
+
+                    if(id === 'SingleDropDownItem'){
+                        exp = '$scope.rows[count].' + header + '.tearsheet.selectedValue = "";';
+                        eval(exp);
                     }
-                    currentCount++;
+
+                    exp = '$scope.rows[count].' + header + '.value = "";';
+                    eval(exp);
                 });
             }
-            return newItemId;
+
+            toast.simpleToast('Expiring program cleared!');
+        }
+
+        function copyProgram($scope){
+
+            for(var count = 0; count < $scope.rows.length; count++)
+            {
+                angular.forEach($scope.headerItems, function(header) {
+
+                    var exp = '$scope.rows[count].' + header + '.copyitemid';
+                    var copyItemId =  eval(exp);
+
+                        exp = '$scope.rows[count].' + header + '.mnemonicid';
+                    var mnemonicId = eval(exp);
+
+                        exp = '$scope.rows[count].' + header + '.id';
+                    var id = eval(exp);
+
+                    var value = templateBusiness.getMnemonicValue(copyItemId, mnemonicId);
+
+
+                    if(id === 'SingleDropDownItem'){
+                        if(value === 'undefined')
+                        {
+                            value = ' ';
+                        }
+                        exp = '$scope.rows[count].' + header + '.tearsheet.selectedValue = "' + value + '";';
+                        eval(exp);
+                    }
+                    exp = '$scope.rows[count].' + header + '.value = "' + value  + '";';
+
+                    eval(exp);
+                });
+            }
+
+            toast.simpleToast('Proposed program copied!');
+        }
+
+        function uploadExcel()
+        {
+
         }
     }
 

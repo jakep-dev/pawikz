@@ -21,10 +21,75 @@
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
-           getEvalMnemonicValue: getEvalMnemonicValue
+           getEvalMnemonicValue: getEvalMnemonicValue,
+           getNewItemId: getNewItemId,
+           getCopyItemId: getCopyItemId,
+           updateMnemonicValue: updateMnemonicValue
         };
 
         return business;
+
+        function updateMnemonicValue(itemId, mnemnoicId, value)
+        {
+            if(angular.isDefined(business.mnemonics))
+            {
+                angular.forEach(business.mnemonics, function(eachrow)
+                {
+                    if(eachrow.itemId === itemId)
+                    {
+                        eachrow.value = value;
+                    }
+                });
+            }
+        }
+
+        function getCopyItemId(copyItemId)
+        {
+            var newItemId = '';
+            if(copyItemId)
+            {
+                var splittedItem = copyItemId.split("_");
+                var totalCount = splittedItem.length;
+                var currentCount = 1;
+
+                _.each(splittedItem, function(str)
+                {
+                    if(currentCount !== 1)
+                    {
+                        newItemId += str;
+                    }
+
+                    if(currentCount !== 1 && currentCount !== totalCount)
+                    {
+                        newItemId += '_';
+                    }
+
+                    currentCount++;
+                });
+            }
+            return newItemId;
+        }
+
+        function getNewItemId(itemId)
+        {
+            var newItemId = '';
+            if(itemId)
+            {
+                var splittedItem = itemId.split("_");
+                var totalCount = splittedItem.length;
+                var currentCount = 1;
+
+                _.each(splittedItem, function(str)
+                {
+                    if(currentCount !== totalCount)
+                    {
+                        newItemId += str;
+                    }
+                    currentCount++;
+                });
+            }
+            return newItemId;
+        }
 
         function getEvalMnemonicValue(mnemonic, exp)
         {
@@ -75,7 +140,7 @@
                 {
                     if(eachrow.itemId === itemId)
                     {
-                        value = eachrow.value || '';
+                        value = eachrow.value.trim() || '';
                         return value;
                     }
                 });

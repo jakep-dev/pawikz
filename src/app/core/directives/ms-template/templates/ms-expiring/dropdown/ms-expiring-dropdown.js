@@ -10,9 +10,18 @@
     /** @ngInject */
     function MsExpiringDropdownController($scope, templateBusiness)
     {
-        var isAutoSaveEnabled = false;
-        console.log('DropDown Controller Scope = ');
-        console.log($scope);
+        $scope.$watch(
+            "tearsheetobj.selectedValue",
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue)
+                {
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
+                }
+            }
+        );
+
+
     }
 
     /** @ngInject */
@@ -33,8 +42,20 @@
                 {
                     console.log('DropDown - Compile');
                     console.log($scope);
-                    var tearsheet = $scope.tearsheet;
-                    $scope.tearsheetobj = angular.fromJson(tearsheet);
+
+                    $scope.$watch(
+                        "tearsheet",
+                        function handleAutoSave(newValue, oldValue) {
+                            if(newValue !== oldValue)
+                            {
+                                $scope.tearsheetobj = angular.fromJson($scope.tearsheet);
+                                console.log('Changed');
+                                console.log($scope.tearsheetobj);
+                            }
+                        }
+                    );
+
+                    $scope.tearsheetobj = angular.fromJson($scope.tearsheet);
                 };
             }
         };
