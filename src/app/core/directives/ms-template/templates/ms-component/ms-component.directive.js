@@ -13,9 +13,14 @@
         vm.isNonEditable = $scope.isnoneditable;
         vm.iscollapsible = $scope.iscollapsible;
         vm.isProcessComplete = $scope.isprocesscomplete;
-        vm.isAvailableForPrint = false;
+        vm.showPrintIcon = false;
         vm.actions = null;
+        vm.collapsed = false;
+        vm.isAvailableForPrint = null;
 
+        vm.toggleCollapse = toggleCollapse;
+        vm.applyClickEvent = applyClickEvent;
+        vm.printer = printer;
 
         $scope.$watch(
             "isprocesscomplete",
@@ -30,10 +35,24 @@
             toggleCollapse();
         });
 
-        vm.collapsed = false;
-        vm.toggleCollapse = toggleCollapse;
-        vm.applyClickEvent = applyClickEvent;
-        vm.printer = printer;
+        console.log('Component Scope');
+        console.log($scope);
+
+        initialize();
+
+        function initialize()
+        {
+            if($scope.tearheader &&
+                $scope.tearheader.mnemonicid)
+            {
+                vm.showPrintIcon = templateBusiness.showPrintIcon($scope.tearheader.mnemonicid);
+                if(vm.showPrintIcon)
+                {
+                    vm.isAvailableForPrint = templateBusiness.getPrintableValue($scope.tearheader.itemid);
+                    vm.collapsed = vm.isAvailableForPrint;
+                }
+            }
+        }
 
         function printer()
         {
@@ -117,14 +136,10 @@
                 {
                     $scope.title = $scope.tearheader.label;
 
-                    console.log('Component Scope of - ' + $scope.title);
-                    console.log($scope);
-
-
                     var html = '';
                     var isTableLayout = false;
                     isTableLayout = ($scope.tearcontent.length && $scope.tearcontent.length >= 1 &&
-                    _.findIndex($scope.tearcontent, {id: 'TableLayOut'}) !== -1)
+                    _.findIndex($scope.tearcontent, {id: 'TableLayOut'}) !== -1);
 
                     angular.forEach($scope.tearcontent, function(content)
                     {

@@ -15,7 +15,7 @@
     function OverviewController($rootScope, $stateParams, $scope, $interval,
                                 overviewService, clientConfig, bottomSheetConfig,
                                 navConfig, breadcrumbBusiness, commonBusiness,
-                                store, toast)
+                                stepsBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
         $rootScope.projectId = $stateParams.projectId;
@@ -123,7 +123,7 @@
                     commonBusiness.companyName = vm.templateOverview.companyName + " (" + vm.templateOverview.ticker + ")" ;
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
 
-
+                    stepsBusiness.stepDetails = vm.templateOverview.steps;
 
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {

@@ -69,7 +69,7 @@
                 .withOption('autoWidth', true)
                 .withOption('info', false)
                 .withOption('ordering', false)
-                .withOption('responsive', true);
+                .withOption('responsive', false);
 
             //Header Details
             html += '<thead>';

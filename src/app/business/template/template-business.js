@@ -9,7 +9,7 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($interval, toast, clientConfig, commonBusiness, templateService) {
+    function templateBusiness($interval, toast, clientConfig, commonBusiness, stepsBusiness, templateService) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
@@ -24,10 +24,55 @@
            getEvalMnemonicValue: getEvalMnemonicValue,
            getNewItemId: getNewItemId,
            getCopyItemId: getCopyItemId,
-           updateMnemonicValue: updateMnemonicValue
+           updateMnemonicValue: updateMnemonicValue,
+           showPrintIcon:  showPrintIcon,
+           getPrintableValue: getPrintableValue
         };
 
         return business;
+
+        function getPrintableValue(sectionId)
+        {
+            var value = false;
+            var specificStep = _.find(stepsBusiness.stepDetails, function(step)
+            {
+                if(parseInt(step.stepId) === parseInt(stepsBusiness.stepId))
+                {
+                    return step;
+                }
+            });
+
+            console.log('Specific Step - ');
+            console.log(stepsBusiness.stepDetails);
+            console.log(stepsBusiness.stepId);
+            console.log(specificStep);
+
+            if(specificStep)
+            {
+                var specificSection = _.find(specificStep.sections, function(section)
+                {
+                   if(section.itemId === sectionId)
+                   {
+                       return section;
+                   }
+                });
+
+                console.log('Specific Section - ');
+                console.log(specificSection);
+
+                if(specificSection)
+                {
+                    value = specificSection.value;
+                }
+            }
+
+            return value;
+        }
+
+        function showPrintIcon(mnemonicId)
+        {
+            return (mnemonicId === 'section');
+        }
 
         function updateMnemonicValue(itemId, mnemnoicId, value)
         {
