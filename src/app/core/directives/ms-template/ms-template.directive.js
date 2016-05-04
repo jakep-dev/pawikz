@@ -8,7 +8,7 @@
         .directive('msTemplate', msTemplateDirective);
 
 
-    function msTemplateController($scope, templateBusiness, commonBusiness)
+    function msTemplateController($scope, templateBusiness, commonBusiness,$rootScope)
     {
         var vm = this;
 
@@ -19,8 +19,10 @@
         //Save the entire template data.
         function saveAll()
         {
-            templateBusiness.save();
-            templateBusiness.cancelPromise();
+            //Changed Date: 28/4/2016 as per Bug - Chart title not saving
+            $rootScope.$broadcast('saveAllChart');
+            //templateBusiness.save();
+            //templateBusiness.cancelPromise();
         }
 
         //Toggle expand or collapse

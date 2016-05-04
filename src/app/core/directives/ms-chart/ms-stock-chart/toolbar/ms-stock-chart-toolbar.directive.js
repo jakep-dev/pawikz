@@ -6,7 +6,7 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect) {
+    function msStockChartToolBarController($scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect,$rootScope) {
         var vm = this;
         vm.splits = false;
         vm.earnings = false;
@@ -139,7 +139,6 @@
             vm.filterState.startDate = vm.startDate;
             vm.filterState.endDate = vm.endDate;
             vm.filterState.interval = periodVal;
-
             setStartEndDate(periodVal);
             vm.onFilterStateUpdate();
         }
@@ -227,6 +226,8 @@
 
         function selectedItemChange(item) {
             $log.info('Item changed to ' + item);
+            //Checkbox checked
+
             itemList.push(item);
 
             vm.selectedItem = null;

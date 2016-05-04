@@ -24,8 +24,8 @@
         vm.onChartSave = $scope.onChartSave;
         vm.onChartReset = $scope.onChartReset;
         //@@TODO - For Testing
-       // vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&
-                //$scope.chart.tearsheet.type=="image") ? true : false;
+        vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&
+                $scope.chart.tearsheet.type=="image") ? true : false;
 
         //Reset the chart functionality.
         function resetChart() {

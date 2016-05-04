@@ -287,49 +287,51 @@
 
                                     var saveAllCharts = function saveAllCharts() {
                                         var startArr = [];
-                                        scope.jsCharts.forEach(function(chart){
-                                            var stockString = '';
-                                            var jsChart = chart.filterState;
-                                            var tearsheet = chart.tearsheet;
-                                            if(!tearsheet.isMainChart){
-                                                if(jsChart.selectedPeers){
-                                                    jsChart.selectedPeers.forEach( function(stock) {
-                                                        stockString =stockString + stock + ',';
-                                                    });
+                                        if (scope.jsCharts != null) {
+                                            scope.jsCharts.forEach(function (chart) {
+                                                var stockString = '';
+                                                var jsChart = chart.filterState;
+                                                var tearsheet = chart.tearsheet;
+                                                if (!tearsheet.isMainChart) {
+                                                    if (jsChart.selectedPeers) {
+                                                        jsChart.selectedPeers.forEach(function (stock) {
+                                                            stockString = stockString + stock + ',';
+                                                        });
+                                                    }
+                                                    if (jsChart.selectedIndices) {
+                                                        jsChart.selectedIndices.forEach(function (indics) {
+                                                            stockString = stockString + '^' + indics + ',';
+                                                        });
+                                                    }
+                                                    if (jsChart.selectedCompetitors) {
+                                                        jsChart.selectedCompetitors.forEach(function (competitors) {
+                                                            stockString = stockString + '@' + competitors + ',';
+                                                        });
+                                                    }
+                                                    if (stockString && stockString !== '') {
+                                                        stockString = stockString.slice(0, -1);
+                                                    }
+                                                    var obj = {
+                                                        chart_title: jsChart.title,
+                                                        peers: stockString,
+                                                        period: jsChart.interval,
+                                                        date_start: jsChart.date_start,
+                                                        date_end: jsChart.date_end,
+                                                        dividends: jsChart.dividends ? "Y" : "N",
+                                                        earnings: jsChart.earnings ? "Y" : "N",
+                                                        splits: jsChart.splits ? "Y" : "N",
+                                                        mnemonic: tearsheet.mnemonicId,
+                                                        item_id: tearsheet.itemId,
+                                                        chartType: chart.chartType
+                                                    };
+                                                    if (jsChart.chart_id) {
+                                                        obj.chartId = parseInt(jsChart.chart_id)
+                                                    }
+                                                    startArr.push(obj);
                                                 }
-                                                if(jsChart.selectedIndices){
-                                                    jsChart.selectedIndices.forEach( function(indics) {
-                                                        stockString = stockString + '^'+indics + ',';
-                                                    });
-                                                }
-                                                if(jsChart.selectedCompetitors){
-                                                    jsChart.selectedCompetitors.forEach( function(competitors){
-                                                        stockString = stockString + '@'+competitors + ',';
-                                                    });
-                                                }
-                                                if(stockString && stockString !=='') {
-                                                    stockString = stockString.slice(0, -1);
-                                                }
-                                                var obj = {
-                                                    chart_title: jsChart.title,
-                                                    peers: stockString,
-                                                    period:jsChart.interval,
-                                                    date_start:jsChart.date_start,
-                                                    date_end:jsChart.date_end,
-                                                    dividends: jsChart.dividends ? "Y" : "N",
-                                                    earnings: jsChart.earnings  ? "Y" : "N",
-                                                    splits:jsChart.splits ? "Y" : "N",
-                                                    mnemonic: tearsheet.mnemonicId,
-                                                    item_id: tearsheet.itemId,
-                                                    chartType:chart.chartType
-                                                };
-                                                if(jsChart.chart_id){
-                                                    obj.chartId = parseInt(jsChart.chart_id)
-                                                }
-                                                startArr.push(obj);
-                                            }
 
-                                        });
+                                            });
+                                        }
 
                                         return stockService.saveChartAllSettings(commonBusiness.companyId,
                                             commonBusiness.stepId, commonBusiness.projectId, startArr);
@@ -344,6 +346,11 @@
                                             });
                                         },10000);
                                     });/*clientConfig.appSettings.autoSaveTimeOut);*/
+                                    $rootScope.$on('saveAllChart',function(){
+                                        saveAllCharts().then(function(){
+                                            toast.simpleToast("Saved Successfully");
+                                        });
+                                    });
                                 });
                             break;
                         case 'bar':
