@@ -1,0 +1,30 @@
+$expiring-padding-left:10px;
+$expiring-border-radius: 2px;
+$expiring-hover-color: rgba(15, 185, 255, 0.35);
+$expiring-input-height: 25px;
+
+
+#expiring-layout
+{
+  border:1px dotted lightgrey;
+  border-radius: 2px;
+
+  .row
+  {
+    padding-left: $expiring-padding-left;
+    font-weight: bold;
+  }
+
+  .row:nth-child(odd) {
+    background-color: rgba(15, 185, 255, 0.11);
+    border-radius: $expiring-border-radius;
+  }
+
+  .input:focus {
+    outline: none !important;
+    border:1px solid #f68c20;
+    box-shadow: 0 0 10px rgba(253, 142, 0, 0.14);
+  }
+}
+
+

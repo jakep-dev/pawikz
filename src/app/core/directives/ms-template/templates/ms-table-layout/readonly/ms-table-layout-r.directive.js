@@ -157,7 +157,7 @@
                     html += '<ms-message message="No data available"></ms-message>';
                     html += '</div>';
                 }
-                else if(data.length === 1) {
+                else if(data.length >= 1) {
 
                     console.log('Rendering V2 Layout');
 

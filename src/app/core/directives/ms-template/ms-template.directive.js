@@ -349,8 +349,8 @@
 
             if(tearSheetItem.id &&
                 tearSheetItem.row &&
-                tearSheetItem.col &&
-                tearSheetItem.col > 1)
+                tearSheetItem.row.col &&
+                tearSheetItem.row.col.length > 1)
             {
                 component = {
                     header: {},

@@ -122,6 +122,9 @@
                     commonBusiness.companyId = vm.templateOverview.companyId;
                     commonBusiness.companyName = vm.templateOverview.companyName + " (" + vm.templateOverview.ticker + ")" ;
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+
+
+
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({

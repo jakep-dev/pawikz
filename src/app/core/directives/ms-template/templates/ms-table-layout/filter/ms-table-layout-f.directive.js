@@ -80,14 +80,14 @@
 
                         scope.$parent.$parent.actions.push({
                             id: 1,
-                            callback:filteredTL,
+                            callback: filteredTL,
                             icon: 'icon-filter',
                             isclicked: false
                         });
 
                         scope.$parent.$parent.actions.push({
                             id: 2,
-                            callback:unFilteredTL,
+                            callback: unFilteredTL,
                             icon: 'icon-filter-remove',
                             isclicked: false
                         });

@@ -11,5 +11,18 @@
     /* @ngInject */
     function stepsBusiness() {
         this.stepId = null;
+        this.stepDetails = null;
+
+        Object.defineProperty(this, 'stepDetails', {
+            enumerable: true,
+            configurable: false,
+            get: function() {
+                return stepDetails;
+            },
+            set: function(value) {
+                stepDetails = value;
+            }
+        });
+
     }
 })();

@@ -58,7 +58,10 @@
             if(action && action.callback)
             {
                commonBusiness.emitMsg(action.callback);
-                action.isclicked = !action.isclicked;
+                if(action.isclicked !== null)
+                {
+                    action.isclicked = !action.isclicked;
+                }
             }
         }
 
@@ -134,7 +137,26 @@
                         {
                             case 'ExpiringProgram':
                                 var newScope  = $scope.$new();
-                                html += '<ms-message message="Under Construction"></ms-message>';
+                                newScope.tearsheet = null;
+                                newScope.isnoneditable = $scope.isnoneditable;
+                                newScope.copyproposed = null;
+
+                                if($scope.tearheader)
+                                {
+                                    newScope.copyproposed =  $scope.tearheader.copyproposed || null;
+                                }
+
+                                if($scope.tearcontent)
+                                {
+                                    //newScope.tearsheet = [];
+                                    angular.forEach($scope.tearcontent, function(content)
+                                    {
+                                      newScope.tearsheet = content;
+                                    })
+                                }
+
+
+                                html += '<ms-expiring tearsheet="tearsheet" copyproposed="'+ newScope.copyproposed +'" isnoneditable="isnoneditable"></ms-expiring>';
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;
 
@@ -205,8 +227,7 @@
 
                                 console.log(newScope);
 
-                                if((col && !col.length) &&
-                                    $scope.isnoneditable)
+                                if((col && $scope.isnoneditable) || col.col)
                                 {
                                     html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
                                 }
@@ -224,7 +245,7 @@
                                     {
                                         html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
                                     }
-                                    else if(!$scope.isnoneditable)
+                                    else if(!$scope.isnoneditable && content.EditRow)
                                     {
                                         if(!newScope.tearsheet.header)
                                         {
@@ -235,7 +256,7 @@
                                         }
                                         html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';
                                     }
-                                    else if(col.length && $scope.isnoneditable)
+                                    else if(col.length)
                                     {
                                         //Fill Up headers
                                         console.log('Inside NonEditable Variation');
@@ -244,7 +265,7 @@
 
                                         angular.forEach(col, function(eachCol)
                                         {
-                                            angular.forEach(eachCol, function(header)
+                                            angular.forEach(eachCol.col, function(header)
                                             {
                                                 if(header.TearSheetItem &&
                                                     header.TearSheetItem.id === 'LabelItem')
