@@ -13,17 +13,17 @@
 
             <md-button class="md-icon-button" aria-label="show in printer"
                        ng-click="vm.printer()"   style="float:right">
-                <md-icon md-font-icon="icon-select" ng-if="!vm.isAvailableForPrint"></md-icon>
-                <md-icon md-font-icon="icon-select-inverse" ng-if="vm.isAvailableForPrint"></md-icon>
+                <md-icon md-font-icon="icon-select" class="s20" ng-if="!vm.isAvailableForPrint"></md-icon>
+                <md-icon md-font-icon="icon-select-inverse" class="s20" ng-if="vm.isAvailableForPrint"></md-icon>
             </md-button>
 
             <md-button class="md-icon-button" ng-if="!!vm.actions"
                        ng-repeat="action in vm.actions"
                        ng-click="vm.applyClickEvent(action)"
                        aria-label="filter actions"
-                       style="height: 30px;float:right;">
+                       style="float:right;">
 
-                <md-icon md-font-icon="{{action.icon}}" ng-class="action.isclicked ? 'orange-500-fg' : ''">
+                <md-icon md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''">
                     <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
                 </md-icon>
             </md-button>
