@@ -68,29 +68,25 @@
         //Build the component actions if provided.
         function buildActions()
         {
-            var isReadyToBuildActions = false;
             console.log('Initialize Build Action');
             $scope.$watchCollection(
                 "actions",
-                function handleBuildActions(value) {
-                    if(isReadyToBuildActions)
+                function handleBuildActions(newValue, oldValue) {
+                    if(newValue !== oldValue)
                     {
                         console.log('Fire Build Action Watch');
-                        console.log($scope.actions);
-                        console.log(value);
 
-                        if(value &&
-                           value.length >= 1)
+                        if(newValue &&
+                            newValue.length >= 1)
                         {
                             vm.actions = [];
-                            _.each(value, function(eachVal)
+                            _.each(newValue, function(eachVal)
                             {
                                vm.actions.push(eachVal);
                             });
                         }
 
                     }
-                    isReadyToBuildActions = true;
                 }
             );
         }
@@ -148,7 +144,6 @@
 
                                 if($scope.tearcontent)
                                 {
-                                    //newScope.tearsheet = [];
                                     angular.forEach($scope.tearcontent, function(content)
                                     {
                                       newScope.tearsheet = content;
