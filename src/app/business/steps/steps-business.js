@@ -13,12 +13,9 @@
 
         var business =
         {
-            stepId: null,
-            stepDetails: null
+            stepId: null
         };
 
         return business;
-
-
     }
 })();

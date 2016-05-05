@@ -7,7 +7,8 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope, $element, $compile,  commonBusiness, templateBusiness, toast)
+    function msComponentController($scope, $element, $compile,  commonBusiness,
+                                   templateBusiness, overviewBusiness, toast)
     {
         var vm = this;
         vm.isNonEditable = $scope.isnoneditable;
@@ -17,6 +18,7 @@
         vm.actions = null;
         vm.collapsed = false;
         vm.isAvailableForPrint = null;
+        vm.sectionId = null;
 
         vm.toggleCollapse = toggleCollapse;
         vm.applyClickEvent = applyClickEvent;
@@ -48,8 +50,9 @@
                 vm.showPrintIcon = templateBusiness.showPrintIcon($scope.tearheader.mnemonicid);
                 if(vm.showPrintIcon)
                 {
+                    vm.sectionId = $scope.tearheader.itemid;
                     vm.isAvailableForPrint = templateBusiness.getPrintableValue($scope.tearheader.itemid);
-                    vm.collapsed = vm.isAvailableForPrint;
+                    vm.collapsed = !vm.isAvailableForPrint;
                 }
             }
         }
@@ -65,6 +68,11 @@
                 toast.simpleToast('Section will not show on pdf download');
             }
 
+            if(vm.sectionId)
+            {
+                overviewBusiness.updateTemplateOverview(vm.sectionId, vm.isAvailableForPrint);
+                overviewBusiness.getReadyForAutoSave();
+            }
         }
 
         function toggleCollapse()

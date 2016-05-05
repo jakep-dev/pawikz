@@ -9,7 +9,8 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($interval, toast, clientConfig, commonBusiness, stepsBusiness, templateService) {
+    function templateBusiness($interval, toast, clientConfig, commonBusiness, stepsBusiness,
+                              overviewBusiness, templateService) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
@@ -34,7 +35,7 @@
         function getPrintableValue(sectionId)
         {
             var value = false;
-            var specificStep = _.find(stepsBusiness.stepDetails, function(step)
+            var specificStep = _.find(overviewBusiness.templateOverview.steps, function(step)
             {
                 if(parseInt(step.stepId) === parseInt(stepsBusiness.stepId))
                 {
@@ -43,7 +44,7 @@
             });
 
             console.log('Specific Step - ');
-            console.log(stepsBusiness.stepDetails);
+            console.log(overviewBusiness.templateOverview.steps);
             console.log(stepsBusiness.stepId);
             console.log(specificStep);
 

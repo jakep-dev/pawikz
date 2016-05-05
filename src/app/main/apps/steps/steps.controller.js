@@ -12,7 +12,7 @@
     function StepController($rootScope, $stateParams, $scope, $state, templateService,
                             overviewService, bottomSheetConfig, navConfig,
                             templateBusiness, breadcrumbBusiness, commonBusiness,
-                            stepsBusiness, toast, store)
+                            stepsBusiness, overviewBusiness, toast, store)
     {
         var vm = this;
         var projectId = $stateParams.projectId;
@@ -31,10 +31,6 @@
         commonBusiness.stepId = stepId;
         commonBusiness.projectId = projectId;
         $rootScope.projectId = $stateParams.projectId;
-
-        console.log('Steps Details');
-        console.log(stepsBusiness.stepId);
-        console.log(stepsBusiness.stepDetails);
 
         vm.TearSheetStep = null;
 
@@ -91,7 +87,7 @@
 
                     if(data.templateOverview)
                     {
-                        stepsBusiness.stepDetails = data.templateOverview.steps;
+                        overviewBusiness.templateOverview = data.templateOverview;
                         commonBusiness.companyId = data.templateOverview.companyId;
                         commonBusiness.companyName = data.templateOverview.companyName;
                         navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
