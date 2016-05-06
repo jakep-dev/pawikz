@@ -8,7 +8,7 @@
 
 
     /** @ngInject */
-    function msTablelayoutFDirective($compile, templateService, 
+    function msTablelayoutFDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder,
                                      DTColumnDefBuilder)
@@ -148,13 +148,12 @@
 
                         scope.filtered = function()
                         {
-                            scope.dtInstance.rerender();
-
+                            tableReDraw(scope);
                         };
 
                         scope.unFiltered = function()
                         {
-                            scope.dtInstance.rerender();
+                            tableReDraw(scope);
                         };
 
                         scope.childInfo = function(id, event)
@@ -192,8 +191,8 @@
 
                         scope.selectAll = function(value)
                         {
-                            var table = scope.dtInstance.DataTable;
-                            var rows = table.rows({ page: 'current', search: 'applied' }).nodes();
+                            var table = scope.dtInstance.dataTable;
+                            var rows = table._('tr', {"filter":"applied"}).rows({ page: 'current', search: 'applied' }).nodes();
                             $('md-checkbox', rows).each(function(){
                                 var ngModel = $(this).attr('ng-model');
                                 var ngChange = $(this).attr('ng-change');
@@ -205,7 +204,7 @@
 
                         scope.indSelection = function(row)
                         {	
-							scope.dtInstance.rerender();
+							tableReDraw(scope, scope.dtInstance.DataTable.page());
 							scope.saveRow(row);
                         };
 
@@ -317,6 +316,12 @@
 
                     scope.$parent.$parent.isprocesscomplete = true;
                     el.find('#ms-table-layout').append($compile(html)(scope));
+					
+					//temp codes
+					//recalculate selection on first load
+					$timeout( function(){
+						recalculateSelection(scope);						
+					});
 
                 });
             }
@@ -341,6 +346,7 @@
                 .withOption('filter', true)
                 .withOption('autoWidth', true)
                 .withOption('responsive', false)
+				.withOption('drawCallback', function(){ recalculateSelection(scope); }) //check isAllSelected when table is change
                 .withOption('sorting', [])
                 .withPaginationType('full')
                 .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
@@ -362,6 +368,34 @@
 			
             scope.dtInstance = {};
         }
+		
+		function recalculateSelection(scope){
+			if(scope.dtInstance && scope.dtInstance.dataTable){
+				var table = scope.dtInstance.dataTable;
+				var rows = table._('tr', {"filter":"applied"}).rows({ page: 'current', search: 'applied' }).nodes();
+				
+				scope.isAllSelected = true;
+				$('md-checkbox', rows).each(function(){
+					var ngModel = $(this).attr('ng-model');
+					
+					if(eval('scope.' + ngModel) == 'Y'){
+						scope.isAllSelected = false;
+						return;
+					}
+				});
+			}
+		}
+		
+		function tableReDraw(scope, page){
+			scope.dtInstance.dataTable._fnReDraw();
+			
+			//retain page
+			if(page)
+			{
+				var table = scope.dtInstance.DataTable;
+				table.page(page).draw( 'page' );
+			}
+		}
     }
 
 })();
