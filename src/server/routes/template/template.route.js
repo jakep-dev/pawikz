@@ -13,7 +13,8 @@
             app.post('/api/schema', schema),
             app.post('/api/mnemonics', mnemonics),
             app.post('/api/saveTemplate', saveMnemonics),
-            app.post('/api/dynamicTable', dynamicTable )
+            app.post('/api/dynamicTable', dynamicTable ),
+            app.post('/api/saveDynamicTable', saveDynamicTable )
         ]);
 
         //Schema for the templates
@@ -156,6 +157,42 @@
             console.log(args);
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+        }
+		
+		function saveDynamicTable(req, res, next)
+        {
+            var service = getServiceDetails('templateManager');
+            console.log('Parameters -');
+            console.log(req.body);
+
+            var methodName = '';
+
+            if(!u.isUndefined(service) && !u.isNull(service))
+            {
+                console.log(service.name);
+                methodName = service.methods.saveDynamicTableData;
+            }
+
+            console.log(methodName);
+
+            var args =
+            {
+                data: {
+                    projectId: req.body.project_id,
+                    stepId: req.body.step_id,
+                    mnemonic: req.body.mnemonic,
+                    itemId: req.body.item_id,
+                    table: req.body.table
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            console.log(args);
+
+            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
                 res.status(response.statusCode).send(data);
             });

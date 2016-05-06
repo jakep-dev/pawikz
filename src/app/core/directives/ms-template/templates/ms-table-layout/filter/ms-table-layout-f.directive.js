@@ -8,7 +8,8 @@
 
 
     /** @ngInject */
-    function msTablelayoutFDirective($compile, templateService, commonBusiness,
+    function msTablelayoutFDirective($compile, templateService, 
+									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder,
                                      DTColumnDefBuilder)
     {
@@ -54,7 +55,7 @@
                     }
                 });
 				
-				columns += 'TL_STATUS';
+				columns += 'TL_STATUS,SEQUENCE';
 
                 var html = '';
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
@@ -194,13 +195,32 @@
                             });
                         };
 
-                        scope.indSelection = function()
-                        {
-
+                        scope.indSelection = function(row)
+                        {	
+							scope.dtInstance.rerender();
+							scope.saveRow(row);
                         };
 
                         scope.saveRow = function(row)
                         {
+							var obj = {
+								row: new Array(),
+								condition: new Array()
+							}
+							obj.row.push({
+								columnName: 'TL_STATUS',
+								value: row.TL_STATUS
+							});
+							obj.condition.push({
+								columnName: 'SEQUENCE',
+								value: row['SEQUENCE']
+							});
+							obj.condition.push({
+								columnName: 'ITEM_ID',
+								value: scope.itemid
+							});
+							
+							templateBusiness.getReayForAutoSaveTableLayout(scope.itemid, scope.mnemonicid, obj);
 
                         };
 
@@ -246,7 +266,7 @@
                         {
                             var newDescId = descriptionDetails.length + 1;
                             html += '<tr style="min-height: 25px" class="row-cursor">';
-                            html += '<td><md-checkbox aria-label="select" ng-model="tableData['+count+'].TL_STATUS" ng-change="saveRow(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
+                            html += '<td><md-checkbox aria-label="select" ng-model="tableData['+count+'].TL_STATUS" ng-change="indSelection(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
                             angular.forEach(column, function(col)
                             {
 

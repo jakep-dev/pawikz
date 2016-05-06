@@ -25,6 +25,7 @@ exports.restcall =
                    saveOverview: 'updateTemplateOverview',
                    logout: 'deleteSession',
                    userInfo: 'getUserInfo',
+                   saveDynamicTableData: 'updateTemplateTableLayOut',
                    saveMnemonics: 'updateTemplateMnemonics'
                 }
               },

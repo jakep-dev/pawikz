@@ -13,6 +13,7 @@
         var business = {
            mnemonics: null,
            saveMnemonics: [],
+		   saveTableMnemonics: [],
            autoSavePromise: [],
            isExpandAll: false,
            save: save,
@@ -20,6 +21,7 @@
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
+		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
            getEvalMnemonicValue: getEvalMnemonicValue
         };
@@ -37,6 +39,45 @@
         {
 
         }
+		
+		function getReayForAutoSaveTableLayout(itemId, mnemonic, row)
+		{
+			var mnemonicTable = _.find(business.saveTableMnemonics, {itemId: itemId, mnemonic: mnemonic});
+
+            console.log('Mnemonic Table');
+            console.log(mnemonicTable);
+
+            if(angular.isUndefined(mnemonicTable))
+            {
+                console.log('Adding...');
+                business.saveTableMnemonics.push({
+                    itemId: itemId,
+                    mnemonic: mnemonic,
+                    table: [row]
+                });
+				
+				console.log(business.saveTableMnemonics);
+            }
+            else {
+				console.log('Updating and checking if row exists');
+				var isExist = false;
+				angular.forEach(mnemonicTable.table, function(savedRow){
+					if(_.isEqual(savedRow.condition, row.condition)){
+						savedRow.row = row.row;
+						isExist = true;
+						return;
+					}
+				});
+				
+				if(!isExist){
+					mnemonicTable.table.push(row);
+				}
+            }
+			
+			console.log('Inserting save Table Mnemonics --');
+            console.log(business.saveTableMnemonics);
+            initiateAutoSave();
+		}
 
         //Get ready for auto save.
         function getReadyForAutoSave(itemId, mnemonic, value)
@@ -98,6 +139,8 @@
                 {
                     save();
                     business.saveMnemonics = [];
+					saveTable();
+					business.saveTableMnemonics = [];
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -106,17 +149,32 @@
         //Save template details
         function save()
         {
-            var input = {
-                projectId: commonBusiness.projectId,
-                stepId: commonBusiness.stepId,
-                userId: commonBusiness.userId,
-                mnemonics: business.saveMnemonics
-            };
+			if(business.saveMnemonics.length > 0){
+				var input = {
+					projectId: commonBusiness.projectId,
+					stepId: commonBusiness.stepId,
+					userId: commonBusiness.userId,
+					mnemonics: business.saveMnemonics
+				};
 
-            templateService.save(input).then(function(response)
-            {
-                toast.simpleToast('Saved successfully');
-            });
+				templateService.save(input).then(function(response)
+				{
+					toast.simpleToast('Saved successfully');
+				});
+			}
+        }
+		
+		 //Save table layout template details
+        function saveTable()
+        {
+			angular.forEach(business.saveTableMnemonics, function(tableMnemonic){
+				
+				templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+					tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
+				{
+					toast.simpleToast('Table saved successfully');
+				});
+			});
         }
 
         //Cancel the auto-save promise.
