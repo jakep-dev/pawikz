@@ -40,8 +40,25 @@
                 if(scope.tearsheet.header && scope.tearsheet.header.col)
                 {
                     header = [];
-                    header.push.apply(header,scope.tearsheet.header.col);
-                }
+                   
+				   angular.forEach(scope.tearsheet.header.col, function (col) {
+						var tearSheetItem = col.TearSheetItem;
+
+						if (!angular.isUndefined(tearSheetItem) &&
+							typeof(tearSheetItem.Label) !== 'object') {
+
+							switch (tearSheetItem.id) {
+								case 'LabelItem':
+									header.push(tearSheetItem.Label);
+								break;
+							}
+						}
+					});
+                }else if(scope.mnemonicid === 'SIG_DEV'){
+					header = [];
+					header.push('Event Date');
+					header.push('Event Summary');
+				}
 
                 column.push.apply(column, scope.tearsheet.columns[0].col);
                 column.push(scope.tearsheet.columns[1].col);
@@ -245,18 +262,9 @@
                             angular.forEach(header, function (col) {
                                 html += '<th>';
                                 footerHtml += '<th>';
-                                var tearSheetItem = col.TearSheetItem;
-
-                                if (!angular.isUndefined(tearSheetItem) &&
-                                    typeof(tearSheetItem.Label) !== 'object') {
-
-                                    switch (tearSheetItem.id) {
-                                        case 'LabelItem':
-                                            html += '<strong>' + tearSheetItem.Label  +'</strong>';
-                                            footerHtml += '<strong>' + tearSheetItem.Label  +'</strong>';
-                                            break;
-                                    }
-                                }
+                                
+								html += '<strong>' + col  +'</strong>';
+								footerHtml += '<strong>' + col  +'</strong>';
 
                                 footerHtml += '</th>';
                                 html += '</th>';
@@ -285,7 +293,7 @@
                                     return;
                                 }
 
-                                if(col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+                                if(col.TearSheetItem.Mnemonic === 'DESCRIPTION' || col.TearSheetItem.Mnemonic === 'SIGDEVDESC')
                                 {
                                     var exp = "data[count]." + col.TearSheetItem.Mnemonic;
                                     var desValue = eval(exp);
@@ -366,7 +374,7 @@
 					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withOption('orderDataType', 'custom-date-sort'));
 				}
 				
-				if(col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+				if(col.TearSheetItem.Mnemonic === 'DESCRIPTION' || col.TearSheetItem.Mnemonic === 'SIGDEVDESC')
                 {
 					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withClass('hiddenColumn'));
 				}

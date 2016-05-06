@@ -207,7 +207,8 @@
                                     var isFilterTableLayout = false;
                                     if(descColumn && descColumn.col &&
                                         descColumn.col.TearSheetItem &&
-                                        descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+                                        ( descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION' ||
+										 descColumn.col.TearSheetItem.Mnemonic === 'SIGDEVDESC') )
                                     {
                                         isFilterTableLayout = true;
                                     }
