@@ -101,6 +101,14 @@
 									}
 								}
 							);
+							
+							//custom date sorting
+							$.fn.dataTable.ext.order['custom-date-sort'] = function  ( settings, col ) {
+								return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+									var date = moment($('span', td).text(), 'DD-MMM-YY', true);
+									return date.isValid() ? date.format('YYYY-MM-DD') : '';
+								});
+							}
 						}
 						
 						scope.dtCustomFunctionsInit();
@@ -109,7 +117,7 @@
 
                         var descriptionDetails = [];
 
-                        dtDefineColumn(scope);
+                        dtDefineColumn(scope, column);
 
                         var filteredTL = 'FilteredTableLayout'.concat("-", dataTableId);
                         var unFilteredTL = 'UnFilteredTableLayout'.concat("-", dataTableId);
@@ -338,11 +346,20 @@
                 .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
 
-        function dtDefineColumn(scope)
+        function dtDefineColumn(scope, column)
         {
             scope.dtColumnDefs = [
                 DTColumnDefBuilder.newColumnDef(0).notSortable()
             ];
+			
+			angular.forEach(column, function(col, index)
+			{
+				if(col.TearSheetItem.id === 'DateItem')
+				{
+					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withOption('orderDataType', 'custom-date-sort'));
+				}
+			});
+			
             scope.dtInstance = {};
         }
     }
