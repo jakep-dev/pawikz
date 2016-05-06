@@ -261,6 +261,7 @@
                                 footerHtml += '</th>';
                                 html += '</th>';
                             });
+							html += '<th></th>';
                             html += '</tr>';
                             html += '</thead>';
 
@@ -290,7 +291,7 @@
                                     var desValue = eval(exp);
                                     descriptionDetails.push({id: newDescId, value: desValue});
 
-                                    return;
+                                    //return;
                                 }
 
                                 html += '<td ng-click="childInfo('+ newDescId +', $event)">';
@@ -363,6 +364,11 @@
 				if(col.TearSheetItem.id === 'DateItem')
 				{
 					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withOption('orderDataType', 'custom-date-sort'));
+				}
+				
+				if(col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+                {
+					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withClass('hiddenColumn'));
 				}
 			});
 			
