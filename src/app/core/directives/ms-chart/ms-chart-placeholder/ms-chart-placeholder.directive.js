@@ -23,6 +23,13 @@
         vm.swapChart = swapChart;
         vm.onChartSave = $scope.onChartSave;
         vm.onChartReset = $scope.onChartReset;
+
+        $scope.$watch('vm.title',function(newValue,oldValue){
+        if(oldValue!=newValue){
+            $scope.chart.filterState.title = vm.title;
+        }
+        });
+
         //@@TODO - For Testing
         vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&
                 $scope.chart.tearsheet.type=="image") ? true : false;
@@ -166,12 +173,23 @@
         ///Remove selected chart.
         function removeChart(id) {
             console.log(id);
-            if ($scope.chart) {
-                $scope.onChartRemove($scope.index, $scope.chart.tearsheet.type);
-            }
-            else {
-                $('#' + id).remove();
-            }
+            dialog.confirm('Selected Stock chart will be deleted. Please confirm.', null,null, {
+                ok: {
+                    name: 'yes', callBack: function () {
+                        if ($scope.chart) {
+                            $scope.onChartRemove($scope.index, $scope.chart.tearsheet.type);
+                        }
+                        else {
+                            $('#' + id).remove();
+                        }
+                    }
+                },
+                cancel:{
+                    name:'no',callBack:function(){
+                        return false;
+                    }
+                }
+            });
 
         }
 
@@ -211,7 +229,7 @@
                     var html = '';
                     switch (scope.chart.tearsheet.type) {
                         case 'stock':
-                            html = '<ms-stock-chart chart-id="id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState"></ms-stock-chart>';
+                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState"></ms-stock-chart>';
                             break;
 
                         case 'image':

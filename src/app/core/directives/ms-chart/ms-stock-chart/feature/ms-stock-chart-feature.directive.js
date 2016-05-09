@@ -681,13 +681,13 @@ $timeout(function(){
 
                             $('.trashIconTooltip').click(function(){
                                 var peer = $(this).parent().parent().find('.name').text().replace('&amp;','&');
+                                peer = peer.substring(0,peer.lastIndexOf(' ')).trim();
                                 scope.onPeerRemove(peer);
                             });
 
                         });
 
                     }
-
                 }
             };
         }]);
