@@ -36,7 +36,8 @@
                     schema: '/api/schema',
                     mnemonics: '/api/mnemonics',
                     save: '/api/saveTemplate',
-                    dynamic: '/api/dynamicTable'
+                    dynamic: '/api/dynamicTable',
+                    saveDynamic: '/api/saveDynamicTable'
                 },
                 loggerEndPoint:
                 {

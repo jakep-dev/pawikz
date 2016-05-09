@@ -8,7 +8,8 @@
 
 
     /** @ngInject */
-    function msTablelayoutFDirective($compile, templateService, commonBusiness,
+    function msTablelayoutFDirective($compile, $timeout, templateService, 
+									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder,
                                      DTColumnDefBuilder)
     {
@@ -39,8 +40,25 @@
                 if(scope.tearsheet.header && scope.tearsheet.header.col)
                 {
                     header = [];
-                    header.push.apply(header,scope.tearsheet.header.col);
-                }
+                   
+				   angular.forEach(scope.tearsheet.header.col, function (col) {
+						var tearSheetItem = col.TearSheetItem;
+
+						if (!angular.isUndefined(tearSheetItem) &&
+							typeof(tearSheetItem.Label) !== 'object') {
+
+							switch (tearSheetItem.id) {
+								case 'LabelItem':
+									header.push(tearSheetItem.Label);
+								break;
+							}
+						}
+					});
+                }else if(scope.mnemonicid === 'SIG_DEV'){
+					header = [];
+					header.push('Event Date');
+					header.push('Event Summary');
+				}
 
                 column.push.apply(column, scope.tearsheet.columns[0].col);
                 column.push(scope.tearsheet.columns[1].col);
@@ -53,6 +71,8 @@
                         columns += col.TearSheetItem.Mnemonic + ',';
                     }
                 });
+				
+				columns += 'TL_STATUS,SEQUENCE';
 
                 var html = '';
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
@@ -68,12 +88,53 @@
                     }
                     else {
                         scope.tableData = data;
+						
+						scope.dtCustomFunctionsInit = function(){
+
+							//custom filtering
+							$.fn.dataTableExt.afnFiltering.push(
+								function (oSettings, aData, iDataIndex) {
+
+									if ( oSettings.nTable.id === dataTableId ) {
+										var filterReturn = false;
+										var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
+											var filterSelection = new Array();
+											if(_.find(scope.$parent.$parent.actions, {id: 1}).isclicked === true){
+												filterSelection.push('N');
+											}
+											if(_.find(scope.$parent.$parent.actions, {id: 2}).isclicked === true){
+												filterSelection.push('Y');
+											}
+
+											var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
+											if(checkboxValue){
+												filterReturn = filterSelection.indexOf(checkboxValue) > -1;
+											}
+										});
+
+										return filterReturn;
+									}else{
+										return true;
+									}
+								}
+							);
+							
+							//custom date sorting
+							$.fn.dataTable.ext.order['custom-date-sort'] = function  ( settings, col ) {
+								return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+									var date = moment($('span', td).text(), 'DD-MMM-YY', true);
+									return date.isValid() ? date.format('YYYY-MM-DD') : '';
+								});
+							}
+						}
+						
+						scope.dtCustomFunctionsInit();
 
                         dtDefineOptions(scope);
 
                         var descriptionDetails = [];
 
-                        dtDefineColumn(scope);
+                        dtDefineColumn(scope, column);
 
                         var filteredTL = 'FilteredTableLayout'.concat("-", dataTableId);
                         var unFilteredTL = 'UnFilteredTableLayout'.concat("-", dataTableId);
@@ -82,14 +143,14 @@
                             id: 1,
                             callback: filteredTL,
                             icon: 'icon-filter',
-                            isclicked: false
+                            isclicked: true
                         });
 
                         scope.$parent.$parent.actions.push({
                             id: 2,
                             callback: unFilteredTL,
                             icon: 'icon-filter-remove',
-                            isclicked: false
+                            isclicked: true
                         });
 
 
@@ -104,59 +165,12 @@
 
                         scope.filtered = function()
                         {
-                            $.fn.dataTableExt.afnFiltering.push(
-                                function (oSettings, aData, iDataIndex) {
-
-                                    if ( oSettings.nTable.id === dataTableId ) {
-                                        var filterReturn = false;
-                                        var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
-
-                                            var filterSelection = new Array();
-                                            filterSelection.push('Y');
-
-                                            var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
-                                            if(checkboxValue){
-                                                filterReturn = filterSelection.indexOf(checkboxValue) > -1;
-                                            }
-                                        });
-
-                                        return filterReturn;
-                                    }else{
-                                        return true;
-                                    }
-                                }
-                            );
-
-                            scope.dtInstance.rerender();
-
+                            tableReDraw(scope);
                         };
 
                         scope.unFiltered = function()
                         {
-                            $.fn.dataTableExt.afnFiltering.push(
-                                function (oSettings, aData, iDataIndex) {
-
-                                    if ( oSettings.nTable.id === dataTableId ) {
-                                        var filterReturn = false;
-                                        var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
-
-                                            var UnFilterSelection = new Array();
-                                            UnFilterSelection.push('Y');
-
-                                            var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
-                                            if(!checkboxValue){
-                                                filterReturn = UnFilterSelection.indexOf(checkboxValue) > -1;
-                                            }
-                                        });
-
-                                        return filterReturn;
-                                    }else{
-                                        return true;
-                                    }
-                                }
-                            );
-
-                            scope.dtInstance.rerender();
+                            tableReDraw(scope);
                         };
 
                         scope.childInfo = function(id, event)
@@ -194,8 +208,8 @@
 
                         scope.selectAll = function(value)
                         {
-                            var table = scope.dtInstance.DataTable;
-                            var rows = table.rows({ page: 'current', search: 'applied' }).nodes();
+                            var table = scope.dtInstance.dataTable;
+                            var rows = table._('tr', {"filter":"applied"}).rows({ page: 'current', search: 'applied' }).nodes();
                             $('md-checkbox', rows).each(function(){
                                 var ngModel = $(this).attr('ng-model');
                                 var ngChange = $(this).attr('ng-change');
@@ -205,13 +219,32 @@
                             });
                         };
 
-                        scope.indSelection = function()
-                        {
-
+                        scope.indSelection = function(row)
+                        {	
+							tableReDraw(scope, scope.dtInstance.DataTable.page());
+							scope.saveRow(row);
                         };
 
                         scope.saveRow = function(row)
                         {
+							var obj = {
+								row: new Array(),
+								condition: new Array()
+							}
+							obj.row.push({
+								columnName: 'TL_STATUS',
+								value: row.TL_STATUS
+							});
+							obj.condition.push({
+								columnName: 'SEQUENCE',
+								value: row['SEQUENCE']
+							});
+							obj.condition.push({
+								columnName: 'ITEM_ID',
+								value: scope.itemid
+							});
+							
+							templateBusiness.getReayForAutoSaveTableLayout(scope.itemid, scope.mnemonicid, obj);
 
                         };
 
@@ -229,22 +262,14 @@
                             angular.forEach(header, function (col) {
                                 html += '<th>';
                                 footerHtml += '<th>';
-                                var tearSheetItem = col.TearSheetItem;
-
-                                if (!angular.isUndefined(tearSheetItem) &&
-                                    typeof(tearSheetItem.Label) !== 'object') {
-
-                                    switch (tearSheetItem.id) {
-                                        case 'LabelItem':
-                                            html += '<strong>' + tearSheetItem.Label  +'</strong>';
-                                            footerHtml += '<strong>' + tearSheetItem.Label  +'</strong>';
-                                            break;
-                                    }
-                                }
+                                
+								html += '<strong>' + col  +'</strong>';
+								footerHtml += '<strong>' + col  +'</strong>';
 
                                 footerHtml += '</th>';
                                 html += '</th>';
                             });
+							html += '<th></th>';
                             html += '</tr>';
                             html += '</thead>';
 
@@ -257,7 +282,7 @@
                         {
                             var newDescId = descriptionDetails.length + 1;
                             html += '<tr style="min-height: 25px" class="row-cursor">';
-                            html += '<td><md-checkbox aria-label="select" ng-model="tableData['+count+'].TL_STATUS" ng-change="saveRow(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
+                            html += '<td><md-checkbox aria-label="select" ng-model="tableData['+count+'].TL_STATUS" ng-change="indSelection(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
                             angular.forEach(column, function(col)
                             {
 
@@ -268,13 +293,13 @@
                                     return;
                                 }
 
-                                if(col.TearSheetItem.Mnemonic === 'DESCRIPTION')
+                                if(col.TearSheetItem.Mnemonic === 'DESCRIPTION' || col.TearSheetItem.Mnemonic === 'SIGDEVDESC')
                                 {
                                     var exp = "data[count]." + col.TearSheetItem.Mnemonic;
                                     var desValue = eval(exp);
                                     descriptionDetails.push({id: newDescId, value: desValue});
 
-                                    return;
+                                    //return;
                                 }
 
                                 html += '<td ng-click="childInfo('+ newDescId +', $event)">';
@@ -300,6 +325,12 @@
 
                     scope.$parent.$parent.isprocesscomplete = true;
                     el.find('#ms-table-layout').append($compile(html)(scope));
+					
+					//temp codes
+					//recalculate selection on first load
+					$timeout( function(){
+						recalculateSelection(scope);						
+					});
 
                 });
             }
@@ -324,18 +355,61 @@
                 .withOption('filter', true)
                 .withOption('autoWidth', true)
                 .withOption('responsive', false)
+				.withOption('drawCallback', function(){ recalculateSelection(scope); }) //check isAllSelected when table is change
                 .withOption('sorting', [])
                 .withPaginationType('full')
                 .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
 
-        function dtDefineColumn(scope)
+        function dtDefineColumn(scope, column)
         {
             scope.dtColumnDefs = [
                 DTColumnDefBuilder.newColumnDef(0).notSortable()
             ];
+			
+			angular.forEach(column, function(col, index)
+			{
+				if(col.TearSheetItem.id === 'DateItem')
+				{
+					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withOption('orderDataType', 'custom-date-sort'));
+				}
+				
+				if(col.TearSheetItem.Mnemonic === 'DESCRIPTION' || col.TearSheetItem.Mnemonic === 'SIGDEVDESC')
+                {
+					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withClass('hiddenColumn'));
+				}
+			});
+			
             scope.dtInstance = {};
         }
+		
+		function recalculateSelection(scope){
+			if(scope.dtInstance && scope.dtInstance.dataTable){
+				var table = scope.dtInstance.dataTable;
+				var rows = table._('tr', {"filter":"applied"}).rows({ page: 'current', search: 'applied' }).nodes();
+				
+				scope.isAllSelected = true;
+				$('md-checkbox', rows).each(function(){
+					var ngModel = $(this).attr('ng-model');
+					
+					if(eval('scope.' + ngModel) == 'Y'){
+						scope.isAllSelected = false;
+						return;
+					}
+				});
+			}
+		}
+		
+		function tableReDraw(scope, page){
+			scope.dtInstance.dataTable._fnReDraw();
+			
+			//retain page
+			if(page)
+			{
+				var table = scope.dtInstance.DataTable;
+				table.page(page).draw( 'page' );
+			}
+		}
     }
 
 })();
