@@ -15,4 +15,15 @@ md-checkbox{
     display:inline !important;
   }
 }
+.addButton{
+  position: fixed;
+  bottom: 0px;
+  width: 95%;
+  background: #ffffff;
+  z-index: 1;
+  border-top: 1px solid #EEE;
+}
+.md-dialog-container{
+  z-index:999 !important;
+}
 

@@ -1,3 +1,4 @@
+'@charset "UTF-8";'
 #ms-chart-placeholder-header
 {
   .md-icon-button
@@ -9,4 +10,11 @@
 .placeholderClass
 {
 
+}
+
+.addButton{
+  position:fixed !important;
+  bottom:0px;
+  width:95%;
+  background:#ffffff;
 }

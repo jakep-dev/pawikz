@@ -46,7 +46,8 @@
                                 .then(function(data)
                                 {
                                     var idCount = 1;
-
+                                    //Saving the  data to rootScope to use at addIndices and competitors
+                                    $rootScope.savedChartData = data;
                                     //Creating Legacy Charts
                                     if(data.legacyCharts)
                                     {
@@ -138,6 +139,10 @@
                                             scope.jsCharts.splice(index, 1);
                                             //chart remove chart the charts on server ..
                                             saveAllCharts();
+
+                                            $timeout(function(){
+                                                renderJSCharts();
+                                            });
                                         };
 
                                         scope.addNewChart = function (chart, index){
@@ -188,7 +193,8 @@
                                                             url:chart.url,
                                                             mnemonicId: scope.mnemonicid,
                                                             itemId: scope.itemid,
-                                                            chartOrder: i
+                                                            chartOrder: i,
+                                                            project_image_code:chartSettings.project_image_code
                                                         };
                                                     }
                                                     else{
@@ -246,7 +252,8 @@
                                                         url:chart.url,
                                                         mnemonicId: scope.mnemonicid,
                                                         itemId: scope.itemid,
-                                                        chartOrder : i
+                                                        chartOrder : i,
+                                                        project_image_code:chartSettings.project_image_code
                                                     };
                                                 }
                                                 else{
@@ -324,8 +331,12 @@
                                                         item_id: tearsheet.itemId,
                                                         chartType: chart.chartType
                                                     };
+                                                    if(chart.chartType==='IMGURL'){
+                                                        obj.project_image_code = chart.tearsheet.project_image_code;
+                                                        obj.url = chart.tearsheet.url;
+                                                    }
                                                     if (jsChart.chart_id) {
-                                                        obj.chartId = parseInt(jsChart.chart_id)
+                                                        obj.chartId = parseInt(jsChart.chart_id);
                                                     }
                                                     startArr.push(obj);
                                                 }

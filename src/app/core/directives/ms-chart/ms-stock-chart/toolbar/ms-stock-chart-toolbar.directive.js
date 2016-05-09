@@ -6,7 +6,7 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect,$rootScope) {
+    function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect) {
         var vm = this;
         vm.splits = false;
         vm.earnings = false;
@@ -16,11 +16,14 @@
         /* Indices Logic Start */
         vm.indices = [];
 
+        vm.savedChartData = $rootScope.savedChartData;
+
         /* Peers Logic Start*/
 
         vm.peers = [];
         vm.queryPeerSearch = queryPeerSearch;
         vm.selectedItemChange = selectedItemChange;
+        vm.indicesOrCompetitorDropDownChange = indicesOrCompetitorDropDownChange;
         vm.addIndices = addIndices;
         vm.selectedPeerChange = selectedPeerChange;
         vm.selectedCompetitorChange = selectedCompetitorChange;
@@ -44,13 +47,28 @@
                 .getIndices('', '1W')
                 .then(function (data) {
                     if (data.indicesResp) {
-                        vm.indices = [];
-                        angular.forEach(data.indicesResp, function (ind) {
-                            vm.indices.push({
-                                value: ind.value,
-                                display: ind.description
+
+                        //@@TODO
+                        var chartCount = vm.chartId.split('-');
+                        chartCount = parseInt(chartCount[1]);
+                        var savedIndicesList = [];
+
+                        if(chartCount>=0){
+                            savedIndicesList = vm.savedChartData.newCharts[chartCount].settings.selectedIndicesList;
+
+                            vm.indices = [];
+                            angular.forEach(data.indicesResp, function (ind) {
+                                var indicesItem = new Object();
+                                indicesItem.value = ind.value;
+                                indicesItem.display = ind.description;
+                                indicesItem.selectedIndicecheck = false;
+                                if (savedIndicesList && savedIndicesList.indexOf(indicesItem.value)>-1) {
+                                    indicesItem.selectedIndicecheck = true;
+                                }
+                                vm.indices.push(indicesItem);
                             });
-                        });
+                        }
+
                     }
                 });
 
@@ -63,13 +81,26 @@
                 .getCompetitors(commonBusiness.companyId)
                 .then(function (data) {
                     if (data.competitors) {
-                        vm.competitors = [];
-                        angular.forEach(data.competitors, function (comp) {
-                            vm.competitors.push({
-                                value: comp.ticker,
-                                display: comp.companyName
+                        var chartCount = vm.chartId.split('-');
+                        chartCount = parseInt(chartCount[1]);
+                        var savedCompetitorsList = [];
+
+                        if(chartCount>=0) {
+                            savedCompetitorsList = vm.savedChartData.newCharts[chartCount].settings.selectedCompetitorsList;
+
+                            vm.competitors = [];
+                            angular.forEach(data.competitors, function (comp) {
+                                var competitorItem = new Object();
+                                competitorItem.value = comp.ticker;
+                                competitorItem.display = comp.companyName;
+                                competitorItem.selectedCompetitorcheck = false;
+                                if (savedCompetitorsList && savedCompetitorsList.indexOf(competitorItem.value)>-1) {
+                                    competitorItem.selectedCompetitorcheck = true;
+                                }
+                                vm.competitors.push(competitorItem);
                             });
-                        });
+                        }
+
                     }
                 });
 
@@ -222,6 +253,50 @@
                 }
                 vm.selectedIndice = null;
             })
+        }
+
+
+        function indicesOrCompetitorDropDownChange(itemType, item) {
+
+            var chartCount = itemList.length + competitorList.length;
+
+            if (chartCount < 4) {
+                if (itemType == 'INDICE') {
+                    if (item.selectedIndicecheck) {
+                        itemList.push(item);
+                    }
+                    else if (!item.selectedIndicecheck) {
+                        for (var itemCount = 0; itemCount < itemList.length; itemCount++) {
+                            if (item.value == itemList[itemCount].value) {
+                                itemList.splice(itemCount, 1);
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (item.selectedCompetitorcheck) {
+                        competitorList.push(item);
+                    }
+                    else if (!item.selectedCompetitorcheck) {
+                        for (var itemCount = 0; itemCount < competitorList.length; itemCount++) {
+                            if (item.value == competitorList[itemCount].value) {
+                                competitorList.splice(itemCount, 1);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (itemType == 'INDICE') {
+                    item.selectedIndicecheck = false;
+                }
+                else {
+                    item.selectedCompetitorcheck = false;
+                }
+            }
+
+            vm.selectedItem = null;
+            vm.searchIndText = "";
         }
 
         function selectedItemChange(item) {
