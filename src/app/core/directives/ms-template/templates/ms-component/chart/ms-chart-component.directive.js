@@ -7,7 +7,7 @@
         .controller('msChartComponentController', msChartComponentController)
         .directive('msChartComponent', msChartComponentDirective);
 
-    function msChartComponentController($scope)
+    function msChartComponentController($scope, commonBusiness)
     {
         var vm = this;
         vm.isNonEditable = $scope.isnoneditable;
@@ -18,9 +18,16 @@
         $scope.$watch(
             "isprocesscomplete",
             function handleProgress(value) {
+                console.log('Progress Watch Triggered');
                 vm.isProcessComplete = value;
             }
         );
+
+        commonBusiness.onMsg('IsTemplateExpanded', $scope, function () {
+            if (commonBusiness.isTemplateExpandAll === vm.collapsed) {
+                toggleCollapse();
+            }
+        });
 
         vm.collapsed = false;
         vm.toggleCollapse = toggleCollapse;

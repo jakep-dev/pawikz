@@ -38,6 +38,7 @@
 
         var vm = this;
         vm.isExpanded = true;
+        commonBusiness.isStepExpandAll = vm.isExpanded;
         vm.expandClass = 'expand';
         vm.isOverviewLoaded = false;
         vm.isTabletMode = false;
@@ -211,7 +212,7 @@
         function toggleExpand()
         {
             vm.isExpanded = !vm.isExpanded;
-            commonBusiness.isStepExpandAll = !commonBusiness.isStepExpandAll;
+            commonBusiness.isStepExpandAll = vm.isExpanded;
         }
 
     }

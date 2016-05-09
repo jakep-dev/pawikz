@@ -7,7 +7,7 @@
                    ng-disabled="!expandable"
                    ng-click="toggleExpanded()" style="float:right">
             <md-icon md-font-icon="icon-backburger"
-                     ng-class="{'collapse': !isExpanded, 'expand': isExpanded}"></md-icon>
+                     ng-class="{'collapse': isExpanded, 'expand': !isExpanded}"></md-icon>
         </md-button>
 
         <md-button class="md-icon-button"
@@ -22,7 +22,7 @@
     </div>
 
     <md-divider></md-divider>
-    <md-content id="step-content" ng-if="!isExpanded" ng-animate="'expandCollapse'">
+    <md-content id="step-content" ng-if="isExpanded" ng-animate="'expandCollapse'">
         <md-list>
             <md-list-item  ng-repeat="section in step.sections">
                 <md-checkbox class="md-secondary" ng-model="section.value" ng-change="singleSelection()"></md-checkbox>

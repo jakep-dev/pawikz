@@ -1,8 +1,8 @@
 <md-bottom-sheet id="overview-sheet" class="md-grid" layout="row" ng-cloak>
-    <md-list flex layout="row" layout-align="center center">
+    <md-list flex layout="row" layout-align="center center" md-autofocus>
         <md-list-item>
             <md-button class="md-grid-item-content" ng-click="previousStep()" ng-if="(!!stepId && stepId > 1)">
-                <md-icon md-font-icon="icon-content-save-all"></md-icon>
+                <md-icon md-font-icon="icon-arrow-left-bold"></md-icon>
                 <div class="md-grid-text" hide-sm>Previous Step</div>
             </md-button>
         </md-list-item>
@@ -20,7 +20,7 @@
         </md-list-item>
         <md-list-item>
             <md-button class="md-grid-item-content" ng-click="nextStep()" ng-if="(!!stepId && stepId < lastStepNumber)">
-                <md-icon md-font-icon="icon-content-save-all"></md-icon>
+                <md-icon md-font-icon="icon-arrow-right-bold"></md-icon>
                 <div class="md-grid-text" hide-sm>Next Step</div>
             </md-button>
         </md-list-item>

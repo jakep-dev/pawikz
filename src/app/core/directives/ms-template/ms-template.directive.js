@@ -12,7 +12,8 @@
     {
         var vm = this;
 
-        vm.isExpandAll = templateBusiness.isTemplateExpandAll;
+        vm.isExpandAll = true;
+        templateBusiness.isTemplateExpandAll = vm.isExpandAll;
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
 
@@ -29,7 +30,7 @@
         function toggleExpand()
         {
             vm.isExpandAll = !vm.isExpandAll;
-            commonBusiness.isTemplateExpandAll = !commonBusiness.isTemplateExpandAll;
+            commonBusiness.isTemplateExpandAll = vm.isExpandAll;
         }
     }
 

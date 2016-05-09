@@ -13,7 +13,7 @@
         console.log('Scope of each overview - ');
         console.log($scope);
 
-        $scope.isExpanded = false;
+        $scope.isExpanded = true;
 
         $scope.toggleExpanded = toggleExpanded;
         $scope.singleSelection = singleSelection;
@@ -60,8 +60,10 @@
             return (angular.isDefined($scope.expandable) && $scope.expandable === true);
         }
 
-        commonBusiness.onMsg('IsStepExpanded', $scope, function() {
-            toggleExpanded();
+        commonBusiness.onMsg('IsStepExpanded', $scope, function () {
+            if (commonBusiness.isStepExpandAll !== $scope.isExpanded) {
+                toggleExpanded();
+            }
         });
     }
 
