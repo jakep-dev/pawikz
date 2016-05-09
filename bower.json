@@ -43,7 +43,8 @@
     "ng-lodash": "^0.4.0",
     "angular-froala": "^2.1.0",
     "highcharts-ng": "^0.0.11",
-    "highcharts": "~4.2.3"
+    "highcharts": "~4.2.3",
+    "angular-papaparse": "^1.0.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.0"
