@@ -36,6 +36,7 @@
                 'angular-storage',
                 'disableAll',
                 'froala',
-                'highcharts-ng'
+                'highcharts-ng',
+                'ngPapaParse'
             ]);
 })();

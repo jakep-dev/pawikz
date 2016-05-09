@@ -4,13 +4,13 @@
 
     angular
         .module('app.core')
-        .controller('MsTextController', MsTextController)
-        .directive('msText', msTextDirective);
+        .controller('MsNumberController', MsNumberController)
+        .directive('msNumber', msNumberDirective);
 
     /** @ngInject */
-    function MsTextController($scope, templateBusiness)
+    function MsNumberController($scope, templateBusiness)
     {
-        $scope.disabled = ($scope.isdisabled === 'true');
+        $scope.actualValue = parseInt($scope.value);
 
         $scope.$watch(
             "value",
@@ -25,7 +25,7 @@
     }
 
     /** @ngInject */
-    function msTextDirective()
+    function msNumberDirective()
     {
         return {
             restrict: 'E',
@@ -33,15 +33,11 @@
                 itemid: '@',
                 mnemonicid: '@',
                 value: '@',
-                isdisabled: '@',
+                isdisabled: '=?',
                 type: '@'
             },
-            controller: 'MsTextController',
-            templateUrl: 'app/core/directives/ms-template/templates/ms-text/ms-text.html',
-            link: function(scope)
-            {
-
-            }
+            controller: 'MsNumberController',
+            templateUrl: 'app/core/directives/ms-template/templates/ms-number/ms-number.html'
         };
     }
 

@@ -15,7 +15,7 @@
     function OverviewController($rootScope, $stateParams, $scope, $interval,
                                 overviewService, clientConfig, bottomSheetConfig,
                                 navConfig, breadcrumbBusiness, commonBusiness,
-                                store, toast)
+                                overviewBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
         $rootScope.projectId = $stateParams.projectId;
@@ -61,7 +61,6 @@
         vm.undo = undo;
         vm.redo = redo;
         vm.showOverviewDetails =showOverviewDetails;
-        var promise = [];
 
         //Data
         loadData();
@@ -112,16 +111,22 @@
         //Load data for project-section and step-section
         function loadData()
         {
-            cancelPromise();
             overviewService.get($stateParams.projectId).then(function(data)
             {
-                if(angular.isDefined(data.templateOverview))
+                if(data.templateOverview)
                 {
+                    console.log('Overview Data - ');
+                    console.log(data.templateOverview);
+
                     vm.templateOverview = data.templateOverview;
 
                     commonBusiness.companyId = vm.templateOverview.companyId;
+                    commonBusiness.projectName = vm.templateOverview.projectName;
                     commonBusiness.companyName = vm.templateOverview.companyName + " (" + vm.templateOverview.ticker + ")" ;
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+
+                    overviewBusiness.templateOverview = vm.templateOverview;
+
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({
@@ -129,10 +134,6 @@
                             stepId: step.stepId,
                             projectId: $stateParams.projectId
                         });
-
-                        console.log('NavConfig - ');
-                        console.log(navConfig);
-
                         step.isExpanded = true;
                     });
 
@@ -148,68 +149,22 @@
         {
             $scope.$watch('vm.templateOverview.steps',function()
                 {
-                    if(_.size(promise) === 0 && vm.isOverviewLoaded)
+                    console.log('Firing Overview watch');
+                    if(vm.isOverviewLoaded)
                     {
-                        console.log('Creating Promise');
-                        promise = $interval(function()
-                        {
-                            saveAll();
-                        }, clientConfig.appSettings.autoSaveTimeOut);
+                        console.log('Inside Firing Overview watch');
+                        overviewBusiness.templateOverview = vm.templateOverview;
+                        overviewBusiness.getReadyForAutoSave();
                     }
                     vm.isOverviewLoaded = true;
                 },
                 true);
         }
 
-        //Cancel the auto-save promise.
-        function cancelPromise()
-        {
-            $interval.cancel(promise);
-            promise = [];
-        }
-
         //Save all the changes to database
         function saveAll()
         {
-            var userId = commonBusiness.userId;
-            var projectId = commonBusiness.projectId;
-            var projectName = vm.templateOverview.projectName;
-            var steps = [];
-
-
-            if(angular.isDefined(vm.templateOverview.steps))
-            {
-                angular.forEach(vm.templateOverview.steps, function(step)
-                {
-                    var stepId = step.stepId;
-                    var stepName = step.stepName;
-                    var sections = [];
-                    if(angular.isDefined(step.sections))
-                    {
-                        _.each(step.sections, function(section)
-                        {
-                            sections.push({
-                                mnemonic: section.mnemonic,
-                                itemId: section.itemId,
-                                value: section.value
-                            });
-                        });
-                    }
-
-                    steps.push({
-                        stepId: stepId,
-                        stepName: stepName,
-                        sections: sections
-                    });
-                });
-            }
-
-            overviewService.save(userId, projectId, projectName, steps).then(function(data)
-            {
-                toast.simpleToast('Saved successfully');
-            });
-
-            cancelPromise();
+            templateBusiness.save();
         }
 
         //Flip only the step view to tab and vice-versa

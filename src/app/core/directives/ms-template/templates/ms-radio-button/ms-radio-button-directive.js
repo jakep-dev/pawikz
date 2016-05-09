@@ -10,16 +10,13 @@
     /** @ngInject */
     function MsRadioButtonController($scope, templateBusiness)
     {
-        var isAutoSaveEnabled = false;
         $scope.$watch(
             "tearsheet.value",
-            function handleAutoSave(value) {
-                if(isAutoSaveEnabled)
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, value);
-                    //console.log( "$watch() -- Radio Button Outer: ", value);
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
                 }
-                isAutoSaveEnabled = true;
             }
         );
 

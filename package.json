@@ -10,6 +10,7 @@
     "moment": "^2.11.2",
     "morgan": "^1.6.1",
     "node-rest-client": "^1.5.1",
+    "phantomjs": "^2.1.7",
     "serve-favicon": "^2.3.0",
     "soap": "^0.11.0",
     "stacktrace-js": "^1.0.2",

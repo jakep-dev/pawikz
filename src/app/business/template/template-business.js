@@ -9,7 +9,8 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($interval, toast, clientConfig, commonBusiness, templateService) {
+    function templateBusiness($interval, toast, clientConfig, commonBusiness, stepsBusiness,
+                              overviewBusiness, templateService, Papa) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
@@ -21,10 +22,203 @@
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
-           getEvalMnemonicValue: getEvalMnemonicValue
+           getEvalMnemonicValue: getEvalMnemonicValue,
+           getNewItemId: getNewItemId,
+           getCopyItemId: getCopyItemId,
+           updateMnemonicValue: updateMnemonicValue,
+           showPrintIcon:  showPrintIcon,
+           getPrintableValue: getPrintableValue,
+           calculateProgramRate: calculateProgramRate,
+           calculateProgramRol: calculateProgramRol,
+           calculateProgramAtt: calculateProgramAtt,
+           parseCsvToJson: parseCsvToJson,
+           unParseJsonToCsv: unParseJsonToCsv
         };
 
         return business;
+
+        function unParseJsonToCsv(json)
+        {
+            return Papa.unparse(json, {
+                quotes: false,
+                delimiter: ",",
+                newline: "\r\n"
+            });
+        }
+
+        function parseCsvToJson(file, callBack, $scope)
+        {
+            if(file)
+            {
+                Papa.parse(file, {
+                    delimiter: "",	// auto-detect
+                    newline: "",	// auto-detect
+                    header: false,
+                    dynamicTyping: false,
+                    preview: 0,
+                    encoding: "",
+                    worker: false,
+                    comments: false,
+                    step: undefined,
+                    complete: function(data)
+                    {
+                        callBack(data, $scope);
+                    },
+                    error: undefined,
+                    download: false,
+                    skipEmptyLines: true,
+                    chunk: undefined,
+                    fastMode: undefined,
+                    beforeFirstChunk: undefined,
+                    withCredentials: undefined
+                });
+            }
+        }
+
+
+        ///Calculate the Att or Ret
+        function calculateProgramAtt(limit, att)
+        {
+            if(!limit || !att)
+            {
+                return null;
+            }
+
+            return parseInt(limit) + parseInt(att);
+        }
+
+        ///Calculate the expiring / proposed program Rate
+        function calculateProgramRate(premium, limit)
+        {
+            if(!premium ||
+                !limit ||
+                premium === '' ||
+                limit === '')
+            {
+                return null;
+            }
+
+            return (( parseInt(premium) * 100000) / parseInt(limit)).toFixed(2);
+        }
+
+        ///Calculate the expiring / proposed program ROL
+        function calculateProgramRol(currentRate, previousRate)
+        {
+            if(!currentRate ||
+               !previousRate ||
+                currentRate === '' ||
+                previousRate === '')
+            {
+                return null;
+            }
+
+            return ((parseInt(currentRate) * 100) / parseInt(previousRate)).toFixed(2);
+        }
+
+        function getPrintableValue(sectionId)
+        {
+            var value = false;
+            var specificStep = _.find(overviewBusiness.templateOverview.steps, function(step)
+            {
+                if(parseInt(step.stepId) === parseInt(stepsBusiness.stepId))
+                {
+                    return step;
+                }
+            });
+
+            console.log('Specific Step - ');
+            console.log(overviewBusiness.templateOverview.steps);
+            console.log(stepsBusiness.stepId);
+            console.log(specificStep);
+
+            if(specificStep)
+            {
+                var specificSection = _.find(specificStep.sections, function(section)
+                {
+                   if(section.itemId === sectionId)
+                   {
+                       return section;
+                   }
+                });
+
+                console.log('Specific Section - ');
+                console.log(specificSection);
+
+                if(specificSection)
+                {
+                    value = specificSection.value;
+                }
+            }
+
+            return value;
+        }
+
+        function showPrintIcon(mnemonicId)
+        {
+            return (mnemonicId === 'section');
+        }
+
+        function updateMnemonicValue(itemId, mnemnoicId, value)
+        {
+            if(angular.isDefined(business.mnemonics))
+            {
+                angular.forEach(business.mnemonics, function(eachrow)
+                {
+                    if(eachrow.itemId === itemId)
+                    {
+                        eachrow.value = value;
+                    }
+                });
+            }
+        }
+
+        function getCopyItemId(copyItemId)
+        {
+            var newItemId = '';
+            if(copyItemId)
+            {
+                var splittedItem = copyItemId.split("_");
+                var totalCount = splittedItem.length;
+                var currentCount = 1;
+
+                _.each(splittedItem, function(str)
+                {
+                    if(currentCount !== 1)
+                    {
+                        newItemId += str;
+                    }
+
+                    if(currentCount !== 1 && currentCount !== totalCount)
+                    {
+                        newItemId += '_';
+                    }
+
+                    currentCount++;
+                });
+            }
+            return newItemId;
+        }
+
+        function getNewItemId(itemId)
+        {
+            var newItemId = '';
+            if(itemId)
+            {
+                var splittedItem = itemId.split("_");
+                var totalCount = splittedItem.length;
+                var currentCount = 1;
+
+                _.each(splittedItem, function(str)
+                {
+                    if(currentCount !== totalCount && currentCount !== 1)
+                    {
+                        newItemId += str;
+                    }
+                    currentCount++;
+                });
+            }
+            return newItemId;
+        }
 
         function getEvalMnemonicValue(mnemonic, exp)
         {
@@ -75,7 +269,7 @@
                 {
                     if(eachrow.itemId === itemId)
                     {
-                        value = eachrow.value || '';
+                        value = eachrow.value.trim() || '';
                         return value;
                     }
                 });

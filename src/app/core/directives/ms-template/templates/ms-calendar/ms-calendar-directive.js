@@ -10,21 +10,15 @@
     /** @ngInject */
     function MsCalendarController($scope, templateBusiness)
     {
-        var isAutoSaveEnabled = false;
-        console.log('Calendar Scope = ');
-        console.log($scope);
-		
 		$scope.value = parseDate($scope.value, $scope.parseFormat);
 
         $scope.$watch(
             "value",
-            function handleAutoSave(value) {
-                if(isAutoSaveEnabled)
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, value);
-                    console.log( "$watch() -- Calendar Outer: ", value);
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
                 }
-                isAutoSaveEnabled = true;
             }
         );
 		

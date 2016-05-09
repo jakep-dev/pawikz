@@ -10,19 +10,14 @@
     /** @ngInject */
     function MsDropdownController($scope, templateBusiness)
     {
-        var isAutoSaveEnabled = false;
-        console.log('DropDown Scope = ');
-        console.log($scope);
-
         $scope.$watch(
             "tearsheet.selectedValue",
-            function handleAutoSave(value) {
-                if(isAutoSaveEnabled)
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, value);
-                    console.log( "$watch() -- Drop down Outer: ", value);
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    console.log( "$watch() -- Drop down Outer: ", newValue);
                 }
-                isAutoSaveEnabled = true;
             }
         );
     }
@@ -39,8 +34,13 @@
             },
             controller: 'MsDropdownController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-dropdown/ms-dropdown.html',
-            link: function(scope, el, attrs)
+            compile: function(el, attrs)
             {
+                return function($scope)
+                {
+                  console.log('DropDown - Compile');
+                  console.log($scope);
+                };
             }
         };
     }

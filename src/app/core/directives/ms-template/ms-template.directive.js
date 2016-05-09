@@ -344,6 +344,82 @@
             return component;
         }
 
+        function fifthVariation(contentComponents, comp)
+        {
+            var tearSheetItem = comp.TearSheetItem;
+            var component = null;
+
+            if(tearSheetItem.id &&
+                tearSheetItem.row &&
+                tearSheetItem.row.col &&
+                tearSheetItem.row.col.length > 1)
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                _.each(tearSheetItem.row.col, function(eachCol)
+                {
+                   var item = eachCol.TearSheetItem;
+
+                    if(item.id === 'LabelItem')
+                    {
+                      component.header = {
+                          label: item.Label,
+                          id: item.id,
+                          itemid: '',
+                          mnemonicid: '',
+                          variation: 'fifth'
+                      }
+                    }
+                    else {
+                        component.sections.push(eachCol);
+                    }
+                });
+            }
+
+            return component;
+        }
+
+        function sixthVariation(contentComponents, comp)
+        {
+            var tearSheetItem = comp.TearSheetItem;
+            var component = null;
+
+            if(tearSheetItem &&
+               tearSheetItem.length &&
+                (comp.copyProposed || comp.copyExpiring))
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                _.each(tearSheetItem, function(item)
+                {
+                    if(item.id === 'LabelItem')
+                    {
+                        component.header = {
+                            label: item.Label,
+                            id: item.id,
+                            itemid: '',
+                            mnemonicid: '',
+                            variation: 'sixth',
+                            copyproposed: comp.copyProposed || null,
+                            copyexpiring: comp.copyExpiring || null
+                        }
+                    }
+                    else {
+                        item.id = comp.copyProposed ? 'ExpiringProgram' : 'ProposedProgram';
+                        component.sections.push(item);
+                    }
+                });
+            }
+
+            return component;
+        }
+
         return {
             restrict: 'E',
             scope   : {
@@ -480,6 +556,16 @@
                         {
                             component = fourthVariation(contentComponents, comp);
                         }
+
+                        if(!component)
+                        {
+                            component = fifthVariation(contentComponents, comp);
+                        }
+
+                        if(!component)
+                        {
+                            component = sixthVariation(contentComponents, comp);
+                        }
                     }
 
                     if(component)
@@ -544,12 +630,17 @@
                                 {
                                     newScope.tearcontent.push(section);
                                 }
+                                else if(section.row)
+                                {
+                                    newScope.tearcontent.push(section);
+                                }
                             });
 
                             if(newScope.tearcontent)
                             {
                                 newScope.iscollapsible = true;
                                 newScope.isprocesscomplete = true;
+                                newScope.actions = [];
                                 var isChartComp = false;
 
                                 //Check for chart component
@@ -565,7 +656,7 @@
                                 {
                                     var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
                                 }else {
-                                    var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
+                                    var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions"></ms-component>';
                                 }
 
 

@@ -10,6 +10,12 @@
 
     /* @ngInject */
     function stepsBusiness() {
-        this.stepId = null;
+
+        var business =
+        {
+            stepId: null
+        };
+
+        return business;
     }
 })();

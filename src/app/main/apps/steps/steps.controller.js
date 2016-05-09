@@ -9,8 +9,10 @@
 
 
     /** @ngInject */
-    function StepController($rootScope, $stateParams, $scope, $state, templateService, overviewService, bottomSheetConfig, navConfig,
-                            templateBusiness, breadcrumbBusiness, commonBusiness, toast, store)
+    function StepController($rootScope, $stateParams, $scope, $state, templateService,
+                            overviewService, bottomSheetConfig, navConfig,
+                            templateBusiness, breadcrumbBusiness, commonBusiness,
+                            stepsBusiness, overviewBusiness, toast, store)
     {
         var vm = this;
         var projectId = $stateParams.projectId;
@@ -25,6 +27,7 @@
         $scope.previousStep = previousStep;
         $scope.nextStep = nextStep;
 
+        stepsBusiness.stepId = stepId;
         commonBusiness.stepId = stepId;
         commonBusiness.projectId = projectId;
         $rootScope.projectId = $stateParams.projectId;
@@ -81,10 +84,13 @@
                 console.log('Getting Step Details');
                 overviewService.get($stateParams.projectId).then(function(data)
                 {
-                    if(angular.isDefined(data.templateOverview))
+
+                    if(data.templateOverview)
                     {
+                        overviewBusiness.templateOverview = data.templateOverview;
                         commonBusiness.companyId = data.templateOverview.companyId;
                         commonBusiness.companyName = data.templateOverview.companyName;
+                        commonBusiness.projectName = data.templateOverview.projectName;
                         navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                         angular.forEach(data.templateOverview.steps, function(step)
                         {
