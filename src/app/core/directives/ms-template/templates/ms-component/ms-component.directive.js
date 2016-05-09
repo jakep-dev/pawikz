@@ -102,20 +102,14 @@
             $scope.$watchCollection(
                 "actions",
                 function handleBuildActions(newValue, oldValue) {
-                    if(newValue !== oldValue)
+                    if(newValue &&
+                        newValue.length >= 1)
                     {
-                        console.log('Fire Build Action Watch');
-
-                        if(newValue &&
-                            newValue.length >= 1)
+                        vm.actions = [];
+                        _.each(newValue, function(eachVal)
                         {
-                            vm.actions = [];
-                            _.each(newValue, function(eachVal)
-                            {
-                               vm.actions.push(eachVal);
-                            });
-                        }
-
+                            vm.actions.push(eachVal);
+                        });
                     }
                 }
             );
@@ -146,6 +140,8 @@
                 return function($scope)
                 {
                     $scope.title = $scope.tearheader.label;
+                    $scope.actions = null;
+                    $scope.actions = [];
 
                     var html = '';
                     var isTableLayout = false;
@@ -158,7 +154,7 @@
                         switch (content.id)
                         {
                             case 'ExpiringProgram':
-                                var newScope  = $scope.$new();
+                                var newScope  = $scope.$new(true);
                                 newScope.tearsheet = null;
                                 newScope.isnoneditable = $scope.isnoneditable;
                                 newScope.copyproposed = null;
@@ -181,7 +177,7 @@
                                 break;
 
                             case 'ProposedProgram':
-                                var newScope  = $scope.$new();
+                                var newScope  = $scope.$new(true);
                                 newScope.tearsheet = null;
                                 newScope.isnoneditable = $scope.isnoneditable;
                                 newScope.copyexpiring = null;

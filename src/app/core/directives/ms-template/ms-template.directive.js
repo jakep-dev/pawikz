@@ -612,7 +612,7 @@
                            renderContent.sections &&
                            renderContent.sections.length > 0)
                         {
-                            var newScope = scope.$new();
+                            var newScope = scope.$new(true);
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
 
