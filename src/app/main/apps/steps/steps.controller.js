@@ -90,6 +90,7 @@
                         overviewBusiness.templateOverview = data.templateOverview;
                         commonBusiness.companyId = data.templateOverview.companyId;
                         commonBusiness.companyName = data.templateOverview.companyName;
+                        commonBusiness.projectName = data.templateOverview.projectName;
                         navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                         angular.forEach(data.templateOverview.steps, function(step)
                         {

@@ -4,11 +4,11 @@
 
     angular
         .module('app.core')
-        .controller('MsExpiringDropdownController', MsExpiringDropdownController)
-        .directive('msExpiringDropdown', msExpiringDropdownDirective);
+        .controller('MsProgramDropdownController', MsProgramDropdownController)
+        .directive('msProgramDropdown', msProgramDropdownDirective);
 
     /** @ngInject */
-    function MsExpiringDropdownController($scope, templateBusiness)
+    function MsProgramDropdownController($scope, templateBusiness)
     {
         $scope.$watch(
             "tearsheetobj.selectedValue",
@@ -25,7 +25,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDropdownDirective()
+    function msProgramDropdownDirective()
     {
         return {
             restrict: 'E',
@@ -34,8 +34,8 @@
                 mnemonicid: '@',
                 tearsheet: '@'
             },
-            controller: 'MsExpiringDropdownController',
-            templateUrl: 'app/core/directives/ms-template/templates/ms-expiring/dropdown/ms-expiring-dropdown.html',
+            controller: 'MsProgramDropdownController',
+            templateUrl: 'app/core/directives/ms-template/templates/ms-program/dropdown/ms-program-dropdown.html',
             compile: function(el, attrs)
             {
                 return function($scope)

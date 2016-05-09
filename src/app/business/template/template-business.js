@@ -10,7 +10,7 @@
 
     /* @ngInject */
     function templateBusiness($interval, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService) {
+                              overviewBusiness, templateService, Papa) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
@@ -27,10 +27,93 @@
            getCopyItemId: getCopyItemId,
            updateMnemonicValue: updateMnemonicValue,
            showPrintIcon:  showPrintIcon,
-           getPrintableValue: getPrintableValue
+           getPrintableValue: getPrintableValue,
+           calculateProgramRate: calculateProgramRate,
+           calculateProgramRol: calculateProgramRol,
+           calculateProgramAtt: calculateProgramAtt,
+           parseCsvToJson: parseCsvToJson,
+           unParseJsonToCsv: unParseJsonToCsv
         };
 
         return business;
+
+        function unParseJsonToCsv(json)
+        {
+            return Papa.unparse(json, {
+                quotes: false,
+                delimiter: ",",
+                newline: "\r\n"
+            });
+        }
+
+        function parseCsvToJson(file, callBack, $scope)
+        {
+            if(file)
+            {
+                Papa.parse(file, {
+                    delimiter: "",	// auto-detect
+                    newline: "",	// auto-detect
+                    header: false,
+                    dynamicTyping: false,
+                    preview: 0,
+                    encoding: "",
+                    worker: false,
+                    comments: false,
+                    step: undefined,
+                    complete: function(data)
+                    {
+                        callBack(data, $scope);
+                    },
+                    error: undefined,
+                    download: false,
+                    skipEmptyLines: true,
+                    chunk: undefined,
+                    fastMode: undefined,
+                    beforeFirstChunk: undefined,
+                    withCredentials: undefined
+                });
+            }
+        }
+
+
+        ///Calculate the Att or Ret
+        function calculateProgramAtt(limit, att)
+        {
+            if(!limit || !att)
+            {
+                return null;
+            }
+
+            return parseInt(limit) + parseInt(att);
+        }
+
+        ///Calculate the expiring / proposed program Rate
+        function calculateProgramRate(premium, limit)
+        {
+            if(!premium ||
+                !limit ||
+                premium === '' ||
+                limit === '')
+            {
+                return null;
+            }
+
+            return (( parseInt(premium) * 100000) / parseInt(limit)).toFixed(2);
+        }
+
+        ///Calculate the expiring / proposed program ROL
+        function calculateProgramRol(currentRate, previousRate)
+        {
+            if(!currentRate ||
+               !previousRate ||
+                currentRate === '' ||
+                previousRate === '')
+            {
+                return null;
+            }
+
+            return ((parseInt(currentRate) * 100) / parseInt(previousRate)).toFixed(2);
+        }
 
         function getPrintableValue(sectionId)
         {
@@ -127,7 +210,7 @@
 
                 _.each(splittedItem, function(str)
                 {
-                    if(currentCount !== totalCount)
+                    if(currentCount !== totalCount && currentCount !== 1)
                     {
                         newItemId += str;
                     }

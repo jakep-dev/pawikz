@@ -4,13 +4,19 @@
 
     angular
         .module('app.core')
-        .controller('MsTextController', MsTextController)
-        .directive('msText', msTextDirective);
+        .controller('MsProgramTextController', MsProgramTextController)
+        .directive('msProgramText', msProgramTextDirective);
 
     /** @ngInject */
-    function MsTextController($scope, templateBusiness)
+    function MsProgramTextController($scope, templateBusiness)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
+
+        $scope.textChange = function()
+        {
+            $scope.compute({currentRow: $scope.row, value: $scope.value,
+                            rowId: $scope.rowid, columnName: $scope.columnname});
+        }
 
         $scope.$watch(
             "value",
@@ -25,7 +31,7 @@
     }
 
     /** @ngInject */
-    function msTextDirective()
+    function msProgramTextDirective()
     {
         return {
             restrict: 'E',
@@ -33,11 +39,15 @@
                 itemid: '@',
                 mnemonicid: '@',
                 value: '@',
+                compute: '&',
+                row: '=',
                 isdisabled: '@',
-                type: '@'
+                type: '@',
+                rowid: '@',
+                columnname: '@'
             },
-            controller: 'MsTextController',
-            templateUrl: 'app/core/directives/ms-template/templates/ms-text/ms-text.html',
+            controller: 'MsProgramTextController',
+            templateUrl: 'app/core/directives/ms-template/templates/ms-program/textbox/ms-program-textbox.html',
             link: function(scope)
             {
 

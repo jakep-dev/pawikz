@@ -14,6 +14,8 @@
         this.userId = null;
         this.stepId = null;
         this.companyId = null;
+        this.projectName = null;
+        this.companyName = null;
 
         var isTemplateExpandAll = false;
         Object.defineProperty(this, 'isTemplateExpandAll', {
