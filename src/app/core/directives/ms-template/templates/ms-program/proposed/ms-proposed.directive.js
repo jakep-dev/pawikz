@@ -451,7 +451,8 @@
 
             if(data && linkElement && linkElement.length > 0)
             {
-                var fileName = 'ProposedProgram_' + commonBusiness.projectName || '' + '.csv';
+                var fileName = 'ProposedProgram_' + commonBusiness.projectName.trim() + '.csv';
+                console.log(fileName);
                 linkElement[0].download = fileName;
                 linkElement[0].href = 'data:application/csv,' + escape(data);
                 linkElement[0].click();
