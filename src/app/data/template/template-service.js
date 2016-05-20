@@ -15,6 +15,7 @@
             getDynamicTableData: getDynamicTableData,
             saveDynamicTableData: saveDynamicTableData,
             getSchemaAndData: getSchemaAndData,
+            getSchemaAndDataAndOverview: getSchemaAndDataAndOverview,
             save: save
         };
 
@@ -109,6 +110,25 @@
                 });
         }
 
+        //Get Overview Details
+        function getOverviewDefer(projectId) {
+
+            var deffered = $q.defer();
+
+            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
+
+            $http.get(url)
+                .then(function (data, status, headers, config) {
+                    deffered.resolve(data.data);
+                })
+                .catch(function (error) {
+                    deffered.reject();
+                    logger.error(JSON.stringify(error));
+                });
+
+            return deffered;
+        }
+
         //Get Schema Defer
         function getSchemaDefer(projectId, stepId)
         {
@@ -195,6 +215,13 @@
         function getSchemaAndData(projectId, stepId)
         {
             var all = $q.all([getSchemaDefer(projectId, stepId).promise, getDataDefer(projectId, stepId).promise]);
+
+            return all;
+        }
+
+        //Get template schema & data details together
+        function getSchemaAndDataAndOverview(projectId, stepId) {
+            var all = $q.all([getSchemaDefer(projectId, stepId).promise, getDataDefer(projectId, stepId).promise, getOverviewDefer(projectId).promise]);
 
             return all;
         }
