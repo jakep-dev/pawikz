@@ -110,7 +110,7 @@
         function initialize()
         {
             getSchemaAndData();
-            //getStepDetails();
+            getStepDetails();
         }
 
         function getStepDetails()
