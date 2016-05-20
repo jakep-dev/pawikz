@@ -148,7 +148,16 @@
         //Auto save the data change based on timeout set
         function autoSave()
         {
-            $scope.$watch('vm.templateOverview.steps',function()
+            $scope.$watch('vm.templateOverview.projectName', function () {
+                console.log('Firing Overview Project Name watch');
+                if (vm.isOverviewLoaded) {
+                    console.log('Inside Firing Overview Project Name watch');
+                    overviewBusiness.templateOverview = vm.templateOverview;
+                    overviewBusiness.getReadyForAutoSave();
+                }
+            },
+            true);
+            $scope.$watch('vm.templateOverview.steps', function ()
                 {
                     console.log('Firing Overview watch');
                     if(vm.isOverviewLoaded)
