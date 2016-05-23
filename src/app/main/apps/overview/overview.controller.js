@@ -14,7 +14,7 @@
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope, $interval,
                                 overviewService, clientConfig, bottomSheetConfig,
-                                navConfig, breadcrumbBusiness, commonBusiness,
+                                navConfig, breadcrumbBusiness, commonBusiness, templateBusiness,
                                 overviewBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
@@ -55,7 +55,7 @@
         vm.flipStepView = flipStepView;
         vm.flipSelectionView = flipSelectionView;
         $scope.saveAll = saveAll;
-        //vm.saveAll = saveAll;
+        vm.saveAll = saveAll;
         vm.reload = loadData;
         $scope.goTop = goTop;
         //vm.goTop = goTop;
@@ -174,7 +174,8 @@
         //Save all the changes to database
         function saveAll()
         {
-            templateBusiness.save();
+            overviewBusiness.save();
+            overviewBusiness.cancelPromise();
         }
 
         //Flip only the step view to tab and vice-versa

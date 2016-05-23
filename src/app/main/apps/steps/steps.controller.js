@@ -19,6 +19,7 @@
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
         $scope.stepId = stepId;
+        $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
 
@@ -153,6 +154,7 @@
         //Save all the changes to database
         function saveAll() {
             templateBusiness.save();
+            templateBusiness.cancelPromise();
         }
 
         //Move to the previous step
