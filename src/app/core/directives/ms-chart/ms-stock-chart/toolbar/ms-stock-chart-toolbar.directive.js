@@ -54,7 +54,7 @@
                         var savedIndicesList = [];
 
                         if(chartCount>=0){
-                            savedIndicesList = vm.savedChartData.newCharts[chartCount].settings.selectedIndicesList;
+                            savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
 
                             vm.indices = [];
                             angular.forEach(data.indicesResp, function (ind) {
@@ -86,7 +86,7 @@
                         var savedCompetitorsList = [];
 
                         if(chartCount>=0) {
-                            savedCompetitorsList = vm.savedChartData.newCharts[chartCount].settings.selectedCompetitorsList;
+                            savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
 
                             vm.competitors = [];
                             angular.forEach(data.competitors, function (comp) {

@@ -31,8 +31,8 @@
                 </md-tooltip>
                 <md-icon md-font-icon="icon-plus"></md-icon>
             </md-button>
-
-            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart && !vm.isStockChart">
+<!--Re  - Addinng Delete buttonn to all types of charts as per client requirement : 16-05-2016 -->
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Delete
                 </md-tooltip>
@@ -50,8 +50,8 @@
                 </md-tooltip>
                 <md-icon md-font-icon="icon-arrow-down"></md-icon>
             </md-button>
-
-            <md-button class="md-icon-button" aria-label="refresh-chart" ng-click="vm.ResetChart()" ng-if="vm.isMainChart">
+            <!--Making changes to implement reset functinality as per requirement : 17-05-2016 -->
+            <md-button class="md-icon-button" aria-label="refresh-chart" ng-click="vm.ResetChart(vm.id)" ng-if="!vm.isStockChart">
                 <md-tooltip md-direction="top">
                     Reset
                 </md-tooltip>
