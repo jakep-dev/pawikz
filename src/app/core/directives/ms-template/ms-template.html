@@ -44,7 +44,7 @@
                                         <md-button  aria-label="expand all" ng-click="vm.toggleExpand()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-backburger"
-                                                                 ng-class="!vm.isExpandAll ? 'collapse' : 'expand'"></md-icon>
+                                                                 ng-class="vm.isExpandAll ? 'ms-expand' : 'ms-collapse'"></md-icon>
                                                         <span ng-if="vm.isExpandAll">Collapse All</span>
                                                        <span ng-if="!vm.isExpandAll">Expand All</span>
                                                   </span>

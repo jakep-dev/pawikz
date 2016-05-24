@@ -332,7 +332,7 @@
 
                                 var newScope  = $scope.$new();
                                 html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
-                                    'mnemonicid="'+mnemonicId+'" prompt="'+prompt+'" value="'+ value +'" isdisabled="false"></ms-rich-text-editor>';
+                                    'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false"></ms-rich-text-editor>';
                                 html += '</div>';
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;

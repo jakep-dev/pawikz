@@ -19,6 +19,7 @@
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
         $scope.stepId = stepId;
+        $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
 
@@ -50,25 +51,61 @@
         //Get Schema
         function getSchemaAndData()
         {
-            templateService.getSchemaAndData(projectId, stepId).then(function(response)
-            {
-                toast.simpleToast('AutoSave Enabled');
-                console.log('Defer Response Data ---');
-                console.log(response);
-                if(angular.isDefined(response))
-                {
-                    angular.forEach(response, function(data)
-                    {
-                       if(angular.isDefined(data.list))
-                       {
-                           templateBusiness.mnemonics = data.list;
-                       }
-                        else {
-                           vm.TearSheetStep = data;
-                       }
-                    });
+            if (overviewBusiness.templateOverview === null) {
+                templateService.getSchemaAndDataAndOverview(projectId, stepId).then(function (response) {
+                    processResponses(response);
                 }
-            });
+                );
+            }
+            else
+            {
+                templateService.getSchemaAndData(projectId, stepId).then(function (response) {
+                    processResponses(response);
+                }
+                );
+            }
+        }
+
+        function processResponses(response)
+        {
+            toast.simpleToast('AutoSave Enabled');
+            console.log('Defer Response Data ---');
+            console.log(response);
+            if (angular.isDefined(response)) {
+                angular.forEach(response, function (data) {
+                    if (angular.isDefined(data.list)) {
+                        templateBusiness.mnemonics = data.list;
+                    }
+                    else if (angular.isDefined(data.templateOverview)) {
+                        if (!angular.isDefined(overviewBusiness.templateOverview) || (overviewBusiness.templateOverview === null)) {
+                            overviewBusiness.templateOverview = data.templateOverview;
+                        }
+                        if (!angular.isDefined(commonBusiness.companyId) || (commonBusiness.companyId === null)) {
+                            commonBusiness.companyId = data.templateOverview.companyId;
+                        }
+                        if (!angular.isDefined(commonBusiness.companyName) || (commonBusiness.companyName === null)) {
+                            commonBusiness.companyName = data.templateOverview.companyName + " (" + data.templateOverview.ticker + ")";
+                        }
+                        if (!angular.isDefined(commonBusiness.projectName) || (commonBusiness.projectName === null)) {
+                            commonBusiness.projectName = data.templateOverview.projectName;
+                        }
+
+                        if (navConfig.sideNavItems && navConfig.sideNavItems.length === 0) {
+                            angular.forEach(data.templateOverview.steps, function (step) {
+                                navConfig.sideNavItems.push({
+                                    stepName: step.stepName,
+                                    stepId: step.stepId,
+                                    projectId: $stateParams.projectId
+                                });
+                            });
+                            $scope.lastStepNumber = navConfig.sideNavItems.length;
+                        }
+                    }
+                    else {
+                        vm.TearSheetStep = data;
+                    }
+                });
+            }
         }
 
         function initialize()
@@ -89,7 +126,7 @@
                     {
                         overviewBusiness.templateOverview = data.templateOverview;
                         commonBusiness.companyId = data.templateOverview.companyId;
-                        commonBusiness.companyName = data.templateOverview.companyName;
+                        commonBusiness.companyName = data.templateOverview.companyName + " (" + data.templateOverview.ticker + ")";
                         commonBusiness.projectName = data.templateOverview.projectName;
                         navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                         angular.forEach(data.templateOverview.steps, function(step)
@@ -117,6 +154,7 @@
         //Save all the changes to database
         function saveAll() {
             templateBusiness.save();
+            templateBusiness.cancelPromise();
         }
 
         //Move to the previous step
