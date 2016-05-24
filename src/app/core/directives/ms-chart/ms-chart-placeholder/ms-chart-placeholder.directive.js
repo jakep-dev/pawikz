@@ -35,12 +35,12 @@
                 $scope.chart.tearsheet.type=="image") ? true : false;
 
         //Reset the chart functionality.
-        function resetChart() {
+        function resetChart(id) {
             //Confirmation Popup
             dialog.confirm('All the changes made in this session will be deleted. Please confirm', null,null, {
                 ok: {
                     name: 'yes', callBack: function () {
-                        vm.onChartReset();
+                        vm.onChartReset($scope.index);
                     }
                 },
                 cancel:{
@@ -168,6 +168,9 @@
                 default:
                     break;
             }
+
+            //Calling SaveAll functionality to implement reset functionality
+            $rootScope.$broadcast("saveAllChart");
         }
 
         ///Remove selected chart.

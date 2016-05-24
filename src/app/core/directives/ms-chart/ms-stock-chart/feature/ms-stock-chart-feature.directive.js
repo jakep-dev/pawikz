@@ -491,7 +491,7 @@ $timeout(function(){
                                                         },500);
                                                 }
                                                 //Auto Save functionality
-                                                $rootScope.$broadcast('autosave');
+                                               // $rootScope.$broadcast('autosave');
                                             }},
 
                                         //marginLeft: 80, // Keep all charts left aligned
@@ -686,7 +686,8 @@ $timeout(function(){
                             });
 
                         });
-
+                        //Auto Save functionality
+                        $rootScope.$broadcast('autosave');
                     }
                 }
             };

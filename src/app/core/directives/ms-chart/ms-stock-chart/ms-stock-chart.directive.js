@@ -295,7 +295,9 @@
                 });
         };
 
-        loadChartData();
+    loadChartData();
+
+
 
         vm.onPeerRemove = function (peer) {
             var index = vm.filterState.selectedIndices.indexOf(peer);
