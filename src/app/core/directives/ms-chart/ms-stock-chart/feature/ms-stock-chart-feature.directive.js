@@ -531,10 +531,10 @@ $timeout(function(){
                                         //minTickInterval: 24*3600*1000,
                                         //min: activity.xData[0],
                                         //max: activity.xData[activity.xData.length-1],
-                                        title: {
-                                            ///text: dataset.xaxisTitle,
+                                        //title: {
+                                            //text: dataset.xaxisTitle,
                                             //text: (i%2==0)?'':'Period'
-                                        },
+                                        //},
                                         categories: activity.xData,
                                         //crosshair: true,
                                         crosshair: {

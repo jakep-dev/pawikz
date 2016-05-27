@@ -76,7 +76,7 @@
                     project_id: parseInt(projectId),
                     company_id: parseInt(companyId),
                     step_id: parseInt(stepId),
-                    ssnid : ssnid,
+                    ssnid:ssnid,
                     delete_ignored:true,
                     data : chartSettings
                 },
@@ -84,6 +84,7 @@
             };
             client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
                 res.send(data);
+                console.log('SSNID' + ssnid);
             });
         }
 
@@ -208,7 +209,7 @@
 
             var  ssnid= req.headers['x-session-token'];
             var companyId = req.body.companyId;
-            console.log(config.restcall.url + '/' + service.name + '/' + methodName
+            console.log('FindCompetitors ' + config.restcall.url + '/' + service.name + '/' + methodName
                 +'?company_id=' + companyId + '&ssnid=' +ssnid);
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
                 +'?company_id=' + companyId + '&ssnid=' +ssnid, function (data, response) {

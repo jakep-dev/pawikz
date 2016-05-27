@@ -17,7 +17,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, stockService, commonBusiness, toast, $interval, clientConfig)
+    function msChartDirective($rootScope, $compile, stockService, commonBusiness, toast, $interval, clientConfig,store)
     {
         return {
             restrict: 'E',
@@ -293,6 +293,7 @@
                                                 filterState.date_start = chartSettings.date_start;
                                                 filterState.date_end = chartSettings.date_end;
                                                 filterState.title = chartSettings.companyName;
+                                               // filterState.period = chartSettings.period;
                                                 scope.jsCharts.push({
                                                     tearsheet: tearsheet,
                                                     filterState: filterState,
@@ -393,9 +394,9 @@
                                                         stockString = stockString.slice(0, -1);
                                                     }
                                                     var obj = {
-                                                        chart_title: jsChart.title,
+                                                        chart_title: jsChart.title ? jsChart.title : null,
                                                         peers: stockString,
-                                                        period: jsChart.interval,
+                                                        period: jsChart.interval ? jsChart.interval : null,
                                                         date_start: jsChart.date_start,
                                                         date_end: jsChart.date_end,
                                                         dividends: jsChart.dividends ? "Y" : "N",
@@ -419,7 +420,7 @@
                                         }
 
                                         return stockService.saveChartAllSettings(commonBusiness.companyId,
-                                            commonBusiness.stepId, commonBusiness.projectId, startArr);
+                                            commonBusiness.stepId, commonBusiness.projectId, startArr,store.get('x-session-token')) ;
                                     };
 
                                     scope.saveAllCharts = saveAllCharts;

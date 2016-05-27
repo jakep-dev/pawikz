@@ -35,14 +35,16 @@
 
         return service;
         //chartSettings: chartSettings
-        function saveChartAllSettings(companyId, stepId, projectId, chartSettings) {
+        function saveChartAllSettings(companyId, stepId, projectId, chartSettings, ssnid) {
             return $http({
                 method: "POST",
                 url: "/api/saveChartAllSettings",
                 data: {
-                    companyId: companyId,
-                    stepId: stepId,
-                    projectId: projectId,
+                    //Changing keynames as per jake plaras email on 26/5/2016
+                    company_id: companyId,
+                    step_id: stepId,
+                    project_id: projectId,
+                    ssnid:ssnid,
                     data: chartSettings
                 }
             }).then(function (data, status, headers, config) {
@@ -53,7 +55,7 @@
                 });
         }
 
-        function saveChartSettings(tickers, timeFrame, splits, dividends, earnings, start_date, end_date, companyId, chartTitle, mnemonic, itemId, stepId, projectId, chart_id) {
+        function saveChartSettings(tickers, timeFrame, splits, dividends, earnings, start_date, end_date, companyId, chartTitle, mnemonic, itemId, stepId, projectId, chart_id, ssnid) {
             return $http({
                 method: "POST",
                 url: "/api/saveChartSettings",
@@ -71,7 +73,9 @@
                     itemId: itemId,
                     stepId: stepId,
                     projectId: projectId,
-                    chart_id: chart_id
+                    chart_id: chart_id,
+                    chart_title: chart_title,
+                    ssnid:ssnid
                 }
             }).then(function (data, status, headers, config) {
                 return data.data;
