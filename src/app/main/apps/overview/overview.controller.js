@@ -29,6 +29,7 @@
         if(userDetails)
         {
             $rootScope.passedUserId = userDetails.userId;
+            commonBusiness.userId = userDetails.userId;
         }
 
         console.log('RootScope ProjectID' + $rootScope.projectId );
@@ -148,12 +149,13 @@
         //Auto save the data change based on timeout set
         function autoSave()
         {
-            $scope.$watch('vm.templateOverview.steps',function()
+            $scope.$watch('vm.templateOverview',function()
                 {
                     console.log('Firing Overview watch');
                     if(vm.isOverviewLoaded)
                     {
                         console.log('Inside Firing Overview watch');
+                        console.log(vm.templateOverview);
                         overviewBusiness.templateOverview = vm.templateOverview;
                         overviewBusiness.getReadyForAutoSave();
                     }

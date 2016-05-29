@@ -41,6 +41,7 @@
         if(userDetails)
         {
             $rootScope.passedUserId = userDetails.userId;
+            commonBusiness.userId = userDetails.userId;
         }
 
         console.log('--Steps Input - ', projectId, ' - ', stepId);
