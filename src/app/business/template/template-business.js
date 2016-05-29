@@ -311,7 +311,7 @@
                     if(eachrow.itemId === itemId)
                     {
                         value = eachrow.value.trim() || '';
-                        return value;
+                        return _.escape(value);
                     }
                 });
             }
