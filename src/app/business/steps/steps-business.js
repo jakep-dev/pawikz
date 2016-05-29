@@ -9,13 +9,23 @@
         .service('stepsBusiness', stepsBusiness);
 
     /* @ngInject */
-    function stepsBusiness() {
+    function stepsBusiness($q, overviewService, templateService) {
 
         var business =
         {
-            stepId: null
+            stepId: null,
+            get: get
         };
 
         return business;
+
+        function get(projectId, stepId)
+        {
+            var all = $q.all([templateService.getSchemaDefer(projectId, stepId).promise,
+                templateService.getDataDefer(projectId, stepId).promise,
+                overviewService.getOverviewDefer(projectId).promise]);
+
+            return all;
+        }
     }
 })();

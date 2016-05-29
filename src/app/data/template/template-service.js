@@ -14,7 +14,8 @@
             getData: getData,
             getDynamicTableData: getDynamicTableData,
             saveDynamicTableData: saveDynamicTableData,
-            getSchemaAndData: getSchemaAndData,
+            getSchemaDefer: getSchemaDefer,
+            getDataDefer: getDataDefer,
             save: save
         };
 
@@ -189,14 +190,6 @@
                 .catch(function(error) {
                     logger.error(JSON.stringify(error));
                 });
-        }
-
-        //Get template schema & data details together
-        function getSchemaAndData(projectId, stepId)
-        {
-            var all = $q.all([getSchemaDefer(projectId, stepId).promise, getDataDefer(projectId, stepId).promise]);
-
-            return all;
         }
     }
 })();

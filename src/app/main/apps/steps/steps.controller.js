@@ -51,20 +51,35 @@
         //Get Schema
         function getSchemaAndData()
         {
-            templateService.getSchemaAndData(projectId, stepId).then(function(response)
+            stepsBusiness.get(projectId, stepId).then(function(response)
             {
                 toast.simpleToast('AutoSave Enabled');
                 console.log('Defer Response Data ---');
                 console.log(response);
-                if(angular.isDefined(response))
+                if(response)
                 {
                     angular.forEach(response, function(data)
                     {
-                       if(angular.isDefined(data.list))
+                       if(data.list)
                        {
                            templateBusiness.mnemonics = data.list;
                        }
-                        else {
+                        else if(data.templateOverview) {
+                           overviewBusiness.templateOverview = data.templateOverview;
+                           commonBusiness.companyId = data.templateOverview.companyId;
+                           commonBusiness.companyName = data.templateOverview.companyName;
+                           commonBusiness.projectName = data.templateOverview.projectName;
+                           navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+                           angular.forEach(data.templateOverview.steps, function(step)
+                           {
+                               navConfig.sideNavItems.push({
+                                   stepName: step.stepName,
+                                   stepId: step.stepId,
+                                   projectId: $stateParams.projectId
+                               });
+                           });
+                       }
+                       else {
                            vm.TearSheetStep = data;
                        }
                     });
@@ -75,36 +90,6 @@
         function initialize()
         {
             getSchemaAndData();
-            getStepDetails();
-        }
-
-        function getStepDetails()
-        {
-            if(navConfig.sideNavItems && navConfig.sideNavItems.length === 0)
-            {
-                console.log('Getting Step Details');
-                overviewService.get($stateParams.projectId).then(function(data)
-                {
-
-                    if(data.templateOverview)
-                    {
-                        overviewBusiness.templateOverview = data.templateOverview;
-                        commonBusiness.companyId = data.templateOverview.companyId;
-                        commonBusiness.companyName = data.templateOverview.companyName;
-                        commonBusiness.projectName = data.templateOverview.projectName;
-                        navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
-                        angular.forEach(data.templateOverview.steps, function(step)
-                        {
-                            navConfig.sideNavItems.push({
-                                stepName: step.stepName,
-                                stepId: step.stepId,
-                                projectId: $stateParams.projectId
-                            });
-                        });
-                    }
-                });
-            }
-            $scope.lastStepNumber = navConfig.sideNavItems.length;
         }
 
         //Go to top
