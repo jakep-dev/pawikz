@@ -352,21 +352,16 @@
 
 				templateService.save(input).then(function(response)
 				{
-                    business.saveMnemonics = []
+                    business.saveMnemonics = [];
 					toast.simpleToast('Saved successfully');
 				});
 			}
-            else
-            {
-                toast.simpleToast('No changes to save');
-            }
         }
 		
 		 //Save table layout template details
         function saveTable()
         {
-            if(business.saveTableMnemonics.length > 0)
-            {
+            if(business.saveTableMnemonics.length > 0) {
                 angular.forEach(business.saveTableMnemonics, function(tableMnemonic){
 
                     templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,

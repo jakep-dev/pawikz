@@ -4,7 +4,18 @@
 
     angular
         .module('app.steps', [])
+        .run(runBlock)
         .config(config);
+
+    /** @ngInject */
+    function runBlock($rootScope, templateBusiness)
+    {
+        $rootScope.$on('$stateChangeStart', function ()
+        {
+            templateBusiness.save();
+            templateBusiness.saveTable();
+        });
+    }
 
     /** @ngInject */
     function config($stateProvider)
