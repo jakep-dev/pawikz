@@ -9,11 +9,12 @@
         .factory('overviewService', overviewService);
 
     /* @ngInject */
-    function overviewService($http, clientConfig, logger) {
+    function overviewService($http, $q, clientConfig, logger) {
         var readyPromise;
 
         var service = {
             get: get,
+            getOverviewDefer: getOverviewDefer,
             save: save
         };
 
@@ -33,6 +34,25 @@
                 .catch(function(error) {
                     logger.error(JSON.stringify(error));
                 });
+        }
+
+
+        //Get Overview Details
+        function getOverviewDefer(projectId) {
+
+            var deffered = $q.defer();
+            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
+
+            $http.get(url)
+                .then(function (data, status, headers, config) {
+                    deffered.resolve(data.data);
+                })
+                .catch(function (error) {
+                    deffered.reject();
+                    logger.error(JSON.stringify(error));
+                });
+
+            return deffered;
         }
 
         //Save Overview Details

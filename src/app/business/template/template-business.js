@@ -311,7 +311,7 @@
                     if(eachrow.itemId === itemId)
                     {
                         value = eachrow.value.trim() || '';
-                        return value;
+                        return _.escape(value);
                     }
                 });
             }
@@ -356,6 +356,10 @@
 					toast.simpleToast('Saved successfully');
 				});
 			}
+            else
+            {
+                toast.simpleToast('No changes to save');
+            }
         }
 		
 		 //Save table layout template details

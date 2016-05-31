@@ -12,23 +12,24 @@
 
 
     /** @ngInject */
-    function OverviewController($rootScope, $stateParams, $scope, $interval,
-                                overviewService, clientConfig, bottomSheetConfig,
+    function OverviewController($rootScope, $stateParams, $scope,
+                                overviewService,
                                 navConfig, breadcrumbBusiness, commonBusiness,
                                 overviewBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
         $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
-        $rootScope.isBottomSheet = true;
-        bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
-        bottomSheetConfig.controller = $scope;
+
+
+        defineBottomSheet();
 
         var userDetails = store.get('user-info');
 
         if(userDetails)
         {
             $rootScope.passedUserId = userDetails.userId;
+            commonBusiness.userId = userDetails.userId;
         }
 
         console.log('RootScope ProjectID' + $rootScope.projectId );
@@ -54,11 +55,7 @@
         vm.toggleExpand = toggleExpand;
         vm.flipStepView = flipStepView;
         vm.flipSelectionView = flipSelectionView;
-        $scope.saveAll = saveAll;
-        //vm.saveAll = saveAll;
         vm.reload = loadData;
-        $scope.goTop = goTop;
-        //vm.goTop = goTop;
         vm.undo = undo;
         vm.redo = redo;
         vm.showOverviewDetails =showOverviewDetails;
@@ -66,20 +63,22 @@
         //Data
         loadData();
 
+        function defineBottomSheet()
+        {
+            $scope.saveAll = saveAll;
+            $scope.goTop = goTop;
+            commonBusiness.defineBottomSheet('app/main/apps/overview/sheet/overview-sheet.html', $scope, true);
+        }
+
         function showOverviewDetails(step)
         {
-            console.log('Overview Details');
-            console.log(step);
+
         }
 
         //Go to top
         function goTop()
         {
-            console.log(navConfig);
-            var objScroll = $('div #overview').parents('[ms-scroll]')[0];
-            if (!(objScroll === undefined)) {
-                $(objScroll).scrollTop(0);
-            }
+            commonBusiness.goTop('overview');
         }
 
         //Undo overview data
@@ -148,12 +147,13 @@
         //Auto save the data change based on timeout set
         function autoSave()
         {
-            $scope.$watch('vm.templateOverview.steps',function()
+            $scope.$watch('vm.templateOverview',function()
                 {
                     console.log('Firing Overview watch');
                     if(vm.isOverviewLoaded)
                     {
                         console.log('Inside Firing Overview watch');
+                        console.log(vm.templateOverview);
                         overviewBusiness.templateOverview = vm.templateOverview;
                         overviewBusiness.getReadyForAutoSave();
                     }
@@ -165,7 +165,7 @@
         //Save all the changes to database
         function saveAll()
         {
-            templateBusiness.save();
+            overviewBusiness.save();
         }
 
         //Flip only the step view to tab and vice-versa

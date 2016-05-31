@@ -9,7 +9,7 @@
         .service('commonBusiness', commonBusiness);
 
     /* @ngInject */
-    function commonBusiness($rootScope) {
+    function commonBusiness($rootScope, bottomSheetConfig) {
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
@@ -45,15 +45,51 @@
             }
         });
 
-
-        this.emitMsg = function(msg) {
-            console.log("Emitting changed event");
-            $rootScope.$emit(msg);
+        var business = {
+            emitMsg: emitMsg,
+            onMsg: onMsg,
+            defineBottomSheet: defineBottomSheet,
+            goTop: goTop,
+            resetBottomSheet: resetBottomSheet
         };
 
-        this.onMsg = function(msg, scope, func) {
+        return business;
+
+        function goTop(elem)
+        {
+            var element = $('#'.concat(elem)).parents('[ms-scroll]');
+
+            if (element && element.length > 0) {
+                var objScroll = element[0];
+
+                if(objScroll) {
+                    $(objScroll).scrollTop(0);
+                }
+            }
+        }
+
+        function defineBottomSheet(url, scope, isBottomSheet)
+        {
+            $rootScope.isBottomSheet = isBottomSheet;
+            bottomSheetConfig.url = url;
+            bottomSheetConfig.controller = scope;
+        }
+
+        function resetBottomSheet()
+        {
+            $rootScope.isBottomSheet = false;
+            bottomSheetConfig.url = '';
+            bottomSheetConfig.controller = '';
+        }
+
+        function onMsg(msg, scope, func) {
             var unbind = $rootScope.$on(msg, func);
             scope.$on('$destroy', unbind);
+        };
+
+        function emitMsg (msg) {
+            console.log("Emitting changed event");
+            $rootScope.$emit(msg);
         };
 
     }

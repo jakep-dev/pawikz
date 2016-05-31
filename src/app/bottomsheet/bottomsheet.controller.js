@@ -19,7 +19,7 @@
                 scope: bottomSheetConfig.controller.$new(),
                 targetEvent: $event
             }).then(function(clickedItem) {
-                toast.simpleToast(clickedItem['name'] + ' clicked!');
+                //alert('clicked');
                });
         }
     }

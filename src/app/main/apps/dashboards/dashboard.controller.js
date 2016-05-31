@@ -24,7 +24,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
     }
     breadcrumbBusiness.title = 'My Workups';
     $rootScope.projectOverview = [];
-    $rootScope.isBottomSheet = false;
+
 
     commonBusiness.userId = $stateParams.userId;
 
@@ -34,7 +34,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
     vm.reload = reload;
     vm.initialize = initialize;
     vm.toggleSidenav = toggleSidenav;
-    vm.exportAction = exportAction;
 
     // Make Initial call
     vm.initialize($stateParams.isNav, $stateParams.token);
@@ -51,18 +50,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
         redrawDataTable();
     });
 
-    function exportAction(exportType)
-    {
-        switch(exportType){
-            case 'pdf': $scope.$broadcast('export-pdf', {});
-                break;
-            case 'excel': $scope.$broadcast('export-excel', {});
-                break;
-            case 'doc': $scope.$broadcast('export-doc', {});
-                break;
-            default: console.log('no event caught');
-        }
-    }
+    //commonBusiness.defineBottomSheet('','',false);
 
     //Toggle Sidenav
     function toggleSidenav(sidenavId) {
