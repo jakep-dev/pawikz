@@ -356,6 +356,10 @@
 					toast.simpleToast('Saved successfully');
 				});
 			}
+            else
+            {
+                toast.simpleToast('No changes to save');
+            }
         }
 		
 		 //Save table layout template details

@@ -48,6 +48,28 @@
 
         initialize();
 
+        function defineBottomSheet(steps)
+        {
+            $scope.saveAll = saveAll;
+            $scope.goTop = goTop;
+            $scope.previousStep = previousStep;
+            $scope.nextStep = nextStep;
+            $scope.isPrevDisabled = stepsBusiness.isPreviousStep(stepId, overviewBusiness.templateOverview.steps);
+            $scope.isNextDisabled = stepsBusiness.isNextStep(stepId, overviewBusiness.templateOverview.steps);
+            commonBusiness.defineBottomSheet('app/main/apps/steps/sheet/steps-sheet.html', $scope, true);
+        }
+
+        function saveAll()
+        {
+            templateBusiness.save();
+        }
+
+        //Go to top
+        function goTop()
+        {
+            commonBusiness.goTop('template');
+        }
+
         //Get Schema
         function getSchemaAndData()
         {
@@ -78,6 +100,8 @@
                                    projectId: $stateParams.projectId
                                });
                            });
+
+                           defineBottomSheet();
                        }
                        else {
                            vm.TearSheetStep = data;
@@ -92,40 +116,37 @@
             getSchemaAndData();
         }
 
-        //Go to top
-        function goTop() {
-            var objScroll = $('div #template').parents('[ms-scroll]')[0];
-            if (!(objScroll === undefined)) {
-                $(objScroll).scrollTop(0);
-            }
-        }
-
-        //Save all the changes to database
-        function saveAll() {
-            templateBusiness.save();
-        }
-
         //Move to the previous step
         function previousStep() {
-            if (parseInt(stepId) > 1) {
-                var stateConfig = {
-                    projectId: $rootScope.projectId,
-                    stepId: (parseInt(stepId) - 1),
-                    stepName: navConfig.sideNavItems[parseInt(stepId) - 2].stepName
-                };
-                $state.go('app.steps', stateConfig);
+
+            console.log('Previous Step - ');
+            console.log(overviewBusiness.templateOverview);
+
+            if(overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps)
+            {
+                stepsBusiness.getPrevStep(stepId, overviewBusiness.templateOverview.steps);
             }
         }
 
         //Move to the next step
         function nextStep() {
-            if (parseInt(stepId) < navConfig.sideNavItems.length) {
-                var stateConfig = {
-                    projectId: $rootScope.projectId,
-                    stepId: (parseInt(stepId) + 1),
-                    stepName: navConfig.sideNavItems[parseInt(stepId)].stepName
-                };
-                $state.go('app.steps', stateConfig);
+            //if (parseInt(stepId) < navConfig.sideNavItems.length) {
+            //    var stateConfig = {
+            //        projectId: $rootScope.projectId,
+            //        stepId: (parseInt(stepId) + 1),
+            //        stepName: navConfig.sideNavItems[parseInt(stepId)].stepName
+            //    };
+            //    $state.go('app.steps', stateConfig);
+            //}
+
+            console.log('Previous Step - ');
+            console.log(overviewBusiness.templateOverview);
+
+            if(overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps)
+            {
+                stepsBusiness.getNextStep(stepId, overviewBusiness.templateOverview.steps);
             }
         }
     }

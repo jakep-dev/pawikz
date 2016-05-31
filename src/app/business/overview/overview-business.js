@@ -9,7 +9,7 @@
         .factory('overviewBusiness', overviewBusiness);
 
     /* @ngInject */
-    function overviewBusiness(overviewService, commonBusiness, stepsBusiness,
+    function overviewBusiness(overviewService, commonBusiness,
                               clientConfig, $interval, toast) {
 
         var business = {
@@ -30,7 +30,7 @@
             {
                 var specificStep = _.find(business.templateOverview.steps, function(step)
                 {
-                    if(parseInt(step.stepId) === parseInt(stepsBusiness.stepId))
+                    if(parseInt(step.stepId) === parseInt(commonBusiness.stepId))
                     {
                         return step;
                     }
@@ -115,10 +115,17 @@
                 });
             }
 
-            overviewService.save(userId, projectId, projectName, steps).then(function(data)
+            if(_.size(steps) > 0)
             {
-                toast.simpleToast('Saved successfully');
-            });
+                overviewService.save(userId, projectId, projectName, steps).then(function(data)
+                {
+                    toast.simpleToast('Saved successfully');
+                });
+            }
+            else {
+                toast.simpleToast('No changes to save');
+            }
+
         }
 
         //Cancel the auto-save promise.

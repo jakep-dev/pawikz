@@ -10,10 +10,14 @@
 
 
     <div id="content" flex>
-        <md-content class="md-background md-hue-1 animate slide-up" ms-scroll ui-view="content" flex></md-content>
+        <md-content class="md-background md-hue-1 animate slide-up" ms-scroll ui-view="content" flex>
+
+        </md-content>
     </div>
 
-    <div id="bottomsheet" layout="row" ng-if="$root.isBottomSheet" layout-align="center center" flex ui-view="bottomsheet"></div>
+    <div id="bottomsheet" layout="row"  ng-if="$root.isBottomSheet" layout-align="end center" flex ui-view="bottomsheet"></div>
+
+
 </div>
 
 <md-sidenav id="quick-panel" class="md-sidenav-right md-whiteframe-4dp"

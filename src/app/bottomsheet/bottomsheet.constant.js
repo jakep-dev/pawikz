@@ -8,7 +8,7 @@
 
     angular
         .module('app.bottomsheet')
-        .constant('bottomSheetConfig',{
+        .value('bottomSheetConfig',{
             url: '',
             controller: ''
         });
