@@ -258,7 +258,7 @@
 
                             html += '<thead>';
                             html += '<tr class="row">';
-                            html += '<th><md-checkbox aria-label="select all" ng-model="isAllSelected" ng-change="selectAll(isAllSelected)"></md-checkbox></th>';
+                            html += '<th><md-checkbox aria-label="select all" class="no-padding-margin" ng-model="isAllSelected" ng-change="selectAll(isAllSelected)"></md-checkbox></th>';
                             angular.forEach(header, function (col) {
                                 html += '<th>';
                                 footerHtml += '<th>';
@@ -282,7 +282,7 @@
                         {
                             var newDescId = descriptionDetails.length + 1;
                             html += '<tr style="min-height: 25px" class="row-cursor">';
-                            html += '<td><md-checkbox aria-label="select" ng-model="tableData['+count+'].TL_STATUS" ng-change="indSelection(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
+                            html += '<td><md-checkbox aria-label="select" class="no-padding-margin" ng-model="tableData['+count+'].TL_STATUS" ng-change="indSelection(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
                             angular.forEach(column, function(col)
                             {
 
