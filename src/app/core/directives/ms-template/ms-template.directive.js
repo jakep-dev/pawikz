@@ -22,8 +22,8 @@
         {
             //Changed Date: 28/4/2016 as per Bug - Chart title not saving
             $rootScope.$broadcast('saveAllChart');
-            //templateBusiness.save();
-            //templateBusiness.cancelPromise();
+            templateBusiness.save();
+            templateBusiness.saveTable();
         }
 
         //Toggle expand or collapse

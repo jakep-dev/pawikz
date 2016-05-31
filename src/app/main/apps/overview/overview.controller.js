@@ -58,6 +58,7 @@
         vm.reload = loadData;
         vm.undo = undo;
         vm.redo = redo;
+        vm.saveAll = saveAll;
         vm.showOverviewDetails =showOverviewDetails;
 
         //Data

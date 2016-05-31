@@ -18,6 +18,7 @@
            autoSavePromise: [],
            isExpandAll: false,
            save: save,
+           saveTable: saveTable,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
@@ -332,9 +333,7 @@
                 business.autoSavePromise = $interval(function()
                 {
                     save();
-                    business.saveMnemonics = [];
 					saveTable();
-					business.saveTableMnemonics = [];
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -353,6 +352,7 @@
 
 				templateService.save(input).then(function(response)
 				{
+                    business.saveMnemonics = []
 					toast.simpleToast('Saved successfully');
 				});
 			}
@@ -365,14 +365,18 @@
 		 //Save table layout template details
         function saveTable()
         {
-			angular.forEach(business.saveTableMnemonics, function(tableMnemonic){
-				
-				templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
-					tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
-				{
-					toast.simpleToast('Table saved successfully');
-				});
-			});
+            if(business.saveTableMnemonics.length > 0)
+            {
+                angular.forEach(business.saveTableMnemonics, function(tableMnemonic){
+
+                    templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+                        tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
+                    {
+                        business.saveTableMnemonics = [];
+                        toast.simpleToast('Table saved successfully');
+                    });
+                });
+            }
         }
 
         //Cancel the auto-save promise.
