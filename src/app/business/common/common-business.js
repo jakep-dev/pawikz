@@ -18,32 +18,6 @@
         this.companyName = null;
 
         var isTemplateExpandAll = false;
-        Object.defineProperty(this, 'isTemplateExpandAll', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                console.log('get!');
-                return isTemplateExpandAll;
-            },
-            set: function(value) {
-                isTemplateExpandAll = value;
-                this.emitMsg('IsTemplateExpanded');
-                console.log('set!');
-            }
-        });
-
-        var isStepExpandAll = false;
-        Object.defineProperty(this, 'isStepExpandAll', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return isStepExpandAll;
-            },
-            set: function(value) {
-                isStepExpandAll = value;
-                this.emitMsg('IsStepExpanded');
-            }
-        });
 
         var business = {
             emitMsg: emitMsg,
@@ -52,6 +26,33 @@
             goTop: goTop,
             resetBottomSheet: resetBottomSheet
         };
+
+        Object.defineProperty(business, 'isTemplateExpandAll', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                console.log('get!');
+                return isTemplateExpandAll;
+            },
+            set: function (value) {
+                isTemplateExpandAll = value;
+                this.emitMsg('IsTemplateExpanded');
+                console.log('set!');
+            }
+        });
+
+        var isStepExpandAll = false;
+        Object.defineProperty(business, 'isStepExpandAll', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return isStepExpandAll;
+            },
+            set: function (value) {
+                isStepExpandAll = value;
+                this.emitMsg('IsStepExpanded');
+            }
+        });
 
         return business;
 
