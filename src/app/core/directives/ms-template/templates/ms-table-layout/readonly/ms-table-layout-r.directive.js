@@ -109,7 +109,12 @@
                                 var value = eval(exp);
 
                                 if (value) {
-                                    html += '<span style="font-weight: normal">' + value + '</span>';
+                                    if(mnemonic == 'URL') {
+                                        html += '<span style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"</ms-link></span>';
+                                    }
+                                    else {
+                                        html += '<span style="font-weight: normal">' + value + '</span>';
+                                    }
                                 }
 
 
