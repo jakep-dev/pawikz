@@ -52,10 +52,16 @@
                                     </md-menu-item>
 
                                     <md-menu-item>
-                                        <md-button  aria-label="On/Off Pdf">
+                                        <md-button  aria-label="On/Off Pdf" ng-click="vm.printableAll()">
                                                   <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-select"></md-icon>
-                                                        <span>Select All</span>
+														<div ng-if="!vm.isPrintableAll">
+															<md-icon md-font-icon="icon-select"></md-icon>
+															<span>UnSelect All</span>
+														</div>
+														<div ng-if="vm.isPrintableAll">
+															<md-icon md-font-icon="icon-select-inverse"></md-icon>
+															<span>Select All</span>
+														</div>
                                                   </span>
                                         </md-button>
                                     </md-menu-item>

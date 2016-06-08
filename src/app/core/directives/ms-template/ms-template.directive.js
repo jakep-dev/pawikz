@@ -13,10 +13,12 @@
         var vm = this;
 
         vm.isExpandAll = true;
+		vm.isPrintableAll = commonBusiness.isPrintableAll;
         templateBusiness.isTemplateExpandAll = vm.isExpandAll;
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
-
+		vm.printableAll = printableAll;
+		
         //Save the entire template data.
         function saveAll()
         {
@@ -32,7 +34,13 @@
             vm.isExpandAll = !vm.isExpandAll;
             commonBusiness.isTemplateExpandAll = vm.isExpandAll;
         }
-    }
+		
+		function printableAll(){
+			vm.isPrintableAll = !vm.isPrintableAll;
+			commonBusiness.isPrintableAll = vm.isPrintableAll;
+		}
+	
+	}
 
     /** @ngInject */
     function msTemplateDirective($compile)
