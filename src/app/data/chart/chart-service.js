@@ -30,12 +30,111 @@
             GetInitialStateData: getInitialStateData,
             AddManualSaveData: addmanualSaveData,
             GetManualSaveData: getmanualSaveData,    //End of reset functionality options
-            DeleteSpecificChart: deleteSpecificChart
+            DeleteSpecificChart: deleteSpecificChart,
+            saveChartSvgInFile: saveChartSvgInFile,
+
+            createTemplatePDFRequest:createTemplatePDFRequest,
+            getTemplatePDFStatus:getTemplatePDFStatus,
+            downloadTemplatePDF:downloadTemplatePDF,
+            setSVGFileStatus:setSVGFileStatus
         };
+        function createTemplatePDFRequest(project_id, user_id, stepId, file_name, company_name, user_name,chart_name, chart_data, ssnid) {
+            return $http({
+                method: "POST",
+                url: "/api/createTemplatePDFRequest",
+                data: {
+                    project_id : project_id,
+                    user_id : user_id,
+                    step_ids : stepId,
+                    file_name : file_name,
+                    company_name : company_name,
+                    user_name : user_name,
+                    chart_name: chart_name,
+                    chart_data: chart_data,
+                    ssnid: ssnid
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+                .catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function getTemplatePDFStatus(request_id, ssnid ) {
+            return $http({
+                method: "POST",
+                url: "/api/getTemplatePDFStatus",
+                data: {
+                    request_id: request_id,
+                    ssnid: ssnid
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+                .catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+
+        }
+
+        function downloadTemplatePDF(request_id, ssnid) {
+            return $http({
+                method: "POST",
+                url: "/api/downloadTemplatePDF",
+                data: {
+                    request_id: request_id,
+                    ssnid: ssnid
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+                .catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+
+        }
+
+        function setSVGFileStatus(request_id,svg_files_ready, ssnid) {
+            return $http({
+                method: "POST",
+                url: "/api/setSVGFileStatus",
+                data: {
+                    request_id: request_id,
+                    svg_files_ready: svg_files_ready,
+                    ssnid: ssnid
+                }}).then(function (data, status, headers, config) {
+                return data.data;
+            })
+                .catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+
+        }
+
 
         return service;
+        function saveChartSvgInFile(chart_name,chart_data) {
+            return $http({
+                method: "POST",
+                url: "/api/saveChartSvgInFile",
+                data: {
+                    chart_name: chart_name,
+                    chart_data: chart_data
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+                .catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+
+        }
+
         //chartSettings: chartSettings
         function saveChartAllSettings(companyId, stepId, projectId, chartSettings, ssnid) {
+            console.log(chartSettings);
+
             return $http({
                 method: "POST",
                 url: "/api/saveChartAllSettings",
@@ -176,18 +275,22 @@
         function addInitialStateData(array) {
 //            initalStateData.newCharts = [];
             initalStateData.newCharts = array.slice();
+            console.log('AddInitialStateData------->', array);
         }
 
         function getInitialStateData() {
+            console.log('GetInitialStateData------->');
             return initalStateData;
         }
 
         function addmanualSaveData(array) {
             manualSaveData.newCharts = [];
             manualSaveData.newCharts.push(array);
+            console.log('AddManualSaveData------->', array );
         }
 
         function getmanualSaveData() {
+            console.log('GetManualSaveData------->' );
             return manualSaveData;
         }
 
@@ -205,7 +308,9 @@
                     ssnid: ssnId
                 }
             }).then(function (data, status, headers, config) {
+                //saveChartAllSettings();
                 angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
+                    debugger;
                     $cookies.putObject('tempChartData', data.data);
                 }]);
                 return data.data;

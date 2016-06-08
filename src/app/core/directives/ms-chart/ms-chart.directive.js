@@ -367,6 +367,90 @@
                                         renderJSCharts();
                                     }
 
+
+                                    var exportAllCharts = function exportAllCharts() {
+                                        var allHighCharts = Highcharts.charts;
+                                        var chartCntr = allHighCharts.length;
+                                        var strSVG = '', strSVGArr = [], chartNameArr = [], chartName;
+                                        var j = 0, chartidtemp = "";
+
+
+
+
+                                        for (var chartCnt =0; chartCnt < chartCntr; chartCnt++) {
+                                            var chart = allHighCharts[chartCnt];
+                                            if (chart != undefined) {
+                                                strSVG = chart.getSVG();
+                                                console.log("printing chart object");
+                                                //console.log(chart);
+                                                //console.log('commonBusiness.stepId------->', commonBusiness);
+                                                //console.log('scope.mnemonicid----->', scope.mnemonicid);
+                                                //console.log('scope.item_id----->', scope.itemid);
+                                                //console.log('scope.chart_id----->', scope.chartId);
+                                                //console.log('scope.tearsheet.chart_id----->', scope.tearsheet.chart_id);
+                                                //console.log('scope.chartSettings.chart_id----->', scope.chartSettings.chart_id);
+                                                //console.log('scope.filterState.chart_id------->', scope.filterState.chart_id);
+                                                //console.log('jsChart.chart_id------->', jsChart.chart_id);
+                                                // console.log('chart_id*********************||', chartId);
+                                                // console.log('chartSettings==============>', chart.settings.chart_id);
+
+
+                                               // for (var i = 0; i < 2; i++) {
+                                                    if (scope.jsCharts[j] != null)
+                                                        var jsChart = scope.jsCharts[j].filterState;
+                                                    if (jsChart.chart_id) {
+                                                        //console.log('chart_id*********************>>', jsChart.chart_id);
+                                                        var chartId = parseInt(jsChart.chart_id);
+                                                        console.log('chart_id ===================>', chartId);
+                                                    }
+                                              //  }
+                                                if(chartId) {
+                                                    strSVGArr.push(strSVG);
+
+                                                    var chartName = (commonBusiness.stepId) +
+                                                        "." + (scope.mnemonicid) +
+                                                        "." + (scope.itemid) +
+                                                        "." + (chartId) + ".part" + (chartCnt%2)+ ".svg";
+                                                    chartNameArr.push(chartName);
+                                                }
+                                               // if(chartCnt !==0){
+                                                    if(chartCnt%2 != 0){
+                                                        j++;
+                                                    }
+                                               // }
+
+
+//Need to create one file per chart and save it to  /data/tmp/newTemplates/<request_folder>
+                                            }
+                                        }//hightchart loop end
+                                        console.log('commonBusiness.projectId---------->', commonBusiness.projectId);
+                                        console.log('commonBusiness.userId---------->', commonBusiness.userId);
+                                        console.log('commonBusiness.stepId---------->', commonBusiness.stepId);
+                                        console.log('commonBusiness.file_name---------->', commonBusiness.file_name);
+                                        console.log('commonBusiness.company_name---------->', commonBusiness.companyName);
+                                        console.log('commonBusiness.user_name---------->', commonBusiness.userName);
+
+
+                                        var userDetails = store.get('user-info');
+                                        var userName = "";
+                                        if(userDetails)
+                                        {
+                                            userName = userDetails.fullName;
+                                        }
+                                        console.log('User Name',userName );
+
+                                        //stockService.saveChartSvgInFile(chartNameArr, strSVGArr);
+                                        stockService.createTemplatePDFRequest(commonBusiness.projectId,
+                                            commonBusiness.userId,
+                                            commonBusiness.stepId,
+                                            chartNameArr.toString(),
+                                            commonBusiness.companyName,
+                                            userName,
+                                            chartNameArr,
+                                            strSVGArr,
+                                            store.get('x-session-token'));
+                                    };
+
                                     var saveAllCharts = function saveAllCharts() {
                                         var startArr = [];
                                         if (scope.jsCharts != null) {
@@ -411,7 +495,9 @@
                                                         obj.url = chart.tearsheet.url;
                                                     }
                                                     if (jsChart.chart_id) {
+                                                        //console.log('chart_id*********************>>', jsChart.chart_id);
                                                         obj.chartId = parseInt(jsChart.chart_id);
+                                                        //console.log('chart_id ===================>', obj.chartId);
                                                     }
                                                     startArr.push(obj);
                                                 }
@@ -420,10 +506,14 @@
                                         }
 
                                         return stockService.saveChartAllSettings(commonBusiness.companyId,
-                                            commonBusiness.stepId, commonBusiness.projectId, startArr,store.get('x-session-token')) ;
+                                            commonBusiness.stepId, commonBusiness.projectId, startArr, store.get('x-session-token')) ;
                                     };
 
                                     scope.saveAllCharts = saveAllCharts;
+
+                                    $rootScope.$on('exportAllCharts',function(){
+                                        exportAllCharts();
+                                    });
 
                                     $rootScope.$on('autosave',function(){
                                         setTimeout(function(){
@@ -432,6 +522,7 @@
                                             });
                                         },10000);
                                     });/*clientConfig.appSettings.autoSaveTimeOut);*/
+
                                     $rootScope.$on('saveAllChart',function(){
                                         saveAllCharts().then(function(){
                                             toast.simpleToast("Saved Successfully");

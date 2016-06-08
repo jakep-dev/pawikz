@@ -16,6 +16,13 @@
         templateBusiness.isTemplateExpandAll = vm.isExpandAll;
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
+        vm.pdfExport = exportCharts;
+
+        //Auto Save trigger
+        setTimeout(function(){
+            $rootScope.$broadcast('autosave');
+        },1000);
+
 
         //Save the entire template data.
         function saveAll()
@@ -25,6 +32,12 @@
             templateBusiness.save();
             templateBusiness.cancelPromise();
         }
+
+        function exportCharts()
+        {
+            $rootScope.$broadcast('exportAllCharts');
+        }
+
 
         //Toggle expand or collapse
         function toggleExpand()
@@ -532,6 +545,19 @@
                         {
                            if(isReadyToProcess)
                            {
+                              /* var allHighCharts = Highcharts.charts;
+                               var chartCntr = allHighCharts.length;
+                               var strSVG = '';
+                               for(var chartCnt = 0; chartCnt < chartCntr; chartCnt++)
+                               {
+                                   var chart = allHighCharts[chartCnt];
+                                   if(chart != undefined)
+                                   {
+                                       strSVG = chart.getSVG();
+
+//Need to create one file per chart and save it to  /data/tmp/newTemplates/<request_folder>
+                                   }
+                               }*/
                                isReadyToProcess= (_.findIndex(processedComp, {compId: tearSheet.id}) === -1);
                            }
                         });

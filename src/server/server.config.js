@@ -40,7 +40,8 @@ exports.restcall =
                     templateMnemonics: 'getTemplateMnemonics',
                     findTickers : 'findTickers',
                     dynamicTableData: 'getDynamicTableData',
-                    getCompetitors:'getCompetitors'
+                    getCompetitors:'getCompetitors',
+                    saveChartSvgInFile: 'saveChartSvgInFile'
                 }
             },
         {

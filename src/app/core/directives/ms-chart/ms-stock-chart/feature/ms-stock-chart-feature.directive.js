@@ -266,7 +266,7 @@ $timeout(function(){
                                 return [activity.xData[j], val];
                             });
                             //$('<div style="min-height: 270px;">')
-                            $('<div style="min-height: 200px;">')
+                            $('<div style="min-height: 275px;">')
                                 .appendTo(elem)
                                 .highcharts({
                                     chart: {
@@ -339,6 +339,7 @@ $timeout(function(){
                                                                 .css({
                                                                     color: '#FFFFFF',
                                                                     fontSize: '10px',
+                                                                    width: '75px'
                                                                 })
                                                                 .attr({
                                                                     fill: this.series[serCntr].color,
@@ -485,8 +486,11 @@ $timeout(function(){
                                                                 });
                                                                 //Display xAxis Labels - End
                                                                 //chart.xAxis[0].update({labels{rotation:0}});
-                                                                chart.xAxis[0].labelRotation = 0;
-                                                                chart.redraw();
+                                                                if(chart.xAxis != null && chart.xAxis.length > 0)
+                                                                {
+                                                                    chart.xAxis[0].labelRotation = 0;
+                                                                    chart.redraw();
+                                                                }
                                                             }
                                                         },500);
                                                 }
@@ -496,7 +500,7 @@ $timeout(function(){
 
                                         //marginLeft: 80, // Keep all charts left aligned
                                         //marginRight: 90,
-                                        marginRight: 75,
+                                        marginRight: 80,
                                         spacingTop: dataset.spacingTop,
                                         spacingBottom: 4,
                                         zoomType: 'x',
@@ -687,7 +691,7 @@ $timeout(function(){
 
                         });
                         //Auto Save functionality
-                        $rootScope.$broadcast('autosave');
+                        //$rootScope.$broadcast('autosave');
                     }
                 }
             };

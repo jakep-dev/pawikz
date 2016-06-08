@@ -16,7 +16,13 @@
             app.post('/api/getCompetitors', findCompetitors),
             app.post('/api/getSavedChartData', getSavedChartData),
             app.post('/api/saveChartSettings', saveChartSettings),
-            app.post('/api/saveChartAllSettings', saveChartAllSettings)
+            app.post('/api/saveChartAllSettings', saveChartAllSettings),
+            app.post('/api/saveChartSvgInFile', saveChartSvgInFile),
+            app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest),
+            app.post('/api/getTemplatePDFStatus', getTemplatePDFStatus),
+            app.post('/api/setSVGFileStatus', setSVGFileStatus),
+            app.post('/api/downloadTemplatePDF', downloadTemplatePDF)
+
         ]);
 
         function getChartData(req, res, next) {
@@ -57,6 +63,9 @@
 
         //this creates new charts or remove not iterated ones
         function saveChartAllSettings(req, res, next) {
+        console.log('SaveChartAllSettings ------->');
+            console.log(req.body);
+            //console.log(req.headers);
             var service = getServiceDetails('charts');
 
             var methodName = '';
@@ -66,13 +75,13 @@
             }
 
             var ssnid= req.headers['x-session-token'],
-                companyId = req.body.companyId,
-                stepId = req.body.stepId,
-                projectId = req.body.projectId,
-                chartSettings = req.body.chartSettings;
+                companyId = req.body.company_id,
+                stepId = req.body.step_id,
+                projectId = req.body.project_id,
+                chartSettings = req.body.data;
             //chartsettings should be a array and and defined
             var args = {
-                data : {
+                data: {
                     project_id: parseInt(projectId),
                     company_id: parseInt(companyId),
                     step_id: parseInt(stepId),
@@ -80,22 +89,38 @@
                     delete_ignored:true,
                     data : chartSettings
                 },
-                headers: { "Content-Type": "application/json" }
+                headers: {"Content-Type": "application/json"}
+
             };
+
+           // console.log("formed url -> ");
+            //console.log(config.restcall.url + '/' + service.name + '/' + methodName);
+            //console.log("sending Data");
+            //console.log(args);
+
+
+            console.log("finished call -------");
+
             client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+               // console.log("print data");
+               // console.log(data);
+               // console.log("print response");
+                //console.log(response);
+                console.log("finished post call -------");
                 res.send(data);
-                console.log('SSNID' + ssnid);
+                //console.log('SSNID' + ssnid);
             });
         }
 
-
-
         //this ceates a single chart
         function saveChartSettings(req, res, next) {
+
+
             var service = getServiceDetails('charts');
             console.log('saveChartSettings Parameters ----------------------------------');
             console.log(req.body);
-
+            console.log("service resp");
+            console.log(service);
             var methodName = '';
 
             if (!u.isUndefined(service) && !u.isNull(service)) {
@@ -137,7 +162,7 @@
                 chartSetting.chartId  = parseInt(chart_id);
             }
 
-            console.log('chartSetting tobe saved ',chartSetting);
+           // console.log('chartSetting tobe saved ',chartSetting);
 
             var args = {
                 data : {
@@ -150,12 +175,11 @@
                 },
                 headers: { "Content-Type": "application/json" }
             };
-            console.log('args----------------------------->',args);
+            //console.log('args----------------------------->',args);
             client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
                     res.send(data);
             });
         }
-
 
         function findTickers(req, res, next) {
             var service = getServiceDetails('templateSearch');
@@ -327,8 +351,182 @@
             return result;
 
         }
+        function saveChartSvgInFile(req, res, next) {
+
+            var service = getServiceDetails('charts');
+
+            var methodName = '', i;
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.saveChartSvgInFile;
+            }
+
+            var ssnid= req.headers['x-session-token'],
+                chartName = req.body.chart_name,
+                chartData = req.body.chart_data;
+
+            //var success = function(){
+            //    if(i==chartName.length){
+            //        console.log('>>>>>>>>>>>>>>>>>>>>>>> Already rached here !!');
+            //        res.send({response:'success'});
+            //    }
+            //};
+
+            for(i = 0; i <chartName.length; i++){
+                writeFile(chartName[i],chartData[i]);
+            }
+
+            return res.send({response:'success'});
+
+
+            //can send response to the clinet if needed
+            /*var args = {
+             data : {
+             project_id: parseInt(projectId),
+             company_id: parseInt(companyId),
+             step_id: parseInt(stepId),
+             ssnid:ssnid,
+             delete_ignored:true,
+             data : chartSettings
+             },
+             headers: { "Content-Type": "application/json" }
+             };
+             client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+             res.send(data);
+             console.log('SSNID' + ssnid);
+             });*/
+        }
+        function writeFile(fileName,fileData,reqID) {
+            var fs = require("fs");
+
+            if (!fs.existsSync('src/server/data/tmp/chartSvg/' + reqID )) {
+                fs.mkdirSync('src/server/data/tmp/chartSvg/' + reqID );
+            }
+
+            console.log("Going to write into existing file");
+
+            console.log(fileName);
+            fs.writeFile('src/server/data/tmp/chartSvg/' + reqID + '/' + fileName, fileData, function (err) {
+                if (err) {
+                    return console.error(err);
+                }
+                //cb();
+            });
+        }
+
+
+
+
+        function createTemplatePDFRequest(req, res, next) {
+
+            var service = getServiceDetails('charts');
+
+            var methodName = '', i;
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.createTemplatePDFRequest;
+            }
+
+            var ssnid =  req.body.ssnid,
+                project_id = req.body.project_id,
+                user_id = req.body.user_id,
+                step_ids = req.body.step_ids,
+                file_name = req.body.file_name,
+                company_name = req.body.company_name,
+                user_name = req.body.user_name,
+                chart_name = req.body.chart_name,
+                chart_data = req.body.chart_data,
+                request_id = 0;
+
+            var args = 'project_id=' + project_id + '&user_id=' + user_id + '&step_ids=' + step_ids + '&file_name=' + file_name +
+                '&company_name=' + company_name + '&user_name=' + user_name + '&ssnid=' + ssnid;
+            client.get(config.restcall.url + '/templateManager/createTemplatePDFRequest?' + args, function (data, result) {
+                if (data && data.hasOwnProperty('request')) {
+                    request_id = data.request.requestNo;
+
+                    //Write SVG Files to Disk
+                    for (i = 0; i < chart_name.length; i++) {
+                        writeFile(chart_name[i], chart_data[i], request_id);
+                    }
+                    //Set SVG Status Now
+
+                    client.get(config.restcall.url + '/templateManager/setSVGFileStatus?request_id=' + request_id+
+                        '&svg_files_ready=Y&ssnid='+ssnid, function (svgstatusdata, svgstatusresult) {
+                        if(data && data.hasOwnProperty('code') && data.code===200){
+                            //Check for Status if percentage s 100% complete then implement the download
+                            client.get(config.restcall.url + '/templateManager/downloadTemplatePDF?request_id=' + request_id+
+                                    '&ssnid='+ssnid,function(pdfDownloadData,pdfDownloadResponse){
+                                if(pdfDownloadData){
+                                    return res.send({"data":pdfDownloadData});
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function getTemplatePDFStatus(req, res, next) {
+
+            var service = getServiceDetails('charts');
+
+            var methodName = '', i;
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getTemplatePDFStatus;
+            }
+
+            var ssnid= req.headers['x-session-token'],
+                request_id = req.body.request_id;
+
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+                res.send(data);
+            });
+
+        }
+        function downloadTemplatePDF(req, res, next) {
+
+            var service = getServiceDetails('charts');
+
+            var methodName = '', i;
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.downloadTemplatePDF;
+            }
+
+            var ssnid= req.headers['x-session-token'],
+                request_id = req.body.request_id;
+
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+                res.send(data);
+            });
+
+        }
+        function setSVGFileStatus(req, res, next) {
+
+            var service = getServiceDetails('charts');
+
+            var methodName = '', i;
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.setSVGFileStatus;
+            }
+
+            var ssnid= req.headers['x-session-token'],
+                request_id = req.body.request_id,
+                svg_files_ready = req.body.svg_files_ready;//-- > 'Y' or 'N';
+
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
+                res.send(data);
+            });
+
+        }
+
 
         function getServiceDetails(serviceName) {
+            console.log("get service details callc", serviceName );
+            console.log(config.restcall.url);
+            console.log("************");
             return u.find(config.restcall.service, {name: serviceName});
         }
 
