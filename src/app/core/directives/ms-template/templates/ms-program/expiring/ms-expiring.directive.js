@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, commonBusiness,
+    function msExpiringDirective($compile, $filter, commonBusiness,
                                      templateBusiness, DTOptionsBuilder, toast)
     {
         return {
@@ -52,7 +52,7 @@
                     callback: "EP-Upload",
                     icon: 'icon-upload',
                     isclicked: null,
-                    tooltip: 'Upload csv file'
+                    tooltip: 'Upload From Spreadsheet'
                 });
 
                 $scope.$parent.$parent.actions.push({
@@ -60,7 +60,7 @@
                     callback: "EP-Download",
                     icon: 'icon-download',
                     isclicked: null,
-                    tooltip: 'Download csv file'
+                    tooltip: 'Download to Spreadsheet'
                 });
 
                 $scope.$parent.$parent.actions.push({
@@ -129,6 +129,10 @@
                         if(value === '')
                         {
                             value = '""';
+                        }
+                        else
+                        {
+                            value = '"' + value + '"';
                         }
                         var rowExp = 'findRow[0].' + columnName + '.value = ' + value + ';';
                         eval(rowExp);
@@ -253,8 +257,36 @@
 
 
                         makeColDef +=  '"' + newItemId + '":';
+
+                        //Set values from web service data
                         makeColDef += '{ "value":';
-                        makeColDef += '"' + value + '",';
+                        if ((itemId.indexOf('LIMIT') !== -1) || (itemId.indexOf('PREMIUM') !== -1) || (itemId.indexOf('RET') > -1))
+                        {
+                            if (value)
+                            {
+                                makeColDef += '"' + $filter("currency")(value, '', 0) + '",';
+                            }
+                            else
+                            {
+                                makeColDef += '"",';
+                            }
+                        }
+                        else if ((itemId.indexOf('RATE') !== -1) || (itemId.indexOf('ROL') !== -1))
+                        {
+                            if (value)
+                            {
+                                makeColDef += '"' + removeCommaValue($filter("number")(value, 2)) + '",';
+                            }
+                            else
+                            {
+                                makeColDef += '"",';
+                            }
+                        }
+                        else if (itemId.indexOf('CARRIER') > -1)
+                        {
+                            makeColDef += '"' + value + '",';
+                        }
+                        
                         makeColDef += '"itemid":';
                         makeColDef += '"' + itemId + '",';
                         makeColDef += '"mnemonicid":';
@@ -316,6 +348,18 @@
             el.find('#expiring-layout').append($compile(html)($scope));
         }
 
+        function removeCommaValue(inputValue) {
+            var outputValue;
+
+            if (inputValue) {
+                outputValue = String(inputValue).replace(/\,/g, '');
+                return outputValue;
+            }
+            else {
+                return inputValue;
+            }
+        }
+
         /*
         * Compute all rows after middle row changes
         * And other rows are filled.
@@ -339,12 +383,33 @@
             if(previousRow &&
                currentRow)
             {
-                var limit = previousRow.LIMIT.value;
-                var att = previousRow.RET.value;
+                var limit;
+                var att;
+
+                if ((previousRow.rowid == 1) && (previousRow.LIMIT.value === '')) {
+                    limit = "0";
+                }
+                else {
+                    limit = removeCommaValue(previousRow.LIMIT.value);
+                }
+
+                if ((previousRow.rowid == 1) && (previousRow.RET.value === '')) {
+                    att = "0";
+                }
+                else {
+                    att = removeCommaValue(previousRow.RET.value);
+                }
 
                 var computedAtt = templateBusiness.calculateProgramAtt(limit, att);
 
-                currentRow.RET.value = computedAtt || '';
+                if (!isNaN(computedAtt) && isFinite(computedAtt))
+                {
+                    currentRow.RET.value = $filter("currency")(computedAtt, '', 0);
+                }
+                else
+                {
+                    currentRow.RET.value = '';
+                }
                 currentRow.iscompute = true;
             }
         }
@@ -353,10 +418,25 @@
         {
             if(currentRow)
             {
-                var premium = currentRow.PREMIUM.value;
-                var limit = currentRow.LIMIT.value;
+                var premium = removeCommaValue(currentRow.PREMIUM.value);
+                var limit;
+                
+                if ((currentRow.rowid == 1) && (currentRow.LIMIT.value === ''))
+                {
+                    limit = "0";
+                }
+                else
+                {
+                    limit = removeCommaValue(currentRow.LIMIT.value);
+                }
 
                 var rate = templateBusiness.calculateProgramRate(premium, limit);
+
+                if (isNaN(rate) || !isFinite(rate)) 
+                {
+                    console.log('RATE is invalid [' + rate + ']');
+                    rate = '';
+                }
 
                 currentRow.RATEMM.value = rate || '';
                 currentRow.iscompute = true;
@@ -372,6 +452,12 @@
                 var previousRate = previousRow.RATEMM.value;
 
                 var rol = templateBusiness.calculateProgramRol(currentRate, previousRate);
+
+                if (isNaN(rol) || !isFinite(rol)) 
+                {
+                    console.log('ROL is invalid [' + rol + ']');
+                    rol = '';
+                }
 
                 currentRow.ROL.value = rol || '';
                 currentRow.iscompute = true;
@@ -506,6 +592,7 @@
 
         }
 
+        //Set values from proposed program table
         function copyProgram($scope){
 
             for(var count = 0; count < $scope.rows.length; count++)
@@ -522,6 +609,26 @@
                     var id = eval(exp);
 
                     var value = templateBusiness.getMnemonicValue(copyItemId, mnemonicId);
+                    if ((header.name.indexOf('LIMIT') > -1) || (header.name.indexOf('PREMIUM') > -1) || (header.name.indexOf('RET') > -1))
+                    {
+                        if (value)
+                        {
+                            value = $filter("currency")(value, '', 0);
+                        }
+                        else
+                        {
+                            value = '';
+                        }
+                    }
+                    else if ((header.name.indexOf('RATE') > -1) || (header.name.indexOf('ROL') > -1))
+                    {
+                        if (value) {
+                            value = removeCommaValue($filter("number")(value, 2));
+                        }
+                        else {
+                            value = '';
+                        }
+                    }
 
 
                     if(id === 'SingleDropDownItem'){
@@ -649,7 +756,10 @@
                         console.log(rowCount);
                     });
 
-                    if(message)
+                    //recompute formula for all rows
+                    computeRate($scope.rows[0]);
+                    computeOthers($scope.rows, 1);
+                    if(message == null)
                     {
                         message = 'Uploaded successfully!';
                     }
@@ -661,6 +771,7 @@
             resetUploadElement();
         }
 
+        //Set values from csv file
         function setValueById(value, $scope, rowCount, headerName, id)
         {
             var exp = null;
@@ -678,7 +789,30 @@
                     break;
 
                 case 'GenericTextItem':
-                    exp = '$scope.rows['+ count +'].' + headerName + '.value = "' + value  + '";';
+                    if ((headerName.indexOf('LIMIT') > -1) || (headerName.indexOf('PREMIUM') > -1) || (headerName.indexOf('RET') > -1))
+                    {
+                        if (value)
+                        {
+                            value = $filter("currency")(removeCommaValue($.trim(value)), '', 0);
+                        }
+                        else
+                        {
+                            value = '';
+                        }
+                    }
+                    else if ((headerName.indexOf('RATE') > -1) || (headerName.indexOf('ROL') > -1))
+                    {
+                        if (value)
+                        {
+                            value = removeCommaValue($filter("number")($.trim(value), 2));
+                        }
+                        else
+                        {
+                            value = '';
+                        }
+                    }
+
+                    exp = '$scope.rows[' + count + '].' + headerName + '.value = "' + value + '";';
                     break;
 
                 default:break;

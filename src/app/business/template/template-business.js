@@ -115,7 +115,7 @@
                 return null;
             }
 
-            return ((parseInt(currentRate) * 100) / parseInt(previousRate)).toFixed(2);
+            return ((parseFloat(currentRate) * 100.0) / parseFloat(previousRate)).toFixed(2);
         }
 
         function getPrintableValue(sectionId)
