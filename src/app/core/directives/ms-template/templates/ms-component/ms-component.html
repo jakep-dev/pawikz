@@ -23,10 +23,8 @@
                        ng-click="vm.applyClickEvent(action)"
                        aria-label="filter actions"
                        style="float:right;">
-
-                <md-icon md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''">
-                    <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
-                </md-icon>
+                <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
+                <md-icon md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
             </md-button>
         </div>
         <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>

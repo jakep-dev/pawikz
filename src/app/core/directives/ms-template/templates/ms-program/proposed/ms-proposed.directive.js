@@ -652,7 +652,7 @@
                 });
             }
 
-            toast.simpleToast('Proposed program copied!');
+            toast.simpleToast('Expiring program copied!');
         }
 
         function uploadExcel()
