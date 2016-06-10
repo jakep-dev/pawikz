@@ -22,6 +22,7 @@
 
         vm.toggleCollapse = toggleCollapse;
         vm.applyClickEvent = applyClickEvent;
+        vm.applyMenuEvent = applyMenuEvent;
         vm.printer = printer;
 
         $scope.$watch(
@@ -82,15 +83,32 @@
             vm.collapsed = !vm.collapsed;
         }
 
-        function applyClickEvent(action)
+        function applyClickEvent(action, $mdOpenMenu, ev)
         {
-            if(action && action.callback)
+            if(action)
             {
-               commonBusiness.emitMsg(action.callback);
+                if(action.type === 'button' && action.callback)
+                {
+                    commonBusiness.emitMsg(action.callback);
+                }
+                else if(action.type === 'menu') {
+                    $mdOpenMenu(ev);
+                }
 
                 if(action.isclicked !== null)
                 {
                     action.isclicked = !action.isclicked;
+                }
+            }
+        }
+
+        function applyMenuEvent(menu, action)
+        {
+            if(menu && action)
+            {
+                if(action.type === 'menu' && menu.callback)
+                {
+                    commonBusiness.emitMsg(menu.callback);
                 }
             }
         }

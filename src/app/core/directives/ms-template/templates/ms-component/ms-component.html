@@ -17,17 +17,29 @@
                 <md-icon md-font-icon="icon-select" class="s20" ng-if="!vm.isAvailableForPrint"></md-icon>
                 <md-icon md-font-icon="icon-select-inverse" class="s20" ng-if="vm.isAvailableForPrint"></md-icon>
             </md-button>
+            <md-menu ng-repeat="action in vm.actions" ng-if="!!vm.actions" md-offset="0 50"
+                     md-position-mode="target-right target">
+                <md-button class="md-icon-button"
+                           md-menu-origin
+                           ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)"
+                           aria-label="filter actions"
+                           style="float:right;">
+                    <md-icon md-menu-align-target  md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''">
+                        <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
+                    </md-icon>
+                </md-button>
 
-            <md-button class="md-icon-button" ng-if="!!vm.actions"
-                       ng-repeat="action in vm.actions"
-                       ng-click="vm.applyClickEvent(action)"
-                       aria-label="filter actions"
-                       style="float:right;">
-
-                <md-icon md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''">
-                    <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
-                </md-icon>
-            </md-button>
+                <md-menu-content  width="3" class="md-background-bg">
+                    <md-menu-item ng-repeat="menu in action.menus">
+                        <md-button ng-click="vm.applyMenuEvent(menu, action)">
+                            <span layout="row" layout-align="start center">
+                                <md-icon md-font-icon="{{menu.icon}}" class="icon"></md-icon>
+                                <span>{{menu.name}}</span>
+                            </span>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
         </div>
         <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
         <md-divider></md-divider>
