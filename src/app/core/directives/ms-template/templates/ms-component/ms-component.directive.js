@@ -7,7 +7,7 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope, $element, $compile,  commonBusiness,
+    function msComponentController($scope, $mdMenu, $element, $compile,  commonBusiness,
                                    templateBusiness, overviewBusiness, toast)
     {
         var vm = this;
@@ -22,6 +22,7 @@
 
         vm.toggleCollapse = toggleCollapse;
         vm.applyClickEvent = applyClickEvent;
+        vm.applyMenuEvent = applyMenuEvent;
         vm.printer = printer;
 
         $scope.$watch(
@@ -88,15 +89,33 @@
             vm.collapsed = !vm.collapsed;
         }
 
-        function applyClickEvent(action)
+        function applyClickEvent(action, $mdOpenMenu, ev)
         {
-            if(action && action.callback)
+            if(action)
             {
-               commonBusiness.emitMsg(action.callback);
+                $mdMenu.hide();
+                if(action.type === 'button' && action.callback)
+                {
+                    commonBusiness.emitMsg(action.callback);
+                }
+                else if(action.type === 'menu') {
+                    $mdOpenMenu(ev);
+                }
 
                 if(action.isclicked !== null)
                 {
                     action.isclicked = !action.isclicked;
+                }
+            }
+        }
+
+        function applyMenuEvent(menu, action)
+        {
+            if(menu && action)
+            {
+                if(action.type === 'menu' && menu.callback)
+                {
+                    commonBusiness.emitMsg(menu.callback);
                 }
             }
         }
