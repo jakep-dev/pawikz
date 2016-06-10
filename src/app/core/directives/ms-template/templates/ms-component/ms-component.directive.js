@@ -38,7 +38,13 @@
                 toggleCollapse();
             }
         });
-
+		
+		commonBusiness.onMsg('IsPrintable', $scope, function() {
+            if (vm.isAvailableForPrint != null && commonBusiness.isPrintableAll === vm.isAvailableForPrint) {
+                vm.printer();
+            }            
+        });
+		
         console.log('Component Scope');
         console.log($scope);
 

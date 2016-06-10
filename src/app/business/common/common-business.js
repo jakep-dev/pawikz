@@ -18,6 +18,7 @@
         this.companyName = null;
 
         var isTemplateExpandAll = false;
+		var isPrintableAll = false;
 
         var business = {
             emitMsg: emitMsg,
@@ -51,6 +52,20 @@
             set: function (value) {
                 isStepExpandAll = value;
                 this.emitMsg('IsStepExpanded');
+            }
+        });
+		
+		Object.defineProperty(business, 'isPrintableAll', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                console.log('get!');
+                return isPrintableAll;
+            },
+            set: function (value) {
+                isPrintableAll = value;
+                this.emitMsg('IsPrintable');
+                console.log('set!');
             }
         });
 
