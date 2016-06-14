@@ -13,7 +13,19 @@
 // injector
 // endinjector
 
+
+$new-font-family: 'Helvetica Neue', Arial, sans-serif !default;
+
 $loadingBackground: #F68C20;
+
+
+button,
+select,
+html,
+textarea,
+input {
+  font-family: $new-font-family;
+}
 
 #loading-bar .bar{
   background: $loadingBackground;
