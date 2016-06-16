@@ -1,15 +1,16 @@
-<div id="login" layout="row" layout-align="start">
-    <div id="login-intro" flex hide show-gt-md>
+<div id="login-v2" layout="row" layout-align="start">
+    <div id="login-v2-intro" flex hide show-gt-sm>
         <div>
-            <img md-menu-align-target  src="assets/images/logos/advisen-logo-L.png">
+            <img src="assets/images/logos/advisen-logo-L.png">
         </div>
-        <div class="description">
+        <div class="description" translate translate-attr-placeholder="LOGIN.DESCRIPTION">
             Advisen is leading the way to smarter and more efficient risk and insurance communities.
             Through its information, analytics, ACORD messaging gateway, news, research, and events,
             Advisen reaches more than 150,000 commercial insurance and risk professionals at 8,000
             organizations worldwide. The company was founded in 2000 and is headquartered in New York City,
             with offices in the US and the UK.
         </div>
+
         <div layout="column" layout-margin layout-padding layout-align="center start">
             <div id="contact-Info" layout="column">
                 <div>
@@ -39,9 +40,6 @@
                     </div>
                 </div>
             </div>
-            <div>
-                &nbsp;
-            </div>
             <div id="customer-support">
                 <div>
                     <strong>Customer Support</strong>
@@ -67,20 +65,16 @@
                 </div>
             </div>
         </div>
-
     </div>
 
-    <div id="login-form-wrapper" class="md-whiteframe-8dp">
-        <div id="login-form">
-            <div class="title" layout="row" layout-sm="column">
-                <div hide-gt-lg hide-gt-md hide-gt-sm>
-                    <img md-menu-align-target  src="assets/images/logos/advisen-logo-short.png">
-                </div>
-                <div style="padding-left: 15px">
-                    Log in to your account</div>
+    <div id="login-v2-form-wrapper" class="flex-scrollable md-whiteframe-8dp" ms-scroll>
+        <div id="login-v2-form">
+
+            <div hide-gt-lg hide-gt-md hide-gt-sm>
+                <img src="assets/images/logos/advisen-logo-short.png">
             </div>
-            <div class="description">
-            </div>
+
+            <div class="title" translate="LOGIN.TITLE">Log in to your account</div>
 
             <form name="loginForm" novalidate>
                 <md-input-container class="md-block md-accent" md-no-float>
@@ -108,30 +102,31 @@
                 <div class="remember-forgot-password" layout="row" layout-sm="column"
                      layout-align="space-between center">
                     <md-checkbox class="remember-me" ng-model="data.cb1" aria-label="Remember Me">
-                        <span>Remember Me</span>
+                        <span translate="LOGIN.REMEMBER_ME">Remember Me</span>
                     </md-checkbox>
 
                     <a ui-sref="app.pages_auth_forgot-password" class="forgot-password md-accent-color"
-                    >Forgot Password?</a>
+                       translate="LOGIN.FORGOT_PASSWORD">Forgot Password?</a>
                 </div>
 
-                <md-button type="submit" class="md-raised md-primary" aria-label="LOG IN"
+                <md-button type="submit" class="md-raised md-primary submit-button" aria-label="LOG IN"
+                           ng-disabled="loginForm.$invalid || loginForm.$pristine"
                            ng-click="vm.LogIn(vm.form.userName, vm.form.password)"
-                           ng-disabled="loginForm.$invalid || loginForm.$pristine">
+                           translate="LOGIN.LOG_IN" translate-attr-aria-label="LOGIN.LOG_IN">
                     LOG IN
                 </md-button>
             </form>
 
-            <div class="separator" >
-                <span class="text">OR</span>
+            <div class="separator">
+                <span class="text" translate="LOGIN.OR">OR</span>
             </div>
 
-            <div layout="column" layout-align="start center" >
+            <div layout="column" layout-align="start center">
                 <md-button class="md-raised google" ng-disabled="true">
                     <div layout="row" layout-align="center center">
                         <span>
                             <md-icon md-font-icon="icon-google-plus" class="s16"></md-icon>
-                            <span>Log in with Google</span>
+                            <span translate="LOGIN.WITH_GOOGLE">Log in with Google</span>
                             <md-tooltip md-direction="top">
                                 Coming soon!
                             </md-tooltip>
@@ -143,7 +138,7 @@
                     <div layout="row" layout-align="center center">
                         <span>
                             <md-icon md-font-icon="icon-facebook" class="s16"></md-icon>
-                            <span>Log in with Facebook</span>
+                            <span translate="LOGIN.WITH_FACEBOOK">Log in with Facebook</span>
                             <md-tooltip md-direction="top">
                                 Coming soon!
                             </md-tooltip>
@@ -152,16 +147,10 @@
                 </md-button>
             </div>
 
-            <div class="register" layout="row" layout-sm="column" layout-align="center center" ng-show="false">
-                <span class="text">Don't have an account?</span>
-                <a class="link" ui-sref="app.pages_auth_register">Create an
-                    account</a>
-            </div>
-
             <div layout="column" layout-align="center center" layout-padding hide-gt-md>
                 <div>
                     <strong>
-                        Sales & General Information
+                        <span>Sales & General Information</span>
                     </strong>
                     <div layout="row" layout-align="center center">
                         <md-button class="md-fab md-mini" ng-click="vm.goUrl('tel:12128974800')">

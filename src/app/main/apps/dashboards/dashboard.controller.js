@@ -9,7 +9,7 @@
 
 })();
 /** @ngInject */
-function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
+function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
                              DTColumnDefBuilder, DTColumnBuilder,
                              DTOptionsBuilder, dashboardService,
                              authService, authBusiness, commonBusiness,
@@ -55,6 +55,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
     //Toggle Sidenav
     function toggleSidenav(sidenavId) {
         $mdSidenav(sidenavId).toggle();
+        $mdMenu.hide()
     }
 
     // Action Html
@@ -69,6 +70,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
         vm.userId = 0;
         dashboardBusiness.isClearDashboard = true;
         redrawDataTable();
+        $mdMenu.hide();
     }
 
     // Redraw datatable
@@ -182,7 +184,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $stateParams,
             .withOption('stateSave', true)
             .withOption('order',[4, 'desc'])
             .withPaginationType('full')
-            .withDOM('<"top bottom"<"left"<"length"l>><"right"f>>rt<"bottom"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
         //Defining column definitions
         vm.dtColumnDefs = [

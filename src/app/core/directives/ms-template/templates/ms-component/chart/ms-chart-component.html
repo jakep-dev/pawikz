@@ -1,36 +1,22 @@
-<div style="padding-bottom: 10px">
-    <div class="md-whiteframe-1dp">
-        <div id="ms-chart-accordion" class="step-table-title md-amber-A200-bg">
-           Chart
-
+<div class="md-whiteframe-1dp" id="step-main">
+    <div id="ms-chart-accordion" style="height: 50px" class="md-amber-A200-bg"
+         layout="row" layout-align="space-between center">
+        <div style="padding-left: 10px; font-size: 18px">
+            Chart
             <i class="icon-lock s12" ng-if="vm.isNonEditable"></i>
-
-            <md-button class="md-icon-button" aria-label="expand/collapse"
-                       ng-if="vm.iscollapsible"
-                       ng-click="vm.toggleCollapse()" style="float:right">
-                <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
-            </md-button>
-
-            <!--<md-button class="md-icon-button" aria-label="reset"-->
-                       <!--style="float:right">-->
-                <!--<md-icon md-font-icon="icon-reload"></md-icon>-->
-            <!--</md-button>-->
-
-            <!--<md-button class="md-icon-button" aria-label="add"-->
-                       <!--style="float:right">-->
-                <!--<md-icon md-font-icon="icon-plus"></md-icon>-->
-            <!--</md-button>-->
-
-            <!--<md-button class="md-icon-button" aria-label="save"-->
-                       <!--style="float:right">-->
-                <!--<md-icon md-font-icon="icon-content-save"></md-icon>-->
-            <!--</md-button>-->
-
         </div>
-        <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
-        <md-divider></md-divider>
-        <div id="ms-chart-accordion-content" ng-show="!vm.collapsed" layout-padding>
-
+        <div>
+            <div layout="row" layout-align="end center">
+                <md-button class="md-icon-button" aria-label="expand/collapse"
+                           ng-if="vm.iscollapsible"
+                           ng-click="vm.toggleCollapse()">
+                    <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+                </md-button>
+            </div>
         </div>
+    </div>
+    <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
+    <div id="ms-chart-accordion-content" ng-show="!vm.collapsed" layout-padding>
+
     </div>
 </div>

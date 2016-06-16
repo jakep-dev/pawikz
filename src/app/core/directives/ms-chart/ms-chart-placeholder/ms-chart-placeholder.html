@@ -1,29 +1,20 @@
 <div  class="md-whiteframe-1dp  md-light-blue-A100-bg">
-    <div id="ms-chart-placeholder-header" layout="row" layout-align="space-between center">
-        <div layout-padding>
-            <md-input-container  md-no-float class="md-accent" style="height: 10px;width: 160%">
+    <div id="ms-chart-placeholder-header" style="height: 40px" layout="row" layout-align="space-between center">
+        <div>
+            <md-input-container  md-no-float class="md-block md-accent">
                 <input id="chartTitle" placeholder="Chart Title" ng-model="vm.title"
-                       class="font-weight-700 font-size-12"/>
+                       class="font-weight-700 font-size-14" style="position: absolute;  bottom: 0px; padding-bottom: 4px; color: black"/>
             </md-input-container>
+
+            <!--<h3 editable-text="vm.title" style="padding-left: 4px; width: 100%" placeholder="Chart Title"></h3>-->
         </div>
-        <div layout-margin>
-
-
+        <div>
             <md-button class="md-icon-button" aria-label="save-chart" ng-show="false" ng-click="vm.saveChart()" ng-if="vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Save
                 </md-tooltip>
                 <md-icon md-font-icon="icon-content-save"></md-icon>
             </md-button>
-
-
-           <!-- <md-button class="md-icon-button" aria-label="drag-chart">
-                <md-tooltip md-direction="top">
-                    Drag
-                </md-tooltip>
-                <md-icon md-font-icon="icon-drag"></md-icon>
-            </md-button>-->
-
 
             <md-button class="md-icon-button" aria-label="add-chart" ng-click="vm.addChart()" ng-if="vm.isMainChart">
                 <md-tooltip md-direction="top">

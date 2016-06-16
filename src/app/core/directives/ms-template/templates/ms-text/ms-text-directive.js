@@ -33,7 +33,7 @@
                 itemid: '@',
                 mnemonicid: '@',
                 value: '@',
-                isdisabled: '@',
+                isdisabled: '=?',
                 type: '@'
             },
             controller: 'MsTextController',

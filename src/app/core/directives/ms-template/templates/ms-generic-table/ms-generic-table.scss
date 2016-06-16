@@ -13,7 +13,8 @@ $generic-table-input-height: 25px;
 
   .row
   {
-    padding-left: $generic-table-padding-left;
+   // padding-left: $generic-table-padding-left;
+    height: 40px;
     font-weight: bold;
   }
 

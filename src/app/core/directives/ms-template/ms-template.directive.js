@@ -8,7 +8,7 @@
         .directive('msTemplate', msTemplateDirective);
 
 
-    function msTemplateController($scope, templateBusiness, commonBusiness,$rootScope)
+    function msTemplateController($scope, $mdMenu, templateBusiness, commonBusiness,$rootScope)
     {
         var vm = this;
 
@@ -26,6 +26,7 @@
             $rootScope.$broadcast('saveAllChart');
             templateBusiness.save();
             templateBusiness.saveTable();
+            $mdMenu.hide();
         }
 
         //Toggle expand or collapse
@@ -33,11 +34,13 @@
         {
             vm.isExpandAll = !vm.isExpandAll;
             commonBusiness.isTemplateExpandAll = vm.isExpandAll;
+            $mdMenu.hide();
         }
 		
 		function printableAll(){
 			vm.isPrintableAll = !vm.isPrintableAll;
 			commonBusiness.isPrintableAll = vm.isPrintableAll;
+            $mdMenu.hide();
 		}
 	
 	}

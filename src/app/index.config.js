@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('fuse')
+        .module('advisen')
         .config(function($httpProvider, cfpLoadingBarProvider)
         {
             $httpProvider.interceptors.push('interceptor');

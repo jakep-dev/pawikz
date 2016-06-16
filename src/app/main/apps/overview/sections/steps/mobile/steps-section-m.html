@@ -1,27 +1,12 @@
 <div layout-padding ng-if="vm.isStepTabletMode" >
-    <md-tabs id="step-overview-steps" style="border:1px solid #e1e1e1; background: #f6f6f6"
-             md-no-pagination md-dynamic-height md-swipe-content md-stretch-tabs="always">
-        <md-tab ng-repeat="step in vm.templateOverview.steps">
-            <md-tab-label>{{ step.stepName }}</md-tab-label>
-            <md-content>
+    <md-tabs id="step-overview-steps" style="border:1px solid #e1e1e1; background: #f6f6f6" md-dynamic-height>
+        <md-tab ng-repeat="step in vm.templateOverview.steps"
+                label="{{step.stepName}}">
+            <div>
                 <ms-step-overview step="step" project-Id="vm.projectId" expandable="true" >
 
                 </ms-step-overview>
-            </md-content>
+            </div>
         </md-tab>
     </md-tabs>
-
-    <!--<md-grid-list-->
-            <!--md-cols-sm="2"-->
-            <!--md-cols-md="3"-->
-            <!--md-cols-gt-md="4"-->
-            <!--md-row-height="3:2"-->
-            <!--md-gutter="12px" md-gutter-gt-sm="8px" >-->
-        <!--<md-grid-tile class="md-whiteframe-1dp md-grey-A200-bg" md-ink-ripple="#f68c20"-->
-                      <!--style="border-radius: 3px"-->
-                      <!--ng-repeat="step in vm.templateOverview.steps"-->
-                      <!--ng-click="vm.showOverviewDetails(step)">-->
-            <!--<h3 class="font-weight-500">{{ step.stepName }}</h3>-->
-        <!--</md-grid-tile>-->
-    <!--</md-grid-list>-->
 </div>

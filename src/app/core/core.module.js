@@ -10,7 +10,6 @@
                 'ngCookies',
                 'ngMessages',
                 'ngResource',
-                'ngRoute',
                 'ngSanitize',
                 'ngTouch',
                 'ngMaterial',
@@ -19,8 +18,6 @@
                 //'chart.js',
                 'trNgGrid',
                 'datatables',
-                'datatables.tabletools',
-                'datatables.bootstrap',
                 //'gridshore.c3js.chart',
                 //'nvd3',
                 'pascalprecht.translate',
@@ -37,6 +34,7 @@
                 'disableAll',
                 'froala',
                 'highcharts-ng',
-                'ngPapaParse'
+                'ngPapaParse',
+                'gg.editableText'
             ]);
 })();

@@ -6,7 +6,7 @@
      * Main module of the Fuse
      */
     angular
-        .module('fuse', [
+        .module('advisen', [
 
             // Core
             'app.core',
@@ -32,14 +32,8 @@
             // Bottomsheet
             'app.bottomsheet',
 
-            // Dashboards
-            'app.dashboard',
-
-            // Overview
-            'app.overview',
-
-            // Steps
-            'app.steps',
+            // Apps
+            'app.apps',
 
             // Pages
             'app.pages',

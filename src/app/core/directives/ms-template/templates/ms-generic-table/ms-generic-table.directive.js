@@ -39,7 +39,8 @@
                     if(!row.id || row.id !== 'toolbar_links') {
                         html = '';
                         newScope = null;
-                        html += '<div class="row" layout-align="center center"  layout="row" flex>';
+                        html += '<div class="row" layout-align="center center" style="height: 30px"  ' +
+                            'layout="row" flex>';
 
                         var columns = null;
 
@@ -89,16 +90,15 @@
                                         html += '<ms-link value="'+value+'" href="'+link+'" isdisabled="false"></ms-link>';
                                         break;
                                     case 'GenericTextItem':
-                                        newScope = scope.$new();
 
+                                        newScope = scope.$new();
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-
                                         html += '<ms-text value="'+ value +'" ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
-                                            'isdisabled="false"></ms-text>';
+                                            'isdisabled="'+ scope.isnoneditable +'"></ms-text>';
                                         break;
                                     case 'SingleDropDownItem':
                                         var itemId = tearSheetItem.ItemId;

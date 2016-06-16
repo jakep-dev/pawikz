@@ -53,7 +53,7 @@
                         .withOption('sorting', [])
                         .withOption('responsive', true)
                         .withPaginationType('full')
-                        .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                        .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
                     html += '<table id="'+ scope.itemid +'" dt-options="dtOptions" ' +
                         'class="row-border hover" datatable="" width="100%" cellpadding="4" cellspacing="0">';

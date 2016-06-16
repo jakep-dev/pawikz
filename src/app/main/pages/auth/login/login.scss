@@ -1,17 +1,22 @@
-#login {
-
-
-  //height: 100%;
+#login-v2 {
+  height: 100%;
   overflow: hidden;
-  //background: url('/src/assets/images/logos/advisen-logo.png') no-repeat;
+  //background: url('/assets/images/backgrounds/march.jpg') no-repeat;
   //background-size: cover;
-  //height:calc(100% - 200px);
 
-  #login-intro {
+  #login-v2-intro {
     padding: 128px;
 
     .logo {
-
+      width: 128px;
+      height: 128px;
+      line-height: 128px;
+      font-size: 86px;
+      font-weight: 500;
+      margin-bottom: 32px;
+      color: #FFFFFF;
+      border-radius: 2px;
+      text-align: center;
     }
 
     .title {
@@ -21,26 +26,31 @@
 
     .description {
       padding-top: 8px;
-      padding-bottom: 8px;
       font-size: 14px;
       max-width: 600px;
-      text-align: justify;
-      text-justify: inter-word;
     }
   }
 
-  #login-form-wrapper {
+  #login-v2-form-wrapper {
     width: 416px;
     min-width: 416px;
     max-width: 416px;
     height: 100%;
     background: #FFFFFF;
 
-    #login-form {
-      padding: 70px 48px 48px 48px;
-      margin: 0px 0px 120px 0px;
+    #login-v2-form {
+      padding: 80px 48px 48px 48px;
 
-
+      .logo {
+        width: 128px;
+        height: 128px;
+        line-height: 128px;
+        font-size: 86px;
+        font-weight: 500;
+        margin: 32px auto;
+        color: #FFFFFF;
+        border-radius: 2px;
+      }
 
       .title {
         font-size: 21px;
@@ -74,7 +84,7 @@
           }
         }
 
-        .md-button {
+        .submit-button {
           width: 100%;
           margin: 16px auto;
           display: block;
@@ -158,18 +168,17 @@
   }
 }
 
-
 // RESPONSIVE
-@media screen and (max-width: $layout-breakpoint-md) {
+@media screen and (max-width: $layout-breakpoint-sm) {
 
-  #login {
+  #login-v2 {
 
-    #login-form-wrapper {
+    #login-v2-form-wrapper {
       width: 100%;
       min-width: 100%;
       max-width: 100%;
 
-      #login-form {
+      #login-v2-form {
         text-align: center;
         padding: 24px;
 
@@ -185,4 +194,3 @@
   }
 
 }
-

@@ -13,7 +13,7 @@
 
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope,
-                                overviewService,
+                                $mdMenu, overviewService,
                                 navConfig, breadcrumbBusiness, commonBusiness,
                                 overviewBusiness, store, toast)
     {
@@ -167,12 +167,14 @@
         function saveAll()
         {
             overviewBusiness.save();
+            $mdMenu.hide()
         }
 
         //Flip only the step view to tab and vice-versa
         function flipStepView()
         {
             vm.isStepTabletMode = !vm.isStepTabletMode;
+            $mdMenu.hide()
         }
 
         //Flip the select/unselect functionlity.
@@ -181,13 +183,12 @@
             vm.isAllSelected = !vm.isAllSelected;
 			commonBusiness.isPrintableAll = vm.isAllSelected;
             selectionProcess(vm.isAllSelected);
-            console.log($scope);
+            $mdMenu.hide()
         }
 
         function expandAll()
         {
             vm.isAllExpanded = !vm.isAllExpanded;
-
         }
 
         //Select the steps
@@ -215,6 +216,7 @@
         {
             vm.isExpanded = !vm.isExpanded;
             commonBusiness.isStepExpandAll = vm.isExpanded;
+            $mdMenu.hide()
         }
 
     }
