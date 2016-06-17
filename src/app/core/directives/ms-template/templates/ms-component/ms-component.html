@@ -31,12 +31,19 @@
 
                 <md-menu-content  width="3" class="md-background-bg">
                     <md-menu-item ng-repeat="menu in action.menus">
-                        <md-button ng-click="vm.applyMenuEvent(menu, action)">
-                            <span layout="row" layout-align="start center">
-                                <md-icon md-font-icon="{{menu.icon}}" class="icon"></md-icon>
-                                <span>{{menu.name}}</span>
-                            </span>
+                        <md-button ng-click="vm.applyMenuEvent(menu, action)" aria-label="menu buttons" ng-if="(menu.type==='button')">
+							<span layout="row" layout-align="start center" ng-if="(menu.icon !== null)">
+								<md-icon md-font-icon="{{menu.icon}}" class="icon"></md-icon>
+								<span>{{menu.name}}</span> 
+                            </span> 
+                            <span layout="row" layout-align="center center" ng-if="(menu.icon === null)"> 
+                                <span>{{menu.name}}</span> 
+                            </span> 
                         </md-button>
+                        <md-input-container ng-if="(menu.type==='input')">
+                            <input ng-if="menu.isNumeric" type="number" ng-model="menu.model" ng-change="menu.setValue(menu.model)" aria-label="input menu" min="{{menu.min}}" max="{{menu.max}}" />
+							<input ng-if="!menu.isNumeric" type="text" ng-model="menu.model" ng-change="menu.setValue(menu.model)" aria-label="input menu" />
+                        </md-input-container>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>
