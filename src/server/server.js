@@ -28,7 +28,24 @@ app.use(exception.init);
 
 
 routes = require('./routes');
-routes.init(app);
+
+var server = app.listen(port, function() {
+  console.log('Express server listening on port ' + port);
+  console.log('env = ' + app.get('env') +
+      '\n__dirname = ' + __dirname +
+      '\nprocess.cwd = ' + process.cwd());
+
+
+});
+
+routes.init(app,server);
+
+/*var io = require('socket.io')(server);
+io.on('connection', function (socket) {
+  console.log("socket connected");
+  socket.emit('pdfc status progress', {percentage:10,status:'working'});
+
+});*/
 
 console.log('About to crank up node');
 console.log('PORT=' + port);
@@ -64,13 +81,6 @@ switch (environment) {
     break;
 }
 
-app.listen(port, function() {
-  console.log('Express server listening on port ' + port);
-  console.log('env = ' + app.get('env') +
-      '\n__dirname = ' + __dirname +
-      '\nprocess.cwd = ' + process.cwd());
 
-
-});
 
 

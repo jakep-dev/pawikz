@@ -49,8 +49,10 @@ exports.restcall =
             methods:{
                 getStockData:'getStockData',
                 getIndices:'getIndices',
-                getSavedChartData : 'getSavedChartData',
-                saveChartSettings : 'saveChartSettings'
+               //getSavedChartData : 'getSavedChartData',
+               // saveChartSettings : 'saveChartSettings'
+                getSavedChartData : 'getChartSettings',
+                saveChartSettings : 'saveChartSettings_v2'
             }
         }]
 }

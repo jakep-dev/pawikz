@@ -31,12 +31,8 @@
             AddManualSaveData: addmanualSaveData,
             GetManualSaveData: getmanualSaveData,    //End of reset functionality options
             DeleteSpecificChart: deleteSpecificChart,
-            saveChartSvgInFile: saveChartSvgInFile,
+            createTemplatePDFRequest:createTemplatePDFRequest
 
-            createTemplatePDFRequest:createTemplatePDFRequest,
-            getTemplatePDFStatus:getTemplatePDFStatus,
-            downloadTemplatePDF:downloadTemplatePDF,
-            setSVGFileStatus:setSVGFileStatus
         };
         function createTemplatePDFRequest(project_id, user_id, stepId, file_name, company_name, user_name,chart_name, chart_data, ssnid) {
             return $http({
@@ -61,90 +57,37 @@
                 });
         }
 
-        function getTemplatePDFStatus(request_id, ssnid ) {
-            return $http({
-                method: "POST",
-                url: "/api/getTemplatePDFStatus",
-                data: {
-                    request_id: request_id,
-                    ssnid: ssnid
-                }
-            }).then(function (data, status, headers, config) {
-                return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
-
-        }
-
-        function downloadTemplatePDF(request_id, ssnid) {
-            return $http({
-                method: "POST",
-                url: "/api/downloadTemplatePDF",
-                data: {
-                    request_id: request_id,
-                    ssnid: ssnid
-                }
-            }).then(function (data, status, headers, config) {
-                return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
-
-        }
-
-        function setSVGFileStatus(request_id,svg_files_ready, ssnid) {
-            return $http({
-                method: "POST",
-                url: "/api/setSVGFileStatus",
-                data: {
-                    request_id: request_id,
-                    svg_files_ready: svg_files_ready,
-                    ssnid: ssnid
-                }}).then(function (data, status, headers, config) {
-                return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
-
-        }
-
-
         return service;
-        function saveChartSvgInFile(chart_name,chart_data) {
-            return $http({
-                method: "POST",
-                url: "/api/saveChartSvgInFile",
-                data: {
-                    chart_name: chart_name,
-                    chart_data: chart_data
-                }
-            }).then(function (data, status, headers, config) {
-                return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
-
-        }
 
         //chartSettings: chartSettings
-        function saveChartAllSettings(companyId, stepId, projectId, chartSettings, ssnid) {
-            console.log(chartSettings);
+        function saveChartAllSettings(companyId, stepId, projectId, mnemonicId, itemId, ssnid, chartSettings) {
 
+            var tmpdata =  {
+                //Changing keynames as per jake plaras email on 26/5/2016
+                  company_id: companyId,
+                    step_id: stepId,
+                    project_id: projectId,
+                    mnemonic: mnemonicId,
+                    item_id: itemId,
+                    ssnid:ssnid,
+                    data: chartSettings
+            };
+            console.log("***********tmp data start *****");
+            console.log(tmpdata);
+            console.log("***********tmp data end *****");
             return $http({
                 method: "POST",
                 url: "/api/saveChartAllSettings",
+                //url: "/chart/saveChartAllSettings_v2",
                 data: {
                     //Changing keynames as per jake plaras email on 26/5/2016
                     company_id: companyId,
                     step_id: stepId,
                     project_id: projectId,
+                    mnemonic: mnemonicId,
+                    item_id: itemId,
                     ssnid:ssnid,
-                    data: chartSettings
+                    chartSettings: chartSettings
                 }
             }).then(function (data, status, headers, config) {
                 return data.data;
@@ -154,7 +97,7 @@
                 });
         }
 
-        function saveChartSettings(tickers, timeFrame, splits, dividends, earnings, start_date, end_date, companyId, chartTitle, mnemonic, itemId, stepId, projectId, chart_id, ssnid) {
+        function saveChartSettings(tickers, timeFrame, splits, dividends, earnings, start_date, end_date, chart_id, chartTitle) {
             return $http({
                 method: "POST",
                 url: "/api/saveChartSettings",
@@ -166,15 +109,8 @@
                     earnings: earnings,
                     start_date: start_date,
                     end_date: end_date,
-                    companyId: companyId,
-                    chartTitle: chartTitle,
-                    mnemonic: mnemonic,
-                    itemId: itemId,
-                    stepId: stepId,
-                    projectId: projectId,
                     chart_id: chart_id,
-                    chart_title: chart_title,
-                    ssnid:ssnid
+                    chart_title: chartTitle,
                 }
             }).then(function (data, status, headers, config) {
                 return data.data;
@@ -184,7 +120,7 @@
                 });
         }
 
-        function stockData(tickers, timeFrame, splits, earnings, dividends, start_date, end_date, companyId) {
+        function stockData(tickers, timeFrame, splits, earnings, dividends, start_date, end_date, companyId, ssnid) {
 
             return $http({
                 method: "POST",
@@ -197,7 +133,8 @@
                     earnings: earnings,
                     start_date: start_date,
                     end_date: end_date,
-                    companyId: companyId
+                    companyId: companyId,
+                    ssnid: ssnid
                 }
             }).then(function (data, status, headers, config) {
                 return data.data;
@@ -207,17 +144,23 @@
                 });
         }
 
-        function getSavedChartData(projectId, stepId, mnemonic, itemId, $cookies) {
+        function getSavedChartData(projectId, stepId, mnemonic, itemId, ssnid, $cookies) {
             return $http({
                 method: "POST",
                 url: "/api/getSavedChartData",
                 data: {
-                    projectId: projectId,
-                    stepId: stepId,
+                    project_id: projectId,
+                    step_id: stepId,
                     mnemonic: mnemonic,
-                    itemId: itemId
+                    item_id: itemId,
+                    ssnid: ssnid
+                    //chart_id: chartId
                 }
             }).then(function (data, status, headers, config) {
+
+                console.log("***********chart data start *****");
+                console.log(data);
+                console.log("*********** data end *****");
 
                 angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
                     $cookies.putObject('tempChartData', data.data);

@@ -14,14 +14,14 @@
 
     var config = require('../server.config');
 
-    routes.init = function(app)
+    routes.init = function(app,server)
     {
         dashboardRoute.init(app, config);
         overviewRoute.init(app, config);
         authenticateRoute.init(app, config);
         templateRoute.init(app, config);
         loggingRoute.init(app, config);
-        chartRoute.init(app, config);
+        chartRoute.init(app, config,server);
     }
 
 })(module.exports);

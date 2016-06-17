@@ -29,6 +29,8 @@
             $scope.chart.filterState.title = vm.title;
         }
         });
+        $scope.chart.filterState.chart_id = vm.id;
+
 
         //@@TODO - For Testing
         vm.isStockChart = ($scope.chart && $scope.chart.tearsheet && !$scope.chart.tearsheet.isMainChart && $scope.chart.tearsheet.type &&

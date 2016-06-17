@@ -8,7 +8,7 @@
         .directive('msStockChart', msStockChartDirective);
 
 
-    function msStockChartController($scope,stockService, commonBusiness)
+    function msStockChartController($scope,stockService, commonBusiness, store)
     {
         var vm = this;
         vm.selectedIndex ="";
@@ -283,7 +283,7 @@
         }
         vm.fetchChartData = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
             stockService
-                .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId)
+                .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId,  store.inMemoryCache['user-info'].token)
                 .then(function(data) {
                     //console.log('seriesdata',data)
                     //@todo call logic for remove legend item on empty series data

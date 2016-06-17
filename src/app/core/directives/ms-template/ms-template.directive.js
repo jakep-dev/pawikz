@@ -8,7 +8,7 @@
         .directive('msTemplate', msTemplateDirective);
 
 
-    function msTemplateController($scope, templateBusiness, commonBusiness,$rootScope)
+    function msTemplateController($scope, templateBusiness, commonBusiness,$rootScope,$interval)
     {
         var vm = this;
 
@@ -17,12 +17,33 @@
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
         vm.pdfExport = exportCharts;
+        vm.determinateValue = 1;
+
+// Iterate every 100ms, non-stop
+//        $interval(function() {
+//            // Increment the Determinate loader
+//            vm.determinateValue += 1;
+//            if (vm.determinateValue > 100) {
+//                vm.determinateValue = 1;
+//            }
+//        }, 100, 0, true);
 
         //Auto Save trigger
         setTimeout(function(){
             $rootScope.$broadcast('autosave');
         },1000);
 
+        var socket = io();
+        socket.on("pdfc status progress", function (data) {
+            //console.log("received from server", data.percentage+" "+data.status);
+
+            setTimeout(function() {
+                vm.determinateValue=data.percentage;
+                console.log("determinateValue:", vm.determinateValue);
+                if(vm.determinateValue>100)
+                    vm.determinateValue=1;
+            }, 0);
+        });
 
         //Save the entire template data.
         function saveAll()

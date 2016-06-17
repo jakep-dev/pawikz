@@ -66,7 +66,31 @@
                                                         <span>PDF Export</span>
                                                   </span>
                                         </md-button>
+                                        <div layout="row" layout-sm="column" layout-align="space-around" style="
+    width: 105px;
+    margin-top: -23px;">
+                                            <span
+                                                    style="
+
+    position: relative;
+    float: right;
+    z-index: 10000;
+    margin-top: 43px;
+    margin-right: -61px;"
+                                                    >{{vm.determinateValue}}</span>
+                                            <md-progress-circular md-mode="determinate" value="{{vm.determinateValue}}" md-buffer-value="{{vm.determinateValue}}">
+
+                                            </md-progress-circular>
+                                        </div>
                                     </md-menu-item>
+                                    <script>
+                                       /* $(function() {
+                                            var iosocket = io.connect();
+                                            iosocket.on('test', function (message) {
+                                                alert(test);
+                                            })
+                                        })*/
+                                    </script>
 
                                 </md-menu-content>
                             </md-menu>
