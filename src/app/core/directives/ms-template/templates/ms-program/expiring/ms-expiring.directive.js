@@ -271,7 +271,18 @@
                                 makeColDef += '"",';
                             }
                         }
-                        else if ((itemId.indexOf('RATE') !== -1) || (itemId.indexOf('ROL') !== -1))
+                        else if (itemId.indexOf('RATE') !== -1)
+                        {
+                            if (value)
+                            {
+                                makeColDef += '"' + $filter("currency")(value, '', 2) + '",';
+                            }
+                            else
+                            {
+                                makeColDef += '"",';
+                            }
+                        }
+                        else if (itemId.indexOf('ROL') !== -1)
                         {
                             if (value)
                             {
@@ -437,6 +448,10 @@
                     console.log('RATE is invalid [' + rate + ']');
                     rate = '';
                 }
+                else
+                {
+                    rate = $filter("currency")(rate, '', 2);
+                }
 
                 currentRow.RATEMM.value = rate || '';
                 currentRow.iscompute = true;
@@ -560,6 +575,9 @@
             if(exp)
             {
                 value = eval(exp);
+                if (angular.isUndefined(value) || value == null) {
+                    value = '';
+                }
             }
 
             return value;
@@ -620,12 +638,25 @@
                             value = '';
                         }
                     }
-                    else if ((header.name.indexOf('RATE') > -1) || (header.name.indexOf('ROL') > -1))
+                    else if (header.name.indexOf('RATE') > -1)
                     {
-                        if (value) {
+                        if (value)
+                        {
+                            value = $filter("currency")(value, '', 2);
+                        }
+                        else
+                        {
+                            value = '';
+                        }
+                    }
+                    else if (header.name.indexOf('ROL') > -1)
+                    {
+                        if (value)
+                        {
                             value = removeCommaValue($filter("number")(value, 2));
                         }
-                        else {
+                        else
+                        {
                             value = '';
                         }
                     }
@@ -800,7 +831,18 @@
                             value = '';
                         }
                     }
-                    else if ((headerName.indexOf('RATE') > -1) || (headerName.indexOf('ROL') > -1))
+                    else if (headerName.indexOf('RATE') > -1)
+                    {
+                        if (value)
+                        {
+                            value = $filter("currency")(removeCommaValue($.trim(value)), '', 2);
+                        }
+                        else
+                        {
+                            value = '';
+                        }
+                    }
+                    else if (headerName.indexOf('ROL') > -1)
                     {
                         if (value)
                         {

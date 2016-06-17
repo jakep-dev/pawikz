@@ -101,7 +101,7 @@
                 return null;
             }
 
-            return (( parseInt(premium) * 100000) / parseInt(limit)).toFixed(2);
+            return (( parseInt(premium) * 1000000) / parseInt(limit)).toFixed(2);
         }
 
         ///Calculate the expiring / proposed program ROL
