@@ -6,7 +6,6 @@
     "angular-animate": "1.5.5",
     "angular-aria": "1.5.5",
     "angular-cookies": "1.5.5",
-    "angular-material": "1.0.9",
     "angular-messages": "1.5.5",
     "angular-resource": "1.5.5",
     "angular-sanitize": "1.5.5",
@@ -44,7 +43,8 @@
     "highcharts-ng": "^0.0.11",
     "highcharts": "~4.2.3",
     "angular-papaparse": "^1.0.0",
-    "angular-editable-text": "^1.1.2"
+    "angular-editable-text": "^1.1.2",
+    "angular-material": "1.1.0-rc4"
   },
   "devDependencies": {
     "angular-mocks": "1.5.5"

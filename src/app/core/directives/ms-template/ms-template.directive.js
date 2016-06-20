@@ -690,6 +690,9 @@
                         }
                     });
                 }
+                console.log('Content - ');
+                console.log($('#main-content'));
+
             }
         };
     }

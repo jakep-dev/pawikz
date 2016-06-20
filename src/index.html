@@ -40,15 +40,15 @@
             }
 
             #splash-screen .logo {
-                width: 96px;
-                height: 96px;
-                line-height: 96px;
+                /*width: 96px;*/
+                /*height: 96px;*/
+                /*line-height: 96px;*/
                 margin: 0 auto 48px auto;
                 font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-                font-size: 56px;
+                font-size: 12px;
                 text-align: center;
                 border-radius: 2px;
-                background:  url("assets/images/logos/advisen-logo-short.png") no-repeat;
+                /*background:  url("assets/images/logos/advisen-logo-short.png") no-repeat;*/
                 color: #FFFFFF;
                 box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.22);
             }
@@ -367,7 +367,7 @@
         <div ng-cloak id="splash-screen">
             <div class="center">
                 <!--<div class="logo">-->
-                  <!---->
+                  <!--Loading-->
                 <!--</div>-->
                 <!-- Material Design Spinner -->
                 <div class="spinner-wrapper">
@@ -382,8 +382,13 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- / Material Design Spinner -->
             </div>
+
+            <!--<div class="center" style="color: red">-->
+                <!--Loading...-->
+            <!--</div>-->
         </div>
 
         <div id="main" class="animate slide-up" flex layout="row" ui-view="main"></div>
