@@ -17,7 +17,6 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                mnemonicid: '@',
                 tearsheet: '='
             },
             templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/hybrid/ms-table-layout-h.html',
