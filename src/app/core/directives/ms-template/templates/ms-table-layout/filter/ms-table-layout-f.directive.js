@@ -155,7 +155,7 @@
                         icon: 'icon-eraser',
                         name: 'Clear Filter',
                         callback: $scope.itemid + '-ClearFilter'
-                    }],
+                    }]
             });
         }
 
@@ -290,25 +290,6 @@
             toast.simpleToast("Cleared filter!");
         }
 
-        function  initializeWatch($scope)
-        {
-            //$scope.$watch('IsAllChecked',function handleAllSelection(newValue, oldValue)
-            //{
-            //    console.log('New Value = ' + newValue);
-            //    console.log('Old Value = ' + oldValue);
-            //    if(newValue !== oldValue)
-            //    {
-            //
-            //        angular.forEach($scope.rows, function(eachRow)
-            //        {
-            //            eachRow.IsChecked = newValue;
-            //        });
-            //        console.log('Current Rows - ');
-            //        console.log($scope.rows);
-            //    }
-            //});
-        }
-
         function headerAllSelection($scope)
         {
             angular.forEach($scope.rows, function(eachRow)
@@ -389,7 +370,6 @@
                         defineActions(scope);
                         initializeMsg(scope);
                         buildRows(scope, data);
-                        initializeWatch(scope);
 
 
                         scope.showChildInfo = function(id, event)
@@ -400,12 +380,17 @@
                         scope.headerSelectAll = function(currentScope)
                         {
                             headerAllSelection(currentScope);
-                        }
+                        };
 
                         scope.rowMakeSelection = function()
                         {
                             calculateHeaderSelection(scope);
                         };
+
+                        console.log('TableLayout Filter Link');
+                        console.log(scope);
+                        console.log('TableLayout Filter Data');
+                        console.log(data);
                     }
                     scope.$parent.$parent.isprocesscomplete = true;
                 });

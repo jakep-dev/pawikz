@@ -14,6 +14,8 @@
             getData: getData,
             getDynamicTableData: getDynamicTableData,
             saveDynamicTableData: saveDynamicTableData,
+            addDynamicTableData: addDynamicTableData,
+            deleteDynamicTableData: deleteDynamicTableData,
             getSchemaDefer: getSchemaDefer,
             getDataDefer: getDataDefer,
             save: save
@@ -179,6 +181,58 @@
 
             return $http({
                 url : clientConfig.endpoints.templateEndPoint.saveDynamic,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+            })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function addDynamicTableData(projectId, stepId,
+                                     mnemonic, itemId, table)
+        {
+            var input = {
+                project_id : projectId,
+                step_id: stepId,
+                mnemonic: mnemonic,
+                item_id: itemId,
+                table: table
+            }
+
+            return $http({
+                url : clientConfig.endpoints.templateEndPoint.addDynamic,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+            })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function deleteDynamicTableData(projectId, stepId,
+                                     mnemonic, itemId, table)
+        {
+            var input = {
+                project_id : projectId,
+                step_id: stepId,
+                mnemonic: mnemonic,
+                item_id: itemId,
+                table: table
+            }
+
+            return $http({
+                url : clientConfig.endpoints.templateEndPoint.deleteDynamic,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",

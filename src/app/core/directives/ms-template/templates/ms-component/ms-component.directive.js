@@ -93,7 +93,6 @@
         {
             if(action)
             {
-                $mdMenu.hide();
                 if(action.type === 'button' && action.callback)
                 {
                     commonBusiness.emitMsg(action.callback);
@@ -286,27 +285,38 @@
                                 };
 
                                 console.log(newScope);
-
-                                if((col && $scope.isnoneditable) || col.col)
+								
+								if(content.EditRow)
+								{
+									var descColumn = col[1];
+									
+									if(descColumn && descColumn.col &&
+										descColumn.col.TearSheetItem &&
+										( descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION' ||
+										 descColumn.col.TearSheetItem.Mnemonic === 'SIGDEVDESC') )
+									{
+										html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
+									}
+									else
+									{
+										if(content.TableRowTemplate.row)
+										{
+											newScope.tearsheet.rows = content.TableRowTemplate.row;
+										}
+										if(content.HeaderRowTemplate)
+										{
+											newScope.tearsheet.header = content.HeaderRowTemplate;
+										}
+										html += '<ms-tablelayout-h itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-h>';
+									}
+								}
+								else if((col && $scope.isnoneditable) || col.col)
                                 {
                                     html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
                                 }
                                 else {
-                                    var descColumn = col[1];
-                                    var isFilterTableLayout = false;
-                                    if(descColumn && descColumn.col &&
-                                        descColumn.col.TearSheetItem &&
-                                        ( descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION' ||
-										 descColumn.col.TearSheetItem.Mnemonic === 'SIGDEVDESC') )
-                                    {
-                                        isFilterTableLayout = true;
-                                    }
-
-                                    if(isFilterTableLayout)
-                                    {
-                                        html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
-                                    }
-                                    else if(!$scope.isnoneditable && content.EditRow)
+                                   
+                                    if(!$scope.isnoneditable && content.EditRow)
                                     {
                                         if(!newScope.tearsheet.header)
                                         {
