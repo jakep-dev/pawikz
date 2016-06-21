@@ -279,38 +279,31 @@
                                 };
 
                                 console.log(newScope);
-
-								var descColumn = col[1];
-								var isFilterTableLayout = false;
-								var isHybridTableLayout = false;
-								if(descColumn && descColumn.col &&
-									descColumn.col.TearSheetItem &&
-									( descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION' ||
-									 descColumn.col.TearSheetItem.Mnemonic === 'SIGDEVDESC') )
-								{
-									isFilterTableLayout = true;
-								}
 								
-								if(content.EditRow && content.HeaderRowTemplate)
+								if(content.EditRow)
 								{
-									if(content.TableRowTemplate.row)
-									{
-										newScope.tearsheet.rows = content.TableRowTemplate.row;
-									}
+									var descColumn = col[1];
 									
-									newScope.tearsheet.header = content.HeaderRowTemplate;
-									newScope.tearsheet.isNonEditable = $scope.isnoneditable
-									isHybridTableLayout = true;
+									if(descColumn && descColumn.col &&
+										descColumn.col.TearSheetItem &&
+										( descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION' ||
+										 descColumn.col.TearSheetItem.Mnemonic === 'SIGDEVDESC') )
+									{
+										html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
+									}
+									else
+									{
+										if(content.TableRowTemplate.row)
+										{
+											newScope.tearsheet.rows = content.TableRowTemplate.row;
+										}
+										if(content.HeaderRowTemplate)
+										{
+											newScope.tearsheet.header = content.HeaderRowTemplate;
+										}
+										html += '<ms-tablelayout-h itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-h>';
+									}
 								}
-								
-                                if(isFilterTableLayout)
-								{
-									html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
-                                }
-								else if(isHybridTableLayout)
-								{
-									html += '<ms-tablelayout-h itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-h>';
-                                }
 								else if((col && $scope.isnoneditable) || col.col)
                                 {
                                     html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
