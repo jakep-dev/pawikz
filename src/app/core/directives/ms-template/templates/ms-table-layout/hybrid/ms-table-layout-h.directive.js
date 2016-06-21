@@ -75,7 +75,6 @@
         {
            $scope.rows = [];
 
-		   var isDisabled = $scope.tearsheet.isNonEditable;
            var html = '<tbody>';
            html += '<tr ng-repeat="row in rows">';
 		   
@@ -100,13 +99,12 @@
                         {
                             case 'GenericSelectItem':
 								html += '<span style="display:none">{{row.' + itemId + '}}</span>'; // for easy sorting & searching
-								html += '<ms-hybrid-checkbox row="row" isdisabled="'+isDisabled+'" save="saveRow(row)" ' +
+								html += '<ms-hybrid-checkbox row="row" save="saveRow(row)" ' +
 												'text="'+tearSheetItem.param.content+'" columnname="'+itemId+'"></ms-hybrid-checkbox>';
                                 break;
 							case 'GenericTextItem':
 								html += '<span style="display:none">{{row.' + itemId + '}}</span>'; // for easy sorting & searching
-								html += '<ms-hybrid-text row="row" isdisabled="'+isDisabled+'" ' +
-												'save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
+								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
 								break;
                             default:
                                 html += '<span>Under Construction</span>';
@@ -396,7 +394,7 @@
 				if(row.IsChecked)
 				{
 					var deleteRow = {
-						condition: new Array()
+						condition: []
 					};
 					
 					deleteRow.condition.push({
@@ -462,8 +460,8 @@
 		function saveRow($scope, row)
 		{
 			var save = {
-				row: new Array(),
-				condition: new Array()
+				row: [],
+				condition: []
 			};
 			
 			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'IsChecked'), function(value, key){
@@ -482,7 +480,7 @@
 				value: $scope.itemid
 			});
 			
-			autoSave($scope, save, 'updated', parseInt(row.SEQUENCE))
+			autoSave($scope, save, 'updated', parseInt(row.SEQUENCE));
 		}
 
 		function autoSave($scope, rowObject, action, sequence)
@@ -579,7 +577,7 @@
 
                             });
 							
-							objRow['SEQUENCE'] = (rowCount + maxSequence) + ''; //add max sequence so it doesn't conflict on delete
+							objRow.SEQUENCE = (rowCount + maxSequence) + ''; //add max sequence so it doesn't conflict on delete
 							insertRow($scope, objRow, (rowCount + maxSequence) + '');
                         }
 						

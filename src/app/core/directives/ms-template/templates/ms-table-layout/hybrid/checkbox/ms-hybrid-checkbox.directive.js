@@ -28,9 +28,7 @@
                 row: '=',
                 isdisabled: '@',
 				text: '@',
-                type: '@',
 				save: '&',
-                rowid: '=',
                 columnname: '@'
             },
             controller: 'MsHybridCheckboxController',

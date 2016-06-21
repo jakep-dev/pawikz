@@ -24,13 +24,9 @@
         return {
             restrict: 'E',
             scope   : {
-                itemid: '@',
-                mnemonicid: '@',
                 row: '=',
                 isdisabled: '@',
-                type: '@',
 				save: '&',
-                rowid: '=',
                 columnname: '@'
             },
             controller: 'MsHybridTextController',
