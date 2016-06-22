@@ -87,7 +87,7 @@
                                             var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                             link = value;
                                         }
-                                        html += '<ms-link value="'+value+'" href="'+link+'" isdisabled="false"></ms-link>';
+                                        html += '<ms-link value="'+value+'" href="//'+link+'" isdisabled="false"></ms-link>';
                                         break;
                                     case 'GenericTextItem':
 
