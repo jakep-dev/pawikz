@@ -70,6 +70,8 @@
 
             $scope.data.push.apply($scope.data, data);
             $scope.rows.push.apply($scope.rows, data);
+			
+			calculateHeaderSelection($scope);
         }
 
         function defineBodyLayout($scope)
@@ -90,8 +92,15 @@
                         {
                             case 'GenericSelectItem':
                                 html += '<td>';
-                                html += '<md-checkbox aria-label="select" ng-change="rowMakeSelection()" ng-model="row.IsChecked"' +
+                                html += '<md-checkbox aria-label="select" ng-change="rowMakeSelection();saveRow(row);" ng-model="row.IsChecked"' +
                                     'class="no-padding-margin"></md-checkbox>';
+                                break;
+                            case 'DateItem':
+                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
+								html += '<span style="display:none">{{formatDate(row.'+ tearSheetItem.ItemId + ', "YYYY-MM-DD")}}</span>'; //for easy sorting
+                                var calRow = '{{row.'+ tearSheetItem.ItemId + '}}';
+                                html += '<span>' + calRow + '</span>';
+
                                 break;
                             default:
                                 html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
@@ -142,16 +151,19 @@
                 tooltip: null,
                 scope: $scope,
                 menus:[{
+					   type: 'button',
                        icon: 'icon-checkbox-marked',
                        name: 'Selected',
                        callback: $scope.itemid + '-Selected'
                     },
                     {
+						type: 'button',
                         icon: 'icon-checkbox-blank-outline',
                         name: 'UnSelected',
                         callback: $scope.itemid + '-UnSelected'
                     },
                     {
+						type: 'button',
                         icon: 'icon-eraser',
                         name: 'Clear Filter',
                         callback: $scope.itemid + '-ClearFilter'
@@ -172,7 +184,7 @@
             newScope.data = {};
             if(rowDetail)
             {
-                newScope.data.description  = rowDetail.DESCRIPTION;
+                newScope.data.description  = rowDetail.DESCRIPTION || rowDetail.SIGDEVDESC;
             }
             else {
                 newScope.data.description = "No Data Available";
@@ -245,6 +257,8 @@
                 $scope.rows = [];
                 $scope.rows.push.apply($scope.rows, selectedRows);
                 toast.simpleToast("Showing only selected");
+				
+				calculateHeaderSelection($scope);
             }
             else {
                 toast.simpleToast("Nothing to filter!");
@@ -267,6 +281,8 @@
                 $scope.rows = [];
                 $scope.rows.push.apply($scope.rows, selectedRows);
                 toast.simpleToast("Showing only unselected");
+				
+				calculateHeaderSelection($scope);
             }
             else {
                 toast.simpleToast("Nothing to filter!");
@@ -288,15 +304,50 @@
             $scope.rows.push.apply($scope.rows, $scope.data);
             resetDataCheck($scope);
             toast.simpleToast("Cleared filter!");
+				
+			calculateHeaderSelection($scope);
         }
 
         function headerAllSelection($scope)
         {
             angular.forEach($scope.rows, function(eachRow)
                     {
-                        eachRow.IsChecked = $scope.IsAllChecked;
+						if(eachRow.IsChecked !== $scope.IsAllChecked)
+						{
+							eachRow.IsChecked = $scope.IsAllChecked;
+							$scope.saveRow(eachRow);
+						}
                     });
         }
+		
+		function saveRow($scope, row)
+		{
+			var save = {
+				row: [],
+				condition: []
+			};
+			
+			save.row.push({
+				columnName: 'TL_STATUS',
+				value: (row.IsChecked) ? 'Y' : 'N'
+			});
+			
+			save.condition.push({
+				columnName: 'SEQUENCE',
+				value: row.SEQUENCE
+			});
+			save.condition.push({
+				columnName: 'ITEM_ID',
+				value: $scope.itemid
+			});
+			
+			autoSave($scope, save, 'updated', parseInt(row.SEQUENCE));
+		}
+
+		function autoSave($scope, rowObject, action, sequence)
+		{
+			templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
+		}
 
         function defineFilterLink(scope, el, attrs)
         {
@@ -347,7 +398,7 @@
                     }
                 });
 				
-				columns += 'TL_STATUS, SEQUENCE';
+				columns += 'TL_STATUS,SEQUENCE';
 
 
                 var html = '';
@@ -386,6 +437,17 @@
                         {
                             calculateHeaderSelection(scope);
                         };
+
+                        scope.saveRow = function(row)
+                        {
+                            saveRow(scope, row);
+                        };
+						
+						scope.formatDate = function(dateStr, format)
+						{
+							var date = moment(dateStr, 'DD-MMM-YY', true);
+							return date.isValid() ? date.format(format) : '';
+						};
 
                         console.log('TableLayout Filter Link');
                         console.log(scope);

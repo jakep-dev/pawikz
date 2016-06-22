@@ -139,7 +139,7 @@
             {
                 html += '<thead>';
                 html += '<tr class="row">';
-                html += '<th><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(IsAllChecked)" aria-label="select all" ' +
+                html += '<th><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" ' +
                     'class="no-padding-margin"></md-checkbox></th>';
                 angular.forEach($scope.header, function (header) {
                     html += '<th>';
@@ -682,13 +682,13 @@
 			}
 		}
 
-        function makeSelections($scope, value)
+        function makeSelections($scope)
         {
 			angular.forEach($scope.rows, function(eachRow)
             {
-				if(eachRow.IsChecked !== value)
+				if(eachRow.IsChecked !== $scope.IsAllChecked)
 				{
-					eachRow.IsChecked = value;
+					eachRow.IsChecked = $scope.IsAllChecked;
 					$scope.saveRow(eachRow);
 				}
             });
@@ -753,9 +753,9 @@
 					initializeMsg(scope);
 					buildRows(scope, data);
 
-					scope.makeSelections = function(value)
+					scope.makeSelections = function(currentScope)
 					{
-						makeSelections(scope, value);
+						makeSelections(currentScope);
 					};
 
 					scope.rowMakeSelection = function()
