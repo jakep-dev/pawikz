@@ -157,24 +157,50 @@
         {			
 			$scope.$parent.$parent.actions.push({
 				id: 1,
-				callback: $scope.itemid + '-Upload',
-				icon: 'icon-upload',
+				callback: null,
+				icon: 'icon-plus',
 				isclicked: null,
-				tooltip: 'Excel Upload',
-				type: 'button'
+				tooltip: 'Add Rows',
+				type: 'menu',
+                scope: $scope,
+                menus:[{
+						type: 'input', 
+						isNumeric: true, 
+						model: $scope.rowNumber,
+						min: 1,
+						max: 100,
+						setValue : function (number) {
+							$scope.rowNumber = number;
+						}
+                    },
+                    {
+                        type: 'button',
+                        icon: null,
+                        name: 'Add',
+                        callback: $scope.itemid + '-Add'
+                    }],
 			});
 			
 			$scope.$parent.$parent.actions.push({
 				id: 2,
-				callback: $scope.itemid + '-Download',
-				icon: 'icon-download',
+				callback: $scope.itemid + '-Delete',
+				icon: 'icon-delete',
 				isclicked: null,
-				tooltip: 'Excel Download',
+				tooltip: 'Delete Rows',
+				type: 'button'
+			});
+			
+			$scope.$parent.$parent.actions.push({
+				id: 3,
+				callback: $scope.itemid + '-Copy',
+				icon: 'icon-content-copy',
+				isclicked: null,
+				tooltip: 'Copy Row',
 				type: 'button'
 			});
 
             $scope.$parent.$parent.actions.push({
-                id: 3,
+                id: 4,
                 callback: null,
                 icon: 'icon-filter',
                 isclicked: null,
@@ -202,47 +228,21 @@
             });
 			
 			$scope.$parent.$parent.actions.push({
-				id: 4,
-				callback: $scope.itemid + '-Copy',
-				icon: 'icon-content-copy',
-				isclicked: null,
-				tooltip: 'Copy Row',
-				type: 'button'
-			});
-			
-			$scope.$parent.$parent.actions.push({
 				id: 5,
-				callback: $scope.itemid + '-Delete',
-				icon: 'icon-delete',
+				callback: $scope.itemid + '-Download',
+				icon: 'icon-download',
 				isclicked: null,
-				tooltip: 'Delete Rows',
+				tooltip: 'Excel Download',
 				type: 'button'
 			});
 			
 			$scope.$parent.$parent.actions.push({
 				id: 6,
-				callback: null,
-				icon: 'icon-plus',
+				callback: $scope.itemid + '-Upload',
+				icon: 'icon-upload',
 				isclicked: null,
-				tooltip: 'Add Rows',
-				type: 'menu',
-                scope: $scope,
-                menus:[{
-						type: 'input', 
-						isNumeric: true, 
-						model: $scope.rowNumber,
-						min: 1,
-						max: 100,
-						setValue : function (number) {
-							$scope.rowNumber = number;
-						}
-                    },
-                    {
-                        type: 'button',
-                        icon: null,
-                        name: 'Add',
-                        callback: $scope.itemid + '-Add'
-                    }],
+				tooltip: 'Excel Upload',
+				type: 'button'
 			});
         }
 
@@ -696,9 +696,8 @@
 		
 		function getMaxSequence($scope)
 		{
-			var max = -1;
 			var maxObj =_.max(_.map($scope.data, function(row){ return parseInt(row.SEQUENCE); }));
-			return (maxObj)? maxObj : max;
+			return (_.isUndefined(maxObj))? -1 : maxObj;
 		}
 		
 		function getRowIndexBySequence(rows, sequence)
