@@ -1,6 +1,5 @@
-
 <div id="template" class="widget-group" layout="column" flex layout-wrap>
-    <div id="template-header" ng-if="!!templateName"  flex>
+    <div id="template-header" ng-if="!!templateName" flex>
         <h2>{{templateName}}</h2>
     </div>
     <ms-widget flex>
@@ -9,7 +8,7 @@
             <div class="simple-table-container">
                 <div>
 
-                    <div class="table-title"  layout="row" layout-align="space-between center">
+                    <div class="table-title" layout="row" layout-align="space-between center">
                         <div>
                             <md-icon md-font-icon="icon-menu"></md-icon>
                             {{stepName}}
@@ -23,7 +22,7 @@
 
                                 <md-menu-content>
                                     <md-menu-item>
-                                        <md-button  aria-label="save all" ng-click="vm.saveAll()">
+                                        <md-button aria-label="save all" ng-click="vm.saveAll()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-content-save-all"></md-icon>
                                                         <span>Save All</span>
@@ -32,9 +31,9 @@
                                     </md-menu-item>
 
                                     <md-menu-item>
-                                        <md-button  aria-label="mode widget">
+                                        <md-button aria-label="mode widget">
                                                   <span layout="row" layout-align="start center">
-                                                    <md-icon md-font-icon="icon-tablet-ipad" ></md-icon>
+                                                    <md-icon md-font-icon="icon-tablet-ipad"></md-icon>
                                                     <span>Tablet Mode</span>
                                                   </span>
 
@@ -42,7 +41,7 @@
                                     </md-menu-item>
 
                                     <md-menu-item>
-                                        <md-button  aria-label="expand all" ng-click="vm.toggleExpand()">
+                                        <md-button aria-label="expand all" ng-click="vm.toggleExpand()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-backburger"
                                                                  ng-class="vm.isExpandAll ? 'ms-expand' : 'ms-collapse'"></md-icon>
@@ -67,6 +66,14 @@
                                         </md-button>
                                     </md-menu-item>
 
+                                    <md-menu-item>
+                                        <md-button aria-label="save all" ng-click="vm.pdfExport()">
+                                                  <span layout="row" layout-align="start center">
+                                                        <md-icon md-font-icon="icon-file-pdf-box"></md-icon>
+                                                        <span>PDF Download</span>
+                                                  </span>
+                                        </md-button>
+                                    </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
                         </div>

@@ -15,7 +15,8 @@
     "soap": "^0.11.0",
     "stacktrace-js": "^1.0.2",
     "underscore": "^1.8.3",
-    "xmltojson": "^1.1.0"
+    "xmltojson": "^1.1.0",
+    "socket.io": "^1.4.6"
   },
   "devDependencies": {
     "browser-sync": "~2.7.12",

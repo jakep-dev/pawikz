@@ -30,14 +30,14 @@
                 mnemonic: mnemonic,
                 item_id: itemId,
                 columns: columns
-            }
+            };
 
             return $http({
                 url : clientConfig.endpoints.templateEndPoint.dynamic,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: "json"
             })
                 .then(function(data, status, headers, config) {
                     return data.data;
@@ -54,7 +54,7 @@
                 method : "POST",
                 data : data,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: "json"
             })
                 .then(function(data, status, headers, config) {
                     return data;
@@ -70,14 +70,14 @@
             var input = {
                 project_id : projectId,
                 step_id: stepId
-            }
+            };
 
             return $http({
                 url : clientConfig.endpoints.templateEndPoint.schema,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: "json"
             })
                 .then(function(data, status, headers, config) {
                     return data.data;
@@ -93,14 +93,14 @@
             var input = {
                 project_id : projectId,
                 step_id: stepId
-            }
+            };
 
             return $http({
                 url : clientConfig.endpoints.templateEndPoint.mnemonics,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: "json"
             })
                 .then(function(data, status, headers, config) {
                     return data.data;
@@ -108,6 +108,25 @@
                 .catch(function(error) {
                     logger.error(JSON.stringify(error));
                 });
+        }
+
+        //Get Overview Details
+        function getOverviewDefer(projectId) {
+
+            var deffered = $q.defer();
+
+            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
+
+            $http.get(url)
+                .then(function (data, status, headers, config) {
+                    deffered.resolve(data.data);
+                })
+                .catch(function (error) {
+                    deffered.reject();
+                    logger.error(JSON.stringify(error));
+                });
+
+            return deffered;
         }
 
         //Get Schema Defer
@@ -118,7 +137,7 @@
             var input = {
                 project_id : projectId,
                 step_id: stepId
-            }
+            };
 
             $http({
                 url : clientConfig.endpoints.templateEndPoint.schema,
@@ -146,7 +165,7 @@
             var input = {
                 project_id : projectId,
                 step_id: stepId
-            }
+            };
 
             $http({
                 url : clientConfig.endpoints.templateEndPoint.mnemonics,
@@ -175,7 +194,7 @@
                 mnemonic: mnemonic,
                 item_id: itemId,
                 table: table
-            }
+            };
 
             return $http({
                 url : clientConfig.endpoints.templateEndPoint.saveDynamic,

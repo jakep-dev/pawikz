@@ -16,10 +16,11 @@ var routes;
 //
 
 var environment = process.env.NODE_ENV || 'Dev';
-app.use(bodyParser.urlencoded({
+app.use(bodyParser.urlencoded({limit: '200mb',
   extended: true
 }));
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '100mb'}));
 app.use(compress());
 app.use(logger('dev'));
 app.use(cors());
@@ -27,7 +28,24 @@ app.use(exception.init);
 
 
 routes = require('./routes');
-routes.init(app);
+
+var server = app.listen(port, function() {
+  console.log('Express server listening on port ' + port);
+  console.log('env = ' + app.get('env') +
+      '\n__dirname = ' + __dirname +
+      '\nprocess.cwd = ' + process.cwd());
+
+
+});
+
+routes.init(app,server);
+
+/*var io = require('socket.io')(server);
+io.on('connection', function (socket) {
+  console.log("socket connected");
+  socket.emit('pdfc status progress', {percentage:10,status:'working'});
+
+});*/
 
 console.log('About to crank up node');
 console.log('PORT=' + port);
@@ -41,29 +59,28 @@ app.get('/ping', function(req, res, next) {
 
 
 switch (environment) {
+
   case 'build':
     console.log('** BUILD **');
     app.use(express.static('./dist/'));
     app.use('/*', express.static('./dist/index.html'));
+
+
+
     break;
   default:
     console.log('** DEV **');
     console.log(__dirname);
+
     app.use('/bower_components', express.static('./bower_components/'));
     app.use('/app', express.static('./src/app/'));
     app.use('/app', express.static('./.tmp/serve/app/'));
     app.use('/assets', express.static('./src/assets/'));
     app.use('/*', express.static('./.tmp/serve/index.html'));
+
     break;
 }
 
-app.listen(port, function() {
-  console.log('Express server listening on port ' + port);
-  console.log('env = ' + app.get('env') +
-      '\n__dirname = ' + __dirname +
-      '\nprocess.cwd = ' + process.cwd());
 
-
-});
 
 

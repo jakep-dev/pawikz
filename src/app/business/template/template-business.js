@@ -368,7 +368,7 @@
                         tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
                     {
                         business.saveTableMnemonics = [];
-                        toast.simpleToast('Table saved successfully');
+                        toast.simpleToast('Saved successfully');
                     });
                 });
             }

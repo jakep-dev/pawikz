@@ -7,7 +7,6 @@
         .controller('msTemplateController', msTemplateController)
         .directive('msTemplate', msTemplateDirective);
 
-
     function msTemplateController($scope, $mdMenu, templateBusiness, commonBusiness,$rootScope)
     {
         var vm = this;
@@ -18,7 +17,18 @@
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
 		vm.printableAll = printableAll;
-		
+        vm.pdfExport = exportCharts;
+        vm.determinateValue = 1;
+
+        var socket = io();
+        socket.on("pdfc status progress", function (data) {
+            setTimeout(function() {
+                vm.determinateValue=data.percentage;
+                console.log("determinateValue:", vm.determinateValue);
+                if(vm.determinateValue>100)
+                    vm.determinateValue=1;
+            }, 0);
+        });
         //Save the entire template data.
         function saveAll()
         {
@@ -27,7 +37,14 @@
             templateBusiness.save();
             templateBusiness.saveTable();
             $mdMenu.hide();
+            templateBusiness.cancelPromise();
         }
+
+        function exportCharts()
+        {
+            $rootScope.$broadcast('exportAllCharts');
+        }
+
 
         //Toggle expand or collapse
         function toggleExpand()
@@ -202,7 +219,6 @@
                                 }
                             });
                         }
-
                     });
 
                     //Find section based on sectionId
@@ -327,7 +343,7 @@
                                     id: item.id,
                                     itemid: item.ItemId || '',
                                     mnemonicid: item.Mnemonic || '',
-                                    variation: 'second'
+                                    variation: 'fourth'
                                 }
                                 if(item.comId)
                                 {
@@ -544,6 +560,19 @@
                         {
                            if(isReadyToProcess)
                            {
+                              /* var allHighCharts = Highcharts.charts;
+                               var chartCntr = allHighCharts.length;
+                               var strSVG = '';
+                               for(var chartCnt = 0; chartCnt < chartCntr; chartCnt++)
+                               {
+                                   var chart = allHighCharts[chartCnt];
+                                   if(chart != undefined)
+                                   {
+                                       strSVG = chart.getSVG();
+
+//Need to create one file per chart and save it to  /data/tmp/newTemplates/<request_folder>
+                                   }
+                               }*/
                                isReadyToProcess= (_.findIndex(processedComp, {compId: tearSheet.id}) === -1);
                            }
                         });
@@ -580,19 +609,26 @@
                         }
                     }
 
-                    if(component)
-                    {
-                        _.each(component.sections, function(section)
-                        {
-                            if(section.id)
-                            {
+                    if(component) {
+                        _.each(component.sections, function (section) {
+                            if (section.id) {
                                 processedComp.push({
                                     compId: section.id
                                 });
                             }
                         });
-
-                        templateData.content.push(component);
+                        var templDataIndex = -1;
+                        if (component && templateData && templateData.hasOwnProperty('content') && templateData.content.length > 0) {
+                            templDataIndex = _.findIndex(templateData.content, function (v) {
+                                if (!v.hasOwnProperty('sections')) {
+                                    return;
+                                }
+                                return v.sections[0].TearSheetItem.Mnemonic == component.sections[0].TearSheetItem.Mnemonic;
+                            });
+                        }
+                        if (templDataIndex == -1) {
+                            templateData.content.push(component);
+                        }
                     }
                     else if(comp.TearSheetItem &&
                             comp.TearSheetItem.id === 'LinkItem')
@@ -619,6 +655,7 @@
                 {
                     angular.forEach(templateData.content, function(renderContent)
                     {
+                        console.log(">>>", renderContent);
                         if(renderContent.header &&
                            renderContent.sections &&
                            renderContent.sections.length > 0)
@@ -629,23 +666,26 @@
 
                             angular.forEach(renderContent.sections, function(section)
                             {
-                                newScope.isnoneditable =  (section.type === 'nonEditableUnmark');
-                                if(section.TearSheetItem &&
-                                   section.TearSheetItem.length)
-                                {
-                                    newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
-                                }
-                                else if(section.TearSheetItem) {
-                                    newScope.tearcontent.push(section.TearSheetItem);
-                                }
-                                else if(section.Label)
-                                {
-                                    newScope.tearcontent.push(section);
-                                }
-                                else if(section.row)
-                                {
-                                    newScope.tearcontent.push(section);
-                                }
+
+                                    newScope.isnoneditable =  (section.type === 'nonEditableUnmark');
+                                    if(section.TearSheetItem &&
+                                        section.TearSheetItem.length)
+                                    {
+                                        newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
+                                    }
+                                    else if(section.TearSheetItem) {
+                                        newScope.tearcontent.push(section.TearSheetItem);
+                                    }
+                                    else if(section.Label)
+                                    {
+                                        newScope.tearcontent.push(section);
+                                    }
+                                    else if(section.row)
+                                    {
+                                        newScope.tearcontent.push(section);
+                                    }
+
+
                             });
 
                             if(newScope.tearcontent)

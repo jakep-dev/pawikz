@@ -20,6 +20,14 @@ $table-layout-input-height: 25px;
     background-color: rgba(15, 185, 255, 0.11);
     border-radius: $table-layout-border-radius;
   }
+
+  md-checkbox.ng-untouched.ng-valid.md-default-theme.ng-dirty {
+      margin: 0;
+  }
+
+  md-checkbox.ng-pristine.ng-untouched.ng-valid.md-default-theme {
+      margin: 0;
+  }
 }
 
 .no-padding-margin

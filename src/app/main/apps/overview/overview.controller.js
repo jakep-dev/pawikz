@@ -167,7 +167,8 @@
         function saveAll()
         {
             overviewBusiness.save();
-            $mdMenu.hide()
+            $mdMenu.hide();
+            overviewBusiness.cancelPromise();
         }
 
         //Flip only the step view to tab and vice-versa
