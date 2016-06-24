@@ -6,12 +6,11 @@
         .module('app.core')
         .directive('msTablelayoutF', msTablelayoutFDirective);
 
-
     /** @ngInject */
     function msTablelayoutFDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder,
-                                     DTColumnDefBuilder)
+                                     DTColumnDefBuilder, toast)
     {
         return {
             restrict: 'E',
@@ -21,15 +20,338 @@
                 tearsheet: '='
             },
             templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/filter/ms-table-layout-f.html',
-            link: tableLayoutFilterLink
+            link: defineFilterLink
         };
 
-        function tableLayoutFilterLink(scope, el, attrs)
+        function defineLayout($scope, el, header)
+        {
+            $scope.dtInstance = {};
+            $scope.isTableShow = true;
+            $scope.IsAllChecked = false;
+            var html = '<table id="tablelayout-filter" ng-show="isTableShow" width="100%" dt-instance="dtInstance" dt-options="dtOptions" ' +
+                'class="row-border hover highlight cell-border" dt-column-defs="dtColumnDefs" datatable="ng" cellpadding="1" cellspacing="0">';
+
+            $scope.dtOptions = DTOptionsBuilder
+                .newOptions()
+                .withOption('processing', false)
+                .withOption('paging', true)
+                .withOption('filter', true)
+                .withOption('autoWidth', true)
+                .withOption('info', true)
+                //.withOption('ordering', true)
+                .withOption('sorting', [])
+                .withOption('responsive', true)
+                .withPaginationType('full')
+                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+
+
+            $scope.dtColumnDefs = [
+                DTColumnDefBuilder.newColumnDef(0).notSortable()
+            ];
+
+            //Defining the header here.
+            html += defineHeaderLayout(header);
+            html += defineBodyLayout($scope);
+            html += '</table>';
+
+            el.find('#ms-table-layout').append($compile(html)($scope));
+        }
+
+        function buildRows($scope, data)
+        {
+            $scope.data = [];
+
+            $scope.fruitNames = ['Apple', 'Banana', 'Orange'];
+
+            angular.forEach(data, function(eachData)
+            {
+               eachData.IsChecked = (eachData.TL_STATUS === 'Y');
+            });
+
+            $scope.data.push.apply($scope.data, data);
+            $scope.rows.push.apply($scope.rows, data);
+			
+			calculateHeaderSelection($scope);
+        }
+
+        function defineBodyLayout($scope)
+        {
+           $scope.rows = [];
+
+           var html = '<tbody>';
+               html += '<tr ng-repeat="row in rows">';
+            if($scope.tearsheet.columns.length > 0)
+            {
+                angular.forEach($scope.tearsheet.columns[0].col, function(eachCol)
+                {
+                    var tearSheetItem = eachCol.TearSheetItem;
+                    if(tearSheetItem)
+                    {
+
+                        switch (tearSheetItem.id)
+                        {
+                            case 'GenericSelectItem':
+                                html += '<td>';
+                                html += '<md-checkbox aria-label="select" ng-change="rowMakeSelection();saveRow(row);" ng-model="row.IsChecked"' +
+                                    'class="no-padding-margin"></md-checkbox>';
+                                break;
+                            case 'DateItem':
+                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
+								html += '<span style="display:none">{{formatDate(row.'+ tearSheetItem.ItemId + ', "YYYY-MM-DD")}}</span>'; //for easy sorting
+                                var calRow = '{{row.'+ tearSheetItem.ItemId + '}}';
+                                html += '<span>' + calRow + '</span>';
+
+                                break;
+                            default:
+                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
+                                var calRow = '{{row.'+ tearSheetItem.ItemId + '}}';
+                                html += '<span>' + calRow + '</span>';
+
+                                break;
+                        }
+                        html += '</td>';
+                    }
+                });
+            }
+
+            html += '</tr>';
+            html += '</tbody>';
+
+            return html;
+        }
+
+        function defineHeaderLayout(header)
+        {
+            var html = '';
+            if(header)
+            {
+                html += '<thead>';
+                html += '<tr class="row">';
+                html += '<th><md-checkbox ng-change="headerSelectAll(this)" ng-model="IsAllChecked" aria-label="select all" ' +
+                    'class="no-padding-margin"></md-checkbox></th>';
+                angular.forEach(header, function (col) {
+                    html += '<th>';
+                    html += '<strong>' + col  +'</strong>';
+                    html += '</th>';
+                });
+                html += '</tr>';
+                html += '</thead>';
+            }
+            return html;
+        }
+
+        function defineActions($scope)
+        {
+            $scope.$parent.$parent.actions.push({
+                id: 1,
+                callback: null,
+                icon: 'icon-filter',
+                isclicked: null,
+                type: 'menu',
+                tooltip: null,
+                scope: $scope,
+                menus:[{
+					   type: 'button',
+                       icon: 'icon-checkbox-marked',
+                       name: 'Selected',
+                       callback: $scope.itemid + '-Selected'
+                    },
+                    {
+						type: 'button',
+                        icon: 'icon-checkbox-blank-outline',
+                        name: 'UnSelected',
+                        callback: $scope.itemid + '-UnSelected'
+                    },
+                    {
+						type: 'button',
+                        icon: 'icon-eraser',
+                        name: 'Clear Filter',
+                        callback: $scope.itemid + '-ClearFilter'
+                    }]
+            });
+        }
+
+        ///Get the child details for the specific row
+        function showChildInfo($scope, rowSeq, event)
+        {
+            var newScope = $scope.$new(true);
+
+            var rowDetail = _.find($scope.data, function(detail)
+            {
+                return (detail.ROW_SEQ === rowSeq);
+            });
+
+            newScope.data = {};
+            if(rowDetail)
+            {
+                newScope.data.description  = rowDetail.DESCRIPTION || rowDetail.SIGDEVDESC;
+            }
+            else {
+                newScope.data.description = "No Data Available";
+            }
+
+            var link = angular.element(event.currentTarget),
+                tr = link.parent(),
+                table = $scope.dtInstance.DataTable,
+                row = table.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+            }
+            else {
+                row.child($compile('<ms-tablelayout-f-ci></ms-tablelayout-f-ci>')(newScope)).show();
+            }
+        }
+
+        function calculateHeaderSelection($scope)
+        {
+            $scope.IsAllChecked = false;
+            var unSelected = _.filter($scope.rows, function(eachRow)
+            {
+                if(eachRow.IsChecked === false)
+                {
+                    return eachRow;
+                }
+            })
+
+            if(unSelected && unSelected.length > 0)
+            {
+                $scope.IsAllChecked = false;
+            }
+            else {
+                $scope.IsAllChecked = true;
+            }
+        }
+
+        function initializeMsg($scope)
+        {
+            commonBusiness.onMsg($scope.itemid + '-Selected', $scope, function() {
+
+                showSelected($scope);
+            });
+
+            commonBusiness.onMsg($scope.itemid + '-UnSelected', $scope, function() {
+
+                showUnSelected($scope);
+            });
+
+            commonBusiness.onMsg($scope.itemid + '-ClearFilter', $scope, function() {
+
+                clearFilter($scope);
+            });
+        }
+
+        function showSelected($scope)
+        {
+           resetDataCheck($scope);
+           var selectedRows = _.filter($scope.data, function(row)
+           {
+               if(row.IsChecked === true)
+               {
+                   return row;
+               }
+           });
+
+            if(selectedRows && selectedRows.length > 0)
+            {
+                $scope.rows = [];
+                $scope.rows.push.apply($scope.rows, selectedRows);
+                toast.simpleToast("Showing only selected");
+				
+				calculateHeaderSelection($scope);
+            }
+            else {
+                toast.simpleToast("Nothing to filter!");
+            }
+        }
+
+        function showUnSelected($scope)
+        {
+            resetDataCheck($scope);
+            var selectedRows = _.filter($scope.data, function(row)
+            {
+                if(row.IsChecked === false)
+                {
+                    return row;
+                }
+            });
+
+            if(selectedRows && selectedRows.length > 0)
+            {
+                $scope.rows = [];
+                $scope.rows.push.apply($scope.rows, selectedRows);
+                toast.simpleToast("Showing only unselected");
+				
+				calculateHeaderSelection($scope);
+            }
+            else {
+                toast.simpleToast("Nothing to filter!");
+            }
+        }
+
+        function resetDataCheck($scope)
+        {
+            if($scope.data.length === $scope.rows.length)
+            {
+                $scope.data = [];
+                $scope.data.push.apply($scope.data, $scope.rows);
+            }
+        }
+
+        function clearFilter($scope)
+        {
+            $scope.rows = [];
+            $scope.rows.push.apply($scope.rows, $scope.data);
+            resetDataCheck($scope);
+            toast.simpleToast("Cleared filter!");
+				
+			calculateHeaderSelection($scope);
+        }
+
+        function headerAllSelection($scope)
+        {
+            angular.forEach($scope.rows, function(eachRow)
+                    {
+						if(eachRow.IsChecked !== $scope.IsAllChecked)
+						{
+							eachRow.IsChecked = $scope.IsAllChecked;
+							$scope.saveRow(eachRow);
+						}
+                    });
+        }
+		
+		function saveRow($scope, row)
+		{
+			var save = {
+				row: [],
+				condition: []
+			};
+			
+			save.row.push({
+				columnName: 'TL_STATUS',
+				value: (row.IsChecked) ? 'Y' : 'N'
+			});
+			
+			save.condition.push({
+				columnName: 'SEQUENCE',
+				value: row.SEQUENCE
+			});
+			save.condition.push({
+				columnName: 'ITEM_ID',
+				value: $scope.itemid
+			});
+			
+			autoSave($scope, save, 'updated', parseInt(row.SEQUENCE));
+		}
+
+		function autoSave($scope, rowObject, action, sequence)
+		{
+			templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
+		}
+
+        function defineFilterLink(scope, el, attrs)
         {
             var dataTableId = scope.itemid;
-            console.log('TableLayout Filter Link');
-            console.log(scope);
-
             if(scope.tearsheet.columns.length > 0)
             {
                 scope.$parent.$parent.isprocesscomplete = false;
@@ -60,9 +382,13 @@
 					header.push('Event Summary');
 				}
 
-                column.push.apply(column, scope.tearsheet.columns[0].col);
-                column.push(scope.tearsheet.columns[1].col);
+                if(scope.tearsheet.columns.length >=2 )
+                {
+                    column.push.apply(column, scope.tearsheet.columns[0].col);
+                    column.push(scope.tearsheet.columns[1].col);
+                }
 
+                scope.columns = column;
                 angular.forEach(column, function(col)
                 {
                     if(col.TearSheetItem &&
@@ -73,6 +399,7 @@
                 });
 				
 				columns += 'TL_STATUS,SEQUENCE';
+
 
                 var html = '';
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
@@ -85,331 +412,52 @@
                         html += '<div flex>';
                         html += '<ms-message message="No data available"></ms-message>';
                         html += '</div>';
+
+                        el.find('#ms-table-layout').append($compile(html)(scope));
                     }
                     else {
-                        scope.tableData = data;
-						
-						scope.dtCustomFunctionsInit = function(){
 
-							//custom filtering
-							$.fn.dataTableExt.afnFiltering.push(
-								function (oSettings, aData, iDataIndex) {
-
-									if ( oSettings.nTable.id === dataTableId ) {
-										var filterReturn = false;
-										var checkbox = $('md-checkbox', oSettings.aoData[iDataIndex].nTr).each(function(){
-											var filterSelection = new Array();
-											if(_.find(scope.$parent.$parent.actions, {id: 1}).isclicked === true){
-												filterSelection.push('N');
-											}
-											if(_.find(scope.$parent.$parent.actions, {id: 2}).isclicked === true){
-												filterSelection.push('Y');
-											}
-
-											var checkboxValue = eval('scope.' + $(this).attr('ng-model'));
-											if(checkboxValue){
-												filterReturn = filterSelection.indexOf(checkboxValue) > -1;
-											}
-										});
-
-										return filterReturn;
-									}else{
-										return true;
-									}
-								}
-							);
-							
-							//custom date sorting
-							$.fn.dataTable.ext.order['custom-date-sort'] = function  ( settings, col ) {
-								return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
-									var date = moment($('span', td).text(), 'DD-MMM-YY', true);
-									return date.isValid() ? date.format('YYYY-MM-DD') : '';
-								});
-							}
-						}
-						
-						scope.dtCustomFunctionsInit();
-
-                        dtDefineOptions(scope);
-
-                        var descriptionDetails = [];
-
-                        dtDefineColumn(scope, column);
-
-                        var filteredTL = 'FilteredTableLayout'.concat("-", dataTableId);
-                        var unFilteredTL = 'UnFilteredTableLayout'.concat("-", dataTableId);
-
-                        scope.$parent.$parent.actions.push({
-                            id: 1,
-                            callback: filteredTL,
-                            icon: 'icon-filter',
-                            isclicked: true
-                        });
-
-                        scope.$parent.$parent.actions.push({
-                            id: 2,
-                            callback: unFilteredTL,
-                            icon: 'icon-filter-remove',
-                            isclicked: true
-                        });
+                        defineLayout(scope, el, header);
+                        defineActions(scope);
+                        initializeMsg(scope);
+                        buildRows(scope, data);
 
 
-                        commonBusiness.onMsg(filteredTL, scope, function() {
-                            scope.filtered();
-                        });
-
-                        commonBusiness.onMsg(unFilteredTL, scope, function() {
-                            scope.unFiltered();
-                        });
-
-
-                        scope.filtered = function()
+                        scope.showChildInfo = function(id, event)
                         {
-                            tableReDraw(scope);
+                            showChildInfo(scope, id, event);
                         };
 
-                        scope.unFiltered = function()
+                        scope.headerSelectAll = function(currentScope)
                         {
-                            tableReDraw(scope);
+                            headerAllSelection(currentScope);
                         };
 
-                        scope.childInfo = function(id, event)
+                        scope.rowMakeSelection = function()
                         {
-                            var newScope = scope.$new(true);
-
-                            var descDetail = _.find(scope.descriptionDetails, function(detail)
-                            {
-                                return (detail.id === id);
-                            })
-
-
-                            newScope.data = {};
-                            if(descDetail)
-                            {
-                                newScope.data.description  = descDetail.value;
-                            }
-                            else {
-                                newScope.data.description = "No Data Available";
-                            }
-
-
-                            var link = angular.element(event.currentTarget),
-                                tr = link.parent(),
-                                table = scope.dtInstance.DataTable,
-                                row = table.row(tr);
-
-                            if (row.child.isShown()) {
-                                row.child.hide();
-                            }
-                            else {
-                                row.child($compile('<ms-tablelayout-f-ci></ms-tablelayout-f-ci>')(newScope)).show();
-                            }
-                        };
-
-                        scope.selectAll = function(value)
-                        {
-                            var table = scope.dtInstance.dataTable;
-                            var rows = table._('tr', {"filter":"applied"}).rows({ page: 'current', search: 'applied' }).nodes();
-                            $('md-checkbox', rows).each(function(){
-                                var ngModel = $(this).attr('ng-model');
-                                var ngChange = $(this).attr('ng-change');
-                                var modelValue = $(this).attr('ng-'+value+'-value');
-                                eval('scope.' + ngModel + ' = ' + modelValue);
-                                eval('scope.' + ngChange.replace('tableData', 'scope.tableData'));
-                            });
-                        };
-
-                        scope.indSelection = function(row)
-                        {	
-							tableReDraw(scope, scope.dtInstance.DataTable.page());
-							scope.saveRow(row);
+                            calculateHeaderSelection(scope);
                         };
 
                         scope.saveRow = function(row)
                         {
-							var obj = {
-								row: new Array(),
-								condition: new Array()
-							}
-							obj.row.push({
-								columnName: 'TL_STATUS',
-								value: row.TL_STATUS
-							});
-							obj.condition.push({
-								columnName: 'SEQUENCE',
-								value: row['SEQUENCE']
-							});
-							obj.condition.push({
-								columnName: 'ITEM_ID',
-								value: scope.itemid
-							});
-							
-							templateBusiness.getReayForAutoSaveTableLayout(scope.itemid, scope.mnemonicid, obj);
-
+                            saveRow(scope, row);
                         };
+						
+						scope.formatDate = function(dateStr, format)
+						{
+							var date = moment(dateStr, 'DD-MMM-YY', true);
+							return date.isValid() ? date.format(format) : '';
+						};
 
-                        html += '<table id="'+ dataTableId +'" dt-options="dtOptions" dt-column-defs="dtColumnDefs" ' +
-                            'dt-instance="dtInstance" class="row-border hover" datatable="" width="100%" cellpadding="1" cellspacing="0">';
-
-                        if(header)
-                        {
-                            var footerHtml = '<tfoot>';
-                            footerHtml += '<tr class="row">';
-
-                            html += '<thead>';
-                            html += '<tr class="row">';
-                            html += '<th><md-checkbox aria-label="select all" class="no-padding-margin" ng-model="isAllSelected" ng-change="selectAll(isAllSelected)"></md-checkbox></th>';
-                            angular.forEach(header, function (col) {
-                                html += '<th>';
-                                footerHtml += '<th>';
-                                
-								html += '<strong>' + col  +'</strong>';
-								footerHtml += '<strong>' + col  +'</strong>';
-
-                                footerHtml += '</th>';
-                                html += '</th>';
-                            });
-							html += '<th></th>';
-                            html += '</tr>';
-                            html += '</thead>';
-
-                            footerHtml += '</tr>';
-                            footerHtml += '</tfoot>';
-                        }
-
-                        html += '<tbody>';
-                        for(var count = 0; count < data.length; count++)
-                        {
-                            var newDescId = descriptionDetails.length + 1;
-                            html += '<tr style="min-height: 25px" class="row-cursor">';
-                            html += '<td><md-checkbox aria-label="select" class="no-padding-margin" ng-model="tableData['+count+'].TL_STATUS" ng-change="indSelection(tableData['+count+'])" ng-true-value="\'N\'" ng-false-value="\'Y\'"></md-checkbox></td>';
-                            angular.forEach(column, function(col)
-                            {
-
-                                if(!col.TearSheetItem ||
-                                    !col.TearSheetItem.Mnemonic ||
-                                    col.TearSheetItem.Mnemonic === 'ACTION')
-                                {
-                                    return;
-                                }
-
-                                if(col.TearSheetItem.Mnemonic === 'DESCRIPTION' || col.TearSheetItem.Mnemonic === 'SIGDEVDESC')
-                                {
-                                    var exp = "data[count]." + col.TearSheetItem.Mnemonic;
-                                    var desValue = eval(exp);
-                                    descriptionDetails.push({id: newDescId, value: desValue});
-
-                                    //return;
-                                }
-
-                                html += '<td ng-click="childInfo('+ newDescId +', $event)">';
-                                var tearSheetItem = col.TearSheetItem;
-                                var mnemonic = tearSheetItem.Mnemonic;
-
-                                var exp = "data[count]." + mnemonic;
-                                var value = eval(exp);
-
-                                if (value) {
-                                    html += '<span style="font-weight: normal">' + value + '</span>';
-                                }
-
-                                html += '</td>';
-                            });
-                            html += '</tr>';
-                        }
-                        html += '</tbody>';
-                        html += '</table>';
-
-                        scope.descriptionDetails = descriptionDetails;
+                        console.log('TableLayout Filter Link');
+                        console.log(scope);
+                        console.log('TableLayout Filter Data');
+                        console.log(data);
                     }
-
                     scope.$parent.$parent.isprocesscomplete = true;
-                    el.find('#ms-table-layout').append($compile(html)(scope));
-					
-					//temp codes
-					//recalculate selection on first load
-					$timeout( function(){
-						recalculateSelection(scope);						
-					});
-
                 });
             }
         }
-
-        function showFiltered()
-        {
-
-        }
-
-        function showUnFiltered()
-        {
-
-        }
-
-        //Define Data-Table Options
-        function dtDefineOptions(scope)
-        {
-            scope.dtOptions = DTOptionsBuilder
-                .newOptions()
-                .withOption('paging', true)
-                .withOption('filter', true)
-                .withOption('autoWidth', true)
-                .withOption('responsive', false)
-				.withOption('drawCallback', function(){ recalculateSelection(scope); }) //check isAllSelected when table is change
-                .withOption('sorting', [])
-                .withPaginationType('full')
-                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
-        }
-
-        function dtDefineColumn(scope, column)
-        {
-            scope.dtColumnDefs = [
-                DTColumnDefBuilder.newColumnDef(0).notSortable()
-            ];
-			
-			angular.forEach(column, function(col, index)
-			{
-				if(col.TearSheetItem.id === 'DateItem')
-				{
-					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withOption('orderDataType', 'custom-date-sort'));
-				}
-				
-				if(col.TearSheetItem.Mnemonic === 'DESCRIPTION' || col.TearSheetItem.Mnemonic === 'SIGDEVDESC')
-                {
-					scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(index).withClass('hiddenColumn'));
-				}
-			});
-			
-            scope.dtInstance = {};
-        }
-		
-		function recalculateSelection(scope){
-			if(scope.dtInstance && scope.dtInstance.dataTable){
-				var table = scope.dtInstance.dataTable;
-				var rows = table._('tr', {"filter":"applied"}).rows({ page: 'current', search: 'applied' }).nodes();
-				
-				scope.isAllSelected = true;
-				$('md-checkbox', rows).each(function(){
-					var ngModel = $(this).attr('ng-model');
-					
-					if(eval('scope.' + ngModel) == 'Y'){
-						scope.isAllSelected = false;
-						return;
-					}
-				});
-			}
-		}
-		
-		function tableReDraw(scope, page){
-			scope.dtInstance.dataTable._fnReDraw();
-			
-			//retain page
-			if(page)
-			{
-				var table = scope.dtInstance.DataTable;
-				table.page(page).draw( 'page' );
-			}
-		}
     }
 
 })();

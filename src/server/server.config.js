@@ -26,6 +26,8 @@ exports.restcall =
                    logout: 'deleteSession',
                    userInfo: 'getUserInfo',
                    saveDynamicTableData: 'updateTemplateTableLayOut',
+				   addDynamicTableData: 'insertTemplateTableLayOut',
+				   deleteDynamicTableData: 'deleteTemplateTableLayOut',
                    saveMnemonics: 'updateTemplateMnemonics'
                 }
               },

@@ -15,6 +15,7 @@
            mnemonics: null,
            saveMnemonics: [],
 		   saveTableMnemonics: [],
+		   saveHybridTableMnemonics: [],
            autoSavePromise: [],
            isExpandAll: false,
            save: save,
@@ -24,6 +25,7 @@
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
 		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
+		   getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
            getEvalMnemonicValue: getEvalMnemonicValue,
            getNewItemId: getNewItemId,
@@ -300,6 +302,130 @@
             console.log(business.saveMnemonics);
             initiateAutoSave();
         }
+		
+		function getReayForAutoSaveHybridTable(itemId, mnemonic, row, action, sequence)
+		{
+			var mnemonicTable = _.find(business.saveHybridTableMnemonics, {itemId: itemId, mnemonic: mnemonic});
+
+            console.log('Mnemonic Table');
+            console.log(mnemonicTable);
+
+            if(angular.isUndefined(mnemonicTable))
+            {
+                console.log('Adding...');
+				row.action = action;
+                business.saveHybridTableMnemonics.push({
+                    itemId: itemId,
+                    mnemonic: mnemonic,
+                    table: [row]
+                });
+				
+				console.log(business.saveHybridTableMnemonics);
+            }
+            else {
+				switch(action)
+				{
+					case 'added':
+						row.action = action;
+						mnemonicTable.table.push(row);
+						break;
+					case 'updated':
+						hybridUpdateRules(mnemonicTable.table, row, sequence);
+						break;
+					case 'deleted':
+						hybridDeleteRules(mnemonicTable.table, row, sequence);
+						break;
+					default: break;
+				}
+            }
+			
+			console.log('Inserting save Table Mnemonics --');
+            console.log(business.saveHybridTableMnemonics);
+            initiateAutoSave();
+		}
+		
+		/*
+		 * if row sequence exists in added, 
+		 * move row object to added
+		 */
+		function hybridUpdateRules(table, newRow, sequence)
+		{
+			var isExist = false;
+			var isAdded = false;
+			angular.forEach(table, function(addedRow){
+				if(addedRow.action === 'added'){
+					if(addedRow.row){
+						angular.forEach(addedRow.row, function(existingRow){
+							if(existingRow.columnName === 'SEQUENCE' && existingRow.value == sequence){
+								isAdded = true;
+								newRow.action = addedRow.action;
+								addedRow.row = newRow.row;
+								return;
+							}
+						});
+					}
+					if(isAdded){
+						return;
+					}
+				}
+			});
+			
+			if(!isAdded){
+				newRow.action = 'updated';
+				angular.forEach(table, function(savedRow){
+					if(_.isEqual(savedRow.condition, newRow.condition)){
+						savedRow.row = newRow.row;
+						isExist = true;
+						return;
+					}
+				});
+				
+				if(!isExist){
+					table.push(newRow);
+				}
+			}
+		}
+		
+		/*
+		 * if row sequence exists in added, delete the row object
+		 * if row sequence exists in updated, change action to deleted
+		 */
+		function hybridDeleteRules(table, newRow, sequence)
+		{
+			var isExist = false;
+			//angular.forEach(table, function(addedRow){
+			for(var index = table.length - 1; index >= 0; index--){
+				var row = table[index];
+				if(row.action === 'added' || row.action === 'updated'){
+					if(row.row){
+						angular.forEach(row.row, function(existingRow){
+							if(existingRow.columnName === 'SEQUENCE' && existingRow.value == sequence){								
+								if(row.action === 'added' )
+								{
+									table.splice(index, 1);
+								}
+								else if(row.action === 'updated')
+								{
+									row.action = 'deleted';
+								}								
+								
+								isExist = true;
+								return;
+							}
+						});
+					}
+					if(isExist){
+						break;
+					}
+				}
+			}
+			//});
+			
+			if(!isExist){
+				newRow.action = 'deleted';
+				table.push(newRow);
+			}
+		}
 
         //Get Mnemonic value based on itemId and Mnemonic
         function getMnemonicValue(itemId, mnemonic)
@@ -334,6 +460,7 @@
                 {
                     save();
 					saveTable();
+					saveHybridTable();
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -373,6 +500,84 @@
                 });
             }
         }
+		
+		function saveHybridTable(){
+			
+			angular.forEach(business.saveHybridTableMnemonics, function(hybridTable){
+				var tableItemId = hybridTable.itemId;
+				var tableMnemonicId = hybridTable.mnemonic;
+				
+				var addHybrid = new Array();
+				var updateHybrid = new Array();
+				var deleteHybrid = new Array();
+				
+				angular.forEach(hybridTable.table, function(table){
+					switch(table.action)
+					{
+						case 'added':
+							
+							//required fields for add row
+							table.row.push({
+								columnName: 'OBJECT_ID',
+								value: commonBusiness.projectId
+							});
+							
+							table.row.push({
+								columnName: 'ITEM_ID',
+								value: tableItemId
+							});
+							
+							addHybrid.push({
+								row: table.row
+							});
+							break;
+						case 'updated':
+							updateHybrid.push({
+								row: table.row,
+								condition: table.condition
+							});
+							break;
+						case 'deleted':
+							deleteHybrid.push({
+								condition: table.condition
+							});
+							
+							break;
+						default: break;
+					}
+				});
+				
+				if(addHybrid && addHybrid.length > 0){
+					templateService.addDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+						tableMnemonicId, tableItemId, addHybrid).then(function(response) {
+							console.log(response);
+							console.log(addHybrid);
+						}
+					);
+				}
+				
+				if(updateHybrid && updateHybrid.length > 0){
+					templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+						tableMnemonicId, tableItemId, updateHybrid).then(function(response) {
+							console.log(response);
+							console.log(updateHybrid);
+						}
+					);
+				}
+				
+				if(deleteHybrid && deleteHybrid.length > 0){
+					templateService.deleteDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+						tableMnemonicId, tableItemId, deleteHybrid).then(function(response) {
+							console.log(response);
+							console.log(deleteHybrid);
+						}
+					);
+				}
+				
+			});
+			
+			business.saveHybridTableMnemonics = [];
+		}
 
         //Cancel the auto-save promise.
         function cancelPromise()

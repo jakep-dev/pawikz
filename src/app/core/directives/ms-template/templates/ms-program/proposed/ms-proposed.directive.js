@@ -36,7 +36,8 @@
                     callback: "ProposedProgram",
                     icon: 'icon-content-copy',
                     isclicked: null,
-                    tooltip: 'Copy from Expiring'
+                    tooltip: 'Copy from Expiring',
+                    type: 'button'
                 });
 
                 $scope.$parent.$parent.actions.push({
@@ -44,7 +45,8 @@
                     callback: "PP-Upload",
                     icon: 'icon-upload',
                     isclicked: null,
-                    tooltip: 'Upload From Spreadsheet'
+                    tooltip: 'Upload From Spreadsheet',
+                    type: 'button'
                 });
 
                 $scope.$parent.$parent.actions.push({
@@ -52,7 +54,8 @@
                     callback: "PP-Download",
                     icon: 'icon-download',
                     isclicked: null,
-                    tooltip: 'Download to Spreadsheet'
+                    tooltip: 'Download to Spreadsheet',
+                    type: 'button'
                 });
 
                 $scope.$parent.$parent.actions.push({
@@ -60,7 +63,8 @@
                     callback: "PP-Eraser",
                     icon: 'icon-eraser',
                     isclicked: null,
-                    tooltip: 'Clear data'
+                    tooltip: 'Clear data',
+                    type: 'button'
                 });
             }
         }
