@@ -43,9 +43,8 @@
     "highcharts-ng": "^0.0.11",
     "highcharts": "~4.2.3",
     "angular-papaparse": "^1.0.0",
-    "angular-editable-text": "^1.1.2",
     "angular-material": "1.1.0-rc4",
-    "socket.io":"^1.4.6"
+    "socket.io": "^1.4.6"
   },
   "devDependencies": {
     "angular-mocks": "1.5.5"

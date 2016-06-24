@@ -34,7 +34,6 @@
                 'disableAll',
                 'froala',
                 'highcharts-ng',
-                'ngPapaParse',
-                'gg.editableText'
+                'ngPapaParse'
             ]);
 })();
