@@ -39,7 +39,7 @@
                     if(!row.id || row.id !== 'toolbar_links') {
                         html = '';
                         newScope = null;
-                        html += '<div class="row" layout-align="center center" style="height: 30px"  ' +
+                        html += '<div class="row" layout-align="center center" style="min-height: 30px"  ' +
                             'layout="row" flex>';
 
                         var columns = null;
