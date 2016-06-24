@@ -9,12 +9,14 @@ $generic-table-input-height: 25px;
   border:1px dotted lightgrey;
   border-radius: 2px;
 
-
+  md-input-container {
+      margin:0px 0;
+  }
 
   .row
   {
    // padding-left: $generic-table-padding-left;
-    height: 40px;
+    //height: 40px;
     font-weight: bold;
   }
 
