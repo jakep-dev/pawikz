@@ -15,6 +15,10 @@
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
+                    $scope.compute({
+                        value: newValue,
+                        rowId: $scope.rowid
+                    });
                     templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
@@ -32,7 +36,9 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                tearsheet: '@'
+                tearsheet: '@',
+                compute: '&',
+                rowid: '@',
             },
             controller: 'MsProgramDropdownController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-program/dropdown/ms-program-dropdown.html',
