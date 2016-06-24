@@ -419,7 +419,7 @@
 
                 var computedAtt = templateBusiness.calculateProgramAtt(limit, att);
 
-                if (!isNaN(computedAtt) && isFinite(computedAtt))
+                if ((currentRow.LIMIT.value != '') && (currentRow.PREMIUM.value != '') && !isNaN(computedAtt) && isFinite(computedAtt))
                 {
                     currentRow.RET.value = $filter("currency")(computedAtt, '', 0);
                 }
@@ -466,8 +466,12 @@
 
         function computeRol(currentRow, previousRow)
         {
-            if(previousRow &&
-                currentRow)
+            if (currentRow.rowid == 1)
+            {
+                currentRow.ROL.value = 'N/A';
+                currentRow.iscompute = true;
+            }
+            else if (previousRow && currentRow)
             {
                 var currentRate = currentRow.RATEMM.value;
                 var previousRate = previousRow.RATEMM.value;
@@ -683,6 +687,9 @@
                 });
             }
 
+            //recompute formula for all rows
+            computeRate($scope.rows[0]);
+            computeOthers($scope.rows, 1);
             toast.simpleToast('Expiring program copied!');
         }
 
