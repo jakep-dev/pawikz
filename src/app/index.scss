@@ -81,3 +81,13 @@ input {
 {
   margin-right: -20px;
 }
+
+._md-select-menu-container._md-active, md-backdrop._md-select-backdrop
+{
+  z-index: 100;
+}
+
+.md-virtual-repeat-container.md-autocomplete-suggestions-container
+{
+  z-index: 101;
+}

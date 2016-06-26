@@ -300,20 +300,38 @@
 
 
         vm.onPeerRemove = function (peer) {
-            var index = vm.filterState.selectedIndices.indexOf(peer);
-            if (index !== -1 ) {
+            var index;
+            vm.filterState.selectedIndices.some(function(ind, i){
+                if(ind.indexOf(peer) === 0){
+                    index = i;
+                    return true;
+                }
+            });
+            if (index >=0 ) {
                 var selectedIndices = vm.filterState.selectedIndices;
                 selectedIndices.splice(index,1);
                 vm.filterState.selectedIndices = selectedIndices;
             }
-            var indexCom = vm.filterState.selectedCompetitors.indexOf(peer);
-            if (indexCom !== -1 ) {
+            var indexCom;
+            vm.filterState.selectedCompetitors.some(function(competitor, i){
+                if(competitor.indexOf(peer) === 0){
+                    indexCom = i;
+                    return true;
+                }
+            });
+            if (indexCom >=0 ) {
                 var selected = vm.filterState.selectedCompetitors;
                 selected.splice(indexCom,1);
                 vm.filterState.selectedCompetitors = selected;
             }
-            var peerIndex = vm.filterState.selectedPeers.indexOf(peer);
-            if (peerIndex !== -1 ) {
+            var peerIndex;
+            vm.filterState.selectedPeers.some(function(eachpeer, i){
+                if(eachpeer.indexOf(peer) === 0){
+                    peerIndex = i;
+                    return true;
+                }
+            });
+            if (peerIndex >=0 ) {
                 vm.filterState.selectedPeers.splice(peerIndex,1);
             }
 

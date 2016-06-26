@@ -4,7 +4,7 @@
 (function () {
     'use strict';
     angular.module('app.core')
-        .directive('msStockChartFeature', ['$timeout','$rootScope', function ($timeout,$rootScope) {
+        .directive('msStockChartFeature', ['$timeout','$rootScope','commonBusiness', function ($timeout,$rootScope, commonBusiness) {
 
             return {
                 restrict: 'EA',
@@ -685,13 +685,13 @@ $timeout(function(){
 
                             $('.trashIconTooltip').click(function(){
                                 var peer = $(this).parent().parent().find('.name').text().replace('&amp;','&');
-                                peer = peer.substring(0,peer.lastIndexOf(' ')).trim();
+                              //  peer = peer.substring(0,peer.lastIndexOf(' ')).trim();
                                 scope.onPeerRemove(peer);
                             });
 
                         });
                         //Auto Save functionality
-                        //$rootScope.$broadcast('autosave');
+                        commonBusiness.emitMsg('autosave');
                     }
                 }
             };

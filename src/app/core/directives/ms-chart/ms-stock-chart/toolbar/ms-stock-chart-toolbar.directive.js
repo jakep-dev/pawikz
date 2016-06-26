@@ -144,10 +144,23 @@
 
          }*/
         function customDateChange() {
-            vm.filterState.startDate = vm.startDate;
-            vm.filterState.endDate = vm.endDate;
-            vm.changedPeriod('CUSTOM');
-            vm.onFilterStateUpdate();
+            if(vm.startDate > vm.endDate) {
+                vm.endDate = vm.filterState.endDate;
+                dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, {
+                    ok: {
+                        name: 'ok', callBack: function () {
+                            console.log('cliked ok');
+                        }
+                    }
+                });
+            }
+            else
+            {
+                vm.filterState.startDate = vm.startDate;
+                vm.filterState.endDate = vm.endDate;
+                vm.changedPeriod('CUSTOM');
+                vm.onFilterStateUpdate();
+            }
         }
 
 
