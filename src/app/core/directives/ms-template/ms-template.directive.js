@@ -553,6 +553,13 @@
                     }
                     else if(comp.id) {
                         isReadyToProcess =  (_.findIndex(processedComp, {compId: comp.id}) === -1);
+                        if(comp.TearSheetItem && comp.TearSheetItem.Mnemonic)
+                        {
+                            if(comp.TearSheetItem.Mnemonic === 'WU_STOCK_CHART_3YR')
+                            {
+                                isReadyToProcess = false;
+                            }
+                        }
                     }
                     else if(comp.TearSheetItem.length)
                     {
@@ -564,6 +571,7 @@
                             }
                         });
                     }
+
 
                     if(isReadyToProcess)
                     {
