@@ -496,8 +496,8 @@
             }
             else if(previousRow && currentRow)
             {
-                var currentRate = currentRow.RATEMM.value;
-                var previousRate = previousRow.RATEMM.value;
+                var currentRate = removeCommaValue(currentRow.RATEMM.value);
+                var previousRate = removeCommaValue(previousRow.RATEMM.value);
 
                 var rol = templateBusiness.calculateProgramRol(currentRate, previousRate);
 
