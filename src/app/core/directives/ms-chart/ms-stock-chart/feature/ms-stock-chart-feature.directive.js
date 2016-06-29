@@ -271,6 +271,7 @@ $timeout(function(){
                                 .highcharts({
                                     chart: {
                                         events:{
+                                            // side labels tooltip and legends to show the stock & peer name ticker in sorted order with custom dates
                                             load: function() {
                                                 $(".highcharts-legend-item path").attr({'stroke-width': 20});
                                                 var chart = this,
@@ -291,7 +292,7 @@ $timeout(function(){
 
                                                                 tooltipBox.css({
                                                                     left:$(this).position().left,
-                                                                    top:$(this).position().top+17
+                                                                    top:$(this).position().top+7
                                                                 }).parent().css({'position':'relative'});
                                                                 tooltipBox.mouseover(function() {
                                                                     tooltipBox.show();
@@ -312,6 +313,7 @@ $timeout(function(){
                                                         })(legendNum);
                                                     }
                                                 }
+                                                //setting ;abel boxes
                                                 if(i==0)
                                                 {
                                                     if(this.series)
@@ -325,10 +327,10 @@ $timeout(function(){
                                                                 chart = this,
                                                                 lastPoint = data[lastIndex],
                                                                 x = chart.chartWidth - chart.marginRight+5,
-                                                                y = lastPoint.plotY + chart.plotTop - 17,
+                                                                y = lastPoint.plotY + chart.plotTop - 40,
                                                                 label;
 
-                                                            //adding tooltip as label
+                                                            //adding tooltip as side labels with customize tooltip properties.
                                                             label = chart.renderer.label(this.series[serCntr].name,
                                                                 x,
                                                                 y,
@@ -614,12 +616,15 @@ $timeout(function(){
                                                                             //console.log('v.priceClose: v.ticker');
                                                                             //tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
                                                                             legendItem.attr({text: (p.name + ' ' + v.priceClose)});
+
                                                                         }
                                                                     });
                                                                 }
                                                                 else
                                                                 {
                                                                     legendItem.attr({text: (p.name + ' ' + primarystockresp.stockChartPeerData[primarystockresp.stockChartPrimaryData.length*(n-1) + xIndex].priceClose)});
+
+
                                                                     //var legCntr=0;
                                                                     //legendItem.attr({ text: (p.name + ' ' + yValue.toFixed(2))});
 
@@ -685,7 +690,10 @@ $timeout(function(){
 
                             $('.trashIconTooltip').click(function(){
                                 var peer = $(this).parent().parent().find('.name').text().replace('&amp;','&');
-                              //  peer = peer.substring(0,peer.lastIndexOf(' ')).trim();
+
+                                    peer = peer.substring(0,peer.lastIndexOf(' ')).trim();
+
+
                                 scope.onPeerRemove(peer);
                             });
 
