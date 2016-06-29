@@ -103,7 +103,30 @@
 
             defineUpload($scope);
 
-            $scope.calculate = function(currentRow, value, rowId, columnName)
+            $scope.updateCarrier = function (value, rowId)
+            {
+                var rowNumber = parseInt(rowId);
+
+                var findRow = _.filter($scope.rows, function (row) {
+                    if (row.rowid === rowNumber) {
+                        return row;
+                    }
+                });
+
+                if (findRow &&
+                   findRow.length === 1) {
+                    if (value === '') {
+                        value = '""';
+                    }
+                    else {
+                        value = '"' + value + '"';
+                    }
+                    var rowExp = 'findRow[0].CARRIER.tearsheet.selectedValue = ' + value + ';';
+                    eval(rowExp);
+                }
+            };
+
+            $scope.calculate = function (currentRow, value, rowId, columnName)
             {
                 if(columnName.indexOf('LIMIT') > -1 ||
                     columnName.indexOf('PREMIUM') > -1 ||
@@ -206,9 +229,11 @@
                         break;
 
                     case 'SingleDropDownItem':
-                        html += '<ms-program-dropdown tearsheet="{{row.'+ newItemId +'.tearsheet}}"' +
-                            'mnemonicid="{{row.'+ newItemId +'.mnemonicid}}" ' +
-                            'itemid="{{row.'+ newItemId +'.itemid}}"></ms-program-dropdown>';
+                        html += '<ms-program-dropdown tearsheet="{{row.'+ newItemId +'.tearsheet}}" ' +
+                            'mnemonicid="{{row.' + newItemId + '.mnemonicid}}" ' +
+                            'rowid="{{row.rowid}}" ' +
+                            'compute="updateCarrier(value, rowId)" ' +
+                            'itemid="{{row.' + newItemId + '.itemid}}"></ms-program-dropdown>';
                         break;
 
                     default:break;
@@ -477,8 +502,8 @@
             }
             else if (previousRow && currentRow)
             {
-                var currentRate = currentRow.RATEMM.value;
-                var previousRate = previousRow.RATEMM.value;
+                var currentRate = removeCommaValue(currentRow.RATEMM.value);
+                var previousRate = removeCommaValue(previousRow.RATEMM.value);
 
                 var rol = templateBusiness.calculateProgramRol(currentRate, previousRate);
 
