@@ -6,7 +6,7 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect) {
+    function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect, $timeout) {
         var vm = this;
         vm.splits = false;
         vm.earnings = false;
@@ -144,10 +144,27 @@
 
          }*/
         function customDateChange() {
-            vm.filterState.startDate = vm.startDate;
-            vm.filterState.endDate = vm.endDate;
-            vm.changedPeriod('CUSTOM');
-            vm.onFilterStateUpdate();
+            $timeout(function(){
+                if(vm.startDate > vm.endDate) {
+                    vm.endDate = vm.filterState.endDate;
+                    dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, {
+                        ok: {
+                            name: 'ok', callBack: function () {
+                                console.log('cliked ok');
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    if(vm.startDate && vm.endDate){
+                        vm.filterState.startDate = vm.startDate;
+                        vm.filterState.endDate = vm.endDate;
+                        vm.changedPeriod('CUSTOM');
+                        vm.onFilterStateUpdate();
+                    }
+                }
+            },1000)
         }
 
 

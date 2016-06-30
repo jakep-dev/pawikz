@@ -136,15 +136,15 @@
         </div>
         <div id="toolbar-date" flex="60" style="margin-left: 15px; margin-right: 15px;">
             <md-radio-group ng-model="vm.range" layout="row">
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('1W')">1W</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('1M')"> 1M</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('3M')"> 3M</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('18M')"> 18M</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('1Y')"> 1Y</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('2Y')"> 2Y</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('3Y')"> 3Y</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('5Y')"> 5Y</md-button>
-                <md-button class="md-icon-button" flex ng-click="vm.changedPeriod('10Y')"> 10Y</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '1W'}" ng-click="vm.changedPeriod('1W')">1W</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '1M'}" ng-click="vm.changedPeriod('1M')"> 1M</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '3M'}" ng-click="vm.changedPeriod('3M')"> 3M</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '18M'}" ng-click="vm.changedPeriod('18M')"> 18M</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '1Y'}" ng-click="vm.changedPeriod('1Y')"> 1Y</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '2Y'}" ng-click="vm.changedPeriod('2Y')"> 2Y</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '3Y'}" ng-click="vm.changedPeriod('3Y')"> 3Y</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '5Y'}" ng-click="vm.changedPeriod('5Y')"> 5Y</md-button>
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '10Y'}" ng-click="vm.changedPeriod('10Y')"> 10Y</md-button>
             </md-radio-group>
         </div>
         <div flex="5">

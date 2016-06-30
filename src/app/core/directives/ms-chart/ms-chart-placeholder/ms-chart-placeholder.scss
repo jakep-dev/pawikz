@@ -6,6 +6,10 @@
   }
 }
 
+#chartTitle
+{
+width: 250px;
+}
 .placeholderClass
 {
 
@@ -16,4 +20,9 @@
   bottom:0px;
   width:95%;
   background:#ffffff;
+}
+
+ms-chart-placeholder:nth-child(2) .md-icon-button .icon-arrow-up, ms-chart-placeholder:last-child .md-icon-button .icon-arrow-down{
+  color: #aaa;
+  cursor: not-allowed;
 }

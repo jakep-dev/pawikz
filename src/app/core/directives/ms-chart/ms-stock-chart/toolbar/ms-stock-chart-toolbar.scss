@@ -3,6 +3,18 @@
   border: 1px dotted grey;
   border-radius: 5px;
   width:60%;
+
+  .period-selected
+  {
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  .md-button.md-icon-button
+  {
+    height: 35px;
+    line-height: 21px;
+  }
 }
 .comparison-text
 {

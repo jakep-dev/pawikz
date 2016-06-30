@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, stockService, commonBusiness, toast, $interval, clientConfig,store)
+    function msChartDirective($rootScope, $compile, $q,  stockService, commonBusiness, toast, $interval, clientConfig,store)
     {
         return {
             restrict: 'E',
@@ -494,7 +494,7 @@
 
                                             });
                                         }
-
+                                        var defer = $q.defer();
                                         stockService.saveChartAllSettings(commonBusiness.companyId,
                                             commonBusiness.stepId, commonBusiness.projectId, scope.mnemonicid,
                                             scope.itemid, store.get('x-session-token'), startArr).then(function(response) {
@@ -503,7 +503,9 @@
                                               angular.forEach(response.data, function(respData) {
                                                   scope.chart_ids.push(respData.chart_id);
                                               })
+                                                defer.resolve();
                                             });
+                                        return defer.promise;
                                     };
 
                                     scope.saveAllCharts = saveAllCharts;
@@ -512,25 +514,28 @@
                                         exportAllCharts();
                                     });
 
-                                    $rootScope.$on('autosave',function(){
+                                    commonBusiness.onMsg('autosave',scope, function(){
                                         setTimeout(function(){
                                             saveAllCharts();
                                         },10000);
                                     });/*clientConfig.appSettings.autoSaveTimeOut);*/
 
                                     $rootScope.$on('saveAllChart',function(){
-                                        saveAllCharts();
-                                        stockService.getSavedChartData(
-                                            commonBusiness.projectId,
-                                            commonBusiness.stepId,
-                                            scope.mnemonicid,
-                                            scope.itemid,
-                                            store.get('x-session-token'))
-                                            .then(function(data)
-                                            {
-                                                stockService.AddManualSaveData(data.newCharts);
-                                            });
+                                        saveAllCharts().then(function(){
+                                            stockService.getSavedChartData(
+                                                commonBusiness.projectId,
+                                                commonBusiness.stepId,
+                                                scope.mnemonicid,
+                                                scope.itemid,
+                                                store.get('x-session-token'))
+                                                .then(function(data)
+                                                {
+                                                    stockService.AddManualSaveData(data.newCharts);
+                                                });
                                         });
+                                        });
+
+
                                 });
                             break;
                         case 'bar':
