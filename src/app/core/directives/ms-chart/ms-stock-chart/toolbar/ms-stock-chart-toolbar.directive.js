@@ -36,7 +36,8 @@
         vm.loadIndices = loadIndices;
         vm.loadCompetitors = loadCompetitors;
         vm.maxDate = new Date();//moment().format('DD-MM-YYYY');
-
+        vm.add = add;
+        vm.clear = clear;
 
         setStartEndDate(vm.selectedPeriod);
 
@@ -57,6 +58,7 @@
                             savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
 
                             vm.indices = [];
+                            itemList =[];
                             angular.forEach(data.indicesResp, function (ind) {
                                 var indicesItem = new Object();
                                 indicesItem.value = ind.value;
@@ -64,6 +66,7 @@
                                 indicesItem.selectedIndicecheck = false;
                                 if (savedIndicesList && savedIndicesList.indexOf(indicesItem.value)>-1) {
                                     indicesItem.selectedIndicecheck = true;
+                                    itemList.push(indicesItem);
                                 }
                                 vm.indices.push(indicesItem);
                             });
@@ -84,7 +87,7 @@
                         var chartCount = vm.chartId.split('-');
                         chartCount = parseInt(chartCount[1]);
                         var savedCompetitorsList = [];
-
+competitorList = [];
                         if(chartCount>=0) {
                             savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
 
@@ -96,6 +99,7 @@
                                 competitorItem.selectedCompetitorcheck = false;
                                 if (savedCompetitorsList && savedCompetitorsList.indexOf(competitorItem.value)>-1) {
                                     competitorItem.selectedCompetitorcheck = true;
+                                    competitorList.push(competitorItem);
                                 }
                                 vm.competitors.push(competitorItem);
                             });
@@ -243,46 +247,26 @@
         var itemList = [];
 
         function addIndices() {
+            vm.filterState.selectedIndices =[];
             itemList.forEach(function (item, key) {
-                console.log(item, key)
-                //considering all the possible legends(indices and peers)
-                var count = 1 + vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
-                if (count < 5) {
-                    console.log('legend1', vm.filterState.selectedIndices, vm.filterState.selectedPeers, item);
-                    console.log('item', item.value, vm.filterState.selectedIndices.indexOf(item.value))
-                    if (item && item.value && vm.filterState.selectedIndices.indexOf(item.value) === -1) {
-                        var selected = vm.filterState.selectedIndices;
-                        selected.push(item.value);
-                        vm.filterState.selectedIndices = selected;
-                        vm.onFilterStateUpdate();
+                    if (item && item.value) {
+                        vm.filterState.selectedIndices.push(item.value);
                     }
-                    $mdSelect.hide();
-                    $mdMenu.hide();
-                }
-                else {
-                    dialog.alert('Error', "Max5 Stock allow to compare!", null, {
-                        ok: {
-                            name: 'ok', callBack: function () {
-                                console.log('cliked ok');
-                            }
-                        }
-                    });
-                }
-                vm.selectedIndice = null;
             })
+
+            $mdSelect.hide();
+            $mdMenu.hide();
+
+            vm.selectedIndice = null;
         }
 
 
         function indicesOrCompetitorDropDownChange(itemType, item) {
-
-            var chartCount = itemList.length + competitorList.length;
-
-            if (chartCount < 4) {
                 if (itemType == 'INDICE') {
-                    if (item.selectedIndicecheck) {
+                    if (item.selectedIndicecheck && itemList.indexOf(item) == -1) {
                         itemList.push(item);
                     }
-                    else if (!item.selectedIndicecheck) {
+                    else {
                         for (var itemCount = 0; itemCount < itemList.length; itemCount++) {
                             if (item.value == itemList[itemCount].value) {
                                 itemList.splice(itemCount, 1);
@@ -291,10 +275,10 @@
                     }
                 }
                 else {
-                    if (item.selectedCompetitorcheck) {
+                    if (item.selectedCompetitorcheck && competitorList.indexOf(item) == -1) {
                         competitorList.push(item);
                     }
-                    else if (!item.selectedCompetitorcheck) {
+                    else {
                         for (var itemCount = 0; itemCount < competitorList.length; itemCount++) {
                             if (item.value == competitorList[itemCount].value) {
                                 competitorList.splice(itemCount, 1);
@@ -302,15 +286,6 @@
                         }
                     }
                 }
-            }
-            else {
-                if (itemType == 'INDICE') {
-                    item.selectedIndicecheck = false;
-                }
-                else {
-                    item.selectedCompetitorcheck = false;
-                }
-            }
 
             vm.selectedItem = null;
             vm.searchIndText = "";
@@ -327,68 +302,68 @@
             //$mdMenu.hide();
         }
 
-        function selectedPeerChange(item) {
-            if (item) {
-                console.log('legend', vm.filterState.selectedIndices, vm.filterState.selectedPeers, item);
-                var count = 1 + vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
-                if (count < 5) {
-                    if (item && item.value && vm.filterState.selectedPeers.indexOf(item.value) === -1) {
-                        var selected = vm.filterState.selectedPeers;
-                        selected.push(item.value);
-                        vm.filterState.selectedPeers = selected;
-                        $mdMenu.hide();
-                        vm.onFilterStateUpdate();
-                    }
-
+        function addPeer(){
+                vm.filterState.selectedPeers = [];
+            peerList.forEach(function (item, key) {
+                if (item && item.value) {
+                    vm.filterState.selectedPeers.push(item.value);
                 }
-                else {
-                    //show pop up
-                    dialog.alert('Error', "Max5 Stock allow to compare!", null, {
-                        ok: {
-                            name: 'ok', callBack: function () {
-                                console.log('cliked ok');
-                            }
-                        }
-                    });
-                }
-            }
+            })
             vm.selectedPeerItem = null;
             vm.searchPeerText = "";
             $mdMenu.hide();
+        }
 
+        var peerList =[];
+        function selectedPeerChange(item){
+            if(item && item.value && peerList.indexOf(item) == -1){
+                peerList.push(item);
+            }
+        }
+
+        function add(){
+            var count = 1 + itemList.length + peerList.length + competitorList.length;
+            if(count >5){
+                //show pop up
+                dialog.alert('Error', "Max5 Stock allow to compare!", null, {
+                    ok: {
+                        name: 'ok', callBack: function () {
+                            console.log('cliked ok');
+                        }
+                    }
+                });
+            }
+            else{
+                addCompetitor();
+                addIndices();
+                addPeer();
+
+                vm.onFilterStateUpdate();
+            }
+        }
+
+        function clear(){
+            vm.filterState.selectedIndices = [];
+            vm.filterState.selectedPeers = [];
+            vm.filterState.selectedCompetitors = [];
+            itemList = [];
+            competitorList = [];
+            peerList=[];
+            vm.selectedPeerItem = null;
+            vm.searchPeerText = "";
+            vm.onFilterStateUpdate();
         }
 
         var competitorList = [];
-
         function addCompetitor() {
+            vm.filterState.selectedCompetitors = [];
             competitorList.forEach(function (item, key) {
-                console.log(item, key);
-                //considering all the possible legends(indices, peers and Competitors)
-                var count = 1 + vm.filterState.selectedIndices.length + vm.filterState.selectedPeers.length + vm.filterState.selectedCompetitors.length;
-                if (count < 5) {
-                    console.log('legend1', vm.filterState.selectedIndices, vm.filterState.selectedPeers, vm.filterState.selectedCompetitors, item);
-                    console.log('item', item.value, vm.filterState.selectedCompetitors.indexOf(item.value))
-                    if (item && item.value && vm.filterState.selectedCompetitors.indexOf(item.value) === -1) {
-                        var selected = vm.filterState.selectedCompetitors;
-                        selected.push(item.value);
-                        vm.filterState.selectedCompetitors = selected;
-                        vm.onFilterStateUpdate();
+                    if (item && item.value) {
+                        vm.filterState.selectedCompetitors.push(item.value);
                     }
-                    $mdSelect.hide();
-                    $mdMenu.hide();
-
-                }
-                else {
-                    dialog.alert('Error', "Max5 Stock allow to compare!", null, {
-                        ok: {
-                            name: 'ok', callBack: function () {
-                                console.log('cliked ok');
-                            }
-                        }
-                    });
-                }
+                $mdSelect.hide();
+                $mdMenu.hide();
                 vm.selectedCompetitor = null;
-
             })
         }
 
@@ -397,6 +372,13 @@
             vm.selectedItem = null;
             vm.searchIndText = "";
             // $mdMenu.hide();
+        }
+
+        vm.presetComparisonMenu = function(){
+            vm.selectedPeerItem = null;
+            vm.searchPeerText = "";
+            vm.loadCompetitors();
+            vm.loadIndices();
         }
 
         function createFilterFor(query) {
