@@ -287,6 +287,7 @@
                 .then(function(data) {
                     //console.log('seriesdata',data)
                     //@todo call logic for remove legend item on empty series data
+                    $scope.$emit('ticker', {'ticker': data.stockChartPrimaryData[0].ticker});
                     vm.stockDataSet=convServiceResptoChartFormat(data);
                     if(data.stockChartPeerData && data.stockChartPeerData.length){
                         vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
