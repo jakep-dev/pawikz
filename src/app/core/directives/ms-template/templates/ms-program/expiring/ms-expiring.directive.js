@@ -801,6 +801,7 @@
 
                         if(rowCount !== 0)
                         {
+                            $scope.rows[rowCount - 1].iscompute = true;
                             angular.forEach($scope.headerItems, function(header)
                             {
                                var findHeader = _.find(headerStatus, function(head)
