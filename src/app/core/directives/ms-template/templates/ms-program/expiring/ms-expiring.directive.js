@@ -852,8 +852,18 @@
                     {
                         value = ' ';
                     }
-                    exp = '$scope.rows['+ count +'].' + headerName + '.tearsheet.selectedValue = "' + value + '";';
-
+                    var items;
+                    exp = ' items = $scope.rows[' + count + '].' + headerName + '.tearsheet.values';
+                    eval(exp);
+                    var findItem = _.find(items, function (item) {
+                        if (value === item.value) {
+                            return item;
+                        }
+                    });
+                    if (findItem)
+                    {
+                        exp = '$scope.rows[' + count + '].' + headerName + '.tearsheet.selectedValue = "' + value + '";';
+                    }
                     break;
 
                 case 'GenericTextItem':

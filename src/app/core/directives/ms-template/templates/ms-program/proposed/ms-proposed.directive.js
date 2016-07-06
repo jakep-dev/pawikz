@@ -859,8 +859,18 @@
                     {
                         value = ' ';
                     }
-                    exp = '$scope.rows['+ count +'].' + headerName + '.tearsheet.selectedValue = "' + value + '";';
-
+                    var items;
+                    exp = ' items = $scope.rows[' + count + '].' + headerName + '.tearsheet.values';
+                    eval(exp);
+                    var findItem = _.find(items, function (item) {
+                        if (value === item.value) {
+                            return item;
+                        }
+                    });
+                    if (findItem)
+                    {
+                        exp = '$scope.rows[' + count + '].' + headerName + '.tearsheet.selectedValue = "' + value + '";';
+                    }
                     break;
 
                 case 'GenericTextItem':
@@ -875,19 +885,18 @@
                             value = '';
                         }
                     }
-                    else if (headerName.indexOf('RATE') > - 1)
+                    else if (headerName.indexOf('RATE') > -1)
                     {
                         if (value)
                         {
-                            value = $filter("currency") (removeCommaValue($.trim(value)), '', 2);
+                            value = $filter("currency")(removeCommaValue($.trim(value)), '', 2);
                         }
                         else
                         {
                             value = '';
                         }
                     }
-
-                    else if (headerName.indexOf('ROL') > - 1)
+                    else if (headerName.indexOf('ROL') > -1)
                     {
                         if (value)
                         {
