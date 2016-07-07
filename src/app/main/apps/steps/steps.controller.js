@@ -63,6 +63,8 @@
         function saveAll()
         {
             templateBusiness.save();
+            templateBusiness.saveTable();
+            templateBusiness.saveHybridTable();
         }
 
         //Go to top
@@ -132,15 +134,6 @@
 
         //Move to the next step
         function nextStep() {
-            //if (parseInt(stepId) < navConfig.sideNavItems.length) {
-            //    var stateConfig = {
-            //        projectId: $rootScope.projectId,
-            //        stepId: (parseInt(stepId) + 1),
-            //        stepName: navConfig.sideNavItems[parseInt(stepId)].stepName
-            //    };
-            //    $state.go('app.steps', stateConfig);
-            //}
-
             console.log('Previous Step - ');
             console.log(overviewBusiness.templateOverview);
 

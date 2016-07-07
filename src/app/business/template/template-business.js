@@ -20,6 +20,7 @@
            isExpandAll: false,
            save: save,
            saveTable: saveTable,
+           saveHybridTable: saveHybridTable,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
