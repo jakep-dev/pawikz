@@ -9,7 +9,7 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($interval, toast, clientConfig, commonBusiness, stepsBusiness,
+    function templateBusiness($interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
                               overviewBusiness, templateService, Papa) {
         var business = {
            mnemonics: null,
@@ -38,7 +38,9 @@
            calculateProgramRol: calculateProgramRol,
            calculateProgramAtt: calculateProgramAtt,
            parseCsvToJson: parseCsvToJson,
-           unParseJsonToCsv: unParseJsonToCsv
+           unParseJsonToCsv: unParseJsonToCsv,
+           isKMBValue: isKMBValue,
+           transformKMB: transformKMB
         };
 
         return business;
@@ -81,6 +83,51 @@
             }
         }
 
+        function isKMBValue(inputVal) {
+            var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
+            if (regEx.test(inputVal))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //Test if inputVal is kmb value if so convert the inputVal and format the value with comma and truncate the number
+        //Otherwise return inputVal unchanged
+        function transformKMB(inputVal)
+        {
+
+            var finalValue = inputVal;
+            if (isKMBValue(inputVal)) {
+                var abbreviationType = inputVal.slice(-1);
+                var longValue = Number(inputVal.substring(0, inputVal.length - 1));
+                if (!isNaN(longValue))
+                {
+                    switch (abbreviationType)
+                    {
+                        case 'K':
+                        case 'k':
+                            longValue *= 1000;
+                            break;
+                        case 'M':
+                        case 'm':
+                            longValue *= 1000000;
+                            break;
+                        case 'B':
+                        case 'b':
+                            longValue *= 1000000000;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                finalValue = $filter("currency")(longValue, '', 0);
+            }
+            return finalValue;
+        }
 
         ///Calculate the Att or Ret
         function calculateProgramAtt(limit, att)
