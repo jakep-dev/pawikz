@@ -514,13 +514,17 @@
                                         exportAllCharts();
                                     });
 
+                                    var autosaveTimeOut;
                                     commonBusiness.onMsg('autosave',scope, function(){
-                                        setTimeout(function(){
+                                        if(autosaveTimeOut){
+                                            clearTimeout(autosaveTimeOut);
+                                        }
+                                        autosaveTimeOut = setTimeout(function(){
                                             saveAllCharts();
                                         },10000);
                                     });/*clientConfig.appSettings.autoSaveTimeOut);*/
 
-                                    $rootScope.$on('saveAllChart',function(){
+                                    commonBusiness.onMsg('saveAllChart',scope, function(){
                                         saveAllCharts().then(function(){
                                             stockService.getSavedChartData(
                                                 commonBusiness.projectId,
@@ -533,9 +537,7 @@
                                                     stockService.AddManualSaveData(data.newCharts);
                                                 });
                                         });
-                                        });
-
-
+                                    });
                                 });
                             break;
                         case 'bar':
