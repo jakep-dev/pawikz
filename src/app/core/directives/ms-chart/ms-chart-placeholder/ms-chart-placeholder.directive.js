@@ -24,6 +24,13 @@
         vm.onChartSave = $scope.onChartSave;
         vm.onChartReset = $scope.onChartReset;
 
+        if(vm.isMainChart) {
+            $scope.$on('ticker', function (event, args) {
+                if(vm.title.indexOf(' (' + args.ticker + ')') == -1) {
+                    vm.title += ' (' + args.ticker + ')';
+                }
+            });
+        }
         $scope.$watch('vm.title',function(newValue,oldValue){
         if(oldValue!=newValue){
             $scope.chart.filterState.title = vm.title;
@@ -112,9 +119,9 @@
             $mdDialog.show({
                 //targetEvent: elementWrapper,
                 scope: $scope,
-                template: '<md-dialog flex="100" style="position: absolute; top: ' + position.top + 'px; left: ' + position.left + 'px; min-width:' + width + 'px">' +
-                '<md-dialog-actions>' +
-                '    <md-button ng-click="closeDialog()" class="md-primary pull-right" > X' +
+                template: '<md-dialog flex="80" style="position: absolute;background: white; top: ' + position.top + 'px; left: ' + position.left + 'px; min-width:' + width + 'px">' +
+                '<md-dialog-actions style="order:1 !important;">' +
+                '    <md-button ng-click="closeDialog()" class="pull-right" > X' +
                 '    </md-button>' +
                 '  </md-dialog-actions>' +
                 '  <md-dialog-content>' + html + '</md-dialog-content>' +
