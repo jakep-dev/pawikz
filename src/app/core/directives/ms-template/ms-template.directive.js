@@ -33,7 +33,7 @@
         function saveAll()
         {
             //Changed Date: 28/4/2016 as per Bug - Chart title not saving
-            $rootScope.$broadcast('saveAllChart');
+            commonBusiness.emitMsg('saveAllChart');
             templateBusiness.save();
             templateBusiness.saveTable();
             $mdMenu.hide();

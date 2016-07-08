@@ -34,6 +34,9 @@
         $scope.$watch('vm.title',function(newValue,oldValue){
         if(oldValue!=newValue){
             $scope.chart.filterState.title = vm.title;
+            if(!vm.isMainChart){
+                commonBusiness.emitMsg('autosave');
+            }
         }
         });
         $scope.chart.filterState.chart_id = vm.id;
