@@ -63,7 +63,7 @@
 	}
 
     /** @ngInject */
-    function msTemplateDirective($compile)
+    function msTemplateDirective($compile, $document)
     {
 
         function firstVariation(contentComponents, comp)
@@ -714,9 +714,27 @@
                         }
                     });
                 }
-                console.log('Content - ');
-                console.log($('#main-content'));
+                console.log('Content Update - ');
 
+                var options = {
+                    wheelSpeed            : 1,
+                    wheelPropagation      : false,
+                    swipePropagation      : true,
+                    minScrollbarLength    : null,
+                    maxScrollbarLength    : null,
+                    useBothWheelAxes      : false,
+                    useKeyboard           : true,
+                    suppressScrollX       : false,
+                    suppressScrollY       : false,
+                    scrollXMarginOffset   : 0,
+                    scrollYMarginOffset   : 0,
+                    stopPropagationOnClick: true
+                };
+
+                console.log($('#template-steps')[0]);
+                PerfectScrollbar.initialize($('#template-steps')[0], options);
+                PerfectScrollbar.destroy($('#main-content')[0]);
+                //$('#main-content').perfectScrollbar();
             }
         };
     }
