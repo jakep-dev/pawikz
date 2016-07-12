@@ -83,15 +83,17 @@
             }
         }
 
-        function isKMBValue(inputVal) {
-            var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
-            if (regEx.test(inputVal))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+        function isKMBValue(inputVal, iskmb) {
+            if(iskmb !== "false"){
+                var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
+                if (regEx.test(inputVal))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 

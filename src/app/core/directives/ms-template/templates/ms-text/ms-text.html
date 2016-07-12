@@ -1,6 +1,5 @@
 <form id="text-form">
     <md-input-container md-no-float class="md-block md-accent">
-        <input ng-model="value" aria-label="Text Field" class ="ms-textbox-input-font-size"
-               style="position: absolute;  bottom: 0px; padding-bottom: 4px; color: black" ng-disabled="isdisabled">
+        <input type="text" ng-attr-numeric-shortcut="{{iskmb}}" ng-change="textChange()" ng-model="value" aria-label="Text Field" ng-disabled="disabled" style="width:100%; position: absolute; color: black; bottom: 0px;" />
     </md-input-container>
 </form>

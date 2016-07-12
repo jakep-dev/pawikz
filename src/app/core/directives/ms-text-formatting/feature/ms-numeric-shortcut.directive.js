@@ -11,7 +11,8 @@
             link: function (scope, element, attibutes) {
                 element.bind('keyup', function () {
                     var inputVal = $.trim($(this).val());
-                    if (templateBusiness.isKMBValue(inputVal))
+                    var iskmb = attibutes.numericShortcut;
+                    if (templateBusiness.isKMBValue(inputVal, iskmb))
                     {
                         var outputVal = templateBusiness.transformKMB(inputVal);
 
