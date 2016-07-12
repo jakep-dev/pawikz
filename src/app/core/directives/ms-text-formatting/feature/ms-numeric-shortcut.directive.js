@@ -12,7 +12,7 @@
                 element.bind('keyup', function () {
                     var inputVal = $.trim($(this).val());
                     var iskmb = attibutes.numericShortcut;
-                    if (templateBusiness.isKMBValue(inputVal, iskmb))
+                    if (templateBusiness.isKMBValue(inputVal) && iskmb !== 'false')
                     {
                         var outputVal = templateBusiness.transformKMB(inputVal);
 
