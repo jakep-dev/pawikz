@@ -144,7 +144,8 @@
             var tearSheetItem = comp.TearSheetItem;
 
             if(tearSheetItem && tearSheetItem.ParentCom &&
-               tearSheetItem.ParentCom.ChildCom)
+               tearSheetItem.ParentCom.ChildCom &&
+                !tearSheetItem.ParentCom.ChildCom.length)
             {
                 component = {
                     header: {},
@@ -192,7 +193,7 @@
             var tearSheetItem = comp.TearSheetItem;
 
             if(tearSheetItem && tearSheetItem.ParentCom &&
-                tearSheetItem.ParentCom.childcom)
+                tearSheetItem.ParentCom.ChildCom)
             {
                 component = {
                     header: {},
@@ -208,7 +209,7 @@
                 };
 
 
-                _.each(tearSheetItem.ParentCom.childcom, function(sectionId)
+                _.each(tearSheetItem.ParentCom.ChildCom, function(sectionId)
                 {
                     if(sectionId)
                     {
