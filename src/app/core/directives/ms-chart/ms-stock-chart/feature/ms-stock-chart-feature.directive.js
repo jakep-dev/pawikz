@@ -4,7 +4,7 @@
 (function () {
     'use strict';
     angular.module('app.core')
-        .directive('msStockChartFeature', ['$timeout','$rootScope','commonBusiness', function ($timeout,$rootScope, commonBusiness) {
+        .directive('msStockChartFeature', ['$timeout','$rootScope','$filter','commonBusiness', function ($timeout,$rootScope,$filter,commonBusiness) {
 
             return {
                 restrict: 'EA',
@@ -615,14 +615,17 @@ $timeout(function(){
                                                                         if (legCntr == xIndex) {
                                                                             //console.log('v.priceClose: v.ticker');
                                                                             //tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
-                                                                            legendItem.attr({text: (p.name + ' ' + v.priceClose)});
+                                                                            v.priceClose = v.priceClose ? v.priceClose : 0;
+																			legendItem.attr({text: (p.name + ' ' + ( $filter('currency')(v.priceClose, '', 2) ) )});
 
                                                                         }
                                                                     });
                                                                 }
                                                                 else
                                                                 {
-                                                                    legendItem.attr({text: (p.name + ' ' + primarystockresp.stockChartPeerData[primarystockresp.stockChartPrimaryData.length*(n-1) + xIndex].priceClose)});
+                                                                    var peerLegendValue = primarystockresp.stockChartPeerData[primarystockresp.stockChartPrimaryData.length*(n-1) + xIndex].priceClose;
+																	peerLegendValue = peerLegendValue ? peerLegendValue : 0;
+                                                                    legendItem.attr({text: (p.name + ' ' +  ( $filter('currency')(peerLegendValue, '', 2) ) ) });
 
 
                                                                     //var legCntr=0;
