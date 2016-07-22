@@ -79,6 +79,7 @@
 
             if(vm.sectionId)
             {
+                overviewBusiness.templateOverview.isChanged = true;
                 overviewBusiness.updateTemplateOverview(vm.sectionId, vm.isAvailableForPrint);
                 overviewBusiness.getReadyForAutoSave();
             }

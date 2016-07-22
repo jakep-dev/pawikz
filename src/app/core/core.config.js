@@ -7,7 +7,9 @@
         .config(config);
 
     /** @ngInject */
-    function config($ariaProvider, $logProvider, msScrollConfigProvider, uiGmapGoogleMapApiProvider, $translateProvider, $provide, fuseConfigProvider)
+    function config($ariaProvider, $logProvider, msScrollConfigProvider,
+                    uiGmapGoogleMapApiProvider, $translateProvider,
+                    $provide, fuseConfigProvider)
     {
         // ng-aria configuration
         $ariaProvider.config({

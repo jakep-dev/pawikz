@@ -7,7 +7,19 @@
 
     angular
         .module('app.overview', [])
+        .run(runBlock)
         .config(config);
+
+
+    /** @ngInject */
+    function runBlock($rootScope, overviewBusiness, toast)
+    {
+        $rootScope.$on('$stateChangeStart', function ()
+        {
+            overviewBusiness.save();
+            overviewBusiness.cancelPromise();
+        });
+    }
 
     /** @ngInject */
     function config($stateProvider)

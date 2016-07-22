@@ -91,6 +91,7 @@
                        }
                         else if(data.templateOverview) {
                            overviewBusiness.templateOverview = data.templateOverview;
+                           overviewBusiness.templateOverview.isChanged = false;
                            commonBusiness.companyId = data.templateOverview.companyId;
                            commonBusiness.companyName = data.templateOverview.companyName;
                            commonBusiness.projectName = data.templateOverview.projectName;

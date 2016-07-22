@@ -127,6 +127,7 @@
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
 
                     overviewBusiness.templateOverview = vm.templateOverview;
+                    overviewBusiness.templateOverview.isChanged = false;
 
                     angular.forEach(vm.templateOverview.steps, function(step)
                     {
@@ -156,6 +157,7 @@
                         console.log('Inside Firing Overview watch');
                         console.log(vm.templateOverview);
                         overviewBusiness.templateOverview = vm.templateOverview;
+                        overviewBusiness.templateOverview.isChanged = true;
                         overviewBusiness.getReadyForAutoSave();
                     }
                     vm.isOverviewLoaded = true;
