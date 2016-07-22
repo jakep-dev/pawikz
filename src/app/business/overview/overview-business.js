@@ -88,7 +88,7 @@
             var projectName = business.templateOverview.projectName;
             var steps = [];
 
-            if(business.templateOverview.steps)
+            if(business.templateOverview.steps && business.templateOverview.isChanged)
             {
                 angular.forEach(business.templateOverview.steps, function(step)
                 {
@@ -119,13 +119,9 @@
             {
                 overviewService.save(userId, projectId, projectName, steps).then(function(data)
                 {
-                    toast.simpleToast('Saved successfully');
+                    toast.simpleToast('Project Overview changes saved successfully');
                 });
             }
-            else {
-                toast.simpleToast('No changes to save');
-            }
-
         }
 
         //Cancel the auto-save promise.
