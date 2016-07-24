@@ -6,7 +6,8 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu, dialog, commonBusiness, $mdSelect, $timeout) {
+    function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu,
+                                           dialog, toast, commonBusiness, $mdSelect, $timeout) {
         var vm = this;
         vm.splits = false;
         vm.earnings = false;
@@ -15,12 +16,13 @@
         vm.customDateChange = customDateChange;
         /* Indices Logic Start */
         vm.indices = [];
-
+        vm.peers = [];
+        vm.competitors = [];
         vm.savedChartData = $rootScope.savedChartData;
 
         /* Peers Logic Start*/
 
-        vm.peers = [];
+
         vm.queryPeerSearch = queryPeerSearch;
         vm.selectedItemChange = selectedItemChange;
         vm.indicesOrCompetitorDropDownChange = indicesOrCompetitorDropDownChange;
@@ -35,10 +37,11 @@
         vm.loadPeers = loadPeers;
         vm.loadIndices = loadIndices;
         vm.loadCompetitors = loadCompetitors;
-        vm.maxDate = new Date();//moment().format('DD-MM-YYYY');
         vm.add = add;
         vm.clear = clear;
+        vm.presetComparisonMenu = presetComparisonMenu;
 
+        vm.maxDate = new Date();
         setStartEndDate(vm.selectedPeriod);
 
 
@@ -55,7 +58,10 @@
                         var savedIndicesList = [];
 
                         if(chartCount>=0){
-                            savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
+
+                            if(vm.savedChartData && _.size(vm.savedChartData) > 0) {
+                                savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
+                            }
 
                             vm.indices = [];
                             itemList =[];
@@ -87,17 +93,20 @@
                         var chartCount = vm.chartId.split('-');
                         chartCount = parseInt(chartCount[1]);
                         var savedCompetitorsList = [];
-competitorList = [];
+                        competitorList = [];
                         if(chartCount>=0) {
-                            savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
+                            if(vm.savedChartData && _.size(vm.savedChartData) > 0)
+                            {
+                                savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
+                            }
 
-                            vm.competitors = [];
                             angular.forEach(data.competitors, function (comp) {
                                 var competitorItem = new Object();
                                 competitorItem.value = comp.ticker;
                                 competitorItem.display = comp.companyName;
                                 competitorItem.selectedCompetitorcheck = false;
-                                if (savedCompetitorsList && savedCompetitorsList.indexOf(competitorItem.value)>-1) {
+                                if (savedCompetitorsList &&
+                                    savedCompetitorsList.indexOf(competitorItem.value)>-1) {
                                     competitorItem.selectedCompetitorcheck = true;
                                     competitorList.push(competitorItem);
                                 }
@@ -129,24 +138,6 @@ competitorList = [];
                 });
         }
 
-        /*     function loadIndices() {
-         stockService
-         .getIndices('', '1W')
-         .then(function(data) {
-         if(data.indicesResp)
-         {
-         vm.indices =[];
-         angular.forEach(data.indicesResp, function(ind)
-         {
-         vm.indices.push({
-         value: ind.value,
-         display: ind.description
-         }) ;
-         });
-         }
-         });
-
-         }*/
         function customDateChange() {
             $timeout(function(){
                 if(vm.startDate > vm.endDate) {
@@ -170,7 +161,6 @@ competitorList = [];
                 }
             },1000)
         }
-
 
         function changedSplitsEvents() {
             vm.filterState.splits = vm.splits;
@@ -374,12 +364,27 @@ competitorList = [];
             // $mdMenu.hide();
         }
 
-        vm.presetComparisonMenu = function(){
+        function presetComparisonMenu(){
             vm.selectedPeerItem = null;
             vm.searchPeerText = "";
-            vm.loadCompetitors();
-            vm.loadIndices();
-        }
+
+            if(_.size(vm.indices) === 0 &&
+                _.size(vm.competitors === 0))
+            {
+                toast.simpleToast("Getting Competitors and Indices!");
+            }
+
+            if(_.size(vm.indices) === 0)
+            {
+                vm.loadIndices();
+
+            }
+
+            if(_.size(vm.competitors) === 0)
+            {
+                vm.loadCompetitors();
+            }
+        };
 
         function createFilterFor(query) {
             var lowercaseQuery = angular.lowercase(query);

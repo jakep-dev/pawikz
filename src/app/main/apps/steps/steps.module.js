@@ -8,9 +8,9 @@
         .config(config);
 
     /** @ngInject */
-    function runBlock($rootScope, templateBusiness)
+    function runBlock($rootScope, templateBusiness, overviewBusiness)
     {
-        $rootScope.$on('$stateChangeStart', function ()
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
             templateBusiness.save();
             templateBusiness.saveTable();

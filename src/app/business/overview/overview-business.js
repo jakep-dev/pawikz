@@ -85,11 +85,15 @@
         {
             var userId = commonBusiness.userId;
             var projectId = commonBusiness.projectId;
-            var projectName = business.templateOverview.projectName;
-            var steps = [];
+            var projectName = '';
+            var steps = null;
 
-            if(business.templateOverview.steps && business.templateOverview.isChanged)
+            if(business.templateOverview &&
+                business.templateOverview.steps &&
+                business.templateOverview.isChanged)
             {
+                projectName = business.templateOverview.projectName;
+                steps = [];
                 angular.forEach(business.templateOverview.steps, function(step)
                 {
                     var stepId = step.stepId;
@@ -115,9 +119,10 @@
                 });
             }
 
-            if(_.size(steps) > 0)
+            if(steps && _.size(steps) > 0)
             {
-                overviewService.save(userId, projectId, projectName, steps).then(function(data)
+                overviewService.save(userId, projectId, projectName, steps)
+                               .then(function(data)
                 {
                     toast.simpleToast('Project Overview changes saved successfully');
                 });

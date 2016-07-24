@@ -1,12 +1,10 @@
 <div  class="md-whiteframe-1dp  md-light-blue-A100-bg">
     <div id="ms-chart-placeholder-header" style="height: 40px" layout="row" layout-align="space-between center">
-        <div>
+        <div style="padding-left: 10px">
             <md-input-container  md-no-float class="md-block md-accent">
                 <input id="chartTitle" placeholder="Chart Title" ng-model="vm.title"
                        class="font-weight-700 font-size-14" style="position: absolute;  bottom: 0px; padding-bottom: 4px; color: black"/>
             </md-input-container>
-
-            <!--<h3 editable-text="vm.title" style="padding-left: 4px; width: 100%" placeholder="Chart Title"></h3>-->
         </div>
         <div>
             <md-button class="md-icon-button" aria-label="save-chart" ng-show="false" ng-click="vm.saveChart()" ng-if="vm.isMainChart">
@@ -22,8 +20,8 @@
                 </md-tooltip>
                 <md-icon md-font-icon="icon-plus"></md-icon>
             </md-button>
-<!--Re  - Addinng Delete buttonn to all types of charts as per client requirement : 16-05-2016 -->
-            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id)" ng-if="!vm.isMainChart">
+
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id, $event)" ng-if="!vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Delete
                 </md-tooltip>
@@ -41,8 +39,8 @@
                 </md-tooltip>
                 <md-icon md-font-icon="icon-arrow-down"></md-icon>
             </md-button>
-            <!--Making changes to implement reset functinality as per requirement : 17-05-2016 -->
-            <md-button class="md-icon-button" aria-label="refresh-chart" ng-click="vm.ResetChart(vm.id)" ng-if="!vm.isStockChart">
+
+            <md-button class="md-icon-button" aria-label="refresh-chart" ng-click="vm.resetChart(vm.id, $event)" ng-if="!vm.isStockChart">
                 <md-tooltip md-direction="top">
                     Reset
                 </md-tooltip>
@@ -61,7 +59,7 @@
     <md-divider></md-divider>
 
     <md-content id="ms-chart-placeholder-content" class="ms-chart-placeholder-class" layout-padding>
-        <!--Inject chart dynamically into the placeholder content from ms-chart directive-->
+
 
     </md-content>
 </div>
