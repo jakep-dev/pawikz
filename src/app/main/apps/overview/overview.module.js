@@ -12,9 +12,9 @@
 
 
     /** @ngInject */
-    function runBlock($rootScope, overviewBusiness, toast)
+    function runBlock($rootScope, overviewBusiness)
     {
-        $rootScope.$on('$stateChangeStart', function ()
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
             overviewBusiness.save();
             overviewBusiness.cancelPromise();
