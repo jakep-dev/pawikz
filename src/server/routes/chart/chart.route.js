@@ -335,7 +335,7 @@
                 u.each(data.chartSettings, function(savedChart)
                 {
                     if (savedChart.chartType  === 'IMGURL'){
-                        result.newCharts.push(savedChart);
+                        result.legacyCharts.push(savedChart);
                     }
                     else  if (savedChart.chartType  === 'JSCHART'){
                         var chart = {};

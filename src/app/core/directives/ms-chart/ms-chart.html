@@ -5,6 +5,10 @@
                                   chart-title="chart.title" tearsheet="chart.tearsheet" add-new-chart="addNewChart" index = "$index"
                                   chart-moved="chartMoved" on-chart-remove="onChartRemove" on-chart-save="saveAllCharts" on-chart-reset="resetChart">
             </ms-chart-placeholder>
+			<ms-chart-placeholder ng-repeat="oldChart in oldCharts" chart="oldChart" 
+									chart-title="oldChart.title" tearsheet="oldChart.tearsheet" index = "$index"
+									chart-moved="chartOldMoved" on-chart-remove="onChartOldRemove" >
+			</ms-chart-placeholder>
         </ms-content>
     </div>
 </div >

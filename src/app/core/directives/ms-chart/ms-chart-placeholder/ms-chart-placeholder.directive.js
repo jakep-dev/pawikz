@@ -33,13 +33,24 @@
         }
         $scope.$watch('vm.title',function(newValue,oldValue){
         if(oldValue!=newValue){
-            $scope.chart.filterState.title = vm.title;
+            if($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title)
+			{			
+				$scope.chart.filterState.title = vm.title;
+			} 
+			else if ($scope.chart && $scope.chart.title) 
+			{
+				$scope.chart.title = vm.title;
+			}
             if(!vm.isMainChart){
                 commonBusiness.emitMsg('autosave');
             }
         }
         });
-        $scope.chart.filterState.chart_id = vm.id;
+
+		if( $scope.chart && $scope.chart.filterState && $scope.chart.filterState.chart_id )
+		{
+			$scope.chart.filterState.chart_id = vm.id;
+		}
 
 
         //@@TODO - For Testing
@@ -225,6 +236,7 @@
                             break;
 
                         case 'image':
+							vm.disableTitle = true;
                             html = '<ms-image-chart url="' + scope.chart.tearsheet.url + '"></ms-image-chart>';
                             break;
 

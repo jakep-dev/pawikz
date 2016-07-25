@@ -57,11 +57,12 @@
                                                 var tearsheet = {
                                                     type: 'image',
                                                     url: chart.url,
+													project_image_code: chart.project_image_code,
                                                     isChartTitle: true
                                                 };
                                                 scope.oldCharts.push({
                                                     tearsheet : tearsheet,
-                                                    title : "",
+                                                    title : chart.chart_title,
                                                     chartType:chart.chartType
                                                 });
                                             }else{
@@ -115,7 +116,6 @@
                                             }
                                         };
 
-
                                         scope.moveSavedChartUp = function (index){
                                             //item is not at first index so we can re arrenge it
                                             if(index > 1) {
@@ -138,6 +138,42 @@
 
                                         scope.onChartRemove = function (index){
                                             scope.jsCharts.splice(index, 1);
+                                            //chart remove chart the charts on server ..
+                                            saveAllCharts();
+
+                                        };
+
+                                        scope.chartOldMoved = function (direction, index) {
+                                            if(direction === 'U'){
+                                                scope.moveSavedChartOldUp(index);
+                                            }
+                                            else if(direction === 'D'){
+                                                scope.moveSavedChartOldDown(index);
+                                            }
+                                        };
+
+                                        scope.moveSavedChartOldUp = function (index){
+                                            //item is not at first index so we can re arrenge it
+                                            if(index > 0) {
+                                                var temp = scope.oldCharts[index -1];
+                                                scope.oldCharts[index -1] =  scope.oldCharts[index];
+                                                scope.oldCharts[index] = temp;
+                                                saveAllCharts();
+                                            }
+                                        };
+
+                                        scope.moveSavedChartOldDown = function (index){
+                                            //item is not at last index so we can re arrenge it
+                                            if(index !== -1 && index+1 !== scope.oldCharts.length) {
+                                                var temp = scope.oldCharts[index+1];
+                                                scope.oldCharts[index+1] =  scope.oldCharts[index];
+                                                scope.oldCharts[index] = temp;
+                                                saveAllCharts();
+                                            }
+                                        };
+
+                                        scope.onChartOldRemove = function (index){
+                                            scope.oldCharts.splice(index, 1);
                                             //chart remove chart the charts on server ..
                                             saveAllCharts();
 
@@ -494,6 +530,26 @@
 
                                             });
                                         }
+
+										if (scope.oldCharts != null) {
+											scope.oldCharts.forEach(function (chart) {
+												var obj = {
+													chart_title: chart.title ? chart.title : null,
+                                                    peers: chart.stockString ? chart.stockString : null,
+                                                    period: chart.interval ? chart.interval : null,
+                                                    date_start: chart.date_start ? chart.date_start : "",
+                                                    date_end: chart.date_end ? chart.date_end : "",
+													chartType : chart.chartType,
+                                                    dividends: chart.dividends ? "Y" : "N",
+                                                    earnings: chart.earnings ? "Y" : "N",
+                                                    splits: chart.splits ? "Y" : "N",
+													project_image_code: chart.tearsheet.project_image_code,
+                                                    url: chart.tearsheet.url
+												};
+												startArr.push(obj);
+											});
+										}
+										
                                         var defer = $q.defer();
                                         stockService.saveChartAllSettings(commonBusiness.companyId,
                                             commonBusiness.stepId, commonBusiness.projectId, scope.mnemonicid,
