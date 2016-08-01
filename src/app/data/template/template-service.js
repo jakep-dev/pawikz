@@ -18,7 +18,8 @@
             deleteDynamicTableData: deleteDynamicTableData,
             getSchemaDefer: getSchemaDefer,
             getDataDefer: getDataDefer,
-            save: save
+            save: save,
+			getScrapedHTML: getScrapedHTML
         };
 
         return service;
@@ -252,6 +253,31 @@
 
             return $http({
                 url : clientConfig.endpoints.templateEndPoint.deleteDynamic,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+            })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+		
+		function getScrapedHTML(projectId, stepId,
+                                     mnemonic, itemId)
+        {
+            var input = {
+                project_id : projectId,
+                step_id: stepId,
+                mnemonic: mnemonic,
+                item_id: itemId
+            }
+
+            return $http({
+                url : clientConfig.endpoints.templateEndPoint.getScrapedHTML,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",

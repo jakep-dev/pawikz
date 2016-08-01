@@ -16,7 +16,8 @@
             app.post('/api/dynamicTable', dynamicTable ),
             app.post('/api/saveDynamicTable', saveDynamicTable ),
             app.post('/api/addDynamicTable', addDynamicTable ),
-            app.post('/api/deleteDynamicTable', deleteDynamicTable )
+            app.post('/api/deleteDynamicTable', deleteDynamicTable ),
+            app.post('/api/getScrapedHTML', getScrapedHTML )
         ]);
 
         //Schema for the templates
@@ -267,6 +268,42 @@
             console.log(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+        }
+		
+		function getScrapedHTML(req, res, next)
+        {
+            console.log('Parameters -');
+            console.log(req.body);
+
+            var service = getServiceDetails('templateSearch');
+            var methodName = '';
+
+            if(!u.isUndefined(service) && !u.isNull(service))
+            {
+                console.log(service.name);
+                methodName = service.methods.getScrapedHTML;
+            }
+
+            console.log(methodName);
+
+            var args =
+            {
+                parameters: {
+                    project_id: req.body.project_id,
+                    step_id: req.body.step_id,
+					mnemonic: req.body.mnemonic,
+					item_id: req.body.item_id,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            console.log(args);
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
                 res.status(response.statusCode).send(data);
             });

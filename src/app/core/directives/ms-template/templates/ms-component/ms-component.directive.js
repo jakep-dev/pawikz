@@ -252,7 +252,10 @@
                                 if(content.row.col && content.row.col.TearSheetItem &&
                                     content.row.col.TearSheetItem.id === 'ScrapedItem')
                                 {
-                                    html += '<ms-message message="Under Construction"></ms-message>';
+									newScope.mnemonicid = content.row.col.TearSheetItem.Mnemonic;
+									newScope.itemid = content.row.col.TearSheetItem.ItemId;
+                                    
+									html += '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>'
                                     el.find('#ms-accordion-content').append($compile(html)(newScope));
                                     return;
                                 }
@@ -380,7 +383,7 @@
                                 newScope.mnemonicid = mnemonicid;
                                 newScope.itemid = itemid;
 
-                                html += '<ms-message message="Under Construction"></ms-message>';
+                                html += '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>'
                                 el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;
                             default:

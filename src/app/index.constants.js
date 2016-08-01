@@ -39,7 +39,8 @@
                     dynamic: '/api/dynamicTable',
                     saveDynamic: '/api/saveDynamicTable',
                     addDynamic: '/api/addDynamicTable',
-                    deleteDynamic: '/api/deleteDynamicTable'
+                    deleteDynamic: '/api/deleteDynamicTable',
+                    getScrapedHTML: '/api/getScrapedHTML'
                 },
                 loggerEndPoint:
                 {
