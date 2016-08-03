@@ -143,10 +143,6 @@
             var component = null;
             var tearSheetItem = comp.TearSheetItem;
 
-            console.log('TearSheetItem Length');
-            console.log(typeof(tearSheetItem.ParentCom.ChildCom));
-
-
             if(tearSheetItem && tearSheetItem.ParentCom &&
                tearSheetItem.ParentCom.ChildCom &&
                typeof(tearSheetItem.ParentCom.ChildCom) === 'string')
