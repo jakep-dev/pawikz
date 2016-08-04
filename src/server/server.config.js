@@ -8,7 +8,7 @@ exports.webservice =
     url: 'dev-vm-websvc.advisen.com',
     port: 8080,
     service:'advwebservice'
-}
+};
 
 var Client = require('node-rest-client').Client;
 var moment = require('moment');
@@ -28,7 +28,8 @@ exports.restcall =
                    saveDynamicTableData: 'updateTemplateTableLayOut',
 				   addDynamicTableData: 'insertTemplateTableLayOut',
 				   deleteDynamicTableData: 'deleteTemplateTableLayOut',
-                   saveMnemonics: 'updateTemplateMnemonics'
+                   saveMnemonics: 'updateTemplateMnemonics',
+                   createTemplate: 'createNewTemplateProject'
                 }
               },
             {
@@ -51,20 +52,20 @@ exports.restcall =
             methods:{
                 getStockData:'getStockData',
                 getIndices:'getIndices',
-               //getSavedChartData : 'getSavedChartData',
-               // saveChartSettings : 'saveChartSettings'
                 getSavedChartData : 'getChartSettings',
                 saveChartSettings : 'saveChartSettings_v2'
             }
         }]
-}
+};
+
+exports.userSocketInfo = {};
 
 exports.log =
 {
     directory: './advisen-template',
     fileDirectory: '/' + moment().format('MM-DD-YYYY'),
     fileName: '/log.' + moment().format('MM-DD-YYYY') + '.txt'
-}
+};
 
 
 exports.parallel = function(middlewares)
@@ -74,4 +75,4 @@ exports.parallel = function(middlewares)
             mw(req, res, cb);
         }, next);
     };
-}
+};

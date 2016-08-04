@@ -116,6 +116,7 @@
             {
                 if(data.templateOverview)
                 {
+                    toast.simpleToast('AutoSave Enabled');
                     console.log('Overview Data - ');
                     console.log(data.templateOverview);
 
@@ -141,7 +142,10 @@
 
                     autoSave();
                 }
-                toast.simpleToast('AutoSave Enabled');
+                else {
+                    toast.simpleToast('There are no overview details available');
+                }
+
             });
         }
 

@@ -38,25 +38,25 @@
                 </md-button>
 
                 <md-menu-content width="3" class="md-background-bg">
-                    <md-menu-item ui-sref="app.pages_profile">
-                        <md-button>
-                            <span layout="row" layout-align="start center">
-                                <md-icon md-font-icon="icon-account" class="icon"></md-icon>
-                                <span translate="TOOLBAR.MY_PROFILE">My Profile</span>
-                            </span>
-                        </md-button>
-                    </md-menu-item>
+                    <!--<md-menu-item ui-sref="app.pages_profile">-->
+                        <!--<md-button>-->
+                            <!--<span layout="row" layout-align="start center">-->
+                                <!--<md-icon md-font-icon="icon-account" class="icon"></md-icon>-->
+                                <!--<span translate="TOOLBAR.MY_PROFILE">My Profile</span>-->
+                            <!--</span>-->
+                        <!--</md-button>-->
+                    <!--</md-menu-item>-->
 
-                    <md-menu-item ui-sref="app.pages_feedback">
-                        <md-button>
-                            <span layout="row" layout-align="start center">
-                                <md-icon md-font-icon="icon-pen" class="icon"></md-icon>
-                                <span translate="TOOLBAR.FEEDBACK">Feedback</span>
-                            </span>
-                        </md-button>
-                    </md-menu-item>
+                    <!--<md-menu-item ui-sref="app.pages_feedback">-->
+                        <!--<md-button>-->
+                            <!--<span layout="row" layout-align="start center">-->
+                                <!--<md-icon md-font-icon="icon-pen" class="icon"></md-icon>-->
+                                <!--<span translate="TOOLBAR.FEEDBACK">Feedback</span>-->
+                            <!--</span>-->
+                        <!--</md-button>-->
+                    <!--</md-menu-item>-->
 
-                    <md-menu-divider></md-menu-divider>
+                    <!--<md-menu-divider></md-menu-divider>-->
 
                     <md-menu-item>
                         <md-button ng-click="vm.logout()">
@@ -72,26 +72,26 @@
 
         <div class="toolbar-separator"></div>
 
-        <md-menu id="language-menu" md-offset="0 72" md-position-mode="target-right target">
-            <md-button class="language-button" ng-click="$mdOpenMenu()"
-                       aria-label="Language" md-menu-origin md-menu-align-target>
-                <div layout="row" layout-align="center center">
-                    <!--<img class="flag" ng-src="assets/images/flags/{{vm.selectedLanguage.flag}}.png">-->
-                    <span class="iso">{{vm.selectedLanguage.code}}</span>
-                </div>
-            </md-button>
+        <!--<md-menu id="language-menu" md-offset="0 72" md-position-mode="target-right target">-->
+            <!--<md-button class="language-button" ng-click="$mdOpenMenu()"-->
+                       <!--aria-label="Language" md-menu-origin md-menu-align-target>-->
+                <!--<div layout="row" layout-align="center center">-->
+                    <!--&lt;!&ndash;<img class="flag" ng-src="assets/images/flags/{{vm.selectedLanguage.flag}}.png">&ndash;&gt;-->
+                    <!--<span class="iso">{{vm.selectedLanguage.code}}</span>-->
+                <!--</div>-->
+            <!--</md-button>-->
 
-            <md-menu-content width="3" id="language-menu-content">
-                <md-menu-item ng-repeat="lang in vm.languages">
-                    <md-button ng-click="vm.changeLanguage(lang)" aria-label="{{lang.title}}" translate
-                               translate-attr-aria-label="{{lang.title}}">
-                        <span layout="row" layout-align="start center">
-                            <!--<img class="flag" ng-src="assets/images/flags/{{lang.flag}}.png">-->
-                            <span translate="{{lang.translation}}">{{lang.title}}</span>
-                        </span>
-                    </md-button>
-                </md-menu-item>
-            </md-menu-content>
-        </md-menu>
+            <!--<md-menu-content width="3" id="language-menu-content">-->
+                <!--<md-menu-item ng-repeat="lang in vm.languages">-->
+                    <!--<md-button ng-click="vm.changeLanguage(lang)" aria-label="{{lang.title}}" translate-->
+                               <!--translate-attr-aria-label="{{lang.title}}">-->
+                        <!--<span layout="row" layout-align="start center">-->
+                            <!--&lt;!&ndash;<img class="flag" ng-src="assets/images/flags/{{lang.flag}}.png">&ndash;&gt;-->
+                            <!--<span translate="{{lang.translation}}">{{lang.title}}</span>-->
+                        <!--</span>-->
+                    <!--</md-button>-->
+                <!--</md-menu-item>-->
+            <!--</md-menu-content>-->
+        <!--</md-menu>-->
     </div>
 </div>

@@ -47,17 +47,17 @@
         //Custom Toast
         //Config needs to be passed.
         //config = { controller: '', url: '', hideDelay:'', toastElement:''}
-        function customToast(message, config)
+        function customToast(config)
         {
             var getToastPosition = configureToast();
             $mdToast.show({
                 controller: config.controller,
                 templateUrl: config.url,
-                parent : $document[0].querySelector('#' + config.toastElement),
                 hideDelay: config.hideDelay,
                 position: getToastPosition
             });
         }
+
 
         //Configure Toast Position
         function configureToast()

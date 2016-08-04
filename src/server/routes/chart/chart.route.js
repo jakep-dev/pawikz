@@ -5,7 +5,7 @@
     var u = require('underscore');
     chartRoutes.init = function(app, config,server)
     {
-        var io = require('socket.io')(server);
+        //var io = require('socket.io')(server);
 
         var client = config.restcall.client;
         var config = config;
@@ -19,9 +19,7 @@
             app.post('/api/getSavedChartData', getSavedChartData),
             app.post('/api/saveChartSettings', saveChartSettings),
             app.post('/api/saveChartAllSettings', saveChartAllSettings),
-            //app.post('/api/saveChartAllSettings_v2', saveChartAllSettings_v2),
             app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest)
-
         ]);
 
         function getChartData(req, res, next) {
@@ -479,7 +477,7 @@
                 '&ssnid='+ssnid, function(tplstatusdata, tplstatusresult){
                 console.log('PDF HTTP response code --->'+ tplstatusdata.responseInfo.code + '  | PDF progress status code--->' + tplstatusdata.request.status + '  | PercentComplete--->' +tplstatusdata.request.percentComplete );
                 //Emitting the percentChange through socket.io to render over UI progressbar
-                io.emit('pdfc status progress', {percentage:tplstatusdata.request.percentComplete,status:'working'});
+                //io.emit('pdfc status progress', {percentage:tplstatusdata.request.percentComplete,status:'working'});
 
                 console.log("socket connected");
                 if(tplstatusdata &&  tplstatusdata.responseInfo.code===200 && tplstatusdata.request.status==="C"){
@@ -502,8 +500,6 @@
                             res.end();
                         }
                     })
-
-
                 }
                 else{
                     getPDFStatus(request_id,ssnid,res)

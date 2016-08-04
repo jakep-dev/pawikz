@@ -2,6 +2,8 @@
 {
     'use strict';
 
+    var socket = io.connect();
+
     angular
         .module('advisen')
         .constant('clientConfig',{
@@ -45,11 +47,22 @@
                 {
                     error: '/api/errorLog',
                     debug: '/api/debugLog'
+                },
+                workUpEndPoint:
+                {
+                    create: '/api/workup/create'
                 }
             },
             appSettings:
             {
                 autoSaveTimeOut: 10000,
+            },
+            socketInfo: socket,
+            activity:{
+                //In Minutes
+                idle: 600,
+                timeout: 600,
+                interval: 1200
             }
         });
 })();

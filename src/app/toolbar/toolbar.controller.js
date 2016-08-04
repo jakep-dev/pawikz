@@ -106,7 +106,7 @@
                store.remove('user-info');
                $location.url('/pages/auth/login');
                toast.simpleToast('Successfully logged out!');
-           })
+           });
         }
 
         /**

@@ -13,13 +13,10 @@ var logger = require('morgan');
 var port = process.env.PORT || 4000;
 var routes;
 
-//
-
 var environment = process.env.NODE_ENV || 'Dev';
 app.use(bodyParser.urlencoded({limit: '200mb',
   extended: true
 }));
-//app.use(bodyParser.json());
 app.use(bodyParser.json({limit: '100mb'}));
 app.use(compress());
 app.use(logger('dev'));
@@ -38,15 +35,7 @@ var server = app.listen(port, function() {
 
 });
 
-routes.init(app,server);
-
-/*var io = require('socket.io')(server);
-io.on('connection', function (socket) {
-  console.log("socket connected");
-  socket.emit('pdfc status progress', {percentage:10,status:'working'});
-
-});*/
-
+routes.init(app, server);
 console.log('About to crank up node');
 console.log('PORT=' + port);
 console.log('NODE_ENV=' + environment);

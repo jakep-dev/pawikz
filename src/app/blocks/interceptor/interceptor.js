@@ -8,9 +8,7 @@
 
     angular
         .module('blocks.interceptor')
-        .factory('interceptor',ConfigInterceptor)
-
-
+        .factory('interceptor',ConfigInterceptor);
 
     /** @ngInject */
     function ConfigInterceptor($q, $location, $injector, $interval, $rootScope, store, logger){
@@ -77,7 +75,7 @@
                     break;
                 case 500:
                     console.log('Inside 500 error');
-                    $location.url('/pages/errors/error-500')
+                    $location.url('/pages/errors/error-500');
                     break;
             }
 

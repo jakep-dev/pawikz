@@ -9,10 +9,33 @@
     function logger($log, $window, $location) {
         var service = {
             error: error,
-            debug: debug
+            debug: debug,
+            log: log
         }
 
         return service;
+
+        function log(message, type)
+        {
+            if(type && message)
+            {
+                switch (type.toLowerCase())
+                {
+                    case 'error':
+                        $log.error(message);
+                        break;
+                    case 'warn':
+                        $log.warn(message);
+                        break;
+                    case 'info':
+                        $log.info(message);
+                        break;
+                    case 'debug':
+                        $log.debug(message);
+                        break;
+                }
+            }
+        }
 
         function error(message)
         {

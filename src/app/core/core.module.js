@@ -27,6 +27,7 @@
                 'disableAll',
                 'froala',
                 'highcharts-ng',
-                'ngPapaParse'
+                'ngPapaParse',
+                'ngIdle'
             ]);
 })();

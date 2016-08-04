@@ -18,7 +18,7 @@
             configurable: false,
             get: function() {
                 console.log('auth get!');
-                return userName || store.get('x-session-user');;
+                return userName || store.get('x-session-user');
             },
             set: function(value) {
                 userName = value;

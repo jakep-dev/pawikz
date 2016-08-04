@@ -4,12 +4,13 @@
 
     angular
         .module('advisen')
-        .config(function($httpProvider, cfpLoadingBarProvider)
+        .config(function($httpProvider, cfpLoadingBarProvider, KeepaliveProvider, IdleProvider, clientConfig)
         {
             $httpProvider.interceptors.push('interceptor');
-            //cfpLoadingBarProvider.spinnerTemplate =  '<div><span class="fa fa-spinner">Loading...</div>';
-            //cfpLoadingBarProvider.latencyThreshold = 1;
             cfpLoadingBarProvider.includeSpinner = false;
+            IdleProvider.idle(clientConfig.activity.idle);
+            IdleProvider.timeout(clientConfig.activity.timeout);
+            KeepaliveProvider.interval(clientConfig.activity.interval);
         });
 
     /** @ngInject */
