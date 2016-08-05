@@ -29,7 +29,8 @@ exports.restcall =
 				   addDynamicTableData: 'insertTemplateTableLayOut',
 				   deleteDynamicTableData: 'deleteTemplateTableLayOut',
                    saveMnemonics: 'updateTemplateMnemonics',
-                   createTemplate: 'createNewTemplateProject'
+                   createWorkUp: 'createNewTemplateProject',
+                   renewWorkUp: 'renewTemplateProject'
                 }
               },
             {

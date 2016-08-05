@@ -50,7 +50,8 @@
                 },
                 workUpEndPoint:
                 {
-                    create: '/api/workup/create'
+                    create: '/api/workup/create',
+                    renew: '/api/workup/renew'
                 }
             },
             appSettings:
@@ -61,7 +62,7 @@
             activity:{
                 //In Minutes
                 idle: 600,
-                timeout: 600,
+                timeout: 120,
                 interval: 1200
             }
         });

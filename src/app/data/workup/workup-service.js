@@ -10,12 +10,13 @@
         var readyPromise;
 
         var service = {
-            createWorkUp: createWorkUp
+            create: create,
+            renew: renew
         };
 
         return service;
 
-        function createWorkUp(userId, templateId, companyId)
+        function create(userId, templateId, companyId)
         {
             var input = {
                 userId: userId,
@@ -30,6 +31,27 @@
                         contentType: "application/json; charset=utf-8",
                         dataType: "json"
                         }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+                });
+        }
+
+        function renew(userId, projectId)
+        {
+            var input = {
+                userId: userId,
+                projectId: projectId
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.renew,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
                     return data;
                 })
                 .catch(function(error) {

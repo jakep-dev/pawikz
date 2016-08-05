@@ -13,11 +13,14 @@
         console.log('WorkUp Route Config - ');
         console.log(config.userSocketInfo);
 
-        config.parallel([app.post('/api/workup/create', createWorkUp)]);
+        config.parallel([
+            app.post('/api/workup/create', create),
+            app.post('/api/workup/renew', renew)
+        ]);
 
 
-        //Get Dashboard data
-        function createWorkUp(req, res, next) {
+        //Create new workup
+        function create(req, res, next) {
 
             var service = getServiceDetails('templateManager');
             var methodName = '';
@@ -25,7 +28,7 @@
             if(!u.isUndefined(service) &&
                !u.isNull(service))
             {
-                methodName = service.methods.createTemplate;
+                methodName = service.methods.createWorkUp;
             }
 
             console.log('MethodName- ' + methodName);
@@ -43,21 +46,53 @@
             };
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
-                interval = setInterval(function(token, data) {
-                    notifyWorkUpStatus(token, data);
-                }, 1000, req.headers['x-session-token'], data);
+                interval = setInterval(function(token, data, key) {
+                    notifyStatus(token, data, key);
+                }, 1000, req.headers['x-session-token'], data, 'notify-create-workup-status');
 
             });
 
             res.status('200').send('');
         }
 
-        function notifyWorkUpStatus(token, data)
+        //Renew existing workup
+        function renew(req, res, next)
+        {
+            console.log('Renew Service Initiated');
+            var service = getServiceDetails('templateManager');
+            var methodName = '';
+
+            if(!u.isUndefined(service) &&
+                !u.isNull(service))
+            {
+                methodName = service.methods.renewWorkUp;
+            }
+
+            var args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    user_id: req.body.userId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
+                interval = setInterval(function(token, data, key) {
+                    notifyStatus(token, data, key);
+                }, 1000, req.headers['x-session-token'], data, 'notify-renew-workup-status');
+                //res.status(response.statusCode).send(data);
+            });
+
+            res.status('200').send('');
+        }
+
+        function notifyStatus(token, data, key)
         {
             clearInterval(interval);
             if(token in config.userSocketInfo)
             {
-                config.userSocketInfo[token].emit('notify-workup-status', data);
+                config.userSocketInfo[token].emit(key, data);
             }
         }
 

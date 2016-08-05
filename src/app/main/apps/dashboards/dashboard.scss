@@ -28,6 +28,17 @@
       transition: all .2s ease-in-out;
     }
   }
+
+  .renewStyle
+  {
+    text-decoration: underline;
+    color: #f68c20;
+  }
+
+  .not-active {
+    pointer-events: none;
+    cursor: default;
+  }
 }
 
 

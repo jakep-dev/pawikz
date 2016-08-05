@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function ToolbarController($rootScope, $scope, $mdSidenav, msNavFoldService, $location,
-                               $translate, store, authService, commonBusiness, authBusiness, toast)
+                               $translate, store, authService, commonBusiness, authBusiness, toast, Idle)
     {
         var vm = this;
         vm.userName = '';
@@ -100,8 +100,10 @@
          */
         function logout()
         {
+            Idle.unwatch();
            authService.logout().then(function(response)
            {
+
                store.remove('x-session-token');
                store.remove('user-info');
                $location.url('/pages/auth/login');

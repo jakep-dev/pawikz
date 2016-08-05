@@ -20,17 +20,18 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
     }
 
     workupBusiness.initialize($stateParams.token);
-    workupService.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
+    workupService.create($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
 
     toast.simpleToast('Creating new workup in progress. Use notification center for updates');
 
     var token =  store.get('x-session-token');
     $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
 
-    clientConfig.socketInfo.on('notify-workup-status', function(data)
+    clientConfig.socketInfo.on('notify-create-workup-status', function(data)
     {
         console.log('Notify-WorkUp-Status');
-        $rootScope.projectId = data.projectId;
+        $rootScope.toastTitle = 'WorkUp Creation Completed!';
+        $rootScope.toastProjectId = data.projectId;
         $mdToast.show({
             hideDelay: 5000,
             position: 'bottom right',

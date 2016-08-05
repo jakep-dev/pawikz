@@ -11,19 +11,24 @@
             confirm: confirm,
             alert: alert,
             custom: custom,
-            status: status
+            status: status,
+            close: close
         }
 
         return service;
 
-        function status(title, content, event)
+        function close()
         {
-            $mdDialog.show(
-                $mdDialog.alert()
-                    .title(title)
-                    .content(content)
-                    .targetEvent(event)
-            );
+            $mdDialog.hide();
+        }
+
+        function status(template, isOutsideClose, isFullScreen)
+        {
+            $mdDialog.show({
+                templateUrl: template,
+                clickOutsideToClose: isOutsideClose,
+                fullscreen: isFullScreen
+            });
         }
 
 

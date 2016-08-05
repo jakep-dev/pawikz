@@ -13,7 +13,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                              DTColumnDefBuilder, DTColumnBuilder,
                              DTOptionsBuilder, dashboardService,
                              authService, authBusiness, commonBusiness,
-                             breadcrumbBusiness, dashboardBusiness, store)
+                             breadcrumbBusiness, dashboardBusiness, workupService, store, toast, $mdToast, clientConfig)
 {
     var vm = this;
     vm.companyId = 0;
@@ -28,11 +28,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     commonBusiness.userId = $stateParams.userId;
 
-    console.log('Common Business UserId -' + commonBusiness.userId);
-
     // Methods
     vm.reload = reload;
     vm.initialize = initialize;
+    vm.renewTemplate = renewTemplate;
     vm.toggleSidenav = toggleSidenav;
 
     // Make Initial call
@@ -50,7 +49,12 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         redrawDataTable();
     });
 
-    //commonBusiness.defineBottomSheet('','',false);
+    function renewTemplate()
+    {
+        alert('Clicked');
+        //toast.simpleToast(projectName);
+        ////workupService.renew($stateParams.userId, projectId);
+    }
 
     //Toggle Sidenav
     function toggleSidenav(sidenavId) {
@@ -62,6 +66,12 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function actionHtml(data, type, full, meta)
     {
         return '<a  ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
+    }
+
+    function renewHtml(data, type, full, meta)
+    {
+        return '<input class="renewStyle" ' +
+            'type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'" value="Renew" />';
     }
 
     // Clear search
@@ -108,14 +118,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         var length = aoData[4].value;
         var searchFilter = aoData[5].value.value;
 
-        console.log('Draw='+ draw + ' sortOrder=' + sortOrder +' sortFilterIndex=' + sortFilterIndex +
-            ' sortFilter=' + sortFilter +
-            ' start=' + start + ' length=' + length +
-            ' searchFilter=' + searchFilter);
-
-        console.log('searchCompanyId = ' + vm.companyId);
-        console.log('userId = ' + vm.userId);
-
         dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
             start, length, sortOrder, sortFilter, searchFilter).then(function(data)
         {
@@ -127,9 +129,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 createdBy: '',
                 lastUpdateDate: ''
             };
-
-            console.log("-- Dashboard Data ---")
-            console.log(data);
 
             var records = {
                 draw: draw,
@@ -154,10 +153,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             store.set('x-session-token', token);
             authService.getUserInfo().then(function(response)
             {
-                console.log('User Details - ');
                 response.token = token;
                 store.set('user-info', response);
-                console.log(response);
                 authBusiness.userName = response.fullName;
             });
         }
@@ -166,6 +163,26 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         }
 
         dataTableConfiguration();
+    }
+
+    function initComplete()
+    {
+        $('.renewStyle').click(function()
+        {
+            var obj = $(this);
+            var row = obj.closest('tr');
+
+            console.log('Nearest Row - ');
+            console.log(row);
+
+            if(obj)
+            {
+                var projectId = obj[0].attributes['projectId'].value;
+                var projectName = obj[0].attributes['projectName'].value;
+                workupService.renew($stateParams.userId, projectId);
+                toast.simpleToast(projectName + ' getting ready for renewal');
+            }
+        });
     }
 
     // DataTable configuration
@@ -178,6 +195,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withDataProp('data')
             .withOption('processing', true)
             .withOption('serverSide', true)
+            .withOption('initComplete', initComplete)
             .withOption('paging', true)
             .withOption('autoWidth', true)
             .withOption('responsive', true)
@@ -188,7 +206,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
         //Defining column definitions
         vm.dtColumnDefs = [
-            DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml)
+            DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
+            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml)
         ];
 
         //Defining columns for dashboard
@@ -196,9 +215,22 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnBuilder.newColumn('companyName', 'Company Name'),
             DTColumnBuilder.newColumn('projectName', 'Project Name'),
             DTColumnBuilder.newColumn('status', 'Status'),
-            // DTColumnBuilder.newColumn('projectHistory', 'Project History'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
-            DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated')
+            DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
+            DTColumnBuilder.newColumn('renew', 'Renew')
         ];
     }
+
+
+    clientConfig.socketInfo.on('notify-renew-workup-status', function(data)
+    {
+        $rootScope.toastTitle = 'WorkUp Renewal Completed!';
+        $rootScope.toastProjectId = data.projectId;
+        $mdToast.show({
+            hideDelay: 5000,
+            position: 'bottom right',
+            controller: 'WorkUpToastController',
+            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+        });
+    });
 }

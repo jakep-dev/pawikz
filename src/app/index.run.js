@@ -35,6 +35,7 @@
                         logger.log('Socket created for specific user', 'debug');
                     }
                     else {
+
                         logger.log('Socket already created for specific user', 'debug');
                     }
                 });

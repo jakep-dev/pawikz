@@ -9,7 +9,8 @@
         .service('authBusiness', authBusiness);
 
     /* @ngInject */
-    function authBusiness(commonBusiness, store) {
+    function authBusiness(commonBusiness, dialog,
+                          $location, authService, Idle, toast, store, clientConfig, $mdDialog) {
         this.userInfo = null;
         var userName = null;
 
@@ -27,5 +28,40 @@
                 console.log('auth set!');
             }
         });
+
+        var business = {
+            initIdle: initIdle
+        };
+
+        return business;
+
+        function initIdle($scope)
+        {
+            ///When user in Idle mode
+            $scope.$on('IdleStart', function () {
+                console.log('Idle Start');
+                 dialog.status('app/main/pages/timeout/timeout.html', false, false);
+            });
+
+
+            ///Event fires when user start using the app
+            $scope.$on('IdleEnd', function () {
+                dialog.close();
+            });
+
+
+            ///Event fires when on timeout.
+            $scope.$on('IdleTimeout', function () {
+                Idle.unwatch();
+                authService.logout().then(function (response) {
+                    dialog.close();
+                    store.remove('x-session-token');
+                    store.remove('user-info');
+                    $location.url('/pages/auth/login');
+                    toast.simpleToast('Session timed out');
+                });
+
+            });
+        }
     }
 })();
