@@ -10,10 +10,16 @@
     /** @ngInject */
     function MsHybridTextController($scope, templateBusiness)
     {
-        $scope.disabled = ($scope.isdisabled === 'true');
+		//formats the data on initialization
+		$scope.row[$scope.columnname] = templateBusiness.formatData($scope.row[$scope.columnname], _.find($scope.$parent.$parent.subMnemonics, {mnemonic: $scope.columnname}));
+		$scope.disabled = ($scope.isdisabled === 'true');
 
         $scope.textChange = function()
         {
+			//removes the format before formatting
+			$scope.row[$scope.columnname] = templateBusiness.removeFormatData($scope.row[$scope.columnname], _.find($scope.$parent.$parent.subMnemonics, {mnemonic: $scope.columnname}));
+			$scope.row[$scope.columnname] = templateBusiness.formatData($scope.row[$scope.columnname], _.find($scope.$parent.$parent.subMnemonics, {mnemonic: $scope.columnname}));
+			
 			$scope.save({row: $scope.row});
         };
     }
