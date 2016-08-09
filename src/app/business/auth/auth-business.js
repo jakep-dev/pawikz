@@ -67,6 +67,7 @@
 
             ///Event fires when on timeout.
             $scope.$on('IdleTimeout', function () {
+                dialog.close();
                 logOut();
             });
         }
