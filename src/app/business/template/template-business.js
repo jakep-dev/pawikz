@@ -40,10 +40,251 @@
            parseCsvToJson: parseCsvToJson,
            unParseJsonToCsv: unParseJsonToCsv,
            isKMBValue: isKMBValue,
-           transformKMB: transformKMB
+           transformKMB: transformKMB,
+           getComponents: getComponents
         };
 
         return business;
+
+        //Get the correct component and add to the collection
+        function getComponents(contentComponents, comp)
+        {
+            var component = null;
+            business.variations = [];
+            initVariations(contentComponents, comp);
+
+            while (business.variations.length){
+                component = business.variations.shift().call();
+                if(component)
+                    return component;
+            }
+            return component;
+        }
+
+        ///Initialize the variation
+        function initVariations(contentComponents, comp)
+        {
+            var sectionCompVariationFunc = function(){
+                return sectionCompVariation(contentComponents, comp);
+            };
+
+            var sectionParentChildVariationFunc = function()
+            {
+                return parentChildVariation(contentComponents, comp);
+            };
+
+            var sectionParentChildMulitpleVariationFunc = function()
+            {
+                return parentChildMultipleVariation(contentComponents, comp);
+            };
+
+            business.variations = [ sectionCompVariationFunc,
+                                    sectionParentChildVariationFunc,
+                                    sectionParentChildMulitpleVariationFunc
+                                  ];
+        }
+
+        ///Tearsheet section component relationship
+        function sectionCompVariation(contentComponents, comp)
+        {
+            var sectionId = null;
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
+
+            if(!comp.id && tearSheetItem.length &&
+                tearSheetItem.length > 0)
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                _.each(tearSheetItem, function(item)
+                {
+                    if(item.Label &&
+                        item.comId)
+                    {
+                        sectionId = item.comId;
+                        component.header = {
+                            label: item.Label,
+                            id: item.id,
+                            itemid: item.ItemId,
+                            mnemonicid: item.Mnemonic,
+                            variation: 'section'
+                        }
+                    }
+                });
+
+                //Find section based on sectionId
+                if(sectionId)
+                {
+                    var sectionTearSheetItem = _.filter(contentComponents, function(section)
+                    {
+                        if(section.id &&
+                            section.id === sectionId &&
+                            section.TearSheetItem)
+                        {
+                            return section;
+                        }
+                    });
+
+                    if(sectionTearSheetItem &&
+                        sectionTearSheetItem.length &&
+                        sectionTearSheetItem.length > 0)
+                    {
+                        component.sections.push(sectionTearSheetItem[0]);
+                    }
+                }
+            }
+
+            return component;
+        }
+
+        ///Tearsheet parent child variation
+        function parentChildVariation(contentComponents, comp)
+        {
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
+
+            if(tearSheetItem && tearSheetItem.ParentCom &&
+               tearSheetItem.ParentCom.ChildCom &&
+               typeof(tearSheetItem.ParentCom.ChildCom) === 'string')
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                component.header = {
+                    label: tearSheetItem.Label,
+                    id: tearSheetItem.id,
+                    itemid: null,
+                    mnemonicid: null,
+                    variation: 'parent-child'
+                };
+
+                var sectionId = tearSheetItem.ParentCom.ChildCom;
+
+                if(sectionId)
+                {
+                    var sectionItem = _.filter(contentComponents, function(section)
+                    {
+                        if(section.id &&
+                            section.id === sectionId &&
+                            section.TearSheetItem)
+                        {
+                            return section;
+                        }
+                    });
+
+                    if(sectionItem &&
+                       sectionItem.length &&
+                       sectionItem.length > 0)
+                    {
+                        component.sections.push(sectionItem[0]);
+                    }
+                }
+            }
+
+            return component;
+        }
+
+        //Multiple parent-child relationship
+        function parentChildMultipleVariation(contentComponents, comp)
+        {
+            var component = null;
+            var tearSheetItem = comp.TearSheetItem;
+
+            if(tearSheetItem && tearSheetItem.ParentCom &&
+                tearSheetItem.ParentCom.ChildCom)
+            {
+                component = {
+                    header: {},
+                    sections: []
+                };
+
+                component.header = {
+                    label: tearSheetItem.Label,
+                    id: tearSheetItem.id,
+                    itemid: null,
+                    mnemonicid: null,
+                    variation: 'parent-child-multiple'
+                };
+
+
+                _.each(tearSheetItem.ParentCom.ChildCom, function(sectionId)
+                {
+                    if(sectionId)
+                    {
+                        var sectionItem = _.filter(contentComponents, function(section)
+                        {
+                            if(section.id &&
+                                section.id === sectionId &&
+                                section.TearSheetItem)
+                            {
+                                return section;
+                            }
+                        });
+
+                        if(sectionItem &&
+                            sectionItem.length &&
+                            sectionItem.length > 0)
+                        {
+                            //Check for array and compId,
+                            var sections = sectionItem[0];
+                            if(sections && sections.TearSheetItem &&
+                                sections.TearSheetItem.length)
+                            {
+                                _.each(sections.TearSheetItem, function(sec)
+                                {
+                                    var comId = sec.comId;
+                                    var section = null;
+                                    if(comId)
+                                    {
+                                        section = getSectionByCompId(contentComponents, comId);
+                                    }
+                                    if(section)
+                                    {
+                                        component.sections.push(section[0]);
+                                    }
+                                    else {
+                                        component.sections.push(sec);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
+            return component;
+        }
+
+        //Get section based on compId/sectionId
+        function getSectionByCompId(contentComponents, sectionId)
+        {
+            var section = null;
+            if(contentComponents && sectionId)
+            {
+                var sectionItem = _.filter(contentComponents, function(section)
+                {
+                    if(section.id &&
+                        section.id === sectionId &&
+                        section.TearSheetItem)
+                    {
+                        return section;
+                    }
+                });
+
+                if(sectionItem &&
+                    sectionItem.length &&
+                    sectionItem.length > 0) {
+                    section = [];
+                    section.push(sectionItem[0]);
+                }
+            }
+            return section;
+        }
 
         function unParseJsonToCsv(json)
         {

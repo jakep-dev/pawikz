@@ -107,7 +107,7 @@
 
                            defineBottomSheet();
                        }
-                       else {
+                       else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
