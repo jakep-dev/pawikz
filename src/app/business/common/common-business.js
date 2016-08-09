@@ -25,7 +25,8 @@
             onMsg: onMsg,
             defineBottomSheet: defineBottomSheet,
             goTop: goTop,
-            resetBottomSheet: resetBottomSheet
+            resetBottomSheet: resetBottomSheet,
+            socketType: socketType
         };
 
         Object.defineProperty(business, 'isTemplateExpandAll', {
@@ -101,12 +102,24 @@
         function onMsg(msg, scope, func) {
             var unbind = $rootScope.$on(msg, func);
             scope.$on('$destroy', unbind);
-        };
+        }
 
         function emitMsg (msg) {
             console.log("Emitting changed event");
             $rootScope.$emit(msg);
-        };
+        }
+
+
+        function socketType(toState)
+        {
+            if(toState &&
+                (toState.name === 'app.dashboard' || toState.name === 'app.myWork'))
+            {
+                return 'workup';
+            }
+
+            return '';
+        }
 
     }
 })();

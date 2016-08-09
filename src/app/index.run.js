@@ -7,9 +7,9 @@
         .run(runBlock);
 
     /** @ngInject */
-    function runBlock($rootScope, commonBusiness, store, logger, clientConfig, Idle)
+    function runBlock($rootScope, commonBusiness, store,
+                      logger, clientConfig, Idle, $window)
     {
-        var socket = clientConfig.socketInfo;
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
             ///Removing the token if user is at login page.
@@ -25,11 +25,22 @@
             ///We need to make sure the user has a single socket available.
             ///If its already created we won't create it again.
             var token = store.get('x-session-token');
+            var userInfo = store.get('user-info');
             logger.log(token, 'info');
             if(token)
             {
+
+                if(clientConfig.socketInfo.disconnected)
+                {
+                    clientConfig.socketInfo.connect();
+                }
+
+                var type = commonBusiness.socketType(toState);
                 Idle.watch();
-                socket.emit('init-socket',token, function(data) {
+                clientConfig.socketInfo.emit('init-socket',{
+                    token: token,
+                    userId: userInfo.userId
+                }, function(data) {
                     if(data)
                     {
                         logger.log('Socket created for specific user', 'debug');

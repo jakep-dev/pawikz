@@ -9,7 +9,7 @@
         var client = config.restcall.client;
         var config = config;
 
-        config.parallel([app.get('/api/overview/:projectId', getOverview),
+        config.parallel([app.post('/api/overview', getOverview),
             app.post('/api/saveOverview', saveOverview)]);
 
 
@@ -32,14 +32,14 @@
             var args =
             {
                 parameters: {
-                    project_id: req.params.projectId,
+                    project_id: req.body.projectId,
                     ssnid: req.headers['x-session-token']
                 }
             };
 
-            console.log(config.restcall.url + '/templateSearch/' + methodName);
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
+                broadcastWorkUpInfo(req.headers['x-session-token'], req.body.userId, req.body.projectId, 'in-process');
                 res.status(response.statusCode).send(setOverViewDetails(data));
             });
         }
@@ -81,6 +81,44 @@
             });
         }
 
+        function broadcastWorkUpInfo(token, userId, projectId, status)
+        {
+            console.log('NotifyWorkUpUse - ' + userId);
+
+            if((token in config.userSocketInfo) &&
+                config.socketIO)
+            {
+                var workup = u.find(config.socketData.workup, function(item)
+                {
+                    if(parseInt(item.projectId) === parseInt(projectId))
+                    {
+                        return item;
+                    }
+                });
+
+                if(workup)
+                {
+                    workup.status = status;
+                }
+                else {
+                    //Adding data into the socketData for future user.
+                    config.socketData.workup.push({
+                        projectId: projectId,
+                        status: status,
+                        userId: userId.toString()
+                    });
+                }
+
+                config.socketIO.sockets.in('workup-room').emit('workup-room-message', {
+                    type: 'workup-info',
+                    data: {
+                        projectId: projectId,
+                        userId: userId,
+                        status: status
+                    }
+                });
+            }
+        }
 
         function getServiceDetails(serviceName) {
             return u.find(config.restcall.service, {name: serviceName});

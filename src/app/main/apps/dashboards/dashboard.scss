@@ -31,13 +31,13 @@
 
   .renewStyle
   {
-    text-decoration: underline;
     color: #f68c20;
   }
 
   .not-active {
     pointer-events: none;
     cursor: default;
+    background-color: yellow;
   }
 }
 

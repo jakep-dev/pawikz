@@ -30,10 +30,25 @@
         });
 
         var business = {
-            initIdle: initIdle
+            initIdle: initIdle,
+            logOut: logOut
         };
 
         return business;
+
+        function logOut()
+        {
+            Idle.unwatch();
+            authService.logout().then(function(response)
+            {
+                clientConfig.socketInfo.disconnect();
+                store.remove('x-session-token');
+                store.remove('user-info');
+                $location.url('/pages/auth/login');
+                toast.simpleToast('Successfully logged out!');
+            });
+        }
+
 
         function initIdle($scope)
         {
@@ -52,15 +67,7 @@
 
             ///Event fires when on timeout.
             $scope.$on('IdleTimeout', function () {
-                Idle.unwatch();
-                authService.logout().then(function (response) {
-                    dialog.close();
-                    store.remove('x-session-token');
-                    store.remove('user-info');
-                    $location.url('/pages/auth/login');
-                    toast.simpleToast('Session timed out');
-                });
-
+                logOut();
             });
         }
     }

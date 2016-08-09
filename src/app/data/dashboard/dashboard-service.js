@@ -22,10 +22,12 @@
         return service;
 
         //Get Dashboard Details
-        function get(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder, sortFilter, searchFilter) {
+        function get(userId, searchUserId, searchCompanyId, rowNum, perPage, sortOrder,
+                     sortFilter, searchFilter, projectId) {
 
             var input =  {
                 userId: userId,
+                projectId: projectId,
                 searchUserId: searchUserId,
                 searchCompanyId: searchCompanyId,
                 rowNum: rowNum,

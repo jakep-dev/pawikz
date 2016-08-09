@@ -24,8 +24,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     }
     breadcrumbBusiness.title = 'My Workups';
     $rootScope.projectOverview = [];
-
-
     commonBusiness.userId = $stateParams.userId;
 
     // Methods
@@ -51,9 +49,34 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function renewTemplate()
     {
-        alert('Clicked');
-        //toast.simpleToast(projectName);
-        ////workupService.renew($stateParams.userId, projectId);
+        $('.renewStyle').click(function()
+        {
+            var obj = $(this);
+            var row = obj.closest('tr');
+            row.addClass('not-active');
+
+            if(obj)
+            {
+                var projectId = obj[0].attributes['projectId'].value;
+                var projectName = obj[0].attributes['projectName'].value;
+                workupService.renew($stateParams.userId, projectId);
+                toast.simpleToast(projectName + ' getting ready for renewal');
+            }
+        });
+
+        var token = store.get('x-session-token');
+
+        clientConfig.socketInfo.emit("init-workup", {
+            token: token
+        }, function(response)
+        {
+            console.log('init-workUp callback - ');
+            console.log(response);
+            if(response && response.length)
+            {
+                workUpStatus(response);
+            }
+        });
     }
 
     //Toggle Sidenav
@@ -70,8 +93,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function renewHtml(data, type, full, meta)
     {
-        return '<input class="renewStyle" ' +
-            'type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'" value="Renew" />';
+        return '<a href="#" class="renewStyle" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Renew</a>';
     }
 
     // Clear search
@@ -119,7 +141,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         var searchFilter = aoData[5].value.value;
 
         dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
-            start, length, sortOrder, sortFilter, searchFilter).then(function(data)
+            start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
         {
 
             var blankData = {
@@ -167,27 +189,18 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function initComplete()
     {
-        $('.renewStyle').click(function()
-        {
-            var obj = $(this);
-            var row = obj.closest('tr');
 
-            console.log('Nearest Row - ');
-            console.log(row);
-
-            if(obj)
-            {
-                var projectId = obj[0].attributes['projectId'].value;
-                var projectName = obj[0].attributes['projectName'].value;
-                workupService.renew($stateParams.userId, projectId);
-                toast.simpleToast(projectName + ' getting ready for renewal');
-            }
-        });
     }
 
     // DataTable configuration
     function dataTableConfiguration()
     {
+        //Defining column definitions
+        vm.dtColumnDefs = [
+            DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
+            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml)
+        ];
+
         //Dashboard DataTable Configuration
         vm.dtOptions = DTOptionsBuilder
             .newOptions()
@@ -196,6 +209,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('processing', true)
             .withOption('serverSide', true)
             .withOption('initComplete', initComplete)
+            .withOption('drawCallback', renewTemplate)
             .withOption('paging', true)
             .withOption('autoWidth', true)
             .withOption('responsive', true)
@@ -203,12 +217,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('order',[4, 'desc'])
             .withPaginationType('full')
             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
-
-        //Defining column definitions
-        vm.dtColumnDefs = [
-            DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
-            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml)
-        ];
 
         //Defining columns for dashboard
         vm.dtColumns = [
@@ -221,16 +229,68 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         ];
     }
 
-
     clientConfig.socketInfo.on('notify-renew-workup-status', function(data)
     {
         $rootScope.toastTitle = 'WorkUp Renewal Completed!';
         $rootScope.toastProjectId = data.projectId;
+        var obj = $('.renewStyle[projectId="'+ data.projectId +'"]');
+        var row = obj.closest('tr');
+        row.removeClass('not-active');
         $mdToast.show({
             hideDelay: 5000,
             position: 'bottom right',
             controller: 'WorkUpToastController',
             templateUrl: 'app/main/components/workup/toast/workup.toast.html'
         });
+    });
+
+    ///Work-Up Status
+    function workUpStatus(data)
+    {
+        console.log('WorkUp Status Data - ');
+        console.log(data);
+
+        var workups = [];
+        if(data && data.length) {
+            console.log('Length');
+            workups.push.apply(workups, data);
+        }
+        else {
+            console.log('Single object');
+            workups.push(data);
+        }
+
+        if(workups && _.size(workups) > 0)
+        {
+            _.each(workups, function(workUp)
+            {
+                var obj = $('.renewStyle[projectId="'+ workUp.projectId +'"]');
+                var row = obj.closest('tr');
+
+                switch (workUp.status)
+                {
+                    case 'in-process':
+                        row.addClass('not-active');
+                        break;
+
+                    case 'complete':
+                        row.removeClass('not-active');
+                        break;
+                }
+            });
+        }
+    }
+
+    clientConfig.socketInfo.on('workup-room-message', function(response)
+    {
+        if(response)
+        {
+            switch (response.type)
+            {
+                case 'workup-info':
+                    workUpStatus(response.data);
+                    break;
+            }
+        }
     });
 }

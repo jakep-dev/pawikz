@@ -11,7 +11,7 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, $rootScope, $scope, authService, authBusiness, toast, store, Idle, Keepalive)
+    function LoginController($window, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle, Keepalive)
     {
         var vm = this;
 
@@ -33,7 +33,7 @@
         function LogIn(userName, password)
         {
 
-            var socket = io.connect();
+            //var socket = io.connect();
             authService.authenticate(userName, password).then(function(response)
             {
                 if(angular.isDefined(response) &&
@@ -46,8 +46,21 @@
                     var token = response.userinfo.token;
                     var userId = response.userinfo.userId;
 
-                    socket.emit('init-socket', response.userinfo.token, function(data)
+                    if(clientConfig.socketInfo.disconnected)
                     {
+                        clientConfig.socketInfo.connect();
+                    }
+
+                    console.log('Socket Info - ');
+                    console.log(clientConfig.socketInfo);
+
+                    clientConfig.socketInfo.emit('init-socket', {
+                        token: response.userinfo.token,
+                        userId: userId
+                    }, function(data)
+                    {
+                        console.log('Return data');
+                        console.log(data);
                         if(data)
                         {
                             authBusiness.userInfo = response.userinfo;

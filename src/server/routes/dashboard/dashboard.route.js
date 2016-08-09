@@ -5,7 +5,7 @@
 (function(dashboardRoute)
 {
 
-    var underscore = require('underscore');
+    var _ = require('underscore');
 
     dashboardRoute.init = function(app, config)
     {
@@ -26,7 +26,7 @@
 
             var methodName = '';
 
-            if(!underscore.isUndefined(service) && !underscore.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.templateList;
@@ -50,12 +50,36 @@
                 }
             };
 
-            //console.log(args);
-
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
                 res.status(response.statusCode).send(data);
             });
+        }
+
+        function releaseWorkUp(projectId, userId, token)
+        {
+            console.log('notifyWorkUpNotInUse - ');
+            console.log(projectId);
+            console.log(userId);
+            console.log(config.socketData.workup);
+
+            if(config.socketData.workup &&
+                config.socketData.workup.length > 0 &&
+                _.isUndefined(projectId))
+            {
+              var workup =  _.find(config.socketData.workup, function(work)
+                                {
+                                   if(parseInt(work.userId) === parseInt(userId))
+                                   {
+                                       return work;
+                                   }
+                                });
+
+                if(workup && !(token in config.userSocketInfo))
+                {
+                    delete config.socketData.workup[workup];
+                }
+            }
         }
 
 
@@ -65,7 +89,7 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!underscore.isUndefined(service) && !underscore.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 methodName = service.methods.userLookUp;
             }
@@ -92,7 +116,7 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!underscore.isUndefined(service) && !underscore.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 methodName = service.methods.companyLookUp;
             }
@@ -115,7 +139,7 @@
 
         function getServiceDetails(serviceName)
         {
-           return underscore.find(config.restcall.service, { name: serviceName });
+           return _.find(config.restcall.service, { name: serviceName });
         }
 
     };

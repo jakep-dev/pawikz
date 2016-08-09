@@ -30,7 +30,8 @@ exports.restcall =
 				   deleteDynamicTableData: 'deleteTemplateTableLayOut',
                    saveMnemonics: 'updateTemplateMnemonics',
                    createWorkUp: 'createNewTemplateProject',
-                   renewWorkUp: 'renewTemplateProject'
+                   renewWorkUp: 'renewTemplateProject',
+                   lockWorkUp: 'lockWorkUp'
                 }
               },
             {
@@ -60,6 +61,12 @@ exports.restcall =
 };
 
 exports.userSocketInfo = {};
+
+exports.socketIO = null;
+
+exports.socketData={
+  workup: []
+};
 
 exports.log =
 {

@@ -18,7 +18,7 @@
                                 overviewBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
-        $rootScope.projectId = $stateParams.projectId;
+            $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
 
 
@@ -112,7 +112,7 @@
         //Load data for project-section and step-section
         function loadData()
         {
-            overviewService.get($stateParams.projectId).then(function(data)
+            overviewService.get($stateParams.projectId, $rootScope.passedUserId).then(function(data)
             {
                 if(data.templateOverview)
                 {

@@ -34,7 +34,13 @@
         function request(request)
         {
             $rootScope.isOperation = true;
+
+            var userInfo = store.get('user-info');
             request.headers['x-session-token'] = store.get('x-session-token');
+            if(userInfo)
+            {
+                request.headers['x-session-userId'] = userInfo.userId;
+            }
             return request || $q.when(request);
         }
 

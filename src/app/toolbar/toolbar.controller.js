@@ -100,15 +100,7 @@
          */
         function logout()
         {
-            Idle.unwatch();
-           authService.logout().then(function(response)
-           {
-
-               store.remove('x-session-token');
-               store.remove('user-info');
-               $location.url('/pages/auth/login');
-               toast.simpleToast('Successfully logged out!');
-           });
+            authBusiness.logOut();
         }
 
         /**

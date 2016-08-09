@@ -22,13 +22,21 @@
 
 
         //Get Overview Details
-        function get(projectId)
+        function get(projectId, userId)
         {
-            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
+            var input = {
+                userId: userId,
+                projectId: projectId
+            };
 
-            return $http.get(url)
-                .then(function(data, status, headers, config)
-                {
+            return $http({
+                url : clientConfig.endpoints.overViewEndPoint.get,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+            })
+                .then(function(data, status, headers, config) {
                     return data.data;
                 })
                 .catch(function(error) {
