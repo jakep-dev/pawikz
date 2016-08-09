@@ -83,7 +83,8 @@
             }
         }
 
-        function isKMBValue(inputVal) {
+        function isKMBValue(inputVal) 
+        {
             var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
             if (regEx.test(inputVal))
             {

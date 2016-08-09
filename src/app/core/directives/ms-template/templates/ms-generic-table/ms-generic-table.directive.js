@@ -15,7 +15,7 @@
     }
 
     /** @ngInject */
-    function msGenericTableDirective($compile, templateBusiness, $document)
+    function msGenericTableDirective($compile, $filter, templateBusiness, $document)
     {
         return {
             restrict: 'E',
@@ -95,10 +95,21 @@
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+                                        // var iskmb = (tearSheetItem.onBlur === 'transformKMB(this)' || tearSheetItem.onkeyup === 'transformKMB(this)' || tearSheetItem.onChange === 'transformKMB(this)');
+                                        var iskmb = ((tearSheetItem.onBlur && (tearSheetItem.onBlur.indexOf('transformKMB(this)') > -1 )) ||
+                                                    (tearSheetItem.onkeyup && (tearSheetItem.onkeyup.indexOf('transformKMB(this)') > -1 )) ||
+                                                    (tearSheetItem.onChange && (tearSheetItem.onChange.indexOf('transformKMB(this)') > -1 ))) || false;
+
+
+                                        if(iskmb)
+                                        {
+                                           value = $filter("currency")(value, '', 0);
+                                        }
                                         html += '<ms-text value="'+ value +'" ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
-                                            'isdisabled="'+ scope.isnoneditable +'"></ms-text>';
+                                            'isdisabled="'+ scope.isnoneditable +'" ' +
+                                            'iskmb="' + iskmb + '"></ms-text>';
                                         break;
                                     case 'SingleDropDownItem':
                                         var itemId = tearSheetItem.ItemId;
