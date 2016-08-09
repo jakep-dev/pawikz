@@ -79,161 +79,16 @@
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
-                var components = scope.components;
-
-                var headerComponents = [];
-                var contentComponents =  [];
-                var templateData = {
-                    header: {},
-                    content: []
-                };
-
-                var headerEndIndex = null;
-
-                _.each(components, function(findHeader)
-                {
-                    var tearSheetItem = findHeader.TearSheetItem;
-
-                    if(tearSheetItem &&
-                        tearSheetItem.Label &&
-                        typeof(tearSheetItem.Label) !== 'object' &&
-                        !headerEndIndex)
-                    {
-                        headerEndIndex = _.findIndex(components, findHeader);
-                        return;
-                    }
-                });
-
-
-                headerComponents.push.apply(headerComponents, components.slice(0,headerEndIndex + 1));
-                contentComponents.push.apply(contentComponents, components.slice(headerEndIndex + 1, components.length - 1));
-
-                console.log('Header Component Index');
-                console.log(headerEndIndex);
-                console.log('Header Component');
-                console.log(headerComponents);
-                console.log('Content Componenets');
-                console.log(contentComponents);
-
-                //Build Headers
-                _.each(headerComponents, function(component)
-                {
-                    var tearSheetItem = component.TearSheetItem;
-
-                    if(!tearSheetItem.id)
-                        return;
-
-                    if(tearSheetItem.id === 'GenericTableItem')
-                    {
-                        //Tool Bar Code
-
-                        //var newScope = scope.$new();
-                        //newScope.tearheader = {};
-                        //newScope.tearcontent = [];
-                        //newScope.iscollapsible = true;
-                        //newScope.isprocesscomplete = true;
-                        //newScope.isnoneditable = false;
-                        //
-                        //newScope.tearheader = {
-                        //    label: 'Available Links',
-                        //    id: 'avalLink',
-                        //    itemid: '',
-                        //    mnemonicid: ''
-                        //}
-                        //
-                        //newScope.tearcontent.push(component.TearSheetItem);
-                        //
-                        //var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-component>';
-                        //el.find('#template-content').append($compile(html)(newScope));
-                    }
-                    else if(tearSheetItem.id === 'LabelItem') {
-                        templateData.header.label = tearSheetItem.Label;
-                        templateData.header.id = tearSheetItem.id;
-                        templateData.header.type = tearSheetItem.type;
-                    }
-                });
-
-                //Build Components.
-                var processedComp = [];
-
-                //Build Content
-                _.each(contentComponents, function(comp)
-                {
-                    var component = null;
-                    var sectionId = null;
-                    var tearSheetItem = comp;
-                    var isReadyToProcess = true;
-
-                    if(comp.TearSheetItem.Label &&
-                        typeof(comp.TearSheetItem.Label) === 'object')
-                    {
-                        isReadyToProcess = false;
-                    }
-                    else if(comp.id) {
-                        isReadyToProcess =  (_.findIndex(processedComp, {compId: comp.id}) === -1);
-                        if(comp.TearSheetItem && comp.TearSheetItem.Mnemonic)
-                        {
-                            if(comp.TearSheetItem.Mnemonic === 'WU_STOCK_CHART_3YR')
-                            {
-                                isReadyToProcess = false;
-                            }
-                        }
-                    }
-                    else if(comp.TearSheetItem.length)
-                    {
-                        _.each(comp.TearSheetItem, function(tearSheet)
-                        {
-                            if(isReadyToProcess)
-                            {
-                                isReadyToProcess= (_.findIndex(processedComp, {compId: tearSheet.id}) === -1);
-                            }
-                        });
-                    }
-
-
-                    if(isReadyToProcess)
-                    {
-                        component = templateBusiness.getComponents(contentComponents, comp);
-                    }
-
-                    if(component)
-                    {
-                        _.each(component.sections, function(section)
-                        {
-                            if(section.id)
-                            {
-                                processedComp.push({
-                                    compId: section.id
-                                });
-                            }
-                        });
-
-                        templateData.content.push(component);
-                    }
-                    else if(comp.TearSheetItem &&
-                        comp.TearSheetItem.id === 'LinkItem')
-                    {
-                        templateData.content.push(comp.TearSheetItem);
-                    }
-
-                });
-
-                console.log('Template Data - ');
-                console.log(templateData);
-                console.log(processedComp);
-                console.log('Template component creation ended - ');
-
-
                 //Render the header for the step
-                if(templateData.header)
+                if(scope.components.header)
                 {
-                    scope.stepName = templateData.header.label;
+                    scope.stepName = scope.components.header.label;
                 }
 
                 //Render the content for the step
-                if(templateData.content)
+                if(scope.components.content)
                 {
-                    angular.forEach(templateData.content, function(renderContent)
+                    angular.forEach(scope.components.content, function(renderContent)
                     {
                         if(renderContent.header &&
                             renderContent.sections &&
@@ -323,10 +178,9 @@
                     stopPropagationOnClick: true
                 };
 
-                console.log($('#template-steps')[0]);
-                PerfectScrollbar.initialize($('#template-steps')[0], options);
-                PerfectScrollbar.destroy($('#main-content')[0]);
-                //$('#main-content').perfectScrollbar();
+                //console.log($('#template-steps')[0]);
+                //PerfectScrollbar.initialize($('#template-steps')[0], options);
+                //PerfectScrollbar.destroy($('#main-content')[0]);
             }
         };
     }

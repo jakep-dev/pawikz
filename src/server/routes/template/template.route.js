@@ -2,7 +2,8 @@
 (function(schemaRoute)
 {
 
-    var u = require('underscore');
+    var _ = require('underscore');
+    var templateBusiness = require('./template.business');
 
     schemaRoute.init = function(app, config)
     {
@@ -29,7 +30,7 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.templateSchema;
@@ -64,7 +65,7 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.templateMnemonics;
@@ -99,7 +100,7 @@
 
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.saveMnemonics;
@@ -136,7 +137,7 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.dynamicTableData;
@@ -164,7 +165,7 @@
                 res.status(response.statusCode).send(data);
             });
         }
-		
+
 		function saveDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
@@ -173,7 +174,7 @@
 
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.saveDynamicTableData;
@@ -200,7 +201,7 @@
                 res.status(response.statusCode).send(data);
             });
         }
-		
+
 		function addDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
@@ -209,7 +210,7 @@
 
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.addDynamicTableData;
@@ -236,7 +237,7 @@
                 res.status(response.statusCode).send(data);
             });
         }
-		
+
 		function deleteDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
@@ -245,7 +246,7 @@
 
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.deleteDynamicTableData;
@@ -272,7 +273,7 @@
                 res.status(response.statusCode).send(data);
             });
         }
-		
+
 		function getScrapedHTML(req, res, next)
         {
             console.log('Parameters -');
@@ -281,7 +282,7 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.getScrapedHTML;
@@ -310,13 +311,29 @@
         }
 
         function getServiceDetails(serviceName) {
-            return u.find(config.restcall.service, {name: serviceName});
+            return _.find(config.restcall.service, {name: serviceName});
         }
 
         //S et the schema variations.
         function setSchemaVariations(data){
-            return (data && data.UIStructure && data.UIStructure.data &&
-                    data.UIStructure.data.TearSheetStep && data.UIStructure.data.TearSheetStep.Component )  ? data.UIStructure.data.TearSheetStep.Component : null;
+            var templateData = {
+                header: {},
+                content: []
+            };
+
+            if (data && data.UIStructure &&
+                data.UIStructure.data &&
+                data.UIStructure.data.TearSheetStep &&
+                data.UIStructure.data.TearSheetStep.Component )  {
+
+                var components = data.UIStructure.data.TearSheetStep.Component;
+                var headerComponents = templateBusiness.getHeaderComponents(components);
+                var contentComponents = templateBusiness.getContentComponents(components);
+                templateData.header = templateBusiness.buildHeaderComponents(headerComponents);
+                templateData.content = templateBusiness.buildContentComponents(contentComponents);
+            }
+
+            return templateData;
         }
     };
 
