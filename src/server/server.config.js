@@ -46,7 +46,8 @@ exports.restcall =
                     findTickers : 'findTickers',
                     dynamicTableData: 'getDynamicTableData',
                     getCompetitors:'getCompetitors',
-                    saveChartSvgInFile: 'saveChartSvgInFile'
+                    saveChartSvgInFile: 'saveChartSvgInFile',
+                    getScrapedHTML: 'getScrapedHTML'
                 }
             },
         {
