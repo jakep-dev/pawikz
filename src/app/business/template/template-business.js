@@ -155,7 +155,7 @@
         }
 
         ///Build hybrid table layout element
-        function buildHybridTableLayout(scope, content, header, rows)
+        function buildHybridTableLayout(scope, itemId, mnemonicId, header, columns)
         {
             var newScope  = scope.$new(true),
                 comp = {
@@ -163,12 +163,12 @@
                     scope: null
                 };
 
-            newScope.itemid = content.ItemId;
-            newScope.mnemonicid = content.Mnemonic;
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
 
             newScope.tearsheet = {
                 header: header,
-                rows: rows
+                columns: columns
             };
 
             comp.html = '<ms-tablelayout-h itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-h>';
@@ -202,24 +202,24 @@
 
                 case 'tablelayout3':
                     //
-                    tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
-                    return buildReadOnlyTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    //tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
+                    //return buildReadOnlyTableLayout(scope, content, tableLayout.header, tableLayout.row);
                     break;
 
                 case 'tablelayout4':
                     tableLayout = getHeaderAndColumnsForTableLayout4(scope.tearcontent);
-                    return buildHybridTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
                     //Hybrid Table
                     break;
 
                 case 'tablelayout5':
-                    tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
-                    return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    //tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
+                    //return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
                     break;
 
                 case 'tablelayout6':
-                    tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
-                    return buildHybridTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    //tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
+                    //return buildHybridTableLayout(scope, content, tableLayout.header, tableLayout.row);
                     break;
             }
 
@@ -258,7 +258,9 @@
         {
             var tableLayout = {
                     header: null,
-                    row: null
+                    row: null,
+                    itemId: null,
+                    mnemonicId: null
                 };
 
             _.each(tearcontent, function(content)
@@ -303,7 +305,9 @@
         {
             var tableLayout = {
                     header: null,
-                    row: null
+                    row: null,
+                    itemId: null,
+                    mnemonicId: null
                 };
 
             _.each(tearcontent, function(content)
@@ -312,6 +316,8 @@
                 {
                     tableLayout.header = content.HeaderRowTemplate;
                     tableLayout.row = content.TableRowTemplate.row;
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
 

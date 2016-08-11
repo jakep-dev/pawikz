@@ -259,7 +259,8 @@
             var makeColDef = '';
             angular.forEach($scope.tearsheet.row, function(eachRow)
             {
-                if(rowCount !== 0)
+                if(rowCount !== 0 && eachRow.col &&
+                    eachRow.col.length)
                 {
                     makeColDef = '{';
 
@@ -289,7 +290,9 @@
 
                         //Set values from web service data
                         makeColDef += '{ "value":';
-                        if ((itemId.indexOf('LIMIT') !== -1) || (itemId.indexOf('PREMIUM') !== -1) || (itemId.indexOf('RET') > -1))
+                        if ((itemId.indexOf('LIMIT') !== -1) ||
+                            (itemId.indexOf('PREMIUM') !== -1) ||
+                            (itemId.indexOf('RET') > -1))
                         {
                             if (value)
                             {
@@ -323,6 +326,10 @@
                             }
                         }
                         else if (itemId.indexOf('CARRIER') > -1)
+                        {
+                            makeColDef += '"' + value + '",';
+                        }
+                        else
                         {
                             makeColDef += '"' + value + '",';
                         }

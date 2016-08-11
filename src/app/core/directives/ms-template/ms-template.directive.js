@@ -121,7 +121,7 @@
                                 {
                                     newScope.tearcontent.push(section);
                                 }
-                                else if(section.row)
+                                else if(section.row || section.ItemId)
                                 {
                                     newScope.tearcontent.push(section);
                                 }

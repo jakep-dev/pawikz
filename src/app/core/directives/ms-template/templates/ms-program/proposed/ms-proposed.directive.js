@@ -251,7 +251,8 @@
             var makeColDef = '';
             angular.forEach($scope.tearsheet.row, function(eachRow)
             {
-                if(rowCount !== 0)
+                if(rowCount !== 0 && eachRow.col &&
+                    eachRow.col.length)
                 {
                     makeColDef = '{';
 
@@ -318,7 +319,11 @@
                         {
                             makeColDef += '"' + value + '",';
                         }
-                        
+                        else
+                        {
+                            makeColDef += '"' + value + '",';
+                        }
+
                         makeColDef += '"itemid":';
                         makeColDef += '"' + itemId + '",';
                         makeColDef += '"mnemonicid":';
