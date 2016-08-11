@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function runBlock($rootScope, commonBusiness, store,
-                      logger, clientConfig, Idle, $window)
+                      logger, clientConfig, Idle, $location)
     {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
@@ -30,14 +30,14 @@
             if(token)
             {
 
-                if(clientConfig.socketInfo.disconnected)
+                if(clientConfig.socketInfo.socket.disconnected)
                 {
-                    clientConfig.socketInfo.connect();
+                    clientConfig.socketInfo.socket.connect();
                 }
 
                 var type = commonBusiness.socketType(toState);
                 Idle.watch();
-                clientConfig.socketInfo.emit('init-socket',{
+                clientConfig.socketInfo.socket.emit('init-socket',{
                     token: token,
                     userId: userInfo.userId
                 }, function(data) {

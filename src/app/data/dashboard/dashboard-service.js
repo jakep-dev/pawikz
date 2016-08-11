@@ -6,7 +6,7 @@
     'use strict';
 
     angular
-        .module('app.data')
+        .module('app.dashboard.service', [])
         .factory('dashboardService', dashboardService);
 
     /* @ngInject */

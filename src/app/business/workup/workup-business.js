@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.business')
+        .module('app.workup.business', [])
         .factory('workupBusiness', workupBusiness);
 
     /* @ngInject */
@@ -38,7 +38,7 @@
 
         function renewComplete()
         {
-            clientConfig.socketInfo.on('notify-renew-workup-status', function(data)
+            clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
             {
                 dialog.close();
                 if(!data ||

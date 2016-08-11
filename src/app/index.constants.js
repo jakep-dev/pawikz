@@ -6,11 +6,11 @@
     angular
         .module('advisen')
         .constant('clientConfig',{
-            security:
+            nodeJS:
             {
                 protocol:'http:',
                 ipAddress: 'localhost',
-                port:'3000'
+                port:'4000'
             },
             endpoints:
             {
@@ -57,13 +57,19 @@
             appSettings:
             {
                 autoSaveTimeOut: 10000,
+                textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='
             },
-            socketInfo: socket,
+            socketInfo: {
+                socket: socket
+            },
             activity:{
                 //In Minutes
                 idle: 600,
                 timeout: 120,
                 interval: 1200
+            },
+            test :{
+                id: 0
             }
         });
 })();

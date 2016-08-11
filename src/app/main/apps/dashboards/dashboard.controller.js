@@ -66,7 +66,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
         var token = store.get('x-session-token');
 
-        clientConfig.socketInfo.emit("init-workup", {
+        clientConfig.socketInfo.socket.emit("init-workup", {
             token: token
         }, function(response)
         {
@@ -227,7 +227,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         ];
     }
 
-    clientConfig.socketInfo.on('notify-renew-workup-status', function(data)
+    clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
     {
         $rootScope.toastTitle = 'WorkUp Renewal Completed!';
         $rootScope.toastProjectId = data.projectId;
@@ -253,6 +253,9 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             workups.push(data);
         }
 
+        console.log('WorkupStatue');
+        console.log(workups);
+
         if(workups && _.size(workups) > 0)
         {
             _.each(workups, function(workUp)
@@ -263,6 +266,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 switch (workUp.status)
                 {
                     case 'in-process':
+                    case 'renewal':
+                        row.removeClass('not-active');
                         row.addClass('not-active');
                         break;
 
@@ -274,7 +279,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         }
     }
 
-    clientConfig.socketInfo.on('workup-room-message', function(response)
+    clientConfig.socketInfo.socket.on('workup-room-message', function(response)
     {
         if(response)
         {

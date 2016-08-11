@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.data')
+        .module('app.auth.service', [])
         .factory('authService', authService);
 
 

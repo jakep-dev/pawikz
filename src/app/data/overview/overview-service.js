@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.data')
+        .module('app.overview.service', [])
         .factory('overviewService', overviewService);
 
     /* @ngInject */

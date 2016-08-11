@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.business')
+        .module('app.breadcrumb.business', [])
         .service('breadcrumbBusiness', breadcrumbBusiness);
 
     /* @ngInject */

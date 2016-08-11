@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.business')
+        .module('app.dashboard.business', [])
         .service('dashboardBusiness', dashboardBusiness);
 
     /* @ngInject */

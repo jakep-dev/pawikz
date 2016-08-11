@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.business')
+        .module('app.auth.business', [])
         .service('authBusiness', authBusiness);
 
     /* @ngInject */
@@ -39,7 +39,7 @@
             Idle.unwatch();
             authService.logout().then(function(response)
             {
-                clientConfig.socketInfo.disconnect();
+                clientConfig.socketInfo.socket.disconnect();
                 store.remove('x-session-token');
                 store.remove('user-info');
                 $location.url('/pages/auth/login');

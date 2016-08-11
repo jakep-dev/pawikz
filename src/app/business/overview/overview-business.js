@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.business')
+        .module('app.overview.business', [])
         .factory('overviewBusiness', overviewBusiness);
 
     /* @ngInject */

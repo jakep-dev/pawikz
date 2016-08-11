@@ -27,7 +27,7 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
     var token =  store.get('x-session-token');
     $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
 
-    clientConfig.socketInfo.on('notify-create-workup-status', function(data)
+    clientConfig.socketInfo.socket.on('notify-create-workup-status', function(data)
     {
         console.log('Notify-WorkUp-Status');
         $rootScope.toastTitle = 'WorkUp Creation Completed!';

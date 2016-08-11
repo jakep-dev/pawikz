@@ -77,7 +77,7 @@
             };
 
             //Notify all users about the renewal process going on.
-            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'in-process');
+            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'renewal');
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
 
@@ -146,7 +146,7 @@
                 workUp.status = 'complete';
             }
 
-            config.socketIO.sockets.in('workup-room').emit('workup-room-message', {
+            config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                 type: 'renewal-complete',
                 data: {
                     projectId: data.projectId
@@ -158,7 +158,7 @@
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
             if((token in config.userSocketInfo) &&
-                config.socketIO)
+                config.socketIO.socket)
             {
                 var workup = _.find(config.socketData.workup, function(item)
                 {
@@ -181,13 +181,9 @@
                     });
                 }
 
-                config.socketIO.sockets.in('workup-room').emit('workup-room-message', {
+                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                     type: 'workup-info',
-                    data: {
-                        projectId: projectId,
-                        userId: userId,
-                        status: status
-                    }
+                    data: config.socketData.workup
                 });
             }
         }

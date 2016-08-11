@@ -46,15 +46,12 @@
                     var token = response.userinfo.token;
                     var userId = response.userinfo.userId;
 
-                    if(clientConfig.socketInfo.disconnected)
+                    if(clientConfig.socketInfo.socket.disconnected)
                     {
-                        clientConfig.socketInfo.connect();
+                        clientConfig.socketInfo.socket.connect();
                     }
 
-                    console.log('Socket Info - ');
-                    console.log(clientConfig.socketInfo);
-
-                    clientConfig.socketInfo.emit('init-socket', {
+                    clientConfig.socketInfo.socket.emit('init-socket', {
                         token: response.userinfo.token,
                         userId: userId
                     }, function(data)

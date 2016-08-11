@@ -10,6 +10,14 @@ exports.webservice =
     service:'advwebservice'
 };
 
+exports.client = {
+    protocol: 'http',
+    domain: 'localhost',
+    port: '4000',
+    loglevel: 1,
+    transports: 'polling'
+};
+
 var Client = require('node-rest-client').Client;
 var moment = require('moment');
 
@@ -63,7 +71,10 @@ exports.restcall =
 
 exports.userSocketInfo = {};
 
-exports.socketIO = null;
+exports.socketIO = {
+    host: exports.client.protocol.concat('://', exports.client.domain, ':', exports.client.port),
+    socket: null
+};
 
 exports.socketData={
   workup: []

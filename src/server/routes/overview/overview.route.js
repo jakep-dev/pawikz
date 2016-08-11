@@ -86,7 +86,7 @@
             console.log('NotifyWorkUpUse - ' + userId);
 
             if((token in config.userSocketInfo) &&
-                config.socketIO)
+                config.socketIO.socket)
             {
                 
                 //Release all workup been lock before. 
@@ -132,13 +132,12 @@
                     });
                 }
 
-                config.socketIO.sockets.in('workup-room').emit('workup-room-message', {
+                console.log('Workup broadcast-');
+                console.log(config.socketData.workup);
+
+                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                     type: 'workup-info',
-                    data: {
-                        projectId: projectId,
-                        userId: userId,
-                        status: status
-                    }
+                    data: config.socketData.workup
                 });
             }
         }

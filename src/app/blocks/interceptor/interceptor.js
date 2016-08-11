@@ -69,11 +69,11 @@
             switch (rejection.status)
             {
                 case 401:
-                    clientConfig.socketInfo.disconnect();
+                    clientConfig.socketInfo.socket.disconnect();
                     $location.url('/pages/auth/login');
                     break;
                 case 500:
-                    clientConfig.socketInfo.disconnect();
+                    clientConfig.socketInfo.socket.disconnect();
                     $location.url('/pages/errors/error-500');
                     break;
             }

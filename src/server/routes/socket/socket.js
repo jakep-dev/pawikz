@@ -5,8 +5,13 @@
 
     socket.init = function(server, config)
     {
+        //Configure the websocket
         var io = require('socket.io').listen(server);
-        config.socketIO = io;
+        //io.set('origins', config.socketIO.host);
+        //io.set('transports', ['polling']);
+        //io.set('log level', 1);
+
+        config.socketIO.socket = io;
 
         io.sockets.on('connection', function (socket) {
            initializeSocket(socket);
@@ -92,7 +97,7 @@
 
         function broadcastWorkUpRelease()
         {
-            config.socketIO.sockets.in('workup-room').emit('workup-room-message', {
+            config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                 type: 'workup-info',
                 data: config.socketData.workup
             });

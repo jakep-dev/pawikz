@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.data')
+        .module('app.chart.service', [])
         .factory('stockService', stockService);
 
     /* @ngInject */

@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('app.business')
+        .module('app.template.business', [])
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */

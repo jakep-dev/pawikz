@@ -9,7 +9,7 @@
 
 
     /** @ngInject */
-    function MsRichTextEditorController($scope, templateBusiness)
+    function MsRichTextEditorController($scope, templateBusiness, clientConfig)
     {
         $scope.myHtml = "";
         $scope.froalaOptions = {
@@ -44,7 +44,7 @@
             ],
             toolbarInline: false,
             placeholderText: $scope.answer || 'Enter text here',
-            key: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='
+            key: clientConfig.appSettings.textEditorApiKey
         };
 
         $scope.$watch(

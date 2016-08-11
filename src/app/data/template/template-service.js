@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app.data')
+        .module('app.template.service', [])
         .factory('templateService', templateService);
 
     /* @ngInject */
