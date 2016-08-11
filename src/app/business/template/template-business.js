@@ -213,13 +213,13 @@
                     break;
 
                 case 'tablelayout5':
-                    //tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
-                    //return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
+                    return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
                     break;
 
                 case 'tablelayout6':
-                    //tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
-                    //return buildHybridTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
+                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
                     break;
             }
 
@@ -329,7 +329,9 @@
         {
             var tableLayout = {
                 header: null,
-                row: null
+                row: null,
+                itemId: null,
+                mnemonicId: null
             };
 
             _.each(tearcontent, function(content)
@@ -337,6 +339,8 @@
                 if(content.id === 'TableLayOut')
                 {
                     tableLayout.row = content.TableRowTemplate.row;
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
 
@@ -357,6 +361,8 @@
                 {
                     tableLayout.header = content.VerticalRow.row;
                     tableLayout.row = content.TableRowTemplate.row;
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
 

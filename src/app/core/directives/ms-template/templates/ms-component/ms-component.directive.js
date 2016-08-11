@@ -192,6 +192,7 @@
                             case 'TableLayOut1':
                             case 'TableLayOut2':
                             case 'TableLayOut4':
+                            case 'TableLayOut5':
                                 comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
                                 if(comp && comp.html !== '')
                                 {
