@@ -33,13 +33,11 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                console.log('get!');
                 return isTemplateExpandAll;
             },
             set: function (value) {
                 isTemplateExpandAll = value;
                 this.emitMsg('IsTemplateExpanded');
-                console.log('set!');
             }
         });
 
@@ -60,13 +58,11 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                console.log('get!');
                 return isPrintableAll;
             },
             set: function (value) {
                 isPrintableAll = value;
                 this.emitMsg('IsPrintable');
-                console.log('set!');
             }
         });
 
@@ -105,7 +101,6 @@
         }
 
         function emitMsg (msg) {
-            console.log("Emitting changed event");
             $rootScope.$emit(msg);
         }
 

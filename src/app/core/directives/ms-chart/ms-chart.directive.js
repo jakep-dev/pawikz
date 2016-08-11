@@ -51,7 +51,6 @@
                                         angular.forEach(data.legacyCharts, function(chart)
                                         {
                                             ++idCount;
-                                            console.log('idCount',idCount);
                                             if(idCount<4) {
 
                                                 var tearsheet = {
@@ -414,14 +413,10 @@
                                             var chart = allHighCharts[chartCnt];
                                             if (chart != undefined) {
                                                 strSVG = chart.getSVG();
-                                                console.log("printing chart object");
-
                                                     if (scope.chart_ids[j] != null)
                                                         var jsChart = scope.chart_ids[j];
                                                     if (jsChart) {
-                                                        //console.log('chart_id*********************>>', jsChart.chart_id);
                                                         var chartId = jsChart;
-                                                        console.log('chart_id ===================>', chartId);
                                                     }
                                                 if(chartId) {
                                                     strSVGArr.push(strSVG);
@@ -438,14 +433,7 @@
 
 //Need to create one file per chart and save it to  /data/tmp/newTemplates/<request_folder>
                                             }
-                                        }//hightchart loop end
-                                        console.log('commonBusiness.projectId---------->', commonBusiness.projectId);
-
-                                        console.log('commonBusiness.stepId---------->', commonBusiness.stepId);
-
-                                        console.log('commonBusiness.company_name---------->', commonBusiness.companyName);
-                                        console.log('commonBusiness.user_name---------->', commonBusiness.userName);
-
+                                        }
 
                                         var userDetails = store.get('user-info');
                                         var userName = "",userId = null;

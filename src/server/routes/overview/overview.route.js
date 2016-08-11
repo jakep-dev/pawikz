@@ -2,7 +2,7 @@
 (function(overviewRoute)
 {
 
-    var u = require('underscore');
+    var _ = require('underscore');
 
     overviewRoute.init = function(app, config)
     {
@@ -21,7 +21,7 @@
 
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.overView;
@@ -53,7 +53,7 @@
 
             var methodName = '';
 
-            if(!u.isUndefined(service) && !u.isNull(service))
+            if(!_.isUndefined(service) && !_.isNull(service))
             {
                 console.log(service.name);
                 methodName = service.methods.saveOverview;
@@ -88,7 +88,29 @@
             if((token in config.userSocketInfo) &&
                 config.socketIO)
             {
-                var workup = u.find(config.socketData.workup, function(item)
+                
+                //Release all workup been lock before. 
+                var workup = _.find(config.socketData.workup, function(item)
+                {
+                    if(parseInt(item.userId) === parseInt(userId) &&
+                        item.status === 'in-process')
+                    {
+                        return item;
+                    }
+                });
+
+                console.log('WorkuPs');
+                console.log(workup);
+
+                if(workup)
+                {
+                    workup.status = 'complete';
+                }
+
+                console.log('After Delete');
+                console.log(config.socketData.workup);
+                
+                workup = _.find(config.socketData.workup, function(item)
                 {
                     if(parseInt(item.projectId) === parseInt(projectId))
                     {
@@ -99,6 +121,7 @@
                 if(workup)
                 {
                     workup.status = status;
+                    workup.userId = userId.toString();
                 }
                 else {
                     //Adding data into the socketData for future user.
@@ -121,7 +144,7 @@
         }
 
         function getServiceDetails(serviceName) {
-            return u.find(config.restcall.service, {name: serviceName});
+            return _.find(config.restcall.service, {name: serviceName});
         }
         
         function setOverViewDetails(data)
@@ -130,15 +153,15 @@
            {
                var steps = data.templateOverview.steps;
 
-               u.each(steps, function(step)
+               _.each(steps, function(step)
                {
-                   u.each(step.sections, function(section)
+                   _.each(step.sections, function(section)
                    {
                       section.value = (section.value === 'true');
                    });
 
-                   step.value = (u.size(step.sections) !== 0 &&
-                                 u.every(step.sections, u.identity({value: true})));
+                   step.value = (_.size(step.sections) !== 0 &&
+                                 _.every(step.sections, _.identity({value: true})));
                });
            }
            return data;

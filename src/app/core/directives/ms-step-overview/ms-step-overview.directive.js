@@ -10,9 +10,6 @@
 
     function MsStepOverviewController($scope, commonBusiness)
     {
-        console.log('Scope of each overview - ');
-        console.log($scope);
-
         $scope.isExpanded = true;
 
         $scope.toggleExpanded = toggleExpanded;

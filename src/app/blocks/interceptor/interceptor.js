@@ -4,14 +4,12 @@
 (function() {
     'use strict';
 
-    console.log('blocks.interceptor');
-
     angular
         .module('blocks.interceptor')
         .factory('interceptor',ConfigInterceptor);
 
     /** @ngInject */
-    function ConfigInterceptor($q, $location, $injector, $interval, $rootScope, store, logger){
+    function ConfigInterceptor($q, $location, $injector, $interval, $rootScope, store, logger, clientConfig){
         var promise = [];
 
         var service = {
@@ -48,23 +46,17 @@
         {
             var toast =  $injector.get("toast");
             toast.simpleToast('Oops!. Request error.');
-            console.log('Request Error');
-            console.log(rejection);
             return rejection || $q.when(rejection);
         }
 
         function responseError(rejection)
         {
-            console.log('Response Error');
             $rootScope.isOperation = false;
             store.remove('x-session-token');
             store.remove('x-session-user');
 
             var toast =  $injector.get("toast");
             toast.simpleToast('Oops!. ' + rejection.statusText);
-            console.log('Rejection Response');
-            console.log(rejection);
-
             var error = {
                 method: rejection.config.method,
                 url: rejection.config.url,
@@ -77,10 +69,11 @@
             switch (rejection.status)
             {
                 case 401:
+                    clientConfig.socketInfo.disconnect();
                     $location.url('/pages/auth/login');
                     break;
                 case 500:
-                    console.log('Inside 500 error');
+                    clientConfig.socketInfo.disconnect();
                     $location.url('/pages/errors/error-500');
                     break;
             }

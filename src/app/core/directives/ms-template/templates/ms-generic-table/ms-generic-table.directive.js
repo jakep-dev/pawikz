@@ -181,6 +181,30 @@
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ></ms-radio-button>';
                                         break;
+
+                                    case 'RTFTextAreaItem':
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var prompt = '';
+                                        var answer = '';
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+
+                                        if(angular.isDefined(tearSheetItem.prompt) &&
+                                            typeof(tearSheetItem.prompt) !== 'object')
+                                        {
+                                            prompt = tearSheetItem.prompt;
+                                        }
+
+                                        if(tearSheetItem.answer &&
+                                            typeof(tearSheetItem.answer) !== 'object')
+                                        {
+                                            answer = tearSheetItem.answer;
+                                        }
+
+                                        html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
+                                            'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
+                                        html += '</div>';
+                                        break;
                                 }
                             }
                             html += '</div>';

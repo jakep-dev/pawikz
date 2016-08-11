@@ -87,7 +87,7 @@
                     for(var count = 0; count < data.length; count++)
                     {
                         html += '<tr style="min-height: 25px">';
-                        angular.forEach(column, function(col)
+                        _.each(column, function(col)
                         {
                             if(col.TearSheetItem &&
                                 col.TearSheetItem.Mnemonic) {
@@ -283,8 +283,6 @@
                     }
                 };
             }
-            //controller: 'msTableLayoutController',
-            //controllerAs: 'vm'
         };
     }
 

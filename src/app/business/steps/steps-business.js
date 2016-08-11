@@ -64,7 +64,6 @@
         function getNextStep(stepId, steps)
         {
             var stepIdInt = parseInt(stepId);
-            console.log((stepIdInt) === 1);
 
             if(steps)
             {
@@ -95,8 +94,6 @@
                         $state.go('app.steps', stateConfig);
                     }
                 }
-
-                console.log('GetPrevStep - ' + currentIndex );
             }
         }
 

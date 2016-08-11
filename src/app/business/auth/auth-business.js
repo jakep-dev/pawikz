@@ -18,14 +18,12 @@
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('auth get!');
                 return userName || store.get('x-session-user');
             },
             set: function(value) {
                 userName = value;
                 store.set('x-session-user', userName);
                 commonBusiness.emitMsg('UserName');
-                console.log('auth set!');
             }
         });
 
@@ -54,7 +52,6 @@
         {
             ///When user in Idle mode
             $scope.$on('IdleStart', function () {
-                console.log('Idle Start');
                  dialog.status('app/main/pages/timeout/timeout.html', false, false);
             });
 

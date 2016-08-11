@@ -318,7 +318,8 @@
         function setSchemaVariations(data){
             var templateData = {
                 header: {},
-                content: []
+                content: [],
+                fullComp: []
             };
 
             if (data && data.UIStructure &&
@@ -327,10 +328,10 @@
                 data.UIStructure.data.TearSheetStep.Component )  {
 
                 var components = data.UIStructure.data.TearSheetStep.Component;
-                var headerComponents = templateBusiness.getHeaderComponents(components);
-                var contentComponents = templateBusiness.getContentComponents(components);
-                templateData.header = templateBusiness.buildHeaderComponents(headerComponents);
-                templateData.content = templateBusiness.buildContentComponents(contentComponents);
+                var component = templateBusiness.getHeaderAndContentComponents(components);
+                templateData.header = templateBusiness.buildHeaderComponents(component.headers);
+                templateData.content = templateBusiness.buildContentComponents(component.contents);
+                templateData.fullComp = components;
             }
 
             return templateData;

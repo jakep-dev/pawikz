@@ -30,7 +30,7 @@
                                         </md-button>
                                     </md-menu-item>
 
-                                    <md-menu-item>
+                                    <md-menu-item ng-if="false">
                                         <md-button aria-label="mode widget">
                                                   <span layout="row" layout-align="start center">
                                                     <md-icon md-font-icon="icon-tablet-ipad"></md-icon>
@@ -74,6 +74,16 @@
                                                   </span>
                                         </md-button>
                                     </md-menu-item>
+
+                                    <md-menu-item>
+                                        <md-button  aria-label="save all" ng-click="vm.renew()">
+                                                  <span layout="row" layout-align="start center">
+                                                        <md-icon md-font-icon="icon-rotate-3d"></md-icon>
+                                                        <span>Renew</span>
+                                                  </span>
+                                        </md-button>
+                                    </md-menu-item>
+
                                 </md-menu-content>
                             </md-menu>
                         </div>

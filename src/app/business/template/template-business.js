@@ -41,250 +41,470 @@
            unParseJsonToCsv: unParseJsonToCsv,
            isKMBValue: isKMBValue,
            transformKMB: transformKMB,
-           getComponents: getComponents
+           buildComponents: buildComponents,
+           buildExpiringProgram: buildExpiringProgram,
+           buildProposedProgram: buildProposedProgram,
+           buildLabel: buildLabel,
+           buildGenericTableItem: buildGenericTableItem,
+           buildRichTextArea: buildRichTextArea,
+           buildScrapeItem: buildScrapeItem,
+           buildMessage: buildMessage,
+           determineTableLayout: determineTableLayout
         };
 
         return business;
 
-        //Get the correct component and add to the collection
-        function getComponents(contentComponents, comp)
+        function buildComponents(scope, content, subtype)
         {
-            var component = null;
-            business.variations = [];
-            initVariations(contentComponents, comp);
+            var type = subtype || content.id;
 
-            while (business.variations.length){
-                component = business.variations.shift().call();
-                if(component)
-                    return component;
+            switch(type)
+            {
+                case 'LabelItem':
+                    return buildLabel(scope, content);
+                    break;
+
+                case 'GenericTableItem':
+                    return buildGenericTableItem(scope, content);
+                    break;
+
+                case 'RTFTextAreaItem':
+                    return buildRichTextArea(scope, content);
+                    break;
+
+                case 'ScrapedItem':
+                    return buildScrapeItem(scope, content);
+                    break;
+
+                case 'Expiring':
+                    return buildExpiringProgram(scope, scope.tearheader, content);
+                    break;
+
+                case 'Proposed':
+                    return buildProposedProgram(scope, scope.tearheader, content);
+                    break;
             }
-            return component;
         }
 
-        ///Initialize the variation
-        function initVariations(contentComponents, comp)
+        ///Build filter table layout element
+        function buildFilterTableLayout(scope, itemId, mnemonicId, header, columns)
         {
-            var sectionCompVariationFunc = function(){
-                return sectionCompVariation(contentComponents, comp);
+            var newScope  = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
+            newScope.tearsheet = {
+                header: header,
+                columns: columns
             };
 
-            var sectionParentChildVariationFunc = function()
-            {
-                return parentChildVariation(contentComponents, comp);
+            comp.html = '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        ///Build read-only table layout element
+        function buildReadOnlyTableLayout(scope, itemId, mnemonicId, header, columns)
+        {
+            var newScope  = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
+
+            newScope.tearsheet = {
+                header: header,
+                columns: columns
             };
 
-            var sectionParentChildMulitpleVariationFunc = function()
-            {
-                return parentChildMultipleVariation(contentComponents, comp);
+            comp.html = '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        ///Build edit table layout element
+        function buildEditTableLayout(scope, content, header, columns)
+        {
+            var newScope  = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.itemid = content.ItemId;
+            newScope.mnemonicid = content.Mnemonic;
+
+            newScope.tearsheet = {
+                header: header,
+                columns: columns
             };
 
-            business.variations = [ sectionCompVariationFunc,
-                                    sectionParentChildVariationFunc,
-                                    sectionParentChildMulitpleVariationFunc
-                                  ];
+            comp.html = '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="false"></ms-tablelayout-e>';
+            comp.scope = newScope;
+
+            return comp;
         }
 
-        ///Tearsheet section component relationship
-        function sectionCompVariation(contentComponents, comp)
+        ///Build hybrid table layout element
+        function buildHybridTableLayout(scope, content, header, rows)
         {
-            var sectionId = null;
-            var component = null;
-            var tearSheetItem = comp.TearSheetItem;
-
-            if(!comp.id && tearSheetItem.length &&
-                tearSheetItem.length > 0)
-            {
-                component = {
-                    header: {},
-                    sections: []
+            var newScope  = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
                 };
 
-                _.each(tearSheetItem, function(item)
-                {
-                    if(item.Label &&
-                        item.comId)
-                    {
-                        sectionId = item.comId;
-                        component.header = {
-                            label: item.Label,
-                            id: item.id,
-                            itemid: item.ItemId,
-                            mnemonicid: item.Mnemonic,
-                            variation: 'section'
-                        }
-                    }
-                });
+            newScope.itemid = content.ItemId;
+            newScope.mnemonicid = content.Mnemonic;
 
-                //Find section based on sectionId
-                if(sectionId)
-                {
-                    var sectionTearSheetItem = _.filter(contentComponents, function(section)
-                    {
-                        if(section.id &&
-                            section.id === sectionId &&
-                            section.TearSheetItem)
-                        {
-                            return section;
-                        }
-                    });
+            newScope.tearsheet = {
+                header: header,
+                rows: rows
+            };
 
-                    if(sectionTearSheetItem &&
-                        sectionTearSheetItem.length &&
-                        sectionTearSheetItem.length > 0)
-                    {
-                        component.sections.push(sectionTearSheetItem[0]);
-                    }
+            comp.html = '<ms-tablelayout-h itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-h>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        function determineTableLayout(scope, content, subtype)
+        {
+            var tableLayout = {
+                header: null,
+                row: null,
+                itemId: null,
+                mnemonicId: null
+            };
+
+            switch (subtype.toLowerCase())
+            {
+                case 'tablelayout1':
+                    //ReadOnly Table
+                    tableLayout = getHeaderAndColumnsForTableLayout1(scope.tearcontent);
+                    return buildReadOnlyTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    break;
+
+                case 'tablelayout2':
+                    //Filter Table
+                    tableLayout = getHeaderAndColumnsForTableLayout2(scope.tearcontent);
+                    return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    break;
+
+                case 'tablelayout3':
+                    //
+                    tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
+                    return buildReadOnlyTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    break;
+
+                case 'tablelayout4':
+                    tableLayout = getHeaderAndColumnsForTableLayout4(scope.tearcontent);
+                    return buildHybridTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    //Hybrid Table
+                    break;
+
+                case 'tablelayout5':
+                    tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
+                    return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    break;
+
+                case 'tablelayout6':
+                    tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
+                    return buildHybridTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    break;
+            }
+
+            return null;
+        }
+
+        //Get header and columns for table layout 1
+        function getHeaderAndColumnsForTableLayout1(tearcontent)
+        {
+            var tableLayout = {
+                header: null,
+                row: null,
+                itemId: null,
+                mnemonicId: null
+            };
+
+            _.each(tearcontent, function(content)
+            {
+                if(content.id === 'GenericTableItem')
+                {
+                    tableLayout.header = content.row;
                 }
-            }
-
-            return component;
-        }
-
-        ///Tearsheet parent child variation
-        function parentChildVariation(contentComponents, comp)
-        {
-            var component = null;
-            var tearSheetItem = comp.TearSheetItem;
-
-            if(tearSheetItem && tearSheetItem.ParentCom &&
-               tearSheetItem.ParentCom.ChildCom &&
-               typeof(tearSheetItem.ParentCom.ChildCom) === 'string')
-            {
-                component = {
-                    header: {},
-                    sections: []
-                };
-
-                component.header = {
-                    label: tearSheetItem.Label,
-                    id: tearSheetItem.id,
-                    itemid: null,
-                    mnemonicid: null,
-                    variation: 'parent-child'
-                };
-
-                var sectionId = tearSheetItem.ParentCom.ChildCom;
-
-                if(sectionId)
+                else if(content.id === 'TableLayOut')
                 {
-                    var sectionItem = _.filter(contentComponents, function(section)
-                    {
-                        if(section.id &&
-                            section.id === sectionId &&
-                            section.TearSheetItem)
-                        {
-                            return section;
-                        }
-                    });
-
-                    if(sectionItem &&
-                       sectionItem.length &&
-                       sectionItem.length > 0)
-                    {
-                        component.sections.push(sectionItem[0]);
-                    }
+                    tableLayout.row = content.TableRowTemplate.row;
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
                 }
-            }
+            });
 
-            return component;
+            return tableLayout;
         }
 
-        //Multiple parent-child relationship
-        function parentChildMultipleVariation(contentComponents, comp)
+        //Get header and columns for table layout 2
+        function getHeaderAndColumnsForTableLayout2(tearcontent)
         {
-            var component = null;
-            var tearSheetItem = comp.TearSheetItem;
-
-            if(tearSheetItem && tearSheetItem.ParentCom &&
-                tearSheetItem.ParentCom.ChildCom)
-            {
-                component = {
-                    header: {},
-                    sections: []
+            var tableLayout = {
+                    header: null,
+                    row: null
                 };
 
-                component.header = {
-                    label: tearSheetItem.Label,
-                    id: tearSheetItem.id,
-                    itemid: null,
-                    mnemonicid: null,
-                    variation: 'parent-child-multiple'
-                };
-
-
-                _.each(tearSheetItem.ParentCom.ChildCom, function(sectionId)
-                {
-                    if(sectionId)
-                    {
-                        var sectionItem = _.filter(contentComponents, function(section)
-                        {
-                            if(section.id &&
-                                section.id === sectionId &&
-                                section.TearSheetItem)
-                            {
-                                return section;
-                            }
-                        });
-
-                        if(sectionItem &&
-                            sectionItem.length &&
-                            sectionItem.length > 0)
-                        {
-                            //Check for array and compId,
-                            var sections = sectionItem[0];
-                            if(sections && sections.TearSheetItem &&
-                                sections.TearSheetItem.length)
-                            {
-                                _.each(sections.TearSheetItem, function(sec)
-                                {
-                                    var comId = sec.comId;
-                                    var section = null;
-                                    if(comId)
-                                    {
-                                        section = getSectionByCompId(contentComponents, comId);
-                                    }
-                                    if(section)
-                                    {
-                                        component.sections.push(section[0]);
-                                    }
-                                    else {
-                                        component.sections.push(sec);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
-            }
-
-            return component;
-        }
-
-        //Get section based on compId/sectionId
-        function getSectionByCompId(contentComponents, sectionId)
-        {
-            var section = null;
-            if(contentComponents && sectionId)
+            _.each(tearcontent, function(content)
             {
-                var sectionItem = _.filter(contentComponents, function(section)
+                if(content.id === 'GenericTableItem')
                 {
-                    if(section.id &&
-                        section.id === sectionId &&
-                        section.TearSheetItem)
-                    {
-                        return section;
-                    }
-                });
-
-                if(sectionItem &&
-                    sectionItem.length &&
-                    sectionItem.length > 0) {
-                    section = [];
-                    section.push(sectionItem[0]);
+                    tableLayout.header = content.row;
                 }
-            }
-            return section;
+                else if(content.id === 'TableLayOut')
+                {
+                    tableLayout.row = content.TableRowTemplate.row;
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
+                }
+            });
+
+            return tableLayout;
         }
+
+        //Get header and columns for table layout 3
+        function getHeaderAndColumnsForTableLayout3(tearcontent)
+        {
+            var tableLayout = {
+                header: null,
+                row: null
+            };
+
+            _.each(tearcontent, function(content)
+            {
+                if(content.id === 'TableLayOut')
+                {
+                    tableLayout.row = content.TableRowTemplate.row;
+                }
+            });
+
+            return tableLayout;
+        }
+
+        //Get header and columns for table layout 4
+        //Need to display the generic table item also.
+        function getHeaderAndColumnsForTableLayout4(tearcontent)
+        {
+            var tableLayout = {
+                    header: null,
+                    row: null
+                };
+
+            _.each(tearcontent, function(content)
+            {
+                if(content.id === 'TableLayOut')
+                {
+                    tableLayout.header = content.HeaderRowTemplate;
+                    tableLayout.row = content.TableRowTemplate.row;
+                }
+            });
+
+            return tableLayout;
+        }
+
+        //Get header and columns for table layout 5
+        function getHeaderAndColumnsForTableLayout5(tearcontent)
+        {
+            var tableLayout = {
+                header: null,
+                row: null
+            };
+
+            _.each(tearcontent, function(content)
+            {
+                if(content.id === 'TableLayOut')
+                {
+                    tableLayout.row = content.TableRowTemplate.row;
+                }
+            });
+
+            return tableLayout;
+        }
+
+        //Get header and columns for table layout 6
+        function getHeaderAndColumnsForTableLayout6(tearcontent)
+        {
+            var tableLayout = {
+                header: null,
+                row: null
+            };
+
+            _.each(tearcontent, function(content)
+            {
+                if(content.id === 'TableLayOut')
+                {
+                    tableLayout.header = content.VerticalRow.row;
+                    tableLayout.row = content.TableRowTemplate.row;
+                }
+            });
+
+            return tableLayout;
+        }
+
+        //Build label element
+        function buildLabel(scope, content)
+        {
+            var comp = {
+                html: '',
+                scope: null
+            },
+            newScope  = scope.$new(),
+            html = '';
+
+            newScope.tearsheet = {
+                value: content.Label,
+                type: 'header3'
+            };
+
+            comp.html = '<ms-header tearsheet="tearsheet"></ms-header>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        //Build generic table item
+        function buildGenericTableItem(scope, content)
+        {
+            var newScope  = scope.$new(),
+                comp = {
+                html: '',
+                scope: null
+            };
+
+            newScope.tearsheet = {
+                rows: content.row
+            };
+
+            newScope.isnoneditable = scope.isnoneditable;
+            comp.html = '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        //Build rich text-area element
+        function buildRichTextArea(scope, content)
+        {
+            var itemId = content.ItemId,
+                mnemonicId = content.Mnemonic,
+                prompt = '',
+                answer = '',
+                comp = {
+                    html: '',
+                    scope: null
+                },
+                value = getMnemonicValue(itemId, mnemonicId);
+
+            if(content.prompt &&
+                typeof(content.prompt) !== 'object')
+            {
+                prompt = content.prompt;
+            }
+
+            if(content.answer &&
+                typeof(content.answer) !== 'object')
+            {
+                answer = content.answer;
+            }
+
+            var newScope  = scope.$new();
+            comp.html = '<ms-rich-text-editor itemid="'+itemId+'" ' +
+                'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        ///Build scrape item
+        function buildScrapeItem(scope, content)
+        {
+            var newScope  = scope.$new(),
+                mnemonicid = content.Mnemonic,
+                itemid = content.ItemId,
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.mnemonicid = mnemonicid;
+            newScope.itemid = itemid;
+
+            comp.html = '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        //Build message element
+        function buildMessage(text)
+        {
+            return '<ms-message message="'+ text +'"></ms-message>';
+        }
+
+        ///Build expiring program element
+        function buildExpiringProgram(scope, tearheader, content)
+        {
+            var comp = {
+              html: '',
+              scope: null
+            };
+            var newScope  = scope.$new(true);
+            newScope.tearsheet = null;
+            newScope.isnoneditable = scope.isnoneditable;
+            newScope.copyproposed = null;
+
+            if(tearheader)
+            {
+                newScope.copyproposed =  tearheader.copyproposed || null;
+            }
+
+            newScope.tearsheet = content;
+            comp.html += '<ms-expiring tearsheet="tearsheet" copyproposed="'+ newScope.copyproposed +'" isnoneditable="isnoneditable"></ms-expiring>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        ///Build proposed program element
+        function buildProposedProgram(scope, tearheader, content)
+        {
+            var comp = {
+                html: '',
+                scope: null
+            };
+            var newScope  = scope.$new(true);
+            newScope.tearsheet = null;
+            newScope.isnoneditable = scope.isnoneditable;
+            newScope.copyexpiring = null;
+
+            if(tearheader)
+            {
+                newScope.copyexpiring =  tearheader.copyexpiring || null;
+            }
+
+            newScope.tearsheet = content;
+            comp.html += '<ms-proposed tearsheet="tearsheet" copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
 
         function unParseJsonToCsv(json)
         {
@@ -421,11 +641,6 @@
                 }
             });
 
-            console.log('Specific Step - ');
-            console.log(overviewBusiness.templateOverview.steps);
-            console.log(stepsBusiness.stepId);
-            console.log(specificStep);
-
             if(specificStep)
             {
                 var specificSection = _.find(specificStep.sections, function(section)
@@ -435,9 +650,6 @@
                        return section;
                    }
                 });
-
-                console.log('Specific Section - ');
-                console.log(specificSection);
 
                 if(specificSection)
                 {
@@ -531,22 +743,15 @@
 		{
 			var mnemonicTable = _.find(business.saveTableMnemonics, {itemId: itemId, mnemonic: mnemonic});
 
-            console.log('Mnemonic Table');
-            console.log(mnemonicTable);
-
             if(angular.isUndefined(mnemonicTable))
             {
-                console.log('Adding...');
                 business.saveTableMnemonics.push({
                     itemId: itemId,
                     mnemonic: mnemonic,
                     table: [row]
                 });
-				
-				console.log(business.saveTableMnemonics);
             }
             else {
-				console.log('Updating and checking if row exists');
 				var isExist = false;
 				angular.forEach(mnemonicTable.table, function(savedRow){
 					if(_.isEqual(savedRow.condition, row.condition)){
@@ -560,9 +765,6 @@
 					mnemonicTable.table.push(row);
 				}
             }
-			
-			console.log('Inserting save Table Mnemonics --');
-            console.log(business.saveTableMnemonics);
             initiateAutoSave();
 		}
 
@@ -571,12 +773,8 @@
         {
             var mnemonicRow = _.find(business.saveMnemonics, {itemId: itemId, mnemonic: mnemonic});
 
-            console.log('Mnemonic Row');
-            console.log(mnemonicRow);
-
             if(angular.isUndefined(mnemonicRow))
             {
-                console.log('Adding...');
                 business.saveMnemonics.push({
                     itemId: itemId,
                     mnemonic: mnemonic,
@@ -585,11 +783,8 @@
                 })
             }
             else {
-                console.log('Updating...');
                 mnemonicRow.value = value;
             }
-            console.log('Inserting save Mnemonics --');
-            console.log(business.saveMnemonics);
             initiateAutoSave();
         }
 		
@@ -597,20 +792,14 @@
 		{
 			var mnemonicTable = _.find(business.saveHybridTableMnemonics, {itemId: itemId, mnemonic: mnemonic});
 
-            console.log('Mnemonic Table');
-            console.log(mnemonicTable);
-
             if(angular.isUndefined(mnemonicTable))
             {
-                console.log('Adding...');
 				row.action = action;
                 business.saveHybridTableMnemonics.push({
                     itemId: itemId,
                     mnemonic: mnemonic,
                     table: [row]
                 });
-				
-				console.log(business.saveHybridTableMnemonics);
             }
             else {
 				switch(action)
@@ -628,9 +817,6 @@
 					default: break;
 				}
             }
-			
-			console.log('Inserting save Table Mnemonics --');
-            console.log(business.saveHybridTableMnemonics);
             initiateAutoSave();
 		}
 		
@@ -745,7 +931,6 @@
         {
             if(_.size(business.autoSavePromise) === 0)
             {
-                console.log('Creating Promise for Template');
                 business.autoSavePromise = $interval(function()
                 {
                     save();
@@ -840,8 +1025,7 @@
 				if(addHybrid && addHybrid.length > 0){
 					templateService.addDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
 						tableMnemonicId, tableItemId, addHybrid).then(function(response) {
-							console.log(response);
-							console.log(addHybrid);
+
 						}
 					);
 				}
@@ -849,8 +1033,7 @@
 				if(updateHybrid && updateHybrid.length > 0){
 					templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
 						tableMnemonicId, tableItemId, updateHybrid).then(function(response) {
-							console.log(response);
-							console.log(updateHybrid);
+
 						}
 					);
 				}
@@ -858,8 +1041,7 @@
 				if(deleteHybrid && deleteHybrid.length > 0){
 					templateService.deleteDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
 						tableMnemonicId, tableItemId, deleteHybrid).then(function(response) {
-							console.log(response);
-							console.log(deleteHybrid);
+
 						}
 					);
 				}

@@ -155,7 +155,8 @@
                 iscollapsible: '=?',
                 isnoneditable: '=?',
                 isprocesscomplete: '=?',
-                actions: '='
+                actions: '=',
+                subtype: '@'
             },
             controller: 'msComponentController',
             controllerAs: 'vm',
@@ -167,236 +168,68 @@
                     $scope.title = $scope.tearheader.label;
                     $scope.actions = null;
                     $scope.actions = [];
+                    var comp = {
+                        html: '',
+                        scope: null
+                    };
 
-                    var html = '';
-                    var isTableLayout = false;
-                    isTableLayout = ($scope.tearcontent.length && $scope.tearcontent.length >= 1 &&
-                    _.findIndex($scope.tearcontent, {id: 'TableLayOut'}) !== -1);
-
-                    angular.forEach($scope.tearcontent, function(content)
+                    if($scope.subtype !== '')
                     {
-                        html = '<div>';
-                        switch (content.id)
+                        switch($scope.subtype)
                         {
-                            case 'ExpiringProgram':
-                                var newScope  = $scope.$new(true);
-                                newScope.tearsheet = null;
-                                newScope.isnoneditable = $scope.isnoneditable;
-                                newScope.copyproposed = null;
-
-                                if($scope.tearheader)
+                            case 'Expiring':
+                            case 'Proposed':
+                                _.each($scope.tearcontent, function(content)
                                 {
-                                    newScope.copyproposed =  $scope.tearheader.copyproposed || null;
-                                }
-
-                                if($scope.tearcontent)
-                                {
-                                    angular.forEach($scope.tearcontent, function(content)
+                                    comp = templateBusiness.buildComponents($scope, content, content.subtype);
+                                    if(comp && comp.html !== '')
                                     {
-                                      newScope.tearsheet = content;
-                                    })
-                                }
-
-                                html += '<ms-expiring tearsheet="tearsheet" copyproposed="'+ newScope.copyproposed +'" isnoneditable="isnoneditable"></ms-expiring>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                break;
-
-                            case 'ProposedProgram':
-                                var newScope  = $scope.$new(true);
-                                newScope.tearsheet = null;
-                                newScope.isnoneditable = $scope.isnoneditable;
-                                newScope.copyexpiring = null;
-
-                                if($scope.tearheader)
-                                {
-                                    newScope.copyexpiring =  $scope.tearheader.copyexpiring || null;
-                                }
-
-                                if($scope.tearcontent)
-                                {
-                                    //newScope.tearsheet = [];
-                                    angular.forEach($scope.tearcontent, function(content)
-                                    {
-                                        newScope.tearsheet = content;
-                                    })
-                                }
-
-
-                                html += '<ms-proposed tearsheet="tearsheet" copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                break;
-
-                            case 'LabelItem':
-                                var newScope  = $scope.$new();
-                                newScope.tearsheet = {
-                                    value: content.Label,
-                                    type: 'header3'
-                                };
-
-                                html += '<ms-header tearsheet="tearsheet"></ms-header>';
-                                html += '</div>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                break;
-
-                            case 'GenericTableItem':
-                                if(isTableLayout)
-                                    return;
-
-                                var newScope  = $scope.$new();
-                                newScope.tearsheet = {
-                                    rows: content.row
-                                };
-
-                                newScope.isnoneditable = $scope.isnoneditable;
-
-                                if(content.row.col && content.row.col.TearSheetItem &&
-                                    content.row.col.TearSheetItem.id === 'ScrapedItem')
-                                {
-									newScope.mnemonicid = content.row.col.TearSheetItem.Mnemonic;
-									newScope.itemid = content.row.col.TearSheetItem.ItemId;
-                                    
-									html += '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>'
-                                    el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                    return;
-                                }
-
-                                html += '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
-                                html += '</div>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                break;
-                            case 'TableLayOut':
-                                var newScope  = $scope.$new(true);
-
-                                var header = null;
-                                var col = null;
-
-                                //Get Header And Body Details
-                                if(isTableLayout)
-                                {
-                                    var genericTableItemRow = _.first($scope.tearcontent);
-                                    header = {};
-                                    col = {};
-                                    header = genericTableItemRow.row;
-                                    col = content.TableRowTemplate.row;
-                                }
-
-                                newScope.itemid = content.ItemId;
-                                newScope.mnemonicid = content.Mnemonic;
-
-                                newScope.tearsheet = {
-                                    header: header,
-                                    columns: col
-                                };
-
-                                console.log(newScope);
-								
-								if(content.EditRow)
-								{
-									var descColumn = col[1];
-									
-									if(descColumn && descColumn.col &&
-										descColumn.col.TearSheetItem &&
-										( descColumn.col.TearSheetItem.Mnemonic === 'DESCRIPTION' ||
-										 descColumn.col.TearSheetItem.Mnemonic === 'SIGDEVDESC') )
-									{
-										html += '<ms-tablelayout-f itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet"></ms-tablelayout-f>';
-									}
-									else
-									{
-										if(content.TableRowTemplate.row)
-										{
-											newScope.tearsheet.rows = content.TableRowTemplate.row;
-										}
-										if(content.HeaderRowTemplate)
-										{
-											newScope.tearsheet.header = content.HeaderRowTemplate;
-										}
-										html += '<ms-tablelayout-h itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-h>';
-									}
-								}
-								else if((col && $scope.isnoneditable) || col.col)
-                                {
-                                    html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
-                                }
-                                else {
-                                   
-                                    if(!$scope.isnoneditable && content.EditRow)
-                                    {
-                                        if(!newScope.tearsheet.header)
-                                        {
-                                            if(content.VerticalRow)
-                                            {
-                                                newScope.tearsheet.header = content.VerticalRow.row;
-                                            }
-                                        }
-                                        html += '<ms-tablelayout-e itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" isfulloption="null"></ms-tablelayout-e>';
+                                        el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                     }
-                                    else if(col.length)
-                                    {
-                                        //Fill Up headers
-                                        console.log('Inside NonEditable Variation');
-
-                                        var headers = [];
-
-                                        angular.forEach(col, function(eachCol)
-                                        {
-                                            angular.forEach(eachCol.col, function(header)
-                                            {
-                                                if(header.TearSheetItem &&
-                                                    header.TearSheetItem.id === 'LabelItem')
-                                                {
-                                                    headers.push(header);
-                                                }
-                                            });
-                                        });
-                                        newScope.tearsheet.header = headers;
-                                        html += '<ms-tablelayout-r itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true"></ms-tablelayout-r>';
-                                    }
-                                }
-
-                                html += '</div>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
+                                });
                                 break;
-                            case 'RTFTextAreaItem':
-                                var itemId = content.ItemId;
-                                var mnemonicId = content.Mnemonic;
-                                var prompt = '';
-                                var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
 
-                                if(angular.isDefined(content.prompt) &&
-                                    typeof(content.prompt) !== 'object')
+                            case 'TableLayOut1':
+                            case 'TableLayOut2':
+                                comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
+                                if(comp && comp.html !== '')
                                 {
-                                    prompt = content.prompt;
+                                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                 }
-
-                                var newScope  = $scope.$new();
-                                html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
-                                    'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false"></ms-rich-text-editor>';
-                                html += '</div>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                break;
-                            case "ScrapedItem":
-                                var newScope  = $scope.$new();
-                                var mnemonicid = content.Mnemonic;
-                                var itemid = content.ItemId;
-
-                                newScope.mnemonicid = mnemonicid;
-                                newScope.itemid = itemid;
-
-                                html += '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>'
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
-                                break;
-                            default:
-                                var newScope  = $scope.$new();
-                                html += '<ms-message message="Under Construction"></ms-message>';
-                                el.find('#ms-accordion-content').append($compile(html)(newScope));
                                 break;
                         }
-                    });
-
+                    }
+                    else {
+                        bindComponents($scope, el, $scope.tearcontent);
+                    }
                 };
             }
         };
+
+        function bindSubTypeComponents(scope, el, tearcontent, subtype)
+        {
+            var comp = {
+                html: '',
+                scope: null
+            };
+
+        }
+
+        function bindComponents(scope, el, tearcontent)
+        {
+            var comp = {
+                html: '',
+                scope: null
+            };
+            _.each(tearcontent, function(content) {
+                comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+
+                if(comp && comp.html !== '')
+                {
+                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
+                }
+            });
+        }
     }
 
 })();

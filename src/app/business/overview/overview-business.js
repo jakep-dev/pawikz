@@ -52,8 +52,6 @@
                     }
                 }
             }
-
-            console.log(business.templateOverview);
         }
 
         function cancelPromise()
@@ -67,7 +65,6 @@
         {
             if(_.size(business.autoSavePromise) === 0)
             {
-                console.log('Creating Promise for TemplateOverview');
                 business.autoSavePromise = $interval(function()
                 {
                     save();

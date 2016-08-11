@@ -20,13 +20,11 @@
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('get!');
                 return isFilterDasboard;
             },
             set: function(value) {
                 isFilterDasboard = value;
                 commonBusiness.emitMsg('FilterDashboard');
-                console.log('set!');
             }
         });
 
@@ -34,13 +32,11 @@
             enumerable: true,
             configurable: false,
             get: function() {
-                console.log('get!');
                 return isFilterDasboard;
             },
             set: function(value) {
                 isFilterDasboard = value;
                 commonBusiness.emitMsg('ClearFilterDashboard');
-                console.log('set!');
             }
         });
     }

@@ -70,8 +70,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             token: token
         }, function(response)
         {
-            console.log('init-workUp callback - ');
-            console.log(response);
             if(response && response.length)
             {
                 workUpStatus(response);
@@ -247,16 +245,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     ///Work-Up Status
     function workUpStatus(data)
     {
-        console.log('WorkUp Status Data - ');
-        console.log(data);
-
         var workups = [];
         if(data && data.length) {
-            console.log('Length');
             workups.push.apply(workups, data);
         }
         else {
-            console.log('Single object');
             workups.push(data);
         }
 

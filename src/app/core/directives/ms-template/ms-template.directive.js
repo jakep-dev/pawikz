@@ -7,7 +7,7 @@
         .controller('msTemplateController', msTemplateController)
         .directive('msTemplate', msTemplateDirective);
 
-    function msTemplateController($scope, $mdMenu, templateBusiness, commonBusiness,$rootScope)
+    function msTemplateController($scope, $mdMenu, templateBusiness, commonBusiness, workupBusiness, $rootScope)
     {
         var vm = this;
 
@@ -18,6 +18,7 @@
         vm.toggleExpand = toggleExpand;
 		vm.printableAll = printableAll;
         vm.pdfExport = exportCharts;
+        vm.renew = renew;
         vm.determinateValue = 1;
 
         var socket = io();
@@ -43,6 +44,11 @@
         function exportCharts()
         {
             $rootScope.$broadcast('exportAllCharts');
+        }
+
+        function renew()
+        {
+            workupBusiness.renew(commonBusiness.userId, commonBusiness.projectId);
         }
 
 
@@ -101,6 +107,8 @@
                             angular.forEach(renderContent.sections, function(section)
                             {
                                 newScope.isnoneditable =  (section.type === 'nonEditableUnmark');
+                                newScope.subtype = section.subtype || '';
+
                                 if(section.TearSheetItem &&
                                     section.TearSheetItem.length)
                                 {
@@ -132,14 +140,17 @@
                                     if(each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1)
                                     {
                                         isChartComp = true;
+                                        return;
                                     }
                                 });
 
+                                var html = '';
                                 if(isChartComp)
                                 {
-                                    var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
+                                     html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
                                 }else {
-                                    var html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions"></ms-component>';
+                                     html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" subtype="' + newScope.subtype +'"></ms-component>';
                                 }
 
 
@@ -157,30 +168,9 @@
                                     el.find('#template-content').append($compile(html)(newScope));
                                     break;
                             }
-
                         }
                     });
                 }
-                console.log('Content Update - ');
-
-                var options = {
-                    wheelSpeed            : 1,
-                    wheelPropagation      : false,
-                    swipePropagation      : true,
-                    minScrollbarLength    : null,
-                    maxScrollbarLength    : null,
-                    useBothWheelAxes      : false,
-                    useKeyboard           : true,
-                    suppressScrollX       : false,
-                    suppressScrollY       : false,
-                    scrollXMarginOffset   : 0,
-                    scrollYMarginOffset   : 0,
-                    stopPropagationOnClick: true
-                };
-
-                //console.log($('#template-steps')[0]);
-                //PerfectScrollbar.initialize($('#template-steps')[0], options);
-                //PerfectScrollbar.destroy($('#main-content')[0]);
             }
         };
     }

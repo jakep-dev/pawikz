@@ -14,7 +14,7 @@
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope,
                                 $mdMenu, overviewService,
-                                navConfig, breadcrumbBusiness, commonBusiness,
+                                navConfig, breadcrumbBusiness, workupBusiness, commonBusiness,
                                 overviewBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
@@ -31,8 +31,6 @@
             $rootScope.passedUserId = userDetails.userId;
             commonBusiness.userId = userDetails.userId;
         }
-
-        console.log('RootScope ProjectID' + $rootScope.projectId );
 
         var undoData = [];
         var redoData = [];
@@ -60,6 +58,7 @@
         vm.redo = redo;
         vm.saveAll = saveAll;
         vm.showOverviewDetails =showOverviewDetails;
+        vm.renew = renew;
 
         //Data
         loadData();
@@ -76,6 +75,12 @@
 
         }
 
+        //Renew workup
+        function renew(projectId)
+        {
+            workupBusiness.renew(commonBusiness.userId, projectId);
+        }
+
         //Go to top
         function goTop()
         {
@@ -87,8 +92,6 @@
         {
            if(undoData)
            {
-               console.log('-Undo-');
-               console.log(undoData);
                var templateData = _.last(undoData);
                vm.templateOverview = templateData;
                undoData.splice(_.size(undoData),1);
@@ -101,8 +104,6 @@
         {
             if(redoData)
             {
-                console.log('-Undo-');
-                console.log(redoData);
                 var templateData = _.first(redoData);
                 vm.templateOverview = templateData;
                 redoData.splice(0,1);
@@ -117,11 +118,7 @@
                 if(data.templateOverview)
                 {
                     toast.simpleToast('AutoSave Enabled');
-                    console.log('Overview Data - ');
-                    console.log(data.templateOverview);
-
                     vm.templateOverview = data.templateOverview;
-
                     commonBusiness.companyId = vm.templateOverview.companyId;
                     commonBusiness.projectName = vm.templateOverview.projectName;
                     commonBusiness.companyName = vm.templateOverview.companyName + " (" + vm.templateOverview.ticker + ")" ;
@@ -155,11 +152,8 @@
         {
             $scope.$watch('vm.templateOverview',function()
                 {
-                    console.log('Firing Overview watch');
                     if(vm.isOverviewLoaded)
                     {
-                        console.log('Inside Firing Overview watch');
-                        console.log(vm.templateOverview);
                         overviewBusiness.templateOverview = vm.templateOverview;
                         overviewBusiness.templateOverview.isChanged = true;
                         overviewBusiness.getReadyForAutoSave();

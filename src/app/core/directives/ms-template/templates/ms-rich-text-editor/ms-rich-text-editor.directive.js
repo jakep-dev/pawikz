@@ -43,7 +43,7 @@
                 , "selectAll"
             ],
             toolbarInline: false,
-            placeholderText: $scope.prompt || 'Enter text here',
+            placeholderText: $scope.answer || 'Enter text here',
             key: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='
         };
 
@@ -60,7 +60,7 @@
     }
 
     /** @ngInject */
-    function msRichTextEditorDirective()
+    function msRichTextEditorDirective($compile)
     {
         return {
             restrict: 'E',
@@ -69,7 +69,8 @@
                 mnemonicid: '@',
                 prompt: '@',
                 value: '@',
-                isdisabled: '=?'
+                isdisabled: '=?',
+                answer: '@'
             },
             controller: 'MsRichTextEditorController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/ms-rich-text-editor.html',
@@ -97,6 +98,16 @@
                             }
                         }
                     });
+
+                var html = '';
+
+                if(scope.prompt && scope.prompt !== '')
+                {
+                    html += '<div><ms-label value="' + scope.prompt + '"></ms-label></div>';
+                }
+
+                html += '<div id="textEditor" froala="froalaOptions" ng-model="value"></div>';
+                element.find('#textEditorContent').append($compile(html)(scope));
             }
         };
     }

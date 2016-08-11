@@ -21,14 +21,13 @@
     ///Get the header index
     templateBusiness.getHeaderIndex = function(components)
     {
-        var headerEndIndex = null;
+        var headerEndIndex = 0;
         _.each(components, function(findHeader)
         {
             var tearSheetItem = findHeader.TearSheetItem;
 
-            if(tearSheetItem &&
-                tearSheetItem.Label &&
-                typeof(tearSheetItem.Label) !== 'object' &&
+            if(tearSheetItem && tearSheetItem.subtype &&
+                tearSheetItem.subtype === 'Header1' &&
                 !headerEndIndex)
             {
                 headerEndIndex = _.findIndex(components, findHeader);
@@ -38,11 +37,34 @@
         return headerEndIndex;
     };
 
+    ///Get header and content components
+    templateBusiness.getHeaderAndContentComponents = function(components)
+    {
+      var comp = {
+          headers: [],
+          contents: []
+      };
+        _.each(components, function(component)
+        {
+           var tearSheetItem = component.TearSheetItem;
+           if(tearSheetItem && tearSheetItem.subtype &&
+               (tearSheetItem.subtype === 'Header1' ||
+                tearSheetItem.subtype === 'Header2'))
+           {
+               comp.headers.push(component);
+           }
+            else {
+               comp.contents.push(component);
+           }
+        });
+        return comp;
+    };
+
     ///Get the header components
     templateBusiness.getHeaderComponents = function(components)
     {
         var headerComponents = [];
-        headerComponents.push.apply(headerComponents, components.slice(0,templateBusiness.getHeaderIndex() + 1));
+        headerComponents.push.apply(headerComponents, components.slice(templateBusiness.getHeaderIndex() + 1, templateBusiness.getHeaderIndex() + 2));
         return headerComponents;
     };
 

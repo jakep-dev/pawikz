@@ -40,8 +40,6 @@
          */
         function confirm(title, content, event, action)
         {
-            console.log(action);
-
             var confirmDialog = $mdDialog.confirm()
                                         .title(title)
                                         .content(content)
@@ -76,7 +74,6 @@
 
           function customDialogController($scope, $compile)
           {
-              console.log('Inside CustomDialog Controller');
               var vm = this;
               vm.title = title;
               vm.content = content;

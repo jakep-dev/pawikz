@@ -126,7 +126,6 @@
             },
             set: function(value) {
                 endDate = value;
-                console.log('set end date ');
                 if(this.interval ==='CUSTOM'){
                     //commonBusiness.emitMsg('chartDataChanged');
                 }
