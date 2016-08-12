@@ -191,13 +191,21 @@
 
                             case 'TableLayOut1':
                             case 'TableLayOut2':
-                            case 'TableLayOut4':
                             case 'TableLayOut5':
                                 comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
                                 if(comp && comp.html !== '')
                                 {
                                     el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                 }
+                                break;
+
+                            case 'TableLayOut4':
+                                comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
+                                if(comp && comp.html !== '')
+                                {
+                                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
+                                }
+                                bindTableLayout4Components($scope, el, $scope.tearcontent);
                                 break;
                         }
                     }
@@ -208,13 +216,24 @@
             }
         };
 
-        function bindSubTypeComponents(scope, el, tearcontent, subtype)
+        function bindTableLayout4Components(scope, el, tearcontent)
         {
             var comp = {
                 html: '',
                 scope: null
             };
 
+            _.each(tearcontent, function(content)
+            {
+               if(content.id !== 'TableLayOut')
+               {
+                   comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+                   if(comp && comp.html !== '')
+                   {
+                       el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
+                   }
+               }
+            });
         }
 
         function bindComponents(scope, el, tearcontent)

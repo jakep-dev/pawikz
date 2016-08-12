@@ -95,6 +95,7 @@
                 if(scope.components.header)
                 {
                     scope.stepName = scope.components.header.label;
+                    scope.stepSubHeader = scope.components.header.subheader || '';
                 }
 
                 //Render the content for the step

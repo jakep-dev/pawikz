@@ -317,7 +317,7 @@
         //S et the schema variations.
         function setSchemaVariations(data){
             var templateData = {
-                header: {},
+                header: [],
                 content: [],
                 fullComp: []
             };

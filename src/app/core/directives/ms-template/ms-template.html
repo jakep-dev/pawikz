@@ -9,9 +9,9 @@
                 <div>
 
                     <div class="table-title" layout="row" layout-align="space-between center">
-                        <div>
-                            <md-icon md-font-icon="icon-menu"></md-icon>
-                            {{stepName}}
+                        <div layout="row" layout-align="start start">
+                            <md-icon md-font-icon="icon-menu" class="s20"> </md-icon>
+                            <h2>{{stepName}}</h2>
                         </div>
                         <div>
                             <md-menu md-position-mode="target-right target">
@@ -90,9 +90,10 @@
                     </div>
                     <md-divider></md-divider>
                     <div id="template-content" layout-padding>
-
+                        <div style="font-size: large" ng-if="stepSubHeader !== ''">
+                            {{stepSubHeader}}
+                        </div>
                     </div>
-
                 </div>
             </div>
         </ms-widget-front>

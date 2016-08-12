@@ -89,10 +89,11 @@
                !tearSheetItem.id)
                 return null;
 
-            if(tearSheetItem.id === 'LabelItem') {
+            if(tearSheetItem.subtype === 'Header1') {
                 header.label = tearSheetItem.Label;
-                header.id = tearSheetItem.id;
-                header.type = tearSheetItem.type;
+            }
+            else if(tearSheetItem.subtype === 'Header2') {
+                header.subheader = tearSheetItem.Label;
             }
         });
 
