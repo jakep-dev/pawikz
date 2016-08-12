@@ -23,6 +23,9 @@
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
 
+
+        vm.refreshstep = refreshStep;
+
         $scope.saveAll = saveAll;
         $scope.goTop = goTop;
         $scope.previousStep = previousStep;
@@ -44,9 +47,6 @@
             $rootScope.passedUserId = userDetails.userId;
             commonBusiness.userId = userDetails.userId;
         }
-
-        console.log('--Steps Input - ', projectId, ' - ', stepId);
-
         initialize();
 
         function defineBottomSheet(steps)
@@ -71,6 +71,11 @@
         function goTop()
         {
             commonBusiness.goTop('template');
+        }
+
+        function refreshStep()
+        {
+            initialize();
         }
 
         //Get Schema

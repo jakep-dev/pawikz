@@ -63,13 +63,11 @@
                 socket: socket
             },
             activity:{
-                //In Minutes
+                //In Seconds
                 idle: 600,
                 timeout: 120,
-                interval: 1200
-            },
-            test :{
-                id: 0
+                interval: 1200,
+                dialogtimeout: 60
             }
         });
 })();

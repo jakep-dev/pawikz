@@ -119,6 +119,8 @@
 
         function notifyStatus(token, data, key)
         {
+            console.log('Renewal done - ');
+
             clearInterval(interval);
             if(token in config.userSocketInfo)
             {

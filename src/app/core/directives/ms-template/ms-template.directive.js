@@ -48,7 +48,12 @@
 
         function renew()
         {
-            workupBusiness.renew(commonBusiness.userId, commonBusiness.projectId);
+            workupBusiness.renew(commonBusiness.userId, commonBusiness.projectId, 'reload-steps');
+
+            commonBusiness.onMsg('reload-steps', $scope, function()
+            {
+                $scope.refreshstep();
+            });
         }
 
 
@@ -75,7 +80,8 @@
         return {
             restrict: 'E',
             scope   : {
-                components: '='
+                components: '=',
+                refreshstep: '='
             },
             controller: 'msTemplateController',
             controllerAs: 'vm',

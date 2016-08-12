@@ -20,6 +20,9 @@
                 store.remove('x-session-token');
             }
 
+            console.log('toParams - ');
+            console.log(toParams);
+
             ///Initiate the socket for the client based on token.
             ///Placing it on the state change. b'coz for each state change and complete reload
             ///We need to make sure the user has a single socket available.
@@ -30,6 +33,16 @@
             if(token)
             {
 
+                var userId = '';
+
+                if(userInfo && userInfo.userId)
+                {
+                    userId = userInfo.userId;
+                }
+                else if(toParams && toParams.userId) {
+                    userId = toParams.userId;
+                }
+
                 if(clientConfig.socketInfo.socket.disconnected)
                 {
                     clientConfig.socketInfo.socket.connect();
@@ -39,7 +52,7 @@
                 Idle.watch();
                 clientConfig.socketInfo.socket.emit('init-socket',{
                     token: token,
-                    userId: userInfo.userId
+                    userId: userId
                 }, function(data) {
                     if(data)
                     {

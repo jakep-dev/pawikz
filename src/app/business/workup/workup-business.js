@@ -9,7 +9,7 @@
         .factory('workupBusiness', workupBusiness);
 
     /* @ngInject */
-    function workupBusiness(workupService, authService, toast,  store, dialog, clientConfig) {
+    function workupBusiness(workupService, authService, toast,  store, dialog, clientConfig, commonBusiness) {
 
         var business = {
                 initialize: initialize,
@@ -29,22 +29,22 @@
             });
         }
 
-        function renew(userId, projectId)
+        function renew(userId, projectId, reloadEvent)
         {
-            renewComplete();
+            renewComplete(reloadEvent);
             workupService.renew(userId, projectId);
             dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
         }
 
-        function renewComplete()
+        function renewComplete(reloadEvent)
         {
             clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
             {
                 dialog.close();
-                if(!data ||
-                   !data.projectId)
+                if(reloadEvent !== '')
                 {
-                   toast.simpleToast("Something went wrong. Please try again!");
+                    console.log('Emit Msg - ' + reloadEvent);
+                    commonBusiness.emitMsg(reloadEvent);
                 }
             });
         }

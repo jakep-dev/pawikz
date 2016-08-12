@@ -82,17 +82,32 @@
             if(userId && config.socketData.workup &&
                 config.socketData.workup.length > 0 )
             {
+                var availableWorkUp = [];
+
                 _.each(config.socketData.workup, function(work)
                 {
                     if(parseInt(work.userId) === parseInt(userId))
                     {
                         work.status = 'complete';
                     }
+                    else {
+                        availableWorkUp.push(work);
+                    }
+
                 });
                 console.log('After delete');
                 console.log(config.socketData.workup);
                 broadcastWorkUpRelease();
+                deleteWorkUp(availableWorkUp);
             }
+        }
+
+        function deleteWorkUp(availableWorkUp)
+        {
+            config.socketData.workup = [];
+            config.socketData.workup.push.apply(config.socketData.workup, availableWorkUp);
+            console.log('Workup after deleteworkup-');
+            console.log(config.socketData.workup);
         }
 
         function broadcastWorkUpRelease()

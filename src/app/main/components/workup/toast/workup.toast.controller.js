@@ -7,7 +7,7 @@
         .controller('WorkUpToastController', WorkUpToastController);
 })();
 
-
+/** @ngInject */
 function WorkUpToastController($rootScope, $location, $mdToast)
 {
     var vm = this;

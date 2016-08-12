@@ -78,7 +78,11 @@
         //Renew workup
         function renew(projectId)
         {
-            workupBusiness.renew(commonBusiness.userId, projectId);
+            workupBusiness.renew(commonBusiness.userId, projectId, 'reload-overview');
+            commonBusiness.onMsg('reload-overview', $scope, function()
+            {
+               loadData();
+            });
         }
 
         //Go to top
@@ -140,6 +144,7 @@
                     autoSave();
                 }
                 else {
+                    navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                     toast.simpleToast('There are no overview details available');
                 }
 
