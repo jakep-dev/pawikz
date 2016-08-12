@@ -50,9 +50,6 @@
         {
             socket.on('disconnect', function(data)
             {
-                console.log('Disconnecting app');
-                console.log(socket.userid);
-
                 if(!socket.nickname)
                     return;
 
@@ -78,7 +75,6 @@
 
         function releaseWorkUp(userId)
         {
-            console.log('Releasing workup');
             if(userId && config.socketData.workup &&
                 config.socketData.workup.length > 0 )
             {
@@ -95,8 +91,6 @@
                     }
 
                 });
-                console.log('After delete');
-                console.log(config.socketData.workup);
                 broadcastWorkUpRelease();
                 deleteWorkUp(availableWorkUp);
             }
@@ -106,8 +100,6 @@
         {
             config.socketData.workup = [];
             config.socketData.workup.push.apply(config.socketData.workup, availableWorkUp);
-            console.log('Workup after deleteworkup-');
-            console.log(config.socketData.workup);
         }
 
         function broadcastWorkUpRelease()
