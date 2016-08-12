@@ -32,7 +32,7 @@
             //console.log('textChange --> value = "' + $scope.value + '"');
             if($scope.iskmb)
             {    
-                var inputVal = $.trim($scope.value);
+               var inputVal = $.trim($scope.value);
 
                 //if the number pattern matches numeric shortcuts ###[kmb] then skip the computation of the rest of the rows
                 //ms-numeric-shortcut directive will call textchange and trigger the $scope.$watch
