@@ -10,7 +10,7 @@
         var config = config;
 
         config.parallel([app.post('/api/overview', getOverview),
-            app.post('/api/overview/defer', getOverviewDefer),
+            app.post('/api/overview/defer', getOverview),
             app.post('/api/saveOverview', saveOverview)]);
 
         //Get Dashboard data
