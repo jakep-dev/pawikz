@@ -33,6 +33,8 @@
             if(token)
             {
 
+                console.log('UserInfo');
+                console.log(userInfo);
                 var userId = '';
 
                 if(userInfo && userInfo.userId)
@@ -42,6 +44,10 @@
                 else if(toParams && toParams.userId) {
                     userId = toParams.userId;
                 }
+
+                console.log('userId--');
+                console.log(userId);
+
 
                 if(clientConfig.socketInfo.socket.disconnected)
                 {

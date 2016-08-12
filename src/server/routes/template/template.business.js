@@ -317,6 +317,7 @@
                 id: tearSheetItem.id,
                 itemid: null,
                 mnemonicid: null,
+                subtype: tearSheetItem.subtype || '',
                 variation: 'parent-child-multiple'
             };
 
@@ -341,22 +342,33 @@
                     {
                         //Check for array and compId,
                         var sections = sectionItem[0];
+                        //component.header.itemid = sectionItem[1].ItemId;
+                        //component.header.mnemonicid = sectionItem[1].Mnemonic;
+
                         if(sections && sections.TearSheetItem &&
                             sections.TearSheetItem.length)
                         {
                             _.each(sections.TearSheetItem, function(sec)
                             {
-                                var comId = sec.comId;
-                                var section = null;
+                                var comId = sec.comId,
+                                    section = null;
+
                                 if(comId)
                                 {
                                     section = getSectionByCompId(contentComponents, comId);
                                 }
+
+
                                 if(section)
                                 {
                                     component.sections.push(section[0]);
                                 }
                                 else {
+                                    if(sections.TearSheetItem.length > 1)
+                                    {
+                                        sec.itemid = sections.TearSheetItem[1].ItemId;
+                                        sec.mnemonicid = sections.TearSheetItem[1].Mnemonic;
+                                    }
                                     component.sections.push(sec);
                                 }
                             });

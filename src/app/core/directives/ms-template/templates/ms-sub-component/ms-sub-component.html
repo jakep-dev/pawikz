@@ -1,0 +1,29 @@
+<div class="md-whiteframe-1dp" id="step-main">
+    <div id="ms-accordion" style="min-height: 50px" class="md-amber-A200-bg"
+         layout="row" layout-align="space-between center">
+        <div style="padding-left: 10px; font-size: 18px">
+            {{ title }}
+            <i class="icon-lock s12" ng-if="vm.isNonEditable"></i>
+        </div>
+        <div>
+            <div layout="row" layout-align="end center">
+                <md-button class="md-icon-button" aria-label="show in printer"
+                           style="margin-right: -20px"
+                           ng-if="vm.showPrintIcon"
+                           ng-click="vm.printer()" >
+                    <md-icon md-font-icon="icon-select" class="s20" ng-if="!vm.isAvailableForPrint"></md-icon>
+                    <md-icon md-font-icon="icon-select-inverse" class="s20" ng-if="vm.isAvailableForPrint"></md-icon>
+                </md-button>
+
+                <md-button class="md-icon-button" aria-label="expand/collapse"
+                           ng-if="vm.iscollapsible"
+                           ng-click="vm.toggleCollapse()">
+                    <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+                </md-button>
+            </div>
+        </div>
+    </div>
+    <md-content id="ms-accordion-sub-content" ng-show="!vm.collapsed" style="padding: .5%">
+
+    </md-content>
+</div>

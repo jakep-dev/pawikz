@@ -27,6 +27,7 @@
         ///Join the workup-room to broadcast workup related updates to all users.
         function initializeSocket(socket)
         {
+            console.log('Init socket');
             socket.on('init-socket', function(data, callback)
             {
                 console.log(data);
@@ -48,6 +49,7 @@
         ///Leave the room as well.
         function disConnectionSocket(socket)
         {
+            console.log('Disconnected Socket');
             socket.on('disconnect', function(data)
             {
                 if(!socket.nickname)
@@ -61,6 +63,7 @@
 
         function checkWorkUpInfo(socket)
         {
+            console.log('checkWorkUpInfo Socket');
             socket.on('init-workup', function(data, callback)
             {
                 if(data.token in config.userSocketInfo)
@@ -104,6 +107,7 @@
 
         function broadcastWorkUpRelease()
         {
+            console.log('broadcastWorkUpRelease');
             config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                 type: 'workup-info',
                 data: config.socketData.workup

@@ -21,7 +21,8 @@
                 },
                 overViewEndPoint:{
                     get: '/api/overview/',
-                    save: '/api/saveOverview'
+                    save: '/api/saveOverview',
+                    getDefer: '/api/overview/defer'
                 },
                 chartEndPoint:{
                     get: ''

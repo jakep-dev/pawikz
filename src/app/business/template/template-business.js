@@ -10,7 +10,7 @@
 
     /* @ngInject */
     function templateBusiness($interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService, Papa) {
+                              overviewBusiness, templateService, Papa, dialog) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
@@ -49,10 +49,79 @@
            buildRichTextArea: buildRichTextArea,
            buildScrapeItem: buildScrapeItem,
            buildMessage: buildMessage,
-           determineTableLayout: determineTableLayout
+           determineTableLayout: determineTableLayout,
+           getSubComponents: getSubComponents,
+           buildSubComponent: buildSubComponent,
+           showTemplateProgress: showTemplateProgress,
+           hideTemplateProgress: hideTemplateProgress
         };
 
         return business;
+
+        function showTemplateProgress()
+        {
+            dialog.status('app/core/directives/ms-template/dialog/ms-template.dialog.html', false, false);
+        }
+
+        function hideTemplateProgress()
+        {
+            dialog.close();
+        }
+
+        function buildSubComponent(scope, component)
+        {
+            var newScope = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.tearheader = component.header;
+            newScope.tearcontent = [];
+            newScope.iscollapsible = true;
+            newScope.tearcontent.push(component.section);
+            newScope.isnoneditable = false;
+
+            comp.html = '<ms-sub-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                'isnoneditable="isnoneditable"></ms-sub-component>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        ///Get the sub-component for financial step
+        //Get the same structure to hold header and section.
+        function getSubComponents(contents)
+        {
+            var components = [],
+                component = {
+                      header: null,
+                      section: null
+                    };
+
+            _.each(contents, function(content)
+            {
+               if(content.id === 'LabelItem')
+               {
+                   component.header = content;
+               }
+                else {
+                   component.section = content;
+               }
+
+                if(component.header &&
+                    component.section)
+                {
+                    components.push(component);
+                    component = {
+                        header: null,
+                        section: null
+                    };
+                }
+            });
+
+            return components;
+        }
 
         function buildComponents(scope, content, subtype)
         {
@@ -681,7 +750,7 @@
         {
             if(angular.isDefined(business.mnemonics))
             {
-                angular.forEach(business.mnemonics, function(eachrow)
+                _.each(business.mnemonics, function(eachrow)
                 {
                     if(eachrow.itemId === itemId)
                     {
@@ -765,7 +834,7 @@
             }
             else {
 				var isExist = false;
-				angular.forEach(mnemonicTable.table, function(savedRow){
+				_.each(mnemonicTable.table, function(savedRow){
 					if(_.isEqual(savedRow.condition, row.condition)){
 						savedRow.row = row.row;
 						isExist = true;
@@ -840,10 +909,10 @@
 		{
 			var isExist = false;
 			var isAdded = false;
-			angular.forEach(table, function(addedRow){
+			_.each(table, function(addedRow){
 				if(addedRow.action === 'added'){
 					if(addedRow.row){
-						angular.forEach(addedRow.row, function(existingRow){
+						_.each(addedRow.row, function(existingRow){
 							if(existingRow.columnName === 'SEQUENCE' && existingRow.value == sequence){
 								isAdded = true;
 								newRow.action = addedRow.action;
@@ -860,7 +929,7 @@
 			
 			if(!isAdded){
 				newRow.action = 'updated';
-				angular.forEach(table, function(savedRow){
+				_.each(table, function(savedRow){
 					if(_.isEqual(savedRow.condition, newRow.condition)){
 						savedRow.row = newRow.row;
 						isExist = true;
@@ -881,12 +950,12 @@
 		function hybridDeleteRules(table, newRow, sequence)
 		{
 			var isExist = false;
-			//angular.forEach(table, function(addedRow){
+			//_.each(table, function(addedRow){
 			for(var index = table.length - 1; index >= 0; index--){
 				var row = table[index];
 				if(row.action === 'added' || row.action === 'updated'){
 					if(row.row){
-						angular.forEach(row.row, function(existingRow){
+						_.each(row.row, function(existingRow){
 							if(existingRow.columnName === 'SEQUENCE' && existingRow.value == sequence){								
 								if(row.action === 'added' )
 								{
@@ -919,16 +988,22 @@
         function getMnemonicValue(itemId, mnemonic)
         {
             var value = '';
-            if(angular.isDefined(business.mnemonics))
+            if(business.mnemonics)
             {
-                angular.forEach(business.mnemonics, function(eachrow)
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                                {
+                                  if(m.itemId === itemId)
+                                  {
+                                      return m;
+                                  }
+                                });
+
+                if(mnemonic)
                 {
-                    if(eachrow.itemId === itemId)
-                    {
-                        value = eachrow.value.trim() || '';
-                        return _.escape(value);
-                    }
-                });
+                    value = mnemonic.value.trim() || '';
+                    value = _.escape(value);
+                }
             }
             return value;
         }
@@ -976,7 +1051,7 @@
         function saveTable()
         {
             if(business.saveTableMnemonics.length > 0) {
-                angular.forEach(business.saveTableMnemonics, function(tableMnemonic){
+                _.each(business.saveTableMnemonics, function(tableMnemonic){
 
                     templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                         tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
@@ -990,7 +1065,7 @@
 		
 		function saveHybridTable(){
 			
-			angular.forEach(business.saveHybridTableMnemonics, function(hybridTable){
+			_.each(business.saveHybridTableMnemonics, function(hybridTable){
 				var tableItemId = hybridTable.itemId;
 				var tableMnemonicId = hybridTable.mnemonic;
 				
@@ -998,7 +1073,7 @@
 				var updateHybrid = new Array();
 				var deleteHybrid = new Array();
 				
-				angular.forEach(hybridTable.table, function(table){
+				_.each(hybridTable.table, function(table){
 					switch(table.action)
 					{
 						case 'added':

@@ -75,7 +75,7 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, templateBusiness)
+    function msTemplateDirective($compile, templateBusiness, dialog)
     {
         return {
             restrict: 'E',
@@ -88,6 +88,9 @@
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
             link:function(scope, el, attrs)
             {
+                //templateBusiness.showTemplateProgress();
+
+
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
@@ -111,10 +114,10 @@
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
 
-                            angular.forEach(renderContent.sections, function(section)
+                            _.each(renderContent.sections, function(section)
                             {
                                 newScope.isnoneditable =  (section.type === 'nonEditableUnmark');
-                                newScope.subtype = section.subtype || '';
+                                newScope.subtype = section.subtype || renderContent.header.subtype || '';
 
                                 if(section.TearSheetItem &&
                                     section.TearSheetItem.length)
@@ -178,6 +181,8 @@
                         }
                     });
                 }
+
+                //templateBusiness.hideTemplateProgress();
             }
         };
     }

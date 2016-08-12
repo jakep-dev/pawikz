@@ -10,8 +10,38 @@
         var config = config;
 
         config.parallel([app.post('/api/overview', getOverview),
+            app.post('/api/overview/defer', getOverviewDefer),
             app.post('/api/saveOverview', saveOverview)]);
 
+        //Get Dashboard data
+        function getOverviewDefer(req, res, next) {
+
+            var service = getServiceDetails('templateSearch');
+            console.log(req.headers);
+
+            var methodName = '';
+
+            if(!_.isUndefined(service) && !_.isNull(service))
+            {
+                console.log(service.name);
+                methodName = service.methods.overView;
+            }
+
+            console.log(methodName);
+
+            var args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
+            {
+                res.status(response.statusCode).send(setOverViewDetails(data));
+            });
+        }
 
         //Get Dashboard data
         function getOverview(req, res, next) {

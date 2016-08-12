@@ -56,7 +56,7 @@
             };
 
             $http({
-                url : clientConfig.endpoints.overViewEndPoint.get,
+                url : clientConfig.endpoints.overViewEndPoint.getDefer,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",

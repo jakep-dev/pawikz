@@ -207,6 +207,21 @@
                                 }
                                 bindTableLayout4Components($scope, el, $scope.tearcontent);
                                 break;
+
+                            case 'SubComponent':
+                                var subComponents = templateBusiness.getSubComponents($scope.tearcontent);
+                                if(subComponents)
+                                {
+                                    _.each(subComponents, function(component)
+                                    {
+                                       comp = templateBusiness.buildSubComponent($scope, component);
+                                        if(comp && comp.html !== '')
+                                        {
+                                            el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
+                                        }
+                                    });
+                                }
+                                break;
                         }
                     }
                     else {
