@@ -9,8 +9,8 @@
 
 
     /** @ngInject */
-    function StepController($rootScope, $stateParams, $scope, $state, templateService,
-                            overviewService, bottomSheetConfig, navConfig,
+    function StepController($rootScope, $stateParams, $scope,
+                            bottomSheetConfig, navConfig,
                             templateBusiness, breadcrumbBusiness, commonBusiness,
                             stepsBusiness, overviewBusiness, toast, store)
     {
@@ -81,7 +81,7 @@
         //Get Schema
         function getSchemaAndData()
         {
-            stepsBusiness.get(projectId, stepId).then(function(response)
+            stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
             {
                 toast.simpleToast('AutoSave Enabled');
                 console.log('Defer Response Data ---');

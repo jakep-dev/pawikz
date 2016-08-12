@@ -34,7 +34,7 @@
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                dataType: "json"
             })
                 .then(function(data, status, headers, config) {
                     return data.data;
@@ -46,16 +46,26 @@
 
 
         //Get Overview Details
-        function getOverviewDefer(projectId) {
+        function getOverviewDefer(projectId, userId) {
 
             var deffered = $q.defer();
-            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
 
-            $http.get(url)
-                .then(function (data, status, headers, config) {
+            var input = {
+                userId: userId,
+                projectId: projectId
+            };
+
+            $http({
+                url : clientConfig.endpoints.overViewEndPoint.get,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            })
+                .then(function(data, status, headers, config) {
                     deffered.resolve(data.data);
                 })
-                .catch(function (error) {
+                .catch(function(error) {
                     deffered.reject();
                     logger.error(JSON.stringify(error));
                 });

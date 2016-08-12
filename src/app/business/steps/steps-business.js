@@ -157,11 +157,11 @@
         }
 
         //Get the overview, template schema and template data
-        function get(projectId, stepId)
+        function get(projectId, stepId, userId)
         {
             var all = $q.all([templateService.getSchemaDefer(projectId, stepId).promise,
                 templateService.getDataDefer(projectId, stepId).promise,
-                overviewService.getOverviewDefer(projectId).promise]);
+                overviewService.getOverviewDefer(projectId, userId).promise]);
 
             return all;
         }
