@@ -1,0 +1,61 @@
+<div class="md-whiteframe-1dp" id="step-main">
+    <div id="ms-accordion" style="min-height: 50px" class="md-amber-A200-bg"
+          layout="row" layout-align="space-between center">
+        <div style="padding-left: 10px; font-size: 18px">
+            {{ title }}
+            <i class="icon-lock s12" ng-if="vm.isNonEditable"></i>
+        </div>
+        <div>
+            <div layout="row" layout-align="end center">
+                <md-menu ng-repeat="action in vm.actions" style="margin-right: -20px"
+                         ng-if="!!vm.actions" md-offset="0 54"
+                         md-position-mode="target-right target">
+                    <md-button class="md-icon-button"
+                               md-menu-origin
+                               ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)"
+                               aria-label="filter actions">
+                        <md-icon md-menu-align-target  md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''">
+                            <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
+                        </md-icon>
+                    </md-button>
+
+                    <md-menu-content  width="3" class="md-background-bg">
+                        <md-menu-item ng-repeat="menu in action.menus">
+                            <md-button ng-click="vm.applyMenuEvent(menu, action)" aria-label="menu buttons" ng-if="(menu.type==='button')">
+								<span layout="row" layout-align="start center" ng-if="(menu.icon !== null)">
+									<md-icon md-font-icon="{{menu.icon}}" class="icon"></md-icon>
+									<span>{{menu.name}}</span> 
+								</span> 
+								<span layout="row" layout-align="center center" ng-if="(menu.icon === null)"> 
+									<span>{{menu.name}}</span> 
+								</span> 
+							</md-button>
+							<md-input-container ng-if="(menu.type==='input')">
+								<input ng-if="menu.isNumeric" type="number" ng-model="menu.model" ng-change="menu.setValue(menu.model)" aria-label="input menu" min="{{menu.min}}" max="{{menu.max}}" />
+								<input ng-if="!menu.isNumeric" type="text" ng-model="menu.model" ng-change="menu.setValue(menu.model)" aria-label="input menu" />
+							</md-input-container>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+
+                <md-button class="md-icon-button" aria-label="show in printer"
+                           style="margin-right: -20px"
+                           ng-if="vm.showPrintIcon"
+                           ng-click="vm.printer()" >
+                    <md-icon md-font-icon="icon-select" class="s20" ng-if="!vm.isAvailableForPrint"></md-icon>
+                    <md-icon md-font-icon="icon-select-inverse" class="s20" ng-if="vm.isAvailableForPrint"></md-icon>
+                </md-button>
+
+                <md-button class="md-icon-button" aria-label="expand/collapse"
+                           ng-if="vm.iscollapsible"
+                           ng-click="vm.toggleCollapse()">
+                    <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+                </md-button>
+            </div>
+        </div>
+    </div>
+    <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
+    <md-content id="ms-accordion-content" ng-show="!vm.collapsed" style="padding: .5%">
+
+    </md-content>
+</div>

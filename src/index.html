@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="fuse">
+<html ng-app="advisen">
     <head>
         <base href="/">
         <meta charset="utf-8">
@@ -40,15 +40,15 @@
             }
 
             #splash-screen .logo {
-                width: 96px;
-                height: 96px;
-                line-height: 96px;
+                /*width: 96px;*/
+                /*height: 96px;*/
+                /*line-height: 96px;*/
                 margin: 0 auto 48px auto;
                 font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-                font-size: 56px;
+                font-size: 12px;
                 text-align: center;
                 border-radius: 2px;
-                background:  url("assets/images/logos/advisen-logo-short.png") no-repeat;
+                /*background:  url("assets/images/logos/advisen-logo-short.png") no-repeat;*/
                 color: #FFFFFF;
                 box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.22);
             }
@@ -350,6 +350,8 @@
         <!-- endbuild -->
 
         <link rel="stylesheet" href="assets/icons/style.css">
+        <link rel="stylesheet" href="assets/icons/font-awesome/css/font-awesome.css">        
+
         <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700italic,700,900,900italic'
               rel='stylesheet' type='text/css'>
 
@@ -365,7 +367,7 @@
         <div ng-cloak id="splash-screen">
             <div class="center">
                 <!--<div class="logo">-->
-                  <!---->
+                  <!--Loading-->
                 <!--</div>-->
                 <!-- Material Design Spinner -->
                 <div class="spinner-wrapper">
@@ -380,11 +382,27 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- / Material Design Spinner -->
             </div>
+
+            <!--<div class="center" style="color: red">-->
+                <!--Loading...-->
+            <!--</div>-->
         </div>
 
         <div id="main" class="animate slide-up" flex layout="row" ui-view="main"></div>
+       <!-- <script type="application/javascript" src="../bower_components/socket.io/lib/socket.js"></script>
+        <script>
+            var socket = io.connect('http://localhost:3000');
+            socket.on('message', function (data) {
+                console.log(data);
+                alert(data);
+
+            });
+        </script>-->
+
+        <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
 
         <!-- build:js(src) scripts/vendor.js -->
         <!-- bower:js -->
@@ -401,6 +419,14 @@
         <!-- angular templates will be automatically converted in js and inserted here -->
         <!-- endinject -->
         <!-- endbuild -->
+
+
+        <!--<script type="application/javascript" src="assets/scripts/tableExport.js"></script>-->
+        <!--<script type="application/javascript" src="assets/scripts/jquery.base64.js"></script>-->
+
+        <!--<script type="text/javascript" src="assets/scripts/jspdf/libs/sprintf.js"></script>-->
+        <!--<script type="text/javascript" src="assets/scripts/jspdf/jspdf.js"></script>-->
+        <!--<script type="text/javascript" src="assets/scripts/jspdf/libs/base64.js"></script>-->
 
     </body>
 </html>

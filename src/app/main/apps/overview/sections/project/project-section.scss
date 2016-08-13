@@ -1,0 +1,44 @@
+$expandHeight: 64px;
+
+#expand-content-mode-toggle {
+  width: $expandHeight;
+  height: $expandHeight;
+  margin: 0;
+  float:right;
+  border-radius: 0;
+
+  md-icon {
+    transition: transform 0.3s ease-in-out 0.1s;
+    transform: rotate(0deg);
+	color: #ffffff;
+  }
+}
+
+#workUpName
+{
+  text-align: center;
+}
+
+#overviewGrid
+{
+  overflow: hidden;
+
+  md-grid-tile
+  {
+    border-radius: 0px;
+  }
+}
+
+#overviewGrid table tr td:nth-child(1) {
+  font-weight: bold;
+}
+
+
+#overviewGrid table tr td:nth-child(2) span {
+  float:right;
+}
+  
+// add class
+.section-bg {
+  background-color: #A5C4D6 !important; 
+}

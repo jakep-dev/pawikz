@@ -1,0 +1,44 @@
+#dashboard-project {
+    transform: translate3d(0, 0, 0);
+
+  .padding-10
+  {
+    padding: 25px;
+  }
+
+  #dashBoardDetails
+  {
+    thead tr:first-child
+    {
+      background-color: #464646;
+	  color: #f68c20;
+    };
+    tr:hover {
+      background-color: #0fb9ff;
+      color: white;
+    }
+	tr:hover a{
+      color: white;
+    }
+    tr
+    {
+      -webkit-transition: all .2s ease-in-out;
+      -moz-transition: all .2s ease-in-out;
+      -ms-transition: all .2s ease-in-out;
+      transition: all .2s ease-in-out;
+    }
+  }
+
+  .renewStyle
+  {
+    color: #f68c20;
+  }
+
+  .not-active {
+    pointer-events: none;
+    cursor: default;
+    background-color: yellow;
+  }
+}
+
+

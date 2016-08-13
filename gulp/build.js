@@ -20,7 +20,7 @@ gulp.task('partials', function ()
             quotes: true
         }))
         .pipe($.angularTemplatecache('templateCacheHtml.js', {
-            module: 'fuse',
+            module: 'advisen',
             root  : 'app'
         }))
         .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
@@ -98,5 +98,16 @@ gulp.task('clean', function (done)
 {
     $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/')], done);
 });
+
+gulp.task('clean-com',function(done)
+{
+    $.del([path.join('bower_components', '/'), path.join('node_modules', '/')], done);
+});
+
+gulp.task('clean-all',['clean','clean-com'],function(done)
+{
+
+});
+
 
 gulp.task('build', ['html', 'fonts', 'other']);

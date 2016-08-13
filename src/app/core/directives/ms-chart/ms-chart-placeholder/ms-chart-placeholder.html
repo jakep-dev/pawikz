@@ -1,0 +1,66 @@
+<div  class="md-whiteframe-1dp  md-light-blue-A100-bg">
+    <div id="ms-chart-placeholder-header" style="height: 40px" layout="row" layout-align="space-between center">
+        <div style="padding-left: 10px">
+            <md-input-container  md-no-float class="md-block md-accent">
+                <input id="chartTitle" placeholder="Chart Title" ng-model="vm.title" ng-disabled="vm.disableTitle"
+                       class="font-weight-700 font-size-14" style="position: absolute;  bottom: 0px; padding-bottom: 4px; color: black"/>
+            </md-input-container>
+        </div>
+        <div>
+            <md-button class="md-icon-button" aria-label="save-chart" ng-show="false" ng-click="vm.saveChart()" ng-if="vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Save
+                </md-tooltip>
+                <md-icon md-font-icon="icon-content-save"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="add-chart" ng-click="vm.addChart()" ng-if="vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Add as a copy
+                </md-tooltip>
+                <md-icon md-font-icon="icon-plus"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="delete-chart" ng-click="vm.removeChart(vm.id, $event)" ng-if="!vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Delete
+                </md-tooltip>
+                <md-icon md-font-icon="icon-trash"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="up-chart" ng-click="vm.swapChart('U')" ng-if="!vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Up
+                </md-tooltip>
+                <md-icon md-font-icon="icon-arrow-up"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="down-chart" ng-click="vm.swapChart('D')" ng-if="!vm.isMainChart">
+                <md-tooltip md-direction="top">
+                    Down
+                </md-tooltip>
+                <md-icon md-font-icon="icon-arrow-down"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="refresh-chart" ng-click="vm.resetChart(vm.id, $event)" ng-if="!vm.isStockChart">
+                <md-tooltip md-direction="top">
+                    Reset
+                </md-tooltip>
+                <md-icon md-font-icon="icon-refresh"></md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="full-screen" ng-click="vm.maximizeChart(vm.id, $event)">
+                <md-tooltip md-direction="top">
+                    Maximize
+                </md-tooltip>
+                <md-icon md-font-icon="icon-fullscreen"></md-icon>
+            </md-button>
+        </div>
+    </div>
+
+    <md-divider></md-divider>
+
+    <md-content id="ms-chart-placeholder-content" class="ms-chart-placeholder-class" layout-padding>
+
+
+    </md-content>
+</div>
+

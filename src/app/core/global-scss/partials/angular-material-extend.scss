@@ -3,6 +3,7 @@
 /*  Adds and/or modifies Angular Material styles
 /*----------------------------------------------------------------*/
 
+
 // Autocomplete
 md-autocomplete-wrap {
 
@@ -18,6 +19,16 @@ md-backdrop {
     &.md-opaque {
         background-color: rgba(33, 33, 33, 0.48) !important;
     }
+}
+
+md-bottom-sheet {
+  &.md-grid {
+    md-list-item {
+      .md-grid-item-content {
+          width: 120px;
+      }
+    }
+  }
 }
 
 // Button

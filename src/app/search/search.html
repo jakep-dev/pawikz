@@ -1,0 +1,24 @@
+<div id="search" class="page-layout simple fullwidth white-bg" layout="row"
+     ng-cloak md-swipe-right="vm.toggleSidenav('quick-panel')">
+
+    <!-- CENTER -->
+    <div class="center" flex>
+        <md-toolbar class="md-primary">
+            <div class="md-toolbar-tools" layout="row" layout-align="center center">
+                <h2 class="md-flex">{{$root.searchTitle}}</h2>
+                <md-button class="md-icon-button" aria-label="close" ng-click="vm.toggleSidenav('quick-panel')">
+                    <md-icon md-font-icon="icon-arrow-right-bold">
+                    </md-icon>
+                </md-button>
+            </div>
+            <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="$root.loadingSearchProgress"></md-progress-linear>
+
+        </md-toolbar>
+
+        <div id="search-content" flex>
+            <md-content ms-scroll ui-view="search-content" flex></md-content>
+        </div>
+    </div>
+    <!-- / CENTER -->
+
+</div>

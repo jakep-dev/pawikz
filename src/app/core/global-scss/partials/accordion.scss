@@ -1,0 +1,35 @@
+/*----------------------------------------------------------------*/
+/*  Global Widget Styles
+/*----------------------------------------------------------------*/
+.ms-accordion {
+
+  .ms-accordion-title {
+    box-shadow: $whiteframe-shadow-1dp;
+  }
+
+  .ms-accordion-content {
+    box-shadow: $whiteframe-shadow-1dp;
+  }
+
+  &.sidenav-widget {
+
+    .ms-accordion-title,
+    .ms-accordion-content {
+      box-shadow: none;
+    }
+  }
+
+
+  // ie fix
+  .c3 {
+    height: 100%;
+  }
+
+  // chart fill
+  @for $i from 1 through 10 {
+
+    .chart-fill-#{$i * 8} {
+      margin: 0 #{(-$i * 8) + 'px'} #{(-$i * 8) + 'px'} #{(-$i * 8) + 'px'};
+    }
+  }
+}

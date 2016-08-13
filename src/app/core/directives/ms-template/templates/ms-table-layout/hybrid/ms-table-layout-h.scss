@@ -1,0 +1,48 @@
+$table-layout-padding-left:10px;
+$table-layout-border-radius: 2px;
+$table-layout-hover-color: rgba(15, 185, 255, 0.35);
+$table-layout-input-height: 25px;
+
+
+#ms-table-layout-hybrid
+{
+  border:1px dotted lightgrey;
+  border-radius: 2px;
+
+  .row
+  {
+    padding-left: $table-layout-padding-left;
+    font-weight: bold;
+    min-height: 25px;
+  }
+
+  .row:nth-child(odd) {
+    background-color: rgba(15, 185, 255, 0.11);
+    border-radius: $table-layout-border-radius;
+  }
+  
+  md-input-container .md-errors-spacer {
+    min-height: 0;
+  }
+}
+
+.no-padding-margin
+{
+  margin: 0;
+  padding: 0;
+}
+
+.row-cursor
+{
+  cursor: pointer;
+}
+
+.row-cursor:hover
+{
+  cursor: hand;
+}
+
+.hiddenColumn
+{
+  display: none;
+}

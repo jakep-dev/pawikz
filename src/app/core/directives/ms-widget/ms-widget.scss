@@ -39,18 +39,6 @@ $widgetPadding: 12px;
         backface-visibility: hidden;
     }
 
-    .md-button {
-        margin: 0;
-
-        &.md-icon-button {
-            margin: 0 2px;
-            width: 24px;
-            min-height: 24px;
-            height: 24px;
-            line-height: 24px;
-        }
-    }
-
     &.flipped {
 
         .ms-widget-front {

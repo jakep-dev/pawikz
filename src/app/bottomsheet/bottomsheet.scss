@@ -1,0 +1,12 @@
+// Variables
+$bottomsheetHeight: 10px;
+
+#bottomsheet
+{
+  height: $bottomsheetHeight;
+  min-height: $bottomsheetHeight;
+  max-height: $bottomsheetHeight;
+  font-weight: bolder;
+  color: white;
+  width: 100%;
+}

@@ -3,13 +3,14 @@
 var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
+var port = process.env.PORT || conf.defaultPort;
+
 
 var browserSync = require('browser-sync');
 var browserSyncSpa = require('browser-sync-spa');
+var p = require('gulp-load-plugins')({lazy: true});
 
 var util = require('util');
-
-var proxyMiddleware = require('http-proxy-middleware');
 
 function browserSyncInit(baseDir, browser)
 {
@@ -27,6 +28,12 @@ function browserSyncInit(baseDir, browser)
         baseDir: baseDir,
         routes : routes
     };
+
+    console.log('SERVER ---- ');
+    console.log(server);
+
+    console.log('BROWSER -----');
+    console.log(browser);
 
     /*
      * You can add a proxy to your backend by uncommenting the line bellow.
@@ -51,7 +58,7 @@ browserSync.use(browserSyncSpa({
 
 gulp.task('serve', ['watch'], function ()
 {
-    browserSyncInit([path.join(conf.paths.tmp, '/serve'), conf.paths.src]);
+   browserSyncInit([path.join(conf.paths.tmp, '/serve'), conf.paths.src]);
 });
 
 gulp.task('serve:dist', ['build'], function ()
@@ -61,10 +68,78 @@ gulp.task('serve:dist', ['build'], function ()
 
 gulp.task('serve:e2e', ['inject'], function ()
 {
-    browserSyncInit([conf.paths.tmp + '/serve', conf.paths.src], []);
+    browserSyncInit([conf.paths.tmp + '/serve', conf.paths.src, conf.paths.server], []);
 });
 
 gulp.task('serve:e2e-dist', ['build'], function ()
 {
     browserSyncInit(conf.paths.dist, []);
 });
+
+gulp.task('serve-dev',['clean', 'watch'], function()
+{
+    console.log('PORT-- ' + port);
+
+    var nodeOption = {
+        script: './src/server/server.js',
+        delayTime: 1,
+        env:{
+            'PORT': port,
+            'NODE_ENV': 'dev'
+        },
+        watch: ['./src/server/']
+    };
+
+    return p.nodemon(nodeOption)
+        .on('restart', function(ev) {
+            console.log('Restarted');
+            console.log('Files changed on restart:\n' + ev);
+
+            setTimeout(function(){
+               browserSync.notify('Reloading now..');
+               browserSync.reload({stream: false});
+            }, 5000);
+        })
+        .on('start', function() {
+            console.log('Started');
+            startBrowserSync();
+        })
+        .on('crash', function() {
+            console.log('Crashed');
+        })
+        .on('exit', function() {
+            console.log('Exited');
+        });
+});
+
+function startBrowserSync()
+{
+    if(browserSync.active)
+    {
+        return;
+    }
+
+    var watchFiles = [conf.paths.src + '/app/**/*',
+                      '!' + conf.paths.src, '/app/**/*.scss',
+        conf.paths.tmp + '**/*.css'];
+
+    var options = {
+            proxy: 'localhost:' + port,
+            port: 3000,
+            files:watchFiles,
+            ghostMode:{
+                clicks: true,
+                location: true,
+                forms: true,
+                scroll: true
+            },
+            injectChanges: true,
+            logFileChanges: true,
+            logLevel: 'debug',
+            logPrefix: 'gulp-pattern',
+            notify: true,
+            reloadDelay: 100
+    };
+
+    browserSync(options);
+}

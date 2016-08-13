@@ -2,14 +2,26 @@
 {
     'use strict';
 
+
+
+
     /**
      * Main module of the Fuse
      */
     angular
-        .module('fuse', [
+        .module('advisen', [
 
             // Core
             'app.core',
+
+            // Blocks
+            'app.blocks',
+
+            // Business
+            'app.business',
+
+            // Data
+            'app.data',
 
             // Navigation
             'app.navigation',
@@ -20,10 +32,16 @@
             // Breadcrumb
             'app.breadcrumb',
 
-            // Dashboards
-            'app.dashboards',
+            // Bottomsheet
+            'app.bottomsheet',
 
-            // Feedback
-            'app.pages.feedback'
+            // Apps
+            'app.apps',
+
+            // Pages
+            'app.pages',
+
+            // Components
+            'app.components'
         ]);
 })();

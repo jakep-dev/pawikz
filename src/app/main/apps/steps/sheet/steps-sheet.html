@@ -1,0 +1,31 @@
+<md-bottom-sheet id="steps-sheet" class="md-grid" layout="row" ng-cloak>
+    <md-list flex layout="row" layout-align="center center" md-autofocus>
+        <md-list-item>
+            <md-button class="md-grid-item-content md-accent" style="height: 250px" ng-disabled="isPrevDisabled" ng-click="previousStep()">
+                <md-icon md-font-icon="icon-arrow-left-bold-circle-outline" class="s36"></md-icon>
+                <div class="md-grid-text">Previous Step</div>
+            </md-button>
+        </md-list-item>
+
+        <md-list-item>
+            <md-button class="md-grid-item-content md-accent" style="height: 250px" ng-click="saveAll()">
+                <md-icon md-font-icon="icon-content-save-all" class="s36"></md-icon>
+                <div class="md-grid-text"> Save All </div>
+            </md-button>
+        </md-list-item>
+
+        <md-list-item>
+            <md-button class="md-grid-item-content md-primary md-accent" style="height: 250px" ng-click="goTop()">
+                <md-icon md-font-icon="icon-arrow-up-bold-circle-outline" class="s36"></md-icon>
+                <div class="md-grid-text"> Top </div>
+            </md-button>
+        </md-list-item>
+
+        <md-list-item>
+            <md-button class="md-grid-item-content md-primary md-accent" style="height: 250px" ng-disabled="isNextDisabled" ng-click="nextStep()">
+                <md-icon md-font-icon="icon-arrow-right-bold-circle-outline" class="s36"></md-icon>
+                <div class="md-grid-text">Next Step</div>
+            </md-button>
+        </md-list-item>
+    </md-list>
+</md-bottom-sheet>

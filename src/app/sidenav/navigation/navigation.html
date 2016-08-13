@@ -10,9 +10,24 @@
 <ms-nav ms-scroll="vm.msScrollOptions" class="scrollable">
 
     <ms-nav-item>
-        <a ms-nav-button ui-sref="app.dashboard-project" ui-sref-active="active md-accent-bg" md-ink-ripple>
-            <i class="icon-tile-four s16"></i>
-            <span class="ms-nav-label">Dashboards</span>
+        <a ms-nav-button ui-sref="app.myWork({userId:$root.passedUserId})" ui-sref-active="active md-accent-bg" md-ink-ripple>
+            <i class="icon-worker s16"></i>
+            <span class="ms-nav-label">My Workups</span>
+        </a>
+    </ms-nav-item>
+
+    <ms-nav-item ng-if="(!!vm.sideNavItems && vm.sideNavItems.length > 0)">
+        <a ms-nav-button ui-sref="app.overview({projectId:$root.projectId})" ui-sref-active="active md-accent-bg" md-ink-ripple>
+            <i class="icon-view-agenda s16"></i>
+            <span class="ms-nav-label">Project Overview</span>
+        </a>
+    </ms-nav-item>
+
+    <ms-nav-item ng-repeat="step in vm.sideNavItems">
+        <a ms-nav-button ui-sref="app.steps({projectId:step.projectId, stepId:step.stepId, stepName:step.stepName})"
+           ui-sref-active="active md-accent-bg" md-ink-ripple>
+            <md-tooltip md-direction="right">{{step.stepName}}</md-tooltip>
+            <span style="padding-left: 2em" class="ms-nav-label">{{ step.stepId + ". " + step.stepName }}</span>
         </a>
     </ms-nav-item>
 </ms-nav>

@@ -3,17 +3,15 @@
     'use strict';
 
     angular
-        .module('fuse')
+        .module('advisen')
         .controller('AppController', AppController);
 
     /** @ngInject */
-    function AppController(fuseTheming)
-    {
+    function AppController(fuseTheming, $scope, authBusiness) {
         var vm = this;
 
         // Data
         vm.themes = fuseTheming.themes;
-
-        //////////
+        authBusiness.initIdle($scope);
     }
 })();

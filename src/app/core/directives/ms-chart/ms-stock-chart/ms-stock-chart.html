@@ -1,0 +1,15 @@
+<ms-content class="ms-stock-chart">
+    <ms-stock-chart-tool-bar chart-id ="vm.chartId" filter-state = "vm.filterState" ng-show="!vm.hideFilters"
+                             on-filter-state-update="vm.onFilterStateUpdate">
+
+    </ms-stock-chart-tool-bar>
+
+    <md-divider layout-padding layout-margin></md-divider>
+
+    <ms-content>
+        <div id = "stock-chart" ms-stock-chart-feature config ="vm.stockDataSet" on-peer-remove="vm.onPeerRemove">
+
+        </div>
+    </ms-content>
+
+</ms-content>

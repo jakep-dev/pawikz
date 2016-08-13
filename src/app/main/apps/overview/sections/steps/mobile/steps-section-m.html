@@ -1,0 +1,12 @@
+<div layout-padding ng-if="vm.isStepTabletMode" >
+    <md-tabs id="step-overview-steps" style="border:1px solid #e1e1e1; background: #f6f6f6" md-dynamic-height>
+        <md-tab ng-repeat="step in vm.templateOverview.steps"
+                label="{{step.stepName}}">
+            <div>
+                <ms-step-overview step="step" project-Id="vm.projectId" expandable="true" >
+
+                </ms-step-overview>
+            </div>
+        </md-tab>
+    </md-tabs>
+</div>
