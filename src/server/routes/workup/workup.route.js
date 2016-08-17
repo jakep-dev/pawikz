@@ -47,7 +47,11 @@
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
                 interval = setInterval(function(token, data, key) {
+                    data.companyId = req.body.companyId;
+                    data.templateId = req.body.templateId;
+
                     notifyStatus(token, data, key);
+
                 }, 1000, req.headers['x-session-token'], data, 'notify-create-workup-status');
 
             });
@@ -80,6 +84,8 @@
             broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'renewal');
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
+
+                data.projectId = req.body.projectId;
 
                 //Notify Renewal Status to the user initiated the request.
                 notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status');
@@ -120,6 +126,7 @@
         function notifyStatus(token, data, key)
         {
             console.log('Renewal done - ');
+            console.log(data);
 
             clearInterval(interval);
             if(token in config.userSocketInfo)
@@ -159,6 +166,9 @@
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
+            console.log('Broadcast workup-');
+            console.log(config.socketData.workup);
+
             if((token in config.userSocketInfo) &&
                 config.socketIO.socket)
             {
@@ -169,6 +179,9 @@
                         return item;
                     }
                 });
+
+                console.log('Actual workup-');
+                console.log(workup);
 
                 if(workup)
                 {

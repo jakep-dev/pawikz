@@ -68,7 +68,7 @@
                 idle: 600,
                 timeout: 120,
                 interval: 1200,
-                dialogtimeout: 5
+                dialogtimeout: 60
             }
         });
 })();

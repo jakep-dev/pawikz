@@ -23,6 +23,7 @@
         var business = {
             emitMsg: emitMsg,
             onMsg: onMsg,
+            emitWithArgument: emitWithArgument,
             defineBottomSheet: defineBottomSheet,
             goTop: goTop,
             resetBottomSheet: resetBottomSheet,
@@ -104,6 +105,10 @@
             $rootScope.$emit(msg);
         }
 
+        function emitWithArgument(msg, arg)
+        {
+            $rootScope.$emit(msg, arg);
+        }
 
         function socketType(toState)
         {

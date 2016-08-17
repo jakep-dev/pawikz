@@ -11,7 +11,7 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle, Keepalive)
+    function LoginController($window, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle)
     {
         var vm = this;
 
@@ -32,8 +32,6 @@
 
         function LogIn(userName, password)
         {
-
-            //var socket = io.connect();
             authService.authenticate(userName, password).then(function(response)
             {
                 if(angular.isDefined(response) &&

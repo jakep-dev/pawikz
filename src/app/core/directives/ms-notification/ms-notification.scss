@@ -1,0 +1,75 @@
+// Variables
+$toolbarHeight: 64px;
+
+#notification-menu {
+  height: $toolbarHeight;
+
+  .notification-button {
+    min-width: $toolbarHeight;
+    height: $toolbarHeight;
+    margin: 0;
+    padding: 0 16px;
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0;
+
+    .iso {
+      text-transform: uppercase;
+    }
+
+    .flag {
+      margin-right: 8px;
+    }
+  }
+
+  md-menu-item .md-button {
+    font-size: 15px;
+
+    md-icon {
+      margin: auto 16px auto 0;
+    }
+  }
+
+}
+
+
+#notification-menu-content {
+
+  md-menu-item {
+
+    .flag {
+      margin-right: 16px;
+    }
+  }
+}
+
+.angular-notifications-icon
+{
+  background: #f68c20;
+  right: -5px;
+  top: 0px;
+  min-width: 20px;
+  height: 20px;
+
+
+  div
+  {
+    color: white;
+    line-height: 1;
+    font-size: small;
+    font-weight: bold;
+  }
+}
+
+.progress-wrapper{
+  position: relative;
+
+}
+
+.progress-value {
+  top: 28%;
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+}

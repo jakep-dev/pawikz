@@ -15,7 +15,7 @@
     function OverviewController($rootScope, $stateParams, $scope,
                                 $mdMenu, overviewService,
                                 navConfig, breadcrumbBusiness, workupBusiness, commonBusiness,
-                                overviewBusiness, store, toast)
+                                overviewBusiness, templateBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
             $rootScope.projectId = $stateParams.projectId;
@@ -58,10 +58,15 @@
         vm.redo = redo;
         vm.saveAll = saveAll;
         vm.showOverviewDetails =showOverviewDetails;
+        vm.pdfDownload = pdfDownload;
         vm.renew = renew;
 
         //Data
         loadData();
+
+        function pdfDownload() {
+           templateBusiness.requestPdfDownload();
+        }
 
         function defineBottomSheet()
         {

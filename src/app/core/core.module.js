@@ -28,6 +28,11 @@
                 'froala',
                 'highcharts-ng',
                 'ngPapaParse',
-                'ngIdle'
+                'ngIdle',
+                'angular-notification-icons',
+                'angular-svg-round-progressbar',
+                'ng-html2canvas',
+                'ngActivityIndicator',
+                'ng.deviceDetector'
             ]);
 })();

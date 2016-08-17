@@ -9,8 +9,10 @@
     /** @ngInject */
     function config($ariaProvider, $logProvider, msScrollConfigProvider,
                     uiGmapGoogleMapApiProvider, $translateProvider,
-                    $provide, fuseConfigProvider)
+                    $provide, fuseConfigProvider, $compileProvider)
     {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|blob):/);
+
         // ng-aria configuration
         $ariaProvider.config({
             tabindex: false

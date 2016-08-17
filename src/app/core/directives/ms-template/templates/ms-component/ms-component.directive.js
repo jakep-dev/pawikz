@@ -145,7 +145,7 @@
     }
 
     /** @ngInject */
-    function msComponentDirective($compile, templateBusiness)
+    function msComponentDirective($compile, templateBusiness, commonBusiness)
     {
         return {
             restrict: 'E',
@@ -156,7 +156,8 @@
                 isnoneditable: '=?',
                 isprocesscomplete: '=?',
                 actions: '=',
-                subtype: '@'
+                subtype: '@',
+                islastcomponent: '=?'
             },
             controller: 'msComponentController',
             controllerAs: 'vm',
@@ -226,6 +227,11 @@
                     }
                     else {
                         bindComponents($scope, el, $scope.tearcontent);
+                    }
+
+                    if($scope.islastcomponent)
+                    {
+                        commonBusiness.emitMsg('step-load-completed');
                     }
                 };
             }

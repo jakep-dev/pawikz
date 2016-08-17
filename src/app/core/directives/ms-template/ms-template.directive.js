@@ -7,7 +7,7 @@
         .controller('msTemplateController', msTemplateController)
         .directive('msTemplate', msTemplateDirective);
 
-    function msTemplateController($scope, $mdMenu, templateBusiness, commonBusiness, workupBusiness, $rootScope)
+    function msTemplateController($rootScope, $scope, $mdMenu, templateBusiness, commonBusiness, workupBusiness, deviceDetector)
     {
         var vm = this;
 
@@ -17,19 +17,9 @@
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
 		vm.printableAll = printableAll;
-        vm.pdfExport = exportCharts;
+        vm.pdfDownload = pdfDownload;
         vm.renew = renew;
-        vm.determinateValue = 1;
 
-        var socket = io();
-        socket.on("pdfc status progress", function (data) {
-            setTimeout(function() {
-                vm.determinateValue=data.percentage;
-                console.log("determinateValue:", vm.determinateValue);
-                if(vm.determinateValue>100)
-                    vm.determinateValue=1;
-            }, 0);
-        });
         //Save the entire template data.
         function saveAll()
         {
@@ -41,7 +31,12 @@
             templateBusiness.cancelPromise();
         }
 
-        function exportCharts()
+        function pdfDownload() {
+
+            templateBusiness.requestPdfDownload();
+        }
+
+        function exportCharts1()
         {
             $rootScope.$broadcast('exportAllCharts');
         }
@@ -70,12 +65,11 @@
 			commonBusiness.isPrintableAll = vm.isPrintableAll;
             $mdMenu.hide();
 		}
-	
-	}
+    }
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, templateBusiness, dialog)
+    function msTemplateDirective($compile, templateBusiness, dialog, deviceDetector)
     {
         return {
             restrict: 'E',
@@ -88,11 +82,29 @@
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
             link:function(scope, el, attrs)
             {
-                //templateBusiness.showTemplateProgress();
-
-
                 console.log('Template component creation initiated - ');
                 console.log(scope);
+
+                if(deviceDetector.browser === 'ie')
+                {
+
+                    var options = {
+                        wheelSpeed            : 1,
+                        wheelPropagation      : false,
+                        swipePropagation      : true,
+                        minScrollbarLength    : null,
+                        maxScrollbarLength    : null,
+                        useBothWheelAxes      : false,
+                        useKeyboard           : true,
+                        suppressScrollX       : false,
+                        suppressScrollY       : false,
+                        scrollXMarginOffset   : 0,
+                        scrollYMarginOffset   : 0,
+                        stopPropagationOnClick: true
+                    };
+                    PerfectScrollbar.initialize($('#template-steps')[0], options);
+                    PerfectScrollbar.destroy($('#main-content')[0]);
+                }
 
                 //Render the header for the step
                 if(scope.components.header)
@@ -104,6 +116,19 @@
                 //Render the content for the step
                 if(scope.components.content)
                 {
+                    var allSectionComp = _.filter(scope.components.content, function(content)
+                    {
+                        if(content.header &&
+                            content.sections &&
+                            content.sections.length > 0)
+                        {
+                            return content;
+                        };
+                    });
+
+
+                    var totalComponent = _.size(allSectionComp);
+                    var currentComponent = 1;
                     angular.forEach(scope.components.content, function(renderContent)
                     {
                         if(renderContent.header &&
@@ -154,13 +179,16 @@
                                     }
                                 });
 
-                                var html = '';
+                                var html = '',
+                                    isLastComponent = (currentComponent >= totalComponent);
                                 if(isChartComp)
                                 {
-                                     html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
+                                     html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
                                 }else {
                                      html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
-                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" subtype="' + newScope.subtype +'"></ms-component>';
+                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
+                                         'subtype="' + newScope.subtype +'" islastcomponent="'+ isLastComponent +'"></ms-component>';
                                 }
 
 
@@ -179,10 +207,15 @@
                                     break;
                             }
                         }
+
+                        currentComponent++;
                     });
                 }
 
-                //templateBusiness.hideTemplateProgress();
+                console.log('device detector');
+                console.log(deviceDetector.browser);
+
+
             }
         };
     }

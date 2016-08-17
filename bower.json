@@ -43,7 +43,12 @@
     "angular-papaparse": "^1.0.0",
     "angular-material": "1.1.0-rc4",
     "socket.io": "^1.4.6",
-    "ng-idle": "^1.2.2"
+    "ng-idle": "^1.2.2",
+    "angular-notification-icons": "~0.4.3",
+    "angular-svg-round-progressbar": "^0.4.6",
+    "ng-html2canvas": "*",
+    "ngActivityIndicator": "^0.1.10",
+    "ng-device-detector": "^3.0.1"
   },
   "devDependencies": {
     "angular-mocks": "1.5.5"
