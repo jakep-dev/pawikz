@@ -18,11 +18,7 @@
                 'pascalprecht.translate',
                 'timer',
                 'ui.router',
-                'uiGmapgoogle-maps',
                 'textAngular',
-                'ng-sortable',
-                'ngLodash',
-                'angularSoap',
                 'angular-storage',
                 'disableAll',
                 'froala',
@@ -31,8 +27,8 @@
                 'ngIdle',
                 'angular-notification-icons',
                 'angular-svg-round-progressbar',
-                'ng-html2canvas',
                 'ngActivityIndicator',
-                'ng.deviceDetector'
+                'ng.deviceDetector',
+                'ngLodash'
             ]);
 })();
