@@ -10,6 +10,14 @@
     function runBlock($rootScope, commonBusiness, store,
                       logger, clientConfig, Idle, $location)
     {
+		if (!clientConfig.socketInfo.socket) {
+			var socketCORSPath = $location.protocol() + '://' + $location.host();
+			if ($location.port != 80) {
+				socketCORSPath += ':' + $location.port();
+			}
+			clientConfig.socketInfo.socket = io.connect(socketCORSPath);
+		}
+
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
             ///Removing the token if user is at login page.

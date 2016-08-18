@@ -89,6 +89,7 @@
                             notification.status = 'complete';
                             notification.disabled = false;
                         }
+                        commonBusiness.emitMsg('PDF-Download Status Update');
                     }
 
                 }

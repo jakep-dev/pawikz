@@ -394,10 +394,15 @@
 
                 var i;
                 var n;
-                var chartSettings = data.chartSettings;
+                var chartSettings;
                 var chartDataObj;
                 //var chartDataObjs = [];
 
+                if (data && data.chartSettings) {
+                    chartSettings = data.chartSettings;
+                } else {
+                    chartSettings = [];
+                }
                 n = chartSettings.length;
                 for (i = 0; i < n; i++) {
                     var chartSetting;

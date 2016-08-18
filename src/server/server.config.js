@@ -13,9 +13,9 @@ exports.webservice =
 exports.client = {
     protocol: 'http',
     domain: 'localhost',
-    port: '4000',
+    port: '3001',
     loglevel: 1,
-    transports: 'polling'
+    transports: ['polling']
 };
 
 var Client = require('node-rest-client').Client;

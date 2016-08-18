@@ -1,7 +1,7 @@
 (function ()
 {
     'use strict';
-    var socket = io.connect();
+    //var socket = io.connect();
 
     angular
         .module('advisen')
@@ -61,7 +61,7 @@
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='
             },
             socketInfo: {
-                socket: socket
+                socket: undefined
             },
             activity:{
                 //In Seconds

@@ -8,7 +8,7 @@
         .directive('msNotification', msNotificationDirective);
 
     /** @ngInject */
-    function msNotificationController(templateBusiness, $location, $interval)
+    function msNotificationController(templateBusiness, $location, $interval, $scope, toast, commonBusiness)
     {
         var vm = this;
 
@@ -17,6 +17,11 @@
 
         //Functions
         vm.processNotification = processNotification;
+
+        //Refresh binding to immediately show pdf status changes
+        commonBusiness.onMsg('PDF-Download Status Update', $scope, function () {
+            $scope.$apply();
+        });
 
         function processNotification(notification)
         {
@@ -32,8 +37,8 @@
                     {
                         templateBusiness.downloadTemplatePdf(notification.requestId, notification.title);
                     }
-                    else {
-                     templateBusiness.requestPdfDownload();
+                    else if (notification.status === 'error') {
+                        toast.simpleToast("Issue with PDF Download. Please try again.");
                     }
                     break;
             }
