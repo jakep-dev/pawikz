@@ -17,14 +17,41 @@
 
         //Functions
         vm.processNotification = processNotification;
+        vm.close = close;
 
         //Refresh binding to immediately show pdf status changes
         commonBusiness.onMsg('update-notification-binding', $scope, function () {
             $scope.$apply();
         });
 
+        function close(notification)
+        {
+           var not = _.findIndex(templateBusiness.notifications, function(notify)
+           {
+               console.log(parseInt(notify.id));
+               console.log(parseInt(notification.id));
+               if(notify.id === notification.id)
+               {
+                   return notify;
+               }
+           });
+
+            if(not >= 0)
+            {
+                delete templateBusiness.notifications[not];
+                commonBusiness.emitMsg('update-notification-binding');
+            }
+
+            if(_.size(templateBusiness.notifications) === 0)
+            {
+                templateBusiness.notifications = [];
+            }
+
+        }
+
         function processNotification(notification)
         {
+            notification.status = 'close';
             switch (notification.type)
             {
                 case 'Renewal':
