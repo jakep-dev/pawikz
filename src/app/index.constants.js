@@ -57,7 +57,8 @@
             appSettings:
             {
                 autoSaveTimeOut: 10000,
-                textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='
+                textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
+                componentInitialLoad:  4
             },
             socketInfo: {
                 socket: undefined

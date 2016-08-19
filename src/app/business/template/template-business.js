@@ -20,6 +20,8 @@
            autoSavePromise: [],
            isExpandAll: false,
            componentStatus: [],
+           components:[],
+           remainingComponentCount: 0,
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
@@ -64,10 +66,34 @@
            pushComponentStatus: pushComponentStatus,
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
 		   formatData: formatData,
-		   removeFormatData: removeFormatData
+		   removeFormatData: removeFormatData,
+           loadComponents: loadComponents,
+           getComponentHeader: getComponentHeader
         };
 
         return business;
+
+        ///Get the component header details
+        function getComponentHeader()
+        {
+            var header = {
+                name: '',
+                subHeader: ''
+            };
+
+            if(business.components.header)
+            {
+                header.name = business.components.header.label;
+                header.subHeader = business.components.header.subheader || '';
+            }
+
+            return header;
+        }
+
+        function loadComponents()
+        {
+
+        }
 
         function pushComponentStatus(id, status)
         {
@@ -1249,7 +1275,7 @@
 
                 if(mnemonic)
                 {
-                    value = formatData(value, mnemonic);
+                    value = formatData(mnemonic.value, mnemonic);
                     value = _.escape(value);
                 }
             }

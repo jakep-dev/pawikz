@@ -125,6 +125,10 @@
             commonBusiness.onMsg('step-load-completed', $scope, function() {
                 templateBusiness.hideTemplateProgress();
             });
+
+            commonBusiness.onMsg('step-load-initiated', $scope, function() {
+                templateBusiness.showTemplateProgress();
+            });
         }
 
         //Move to the previous step
