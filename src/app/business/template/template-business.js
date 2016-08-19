@@ -1249,7 +1249,7 @@
 
                 if(mnemonic)
                 {
-                    value = formatData(value, mnemonic);
+                    value = formatData(mnemonic.value, mnemonic);
                     value = _.escape(value);
                 }
             }
