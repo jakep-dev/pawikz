@@ -362,8 +362,7 @@
         }
 		
 		function addRows($scope)
-		{	
-			console.log('ADDING ' + $scope.rowNumber + ' row(s)');
+		{
 			var maxSequence = getMaxSequence($scope);
 			if(!angular.isUndefined($scope.rowNumber))
 			{
@@ -387,7 +386,6 @@
 		
 		function deleteRows($scope)
 		{
-			console.log('Deleting rows');
 			for(var index = $scope.rows.length - 1; index >= 0; index--)
 			{
 				var row = $scope.rows[index];
@@ -414,7 +412,6 @@
 		
 		function copyRows($scope)
 		{
-			console.log('Copying rows');
 			var maxSequence = getMaxSequence($scope);
 			angular.forEach($scope.rows, function(row)
 			{
@@ -492,7 +489,6 @@
 		
 		function excelUpload($scope)
 		{
-			console.log('Uploading excel data');
 			toast.simpleToast("Please choose file!");
 
             var uploadElement = $('#hybrid-upload');
@@ -510,8 +506,6 @@
 		
 		function updateRows(data, $scope)
         {
-            console.log('Update Rows');
-            console.log(data);
             if(data.data && data.data.length > 0)
             {
 				//Header Rows
@@ -620,13 +614,10 @@
             {
                 element[0].value = '';
             }
-
-            console.log(element);
         }
 		
 		function excelDownload($scope)
 		{
-			console.log('Downloading data to excel');
 			var linkElement = $('#link-hybrid-download');
 			var dataInfo = [];
 			var data = null;
@@ -663,16 +654,10 @@
 					colCount++;
 				});
 				data += '}';
-				
-				console.log('Data \n' + data);
-				console.log(angular.fromJson(data));
-
 				dataInfo.push(angular.fromJson(data));
 			});
 			
 			data = templateBusiness.unParseJsonToCsv(dataInfo);
-			
-			console.log(data);
 
 			if(data && linkElement && linkElement.length > 0)
 			{
@@ -786,8 +771,6 @@
 
 							if(files && files.length > 0)
 							{
-								console.log('Files - ');
-								console.log(files);
 								var data = [];
 								templateBusiness.parseCsvToJson(files[0], updateRows, scope);
 							}
@@ -795,13 +778,7 @@
 					};
 
                     scope.$parent.$parent.isprocesscomplete = true;
-
-					console.log('TableLayout Hybrid Link');
-					console.log(scope);
-					console.log('TableLayout Hybrid Data');
-					console.log(data);
                 });
-            //}
         }
     }
 

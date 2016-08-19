@@ -175,7 +175,6 @@
 
         ///Remove selected chart.
         function removeChart(id, event) {
-            console.log(id);
             dialog.confirm('Would you like to delete?', 'Selected Stock chart will be deleted. Please confirm.',event, {
                 ok: {
                     name: 'yes', callBack: function () {

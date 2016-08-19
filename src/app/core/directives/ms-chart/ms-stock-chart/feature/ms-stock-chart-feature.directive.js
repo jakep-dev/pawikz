@@ -174,43 +174,7 @@
 
 
 
-                        /**
-                         * In order to synchronize tooltips and crosshairs, override the
-                         * built-in events with handlers defined on the parent element.
-                         */
-                        /*$(elem).bind('mousemove touchmove', function (e) {
-                         var chart,
-                         point,
-                         i;
-                         var minCrossHairIndex=0, maxCrossHairIndex=1;
-                         if(Highcharts.charts) {
-                         console.log('hoveredChartIndex in mousemove: ' + hoveredChartIndex);
-                         for (i = minCrossHairIndex; i <= maxCrossHairIndex; i = i + 1) {
-                         chart = Highcharts.charts[i];
-                         e = chart.pointer.normalize(e); // Find coordinates within the chart
-                         point = chart.series[0].searchPoint(e, true); // Get the hovered point
-                         if (point) {
-                         point.onMouseOver(); // Show the hover marker
-                         chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                         }
-                         }
-                         }
-                         });*/
 
-                        /*Highcharts.each(Highcharts.charts, function(p, i) {
-                         $(elem).bind('mousemove touchmove touchstart', function(e) {
-                         var point, ind = 0;
-                         ind = i % 2 ? i - 1 : (i + 1 < Highcharts.charts.length ? i + 1 : i);
-                         console.log(ind);
-                         e = Highcharts.charts[ind].pointer.normalize(e.originalEvent);
-                         point = Highcharts.charts[ind].series[0].searchPoint(e, true);
-                         if (point) {
-                         point.onMouseOver(); // Show the hover marker
-                         //Highcharts.charts[ind].tooltip.refresh(point); // Show the tooltip
-                         Highcharts.charts[ind].xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                         }
-                         });
-                         })*/
 
                         /**
                          * Override the reset function, we don't need to hide the tooltips and crosshairs.
@@ -237,7 +201,6 @@
                         }
 
                         // Get the data. The contents of the data file can be viewed at
-                        //console.log('activity: ', scope.config.split('|')[0]);
                         var activity = JSON.parse(scope.config.split('|')[0]);
                         var primarystockresp = JSON.parse(scope.config.split('|')[1]);
 
@@ -277,9 +240,7 @@
                                                 var chart = this,
                                                     legend = chart.legend;
 
-                                                //chart.xAxis[0].setCategories(['15-Apr', '18-Apr', '19-Apr', '20-Apr']);
                                                 if(legend && legend.allItems) {
-                                                    //console.log('legend.allItems.length: ' + legend.allItems.length);
                                                     for (var legendNum = 0, len = legend.allItems.length; legendNum < len; legendNum++) {
                                                         (function (legendNum) {
                                                             var item = legend.allItems[legendNum].legendItem;
@@ -391,9 +352,7 @@
                                                             var diffDays = duration.asDays();
                                                             var diffMonths = Math.floor(duration.asMonths());
                                                             var nextDispDate = startDate;
-                                                            /*console.log('startDate: ' + objLastLbl[0].textContent);
-                                                             console.log('endDate: ' + objLastLbl[lastValue].textContent);
-                                                             console.log('diffMonths: ' + diffMonths);*/
+
                                                             objLastLbl.each(function (txtCntr, element) {
                                                                 var currentPeriod = element.textContent;
                                                                 //$(this).css('transform','rotate(0)');
@@ -577,23 +536,6 @@
                                             ,point: {
                                                 events: {
                                                     mouseOver: function(e) {
-                                                        /*var xIndex = this.x;
-                                                         var legendText='';
-                                                         var seriesCnt = primarystockresp.stockChartPeerData.length/primarystockresp.stockChartPrimaryData.length;
-
-                                                         for(var seriesCntr = 0; seriesCntr < seriesCnt; seriesCntr++) {
-                                                         if ($('.highcharts-legend-item') && $('.highcharts-legend-item')[seriesCntr]) {
-                                                         if ((primarystockresp.stockChartPeerData[xIndex + (seriesCntr * primarystockresp.stockChartPrimaryData.length)]) &&
-                                                         primarystockresp.stockChartPeerData[xIndex + (seriesCntr * primarystockresp.stockChartPrimaryData.length)].ticker) {
-                                                         ($('.highcharts-legend-item')[seriesCntr]).children[1].innerHTML =
-                                                         primarystockresp.stockChartPeerData[xIndex + (seriesCntr * primarystockresp.stockChartPrimaryData.length)].ticker
-                                                         + ' ' + primarystockresp.stockChartPeerData[xIndex +
-                                                         (seriesCntr * primarystockresp.stockChartPrimaryData.length)].priceClose;
-
-                                                         console.log(($('.highcharts-legend-item')[seriesCntr]).children[1].innerHTML);
-                                                         }
-                                                         }
-                                                         }*/
                                                         hoveredChart=this;
                                                         var legend = this.series.chart.legend,
                                                             series = this.series.chart.series,
@@ -609,13 +551,10 @@
                                                             if(legendItems && legendItems[n])
                                                             {
                                                                 legendItem = legendItems[n].legendItem;
-                                                                //console.log('legendItem: ', legendItem);
                                                                 if(n==0) {
                                                                     $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
 
                                                                         if (legCntr == xIndex) {
-                                                                            //console.log('v.priceClose: v.ticker');
-                                                                            //tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
                                                                             v.priceClose = v.priceClose ? v.priceClose : 0;
                                                                             legendItem.attr({text: (p.name + ' ' + ( $filter('currency')(v.priceClose, '', 2) ) )});
 
@@ -627,19 +566,6 @@
                                                                     var peerLegendValue = primarystockresp.stockChartPeerData[primarystockresp.stockChartPrimaryData.length*(n-1) + xIndex].priceClose;
                                                                     peerLegendValue = peerLegendValue ? peerLegendValue : 0;
                                                                     legendItem.attr({text: (p.name + ' ' +  ( $filter('currency')(peerLegendValue, '', 2) ) ) });
-
-
-                                                                    //var legCntr=0;
-                                                                    //legendItem.attr({ text: (p.name + ' ' + yValue.toFixed(2))});
-
-                                                                    /*$.each(primarystockresp.stockChartPeerData, function (legCntr, v) {
-
-                                                                     if (legCntr == n*xIndex && p.name == v.ticker) {
-                                                                     //console.log('v.priceClose: v.ticker');
-                                                                     //tooltipText = xPoint +"<br/>" + "Open: " + v.priceOpen + "<br/>" +"Close: " + v.priceClose + "<br/>" +"High: " + v.priceHigh + "<br/>" +"Low: " + v.priceLow + "<br/>" +"Vol: " + v.volume ;
-                                                                     legendItem.attr({text: (p.name + ' ' + v.priceClose)});
-                                                                     }
-                                                                     });*/
                                                                 }
                                                             }
                                                         });

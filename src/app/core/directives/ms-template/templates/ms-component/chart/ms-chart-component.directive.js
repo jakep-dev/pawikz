@@ -18,7 +18,6 @@
         $scope.$watch(
             "isprocesscomplete",
             function handleProgress(value) {
-                console.log('Progress Watch Triggered');
                 vm.isProcessComplete = value;
             }
         );

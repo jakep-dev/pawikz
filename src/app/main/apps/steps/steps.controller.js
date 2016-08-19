@@ -84,9 +84,6 @@
             stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
             {
                 toast.simpleToast('AutoSave Enabled');
-                console.log('Defer Response Data ---');
-                console.log(response);
-
                 if(response)
                 {
                     angular.forEach(response, function(data)
@@ -132,10 +129,6 @@
 
         //Move to the previous step
         function previousStep() {
-
-            console.log('Previous Step - ');
-            console.log(overviewBusiness.templateOverview);
-
             if(overviewBusiness.templateOverview &&
                 overviewBusiness.templateOverview.steps)
             {
@@ -145,9 +138,6 @@
 
         //Move to the next step
         function nextStep() {
-            console.log('Previous Step - ');
-            console.log(overviewBusiness.templateOverview);
-
             if(overviewBusiness.templateOverview &&
                 overviewBusiness.templateOverview.steps)
             {

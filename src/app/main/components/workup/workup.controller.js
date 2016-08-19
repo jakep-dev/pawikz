@@ -35,7 +35,6 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
 
     clientConfig.socketInfo.socket.on('notify-create-workup-status', function(data)
     {
-        console.log('Notify-WorkUp-Status');
         $rootScope.toastTitle = 'WorkUp Creation Completed!';
         $rootScope.toastProjectId = data.projectId;
         $mdToast.show({

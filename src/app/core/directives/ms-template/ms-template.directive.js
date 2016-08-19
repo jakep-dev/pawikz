@@ -82,9 +82,8 @@
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
             link:function(scope, el, attrs)
             {
-                console.log('Template component creation initiated - ');
-                console.log(scope);
-
+                //console.log('Template component creation initiated - ');
+                //console.log(scope);
                 if(deviceDetector.browser === 'ie')
                 {
 
@@ -228,9 +227,6 @@
 
                         currentComponent++;
                     });
-
-                    console.log('component status - ');
-                    console.log(templateBusiness.componentStatus);
                 }
             }
         };

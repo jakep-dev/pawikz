@@ -14,8 +14,6 @@
         vm.userName = '';
 
         var userDetails = store.get('user-info');
-        console.log('Toolbar-User-Info');
-        console.log(userDetails);
 
         if(userDetails)
         {
@@ -24,7 +22,6 @@
 
         //Set user-name
         commonBusiness.onMsg('UserName', $scope, function() {
-            console.log('UserName Emit');
             vm.userName = authBusiness.userName;
         });
 

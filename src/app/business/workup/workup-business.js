@@ -88,7 +88,6 @@
                 dialog.close();
                 if(reloadEvent !== '')
                 {
-                    console.log('Emit Msg - ' + reloadEvent);
                     commonBusiness.emitMsg(reloadEvent);
                 }
             });

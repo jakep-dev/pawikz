@@ -25,8 +25,6 @@
 
         function tableLayoutEditLink(scope, el, attrs)
         {
-            console.log('Table Layout Edit');
-            console.log(scope);
             var dataTableId = scope.itemid;
 
             if(scope.tearsheet.columns && scope.tearsheet.columns.col)
@@ -58,10 +56,6 @@
                     scope.mnemonicid, scope.itemid, columns).then(function(response) {
 
                     var data = response.dynamicTableDataResp;
-
-                    console.log("Table Layout Edit Response");
-                    console.log(data);
-
                     if(!data)
                     {
                         html += '<div flex>';

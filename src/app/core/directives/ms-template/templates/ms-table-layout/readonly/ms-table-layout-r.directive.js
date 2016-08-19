@@ -24,17 +24,11 @@
                 }
             });
 
-            console.log('Table Layout ReadOnly-');
-            console.log(columns);
-
             templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                 scope.mnemonicid, scope.itemid, columns).then(function(response)
             {
                 html = '';
                 var data = response.dynamicTableDataResp;
-
-                console.log('Table Layout Readonly V1 Data-');
-                console.log(data);
 
                 if(!data)
                 {
@@ -151,10 +145,6 @@
             {
                 var data = response.dynamicTableDataResp;
 
-                console.log('Table Layout Readonly V2 Data-');
-                console.log(data);
-
-
                 if(!data)
                 {
                     html += '<div flex>';
@@ -162,9 +152,6 @@
                     html += '</div>';
                 }
                 else if(data.length >= 1) {
-
-                    console.log('Rendering V2 Layout');
-
                     html += '<table class="tb-v2-layout" width="100%" cellpadding="4" cellspacing="0">';
                     html += '<tbody>';
                     angular.forEach(row, function(eachRow)
@@ -224,10 +211,6 @@
             compile:function(el, attrs)
             {
                 return function($scope) {
-                   console.log('Table ReadOnly-');
-                    console.log($scope);
-
-
                     if($scope.tearsheet.columns)
                     {
                         $scope.$parent.$parent.isprocesscomplete = false;
@@ -239,7 +222,6 @@
 
                     if($scope.tearsheet.columns.col)
                     {
-                        console.log('Readonly Variation 1');
                         columns = $scope.tearsheet.columns.col;
 
                         if($scope.tearsheet.header &&
@@ -254,7 +236,6 @@
                     {
                         columns = [];
                         var rows = [];
-                        console.log('Readonly Variation 2');
                         angular.forEach($scope.tearsheet.columns, function(eachCol)
                         {
                            var row = [];
@@ -282,8 +263,6 @@
                                rows.push(row);
                            }
                         });
-                        console.log(columns);
-                        console.log(rows);
                         tableLayoutSecondVariation($scope, el, $scope.tearsheet.columns, columns);
                     }
                 };

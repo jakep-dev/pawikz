@@ -60,8 +60,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             {
                 var projectId = obj[0].attributes['projectId'].value;
                 var projectName = obj[0].attributes['projectName'].value;
-                console.log('Before renewal - ');
-                console.log(projectId);
                 workupBusiness.renewFromDashboard($stateParams.userId, parseInt(projectId), projectName);
             }
         });
@@ -233,11 +231,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     {
         $rootScope.toastTitle = 'WorkUp Renewal Completed!';
         $rootScope.toastProjectId = data.projectId;
-
-        console.log('After renewal - ');
-        console.log(data.projectId);
-
-
         var obj = $('.renewStyle[projectId="'+ data.projectId +'"]');
         var row = obj.closest('tr');
         row.removeClass('not-active');
@@ -266,9 +259,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         else {
             workups.push(data);
         }
-
-        console.log('WorkupStatue');
-        console.log(workups);
 
         if(workups && _.size(workups) > 0)
         {

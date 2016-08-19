@@ -52,7 +52,6 @@
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
-                    console.log('Fired RichTextEditor');
                     templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }
@@ -78,23 +77,19 @@
                 element.find('#textEditor')
                     .on('froalaEditor.commands.before', function (e, editor, cmd, param1, param2) {
                         if (cmd == 'fullscreen') {
-                            console.log('Before Full Screen button.');
                             var obj = $(this).parents('[ms-scroll]')[0];
                             if (!(obj === undefined) && !$(this).froalaEditor('fullscreen.isActive')) {
                                 scope.offset = $(obj).scrollTop();
                                 $(obj).scrollTop(0);
-                                console.log(scope.offset);
                             }
                         }
                     });
                 element.find('#textEditor')
                     .on('froalaEditor.commands.after', function (e, editor, cmd, param1, param2) {
                         if (cmd == 'fullscreen') {
-                            console.log('After Full Screen button.');
                             var obj = $(this).parents('[ms-scroll]')[0];
                             if (!(obj === undefined) && !$(this).froalaEditor('fullscreen.isActive')) {
                                 $(obj).scrollTop(scope.offset);
-                                console.log(scope.offset);
                             }
                         }
                     });

@@ -72,9 +72,6 @@
                     ssnid:ssnid,
                     data: chartSettings
             };
-            console.log("***********tmp data start *****");
-            console.log(tmpdata);
-            console.log("***********tmp data end *****");
             return $http({
                 method: "POST",
                 url: "/api/saveChartAllSettings",
@@ -157,11 +154,6 @@
                     //chart_id: chartId
                 }
             }).then(function (data, status, headers, config) {
-
-                console.log("***********chart data start *****");
-                console.log(data);
-                console.log("*********** data end *****");
-
                 angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
                     $cookies.putObject('tempChartData', data.data);
                 }]);
@@ -218,22 +210,18 @@
         function addInitialStateData(array) {
 //            initalStateData.newCharts = [];
             initalStateData.newCharts = array.slice();
-            console.log('AddInitialStateData------->', array);
         }
 
         function getInitialStateData() {
-            console.log('GetInitialStateData------->');
             return initalStateData;
         }
 
         function addmanualSaveData(array) {
             manualSaveData.newCharts = [];
             manualSaveData.newCharts.push(array);
-            console.log('AddManualSaveData------->', array );
         }
 
         function getmanualSaveData() {
-            console.log('GetManualSaveData------->' );
             return manualSaveData;
         }
 

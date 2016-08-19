@@ -26,7 +26,6 @@
 
         function goUrl(url)
         {
-            console.log(url);
             $window.location.href = url;
         }
 
@@ -53,15 +52,10 @@
                         userId: userId
                     }, function(data)
                     {
-                        console.log('Return data');
-                        console.log(data);
                         if(data)
                         {
                             authBusiness.userInfo = response.userinfo;
                             authBusiness.userName = response.userinfo.fullName;
-
-                            console.log('authBusiness.userInfo');
-                            console.log(authBusiness.userInfo);
 
                             store.set('user-info', authBusiness.userInfo);
                             store.set('x-session-token', token);

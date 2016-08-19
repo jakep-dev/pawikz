@@ -455,11 +455,6 @@
 						{
 							return templateBusiness.formatData(value, _.find(scope.subMnemonics, {mnemonic: subMnemonic}));
 						}
-
-                        console.log('TableLayout Filter Link');
-                        console.log(scope);
-                        console.log('TableLayout Filter Data');
-                        console.log(data);
                     }
                     scope.$parent.$parent.isprocesscomplete = true;
                 });

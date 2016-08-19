@@ -145,7 +145,6 @@
                     dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, {
                         ok: {
                             name: 'ok', callBack: function () {
-                                console.log('cliked ok');
                             }
                         }
                     });
@@ -318,7 +317,6 @@
                 dialog.alert('Error', "Max5 Stock allow to compare!", null, {
                     ok: {
                         name: 'ok', callBack: function () {
-                            console.log('cliked ok');
                         }
                     }
                 });

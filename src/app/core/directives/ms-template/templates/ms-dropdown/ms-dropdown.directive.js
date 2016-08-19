@@ -16,7 +16,6 @@
                 if(newValue !== oldValue)
                 {
                     templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
-                    console.log( "$watch() -- Drop down Outer: ", newValue);
                 }
             }
         );
@@ -38,8 +37,6 @@
             {
                 return function($scope)
                 {
-                  console.log('DropDown - Compile');
-                  console.log($scope);
                 };
             }
         };

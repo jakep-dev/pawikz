@@ -241,9 +241,6 @@
         //Update the notification details
         function updateNotification(id, status, type, url)
         {
-            console.log('Update Notification Center - ' + id);
-            console.log(business.notifications);
-
             var notification = _.find(business.notifications, function(not)
                                     {
                                        if(not.id === id && not.type === type)
