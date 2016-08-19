@@ -16,7 +16,7 @@
                 return component;
         }
         return component;
-    };
+    }
 
     ///Get the header index
     templateBusiness.getHeaderIndex = function(components)
@@ -249,6 +249,10 @@
         return component;
     }
 
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     ///Tear-sheet parent child variation
     function parentChildVariation(contentComponents, comp)
     {
@@ -267,7 +271,7 @@
             component.header = {
                 label: tearSheetItem.Label,
                 id: tearSheetItem.id,
-                itemid: null,
+                itemid: "SECTION_" + getRandomInt(10, 100000),
                 mnemonicid: null,
                 variation: 'parent-child'
             };

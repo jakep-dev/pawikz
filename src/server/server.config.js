@@ -13,9 +13,9 @@ exports.webservice =
 exports.client = {
     protocol: 'http',
     domain: 'localhost',
-    port: '4000',
+    port: '3001',
     loglevel: 1,
-    transports: 'polling'
+    transports: ['polling']
 };
 
 var Client = require('node-rest-client').Client;
@@ -39,7 +39,11 @@ exports.restcall =
                    saveMnemonics: 'updateTemplateMnemonics',
                    createWorkUp: 'createNewTemplateProject',
                    renewWorkUp: 'renewTemplateProject',
-                   lockWorkUp: 'lockWorkUp'
+                   lockWorkUp: 'lockWorkUp',
+                   createTemplatePDFRequest: 'createTemplatePDFRequest',
+                   setSVGFileStatus: 'setSVGFileStatus',
+                   getTemplatePDFStatus: 'getTemplatePDFStatus',
+                   downloadTemplatePDF: 'downloadTemplatePDF'
                 }
               },
             {
@@ -64,7 +68,16 @@ exports.restcall =
                 getStockData:'getStockData',
                 getIndices:'getIndices',
                 getSavedChartData : 'getChartSettings',
-                saveChartSettings : 'saveChartSettings_v2'
+                saveChartSettings : 'saveChartSettings_v2',
+                getAllChartSettings: 'getAllChartSettings'
+            },
+            exportOptions: {
+                phatomjsURL: 'http://localhost:8888',
+                pdfRequestDir: '/data/tmp/htmlRequest/',
+                stockChartWidth: 800,
+                stockChartHeight: 375,
+                volumeChartWidth:  800,
+                volumeChartHeight: 225
             }
         }]
 };

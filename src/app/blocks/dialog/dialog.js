@@ -13,7 +13,7 @@
             custom: custom,
             status: status,
             close: close
-        }
+        };
 
         return service;
 
