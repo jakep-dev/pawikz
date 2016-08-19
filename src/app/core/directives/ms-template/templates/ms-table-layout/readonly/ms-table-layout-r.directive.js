@@ -8,13 +8,13 @@
 
 
     /** @ngInject */
-    function msTablelayoutRDirective($compile, templateService, commonBusiness, DTOptionsBuilder)
+    function msTablelayoutRDirective($compile, templateService, commonBusiness, templateBusiness, DTOptionsBuilder)
     {
         function tableLayoutFirstVariation(scope, el, header, column)
         {
             var html = '';
             var columns = '';
-
+			
             angular.forEach(column, function(col)
             {
                 if(col.TearSheetItem &&
@@ -43,7 +43,6 @@
                     html += '</div>';
                 }
                 else {
-
                     scope.dtOptions = DTOptionsBuilder
                         .newOptions()
                         .withOption('processing', true)
@@ -113,7 +112,7 @@
                                         html += '<span style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"></ms-link></span>';
                                     }
                                     else {
-                                        html += '<span style="font-weight: normal">' + value + '</span>';
+                                        html += '<span style="font-weight: normal">' + formatData(value, mnemonic, scope.subMnemonics) + '</span>';
                                     }
                                 }
 
@@ -191,7 +190,7 @@
                                var value = eval(exp);
 
                                if (value) {
-                                   html += value;
+                                   html += formatData(value, mnemonic, scope.subMnemonics);
                                }
                                html += '</td>';
                            }
@@ -207,6 +206,11 @@
 
             });
         }
+		
+		function formatData(value, subMnemonic, subMnemonics)
+		{
+			return templateBusiness.formatData(value, _.find(subMnemonics, {mnemonic: subMnemonic}));
+		}
 
         return {
             restrict: 'E',
@@ -227,6 +231,7 @@
                     if($scope.tearsheet.columns)
                     {
                         $scope.$parent.$parent.isprocesscomplete = false;
+						$scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics($scope.itemid, $scope.mnemonicid);
                     }
 
                     var header = null;

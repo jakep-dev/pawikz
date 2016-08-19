@@ -103,7 +103,7 @@
 												'text="'+tearSheetItem.param.content+'" columnname="'+itemId+'"></ms-hybrid-checkbox>';
                                 break;
 							case 'GenericTextItem':
-								html += '<span style="display:none">{{row.' + itemId + '}}</span>'; // for easy sorting & searching
+								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
 								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
 								break;
                             default:
@@ -443,7 +443,8 @@
 			{
 				insert.row.push({
 					columnName: key,
-					value: value
+					value: templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
+					//value: value
 				});
 			});
 			
@@ -467,7 +468,8 @@
 			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'IsChecked'), function(value, key){
 				save.row.push({
 					columnName: key,
-					value: value
+					value: templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
+					//value: value
 				});
 			});
 			
@@ -711,6 +713,8 @@
             /*if(scope.tearsheet.columns.length > 0)
             {*/
                 scope.$parent.$parent.isprocesscomplete = false;
+				scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics(scope.itemid, scope.mnemonicid);
+
                 var column = [];
                 var columns = '';
                 var header = null;
@@ -767,6 +771,11 @@
 					{
 						setTLStatus(row);
 						saveRow(scope, row);
+					};
+					
+					scope.removeFormatData = function(value, subMnemonic)
+					{
+						return templateBusiness.removeFormatData(value, _.find(scope.subMnemonics, {mnemonic: subMnemonic}));
 					};
 					
 					scope.upload = function(){

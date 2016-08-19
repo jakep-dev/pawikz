@@ -61,7 +61,10 @@
            listenToPdfDownload: listenToPdfDownload,
            downloadTemplatePdf:downloadTemplatePdf,
            pushNotification: pushNotification,
-           pushComponentStatus: pushComponentStatus
+           pushComponentStatus: pushComponentStatus,
+		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
+		   formatData: formatData,
+		   removeFormatData: removeFormatData
         };
 
         return business;
@@ -1249,13 +1252,117 @@
 
                 if(mnemonic)
                 {
-                    value = mnemonic.value.trim() || '';
+                    value = formatData(value, mnemonic);
                     value = _.escape(value);
                 }
             }
             return value;
         }
-
+		
+		//get all subMnemonics in table layouts to get its data types and sub data types
+		function getTableLayoutSubMnemonics(itemId, mnemonic)
+        {
+            var subMnemonics = [];
+            if(angular.isDefined(business.mnemonics))
+            {
+                angular.forEach(business.mnemonics, function(eachrow)
+                {
+                    if(eachrow.itemId === itemId && eachrow.dataSubtype)
+                    {
+						angular.forEach(eachrow.dataSubtype.split(','), function(eachColumn)
+						{
+							var mnemonic = eachColumn.split(' ');
+							if(mnemonic.length > 0)
+							{
+								subMnemonics.push({
+									mnemonic: mnemonic[0] || '',
+									dataType: mnemonic[1] || '',
+									dataSubtype: mnemonic[2] || ''
+								});
+							}
+						});
+						
+                    }
+                });
+            }
+			
+            return subMnemonics;
+        }
+		
+		//formats the data for NUMBER(PERCENTAGE & CURRENCY only) and DATE data types
+		function formatData(value, valueType)
+		{
+			value = value.trim() || '';
+			
+			if( valueType.dataType &&
+                valueType.dataType == 'NUMBER' &&
+                valueType.dataSubtype &&
+				(valueType.dataSubtype == 'PERCENTAGE') ||
+                (valueType.dataSubtype == 'CURRENCY') )
+			{
+				value = numberWithCommas(value);
+			}
+			else if(valueType.dataType &&
+                valueType.dataType == 'DATE')
+			{				
+				value = formatDate(parseDate(value, 'DD-MMM-YY'), 'DD/MM/YYYY');
+			}
+			
+			return value;
+		}
+		
+		//removes formatted data, used in savings and reformatting
+		function removeFormatData(value, valueType)
+		{
+			value = value.trim() || '';
+			
+			if( valueType && valueType.dataType && valueType.dataType == 'NUMBER' && valueType.dataSubtype &&
+				(valueType && valueType.dataSubtype == 'PERCENTAGE') || (valueType && valueType.dataSubtype == 'CURRENCY') )
+			{
+				value = removeCommaValue(value);
+			}
+			else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
+			{				
+				value = formatDate(parseDate(value, 'DD/MM/YYYY'), 'DD-MMM-YY');
+			}
+			
+			return value;
+		}
+		
+		function parseDate(str, format)
+		{
+			var date = moment(str, format, true);
+			return date.isValid() ? date.toDate() : '';
+		}
+		
+		function formatDate(date, format)
+		{
+			var date = moment(date);
+			return date.isValid() ? date.format(format) : '';
+		}
+ 
+        function numberWithCommas(value)
+		{ 
+            var parts = value.toString().split("."); 
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+            return parts.join("."); 
+        }
+		
+		function removeCommaValue(inputValue)
+        {
+            var outputValue;
+            
+            if (inputValue)
+            {
+                outputValue = String(inputValue).replace(/\,/g, '');
+                return Number(outputValue);
+            }
+            else
+            {
+                return inputValue;
+            }
+        }
+		
         function getTemplateElement()
         {
 
