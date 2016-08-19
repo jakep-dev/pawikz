@@ -123,7 +123,7 @@
                             content.sections.length > 0)
                         {
                             return content;
-                        };
+                        }
                     });
 
 
@@ -131,6 +131,24 @@
                     var currentComponent = 1;
                     angular.forEach(scope.components.content, function(renderContent)
                     {
+                        //itemid
+                        if(renderContent.header &&
+                            renderContent.header.itemid)
+                        {
+                            templateBusiness.componentStatus.push({
+                               id:  renderContent.header.itemid,
+                               isLoaded: false
+                            });
+                        }
+                        else if(renderContent.ItemId) {
+                            templateBusiness.componentStatus.push({
+                                id:  renderContent.ItemId,
+                                isLoaded: false
+                            });
+                        }
+
+
+
                         if(renderContent.header &&
                             renderContent.sections &&
                             renderContent.sections.length > 0)
@@ -210,12 +228,10 @@
 
                         currentComponent++;
                     });
+
+                    console.log('component status - ');
+                    console.log(templateBusiness.componentStatus);
                 }
-
-                console.log('device detector');
-                console.log(deviceDetector.browser);
-
-
             }
         };
     }

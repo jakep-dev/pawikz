@@ -11,7 +11,7 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle)
+    function LoginController($window, $scope, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle, dialog)
     {
         var vm = this;
 
@@ -34,9 +34,8 @@
         {
             authService.authenticate(userName, password).then(function(response)
             {
-                if(angular.isDefined(response) &&
-                   angular.isDefined(response.responseInfo) &&
-                   angular.isDefined(response.userinfo))
+                if(response && response.responseInfo &&
+                   response.userinfo)
                 {
 
                     Idle.watch();
@@ -72,6 +71,7 @@
                         }
                         else {
                             toast.simpleToast('Cannot open multiple sessions!');
+                            //dialog.status('app/main/pages/auth/login/dialog/login.dialog.html', false, false);
                         }
                     });
                 }

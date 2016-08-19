@@ -136,7 +136,7 @@
                     overviewBusiness.templateOverview = vm.templateOverview;
                     overviewBusiness.templateOverview.isChanged = false;
 
-                    angular.forEach(vm.templateOverview.steps, function(step)
+                    _.each(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({
                             stepName: step.stepName,

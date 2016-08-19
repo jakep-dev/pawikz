@@ -7,7 +7,7 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope, $mdMenu, $element, $compile,  commonBusiness,
+    function msComponentController($scope, commonBusiness,
                                    templateBusiness, overviewBusiness, toast)
     {
         var vm = this;
@@ -28,8 +28,6 @@
         $scope.$watch(
             "isprocesscomplete",
             function handleProgress(value) {
-                console.log('Progress Watch Triggered');
-                console.log(value);
                 vm.isProcessComplete = value;
             }
         );
@@ -45,9 +43,7 @@
                 vm.printer();
             }            
         });
-		
-        console.log('Component Scope');
-        console.log($scope);
+
 
         initialize();
 
@@ -123,7 +119,6 @@
         //Build the component actions if provided.
         function buildActions()
         {
-            console.log('Initialize Build Action');
             $scope.$watchCollection(
                 "actions",
                 function handleBuildActions(newValue, oldValue) {
@@ -142,6 +137,9 @@
 
         buildActions();
 
+        //$scope.$evalAsync( function() {
+        //    alert('component content loaded');
+        //});
     }
 
     /** @ngInject */
@@ -157,7 +155,8 @@
                 isprocesscomplete: '=?',
                 actions: '=',
                 subtype: '@',
-                islastcomponent: '=?'
+                islastcomponent: '=?',
+                itemid: '@'
             },
             controller: 'msComponentController',
             controllerAs: 'vm',

@@ -15,7 +15,7 @@ exports.client = {
     domain: 'localhost',
     port: '4000',
     loglevel: 1,
-    transports: 'polling'
+    transports: ['polling']
 };
 
 var Client = require('node-rest-client').Client;

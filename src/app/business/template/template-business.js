@@ -19,6 +19,7 @@
            notifications: [],
            autoSavePromise: [],
            isExpandAll: false,
+           componentStatus: [],
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
@@ -57,12 +58,38 @@
            hideTemplateProgress: hideTemplateProgress,
            requestPdfDownload: requestPdfDownload,
            updateNotification: updateNotification,
-           pushNotification: pushNotification,
            listenToPdfDownload: listenToPdfDownload,
-           downloadTemplatePdf:downloadTemplatePdf
+           downloadTemplatePdf:downloadTemplatePdf,
+           pushNotification: pushNotification,
+           pushComponentStatus: pushComponentStatus
         };
 
         return business;
+
+        function pushComponentStatus(id, status)
+        {
+            if(business.componentStatus)
+            {
+                var component = _.find(business.componentStatus, function(component)
+                {
+                   if(component.id === id)
+                   {
+                       return component;
+                   }
+                });
+
+                if(component)
+                {
+                    component.isLoaded = status;
+                }
+                else {
+                    business.componentStatus.push({
+                       id: id,
+                        isLoaded: status
+                    });
+                }
+            }
+        }
 
         function listenToPdfDownload()
         {
@@ -89,6 +116,7 @@
                             notification.status = 'complete';
                             notification.disabled = false;
                         }
+                        commonBusiness.emitMsg('update-notification-binding');
                     }
 
                 }
