@@ -87,9 +87,9 @@
 
                 scope.isLoadMoreDisabled = false;
 
-                //console.log('Template component creation initiated - ');
-                //console.log(scope);
-                //console.log(templateBusiness.components);
+                console.log('Template component creation initiated - ');
+                console.log(scope);
+
                 if(deviceDetector.browser === 'ie')
                 {
 
@@ -142,8 +142,16 @@
                 };
 
                 bindHeader(scope);
-                bindComponent(scope,el, scope.components.content, clientConfig.appSettings.componentInitialLoad);
-                el.find('#btnLoadMore').attr('loadedIndex', clientConfig.appSettings.componentInitialLoad);
+                var compCount = clientConfig.appSettings.componentInitialLoad,
+                    compSize = _.size(scope.components.content);
+
+                if(compSize < clientConfig.appSettings.componentInitialLoad)
+                {
+                    compCount = compSize;
+                    scope.isLoadMoreDisabled = true;
+                }
+                bindComponent(scope, el, scope.components.content, compCount);
+                el.find('#btnLoadMore').attr('loadedIndex', compCount);
             }
 
         };

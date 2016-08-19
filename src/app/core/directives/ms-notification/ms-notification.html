@@ -45,6 +45,12 @@
 
                          <md-icon md-font-icon="icon-alert-circle" ng-if="notification.status === 'error'"
                                   style="color:rgba(255, 77, 43, 0.88); font-weight: bolder"></md-icon>
+
+                         <md-button class="md-icon-button" ng-click="vm.close(notification)" ng-if="notification.status === 'close'"
+                                    style="padding-bottom: 10px">
+                             <md-icon md-font-icon="icon-close-circle-outline" style="font-weight: bolder"></md-icon>
+                         </md-button>
+
                      </div>
                     </span>
                   <md-divider></md-divider>
