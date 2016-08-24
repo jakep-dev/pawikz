@@ -331,7 +331,7 @@
                 var component = templateBusiness.getHeaderAndContentComponents(components);
                 templateData.header = templateBusiness.buildHeaderComponents(component.headers);
                 templateData.content = templateBusiness.buildContentComponents(component.contents);
-                //templateData.fullComp = components;
+                templateData.fullComp = components;
             }
 
             return templateData;

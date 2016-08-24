@@ -44,6 +44,6 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
             templateUrl: 'app/main/components/workup/toast/workup.toast.html'
         });
 
-        templateBusiness.updateNotification($stateParams.companyId + '_' + $stateParams.templateId, 'complete', 'Create-WorkUp', parseInt(data.projectId));
+        templateBusiness.updateNotification($stateParams.companyId + '_' + $stateParams.templateId, 'complete', 'Create-WorkUp', parseInt(data.projectId), null);
     });
 }

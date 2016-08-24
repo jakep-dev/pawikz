@@ -162,6 +162,11 @@
             {
                 contents.push(comp.TearSheetItem);
             }
+            else if(comp.TearSheetItem &&
+                comp.TearSheetItem.subtype)
+            {
+                contents.push(comp.TearSheetItem);
+            }
 
         });
 
@@ -217,6 +222,7 @@
                     component.header = {
                         label: item.Label,
                         id: item.id,
+                        prelabel: item.PreLabel || '',
                         itemid: item.ItemId,
                         mnemonicid: item.Mnemonic,
                         variation: 'section'
@@ -272,6 +278,7 @@
                 label: tearSheetItem.Label,
                 id: tearSheetItem.id,
                 itemid: "SECTION_" + getRandomInt(10, 100000),
+                prelabel: tearSheetItem.PreLabel || '',
                 mnemonicid: null,
                 variation: 'parent-child'
             };
@@ -322,6 +329,7 @@
                 itemid: null,
                 mnemonicid: null,
                 subtype: tearSheetItem.subtype || '',
+                prelabel: tearSheetItem.PreLabel || '',
                 variation: 'parent-child-multiple'
             };
 
@@ -346,9 +354,6 @@
                     {
                         //Check for array and compId,
                         var sections = sectionItem[0];
-                        //component.header.itemid = sectionItem[1].ItemId;
-                        //component.header.mnemonicid = sectionItem[1].Mnemonic;
-
                         if(sections && sections.TearSheetItem &&
                             sections.TearSheetItem.length)
                         {
@@ -374,6 +379,39 @@
                                         sec.mnemonicid = sections.TearSheetItem[1].Mnemonic;
                                     }
                                     component.sections.push(sec);
+                                }
+                            });
+                        }
+                        else if(sections && sections.TearSheetItem &&
+                            sections.TearSheetItem.ParentCom)
+                        {
+                            component.sections.push(sections.TearSheetItem);
+                            var childComp = [];
+                            if(sections.TearSheetItem.ParentCom.length)
+                            {
+                                childComp.push.apply(childComp, sections.TearSheetItem.ParentCom.ChildCom);
+                            }
+                            else {
+                                childComp.push(sections.TearSheetItem.ParentCom.ChildCom);
+                            }
+
+                            _.each(childComp, function(sectionId)
+                            {
+                                var sectionItem = _.filter(contentComponents, function(section)
+                                {
+                                    if(section.id &&
+                                        section.id === sectionId &&
+                                        section.TearSheetItem)
+                                    {
+                                        return section;
+                                    }
+                                });
+
+                                if(sectionItem &&
+                                    sectionItem.length &&
+                                    sectionItem.length > 0)
+                                {
+                                    component.sections.push(sectionItem[0]);
                                 }
                             });
                         }

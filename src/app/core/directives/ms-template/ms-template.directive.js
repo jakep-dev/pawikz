@@ -178,70 +178,69 @@
 
                 _.each(contents, function (renderContent) {
 
+                    if(!isSkip)
+                    {
+                        if (renderContent.header &&
+                            renderContent.sections &&
+                            renderContent.sections.length > 0) {
+                            var newScope = scope.$new(true);
+                            newScope.tearheader = renderContent.header;
+                            newScope.tearcontent = [];
 
+                            _.each(renderContent.sections, function (section) {
+                                newScope.isnoneditable = (section.type === 'nonEditableUnmark');
+                                newScope.subtype = section.subtype || renderContent.header.subtype || '';
 
-                    if (renderContent.header &&
-                        renderContent.sections &&
-                        renderContent.sections.length > 0 &&
-                        !isSkip) {
-                        var newScope = scope.$new(true);
-                        newScope.tearheader = renderContent.header;
-                        newScope.tearcontent = [];
-
-                        _.each(renderContent.sections, function (section) {
-                            newScope.isnoneditable = (section.type === 'nonEditableUnmark');
-                            newScope.subtype = section.subtype || renderContent.header.subtype || '';
-
-                            if (section.TearSheetItem &&
-                                section.TearSheetItem.length) {
-                                newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
-                            }
-                            else if (section.TearSheetItem) {
-                                newScope.tearcontent.push(section.TearSheetItem);
-                            }
-                            else if (section.Label) {
-                                newScope.tearcontent.push(section);
-                            }
-                            else if (section.row || section.ItemId) {
-                                newScope.tearcontent.push(section);
-                            }
-                        });
-
-                        if (newScope.tearcontent) {
-                            newScope.iscollapsible = true;
-                            newScope.isprocesscomplete = true;
-                            newScope.actions = [];
-                            var isChartComp = false;
-
-                            //Check for chart component
-                            angular.forEach(newScope.tearcontent, function (each) {
-                                if (each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
-                                    isChartComp = true;
-                                    return;
+                                if (section.TearSheetItem &&
+                                    section.TearSheetItem.length) {
+                                    newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
+                                }
+                                else if (section.TearSheetItem) {
+                                    newScope.tearcontent.push(section.TearSheetItem);
+                                }
+                                else if (section.Label) {
+                                    newScope.tearcontent.push(section);
+                                }
+                                else if (section.row || section.ItemId) {
+                                    newScope.tearcontent.push(section);
                                 }
                             });
 
-                            var html = '',
-                                isLastComponent = (currentComponent >= totalComponent);
-                            if (isChartComp) {
-                                html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
-                                    'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
-                            } else {
-                                html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
-                                    'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
-                                    'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component>';
+                            if (newScope.tearcontent) {
+                                newScope.iscollapsible = true;
+                                newScope.isprocesscomplete = true;
+                                newScope.actions = [];
+                                var isChartComp = false;
+
+                                //Check for chart component
+                                angular.forEach(newScope.tearcontent, function (each) {
+                                    if (each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
+                                        isChartComp = true;
+                                        return;
+                                    }
+                                });
+
+                                var html = '',
+                                    isLastComponent = (currentComponent >= totalComponent);
+                                if (isChartComp) {
+                                    html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                                        'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
+                                } else {
+                                    html = '<ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                                        'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
+                                        'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component>';
+                                }
+
+
+                                el.find('#template-content').append($compile(html)(newScope));
                             }
-
-
-                            el.find('#template-content').append($compile(html)(newScope));
                         }
-                    }
-                    else {
+                        else {
 
-                        if(currentComponent >= totalComponent)
-                        {
-                            commonBusiness.emitMsg('step-load-completed');
-                        }
+                            if(currentComponent >= totalComponent)
+                            {
+                                commonBusiness.emitMsg('step-load-completed');
+                            }
 
                             switch (renderContent.id) {
                                 case 'LinkItem':
@@ -254,12 +253,11 @@
                             }
                         }
 
-                    if(currentComponent == totalComponent)
-                    {
-                        isSkip = true;
+                        if(currentComponent == totalComponent)
+                        {
+                            isSkip = true;
+                        }
                     }
-
-
                     currentComponent++;
                 });
             }
