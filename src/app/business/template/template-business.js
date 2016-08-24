@@ -265,7 +265,7 @@
         }
 
         //Update the notification details
-        function updateNotification(id, status, type, url)
+        function updateNotification(id, status, type, url, title)
         {
             var notification = _.find(business.notifications, function(not)
                                     {
@@ -281,6 +281,11 @@
                 notification.progress = 100;
                 notification.disabled = false;
                 notification.url = url;
+
+                if(title && title != '')
+                {
+                    notification.title = title;
+                }
             }
         }
 

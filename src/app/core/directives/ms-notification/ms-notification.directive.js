@@ -36,17 +36,14 @@
                }
            });
 
-            if(not >= 0)
+            if(not > 0)
             {
-                delete templateBusiness.notifications[not];
-                commonBusiness.emitMsg('update-notification-binding');
+                templateBusiness.notifications.splice(not, not);
             }
-
-            if(_.size(templateBusiness.notifications) === 0)
+            else if(not == 0)
             {
-                templateBusiness.notifications = [];
+                templateBusiness.notifications.splice(not, 1);
             }
-
         }
 
         function processNotification(notification)

@@ -166,6 +166,7 @@
                 return function($scope)
                 {
                     $scope.title = $scope.tearheader.label;
+                    $scope.preLabel = $scope.tearheader.prelabel || '';
                     $scope.actions = null;
                     $scope.actions = [];
                     var comp = {

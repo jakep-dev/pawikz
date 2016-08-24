@@ -241,7 +241,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             templateUrl: 'app/main/components/workup/toast/workup.toast.html'
         });
 
-        templateBusiness.updateNotification(parseInt(data.projectId), 'complete', 'Renewal', parseInt(data.projectId));
+        templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
     });
 
 
