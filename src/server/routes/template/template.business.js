@@ -116,27 +116,10 @@
             {
                 isReadyToProcess = false;
             }
-            else if(comp.id) {
-                isReadyToProcess =  (_.findIndex(processedComp, {compId: comp.id}) === -1);
-                if(comp.TearSheetItem && comp.TearSheetItem.Mnemonic)
-                {
-                    if(comp.TearSheetItem.Mnemonic === 'WU_STOCK_CHART_3YR')
-                    {
-                        isReadyToProcess = false;
-                    }
-                }
-            }
-            else if(comp.TearSheetItem.length)
+            else if(comp.isProcessed)
             {
-                _.each(comp.TearSheetItem, function(tearSheet)
-                {
-                    if(isReadyToProcess)
-                    {
-                        isReadyToProcess= (_.findIndex(processedComp, {compId: tearSheet.id}) === -1);
-                    }
-                });
+                isReadyToProcess = false;
             }
-
 
             if(isReadyToProcess)
             {
@@ -247,6 +230,7 @@
                     sectionTearSheetItem.length &&
                     sectionTearSheetItem.length > 0)
                 {
+                    sectionTearSheetItem[0].isProcessed = true;
                     component.sections.push(sectionTearSheetItem[0]);
                 }
             }
@@ -301,7 +285,45 @@
                     sectionItem.length &&
                     sectionItem.length > 0)
                 {
-                    component.sections.push(sectionItem[0]);
+                    sectionItem[0].isProcessed = true;
+                    //component.sections.push(sectionItem[0]);
+                    console.log('Start');
+                    console.log(sectionItem[0]);
+                    console.log('End');
+
+                    if(sectionItem[0].TearSheetItem.length)
+                    {
+                        _.each(sectionItem[0].TearSheetItem, function(sheet)
+                        {
+                            component.sections.push(sheet);
+                            if(sheet.ParentCom)
+                            {
+                                var sectionId = sheet.ParentCom.ChildCom;
+
+                                var sectionItem = _.filter(contentComponents, function(section)
+                                {
+                                    if(section.id &&
+                                        section.id === sectionId &&
+                                        section.TearSheetItem)
+                                    {
+                                        return section;
+                                    }
+                                });
+
+                                if(sectionItem &&
+                                    sectionItem.length &&
+                                    sectionItem.length > 0)
+                                {
+                                    sectionItem[0].isProcessed = true;
+                                    component.sections.push(sectionItem[0]);
+                                }
+
+                            }
+                        });
+                    }
+                    else {
+                        component.sections.push(sectionItem[0]);
+                    }
                 }
             }
         }
@@ -370,6 +392,7 @@
 
                                 if(section)
                                 {
+                                    section[0].isProcessed = true;
                                     component.sections.push(section[0]);
                                 }
                                 else {
@@ -378,40 +401,8 @@
                                         sec.itemid = sections.TearSheetItem[1].ItemId;
                                         sec.mnemonicid = sections.TearSheetItem[1].Mnemonic;
                                     }
+                                    sec.isProcessed = true;
                                     component.sections.push(sec);
-                                }
-                            });
-                        }
-                        else if(sections && sections.TearSheetItem &&
-                            sections.TearSheetItem.ParentCom)
-                        {
-                            component.sections.push(sections.TearSheetItem);
-                            var childComp = [];
-                            if(sections.TearSheetItem.ParentCom.length)
-                            {
-                                childComp.push.apply(childComp, sections.TearSheetItem.ParentCom.ChildCom);
-                            }
-                            else {
-                                childComp.push(sections.TearSheetItem.ParentCom.ChildCom);
-                            }
-
-                            _.each(childComp, function(sectionId)
-                            {
-                                var sectionItem = _.filter(contentComponents, function(section)
-                                {
-                                    if(section.id &&
-                                        section.id === sectionId &&
-                                        section.TearSheetItem)
-                                    {
-                                        return section;
-                                    }
-                                });
-
-                                if(sectionItem &&
-                                    sectionItem.length &&
-                                    sectionItem.length > 0)
-                                {
-                                    component.sections.push(sectionItem[0]);
                                 }
                             });
                         }

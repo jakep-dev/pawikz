@@ -46,8 +46,12 @@
                         {
                             columns = row;
                         }
-                        else {
+                        else if(row.col && row.col.length)  {
                             columns = row.col;
+                        }
+                        else if(row.col) {
+                            columns = [];
+                            columns.push(row.col);
                         }
 
                         //Creating Columns for Generic-Table
