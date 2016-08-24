@@ -164,7 +164,7 @@
 
             if(header){
                 scope.stepName = header.name;
-                scope.stepSubHeader = header.subheader;
+                scope.stepSubHeader = header.subheader || '';
             }
         }
 
