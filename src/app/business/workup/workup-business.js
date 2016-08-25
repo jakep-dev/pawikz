@@ -74,9 +74,22 @@
             }, 'notify-create-workup-notification-center');
         }
 
-        function renew(userId, projectId, reloadEvent)
+        function renew(userId, projectId, projectName, reloadEvent)
         {
             renewComplete(reloadEvent);
+            NotifyNotificationCenter({
+                id: projectId,
+                title: projectName,
+                type: 'Renewal',
+                icon: 'icon-rotate-3d',
+                progress: 15,
+                disabled: true,
+                tooltip: 'Renewal still in-progress',
+                status: 'in-process',
+                userId: userId,
+                istrackable: false,
+                url: projectId
+            }, 'notify-renewal-workup-notification-center');
             workupService.renew(userId, projectId);
             dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
         }
@@ -88,7 +101,7 @@
                 dialog.close();
                 if(reloadEvent !== '')
                 {
-                    commonBusiness.emitMsg(reloadEvent);
+                    commonBusiness.emitWithArgument(reloadEvent, data);
                 }
             });
         }

@@ -43,12 +43,19 @@
 
         function renew()
         {
-            workupBusiness.renew(commonBusiness.userId, commonBusiness.projectId, 'reload-steps');
-
-            commonBusiness.onMsg('reload-steps', $scope, function()
+            templateBusiness.initializeMessages($scope);
+            workupBusiness.renew(commonBusiness.userId, commonBusiness.projectId, commonBusiness.projectName, 'reload-steps');
+            commonBusiness.onMsg('reload-steps', $scope, function(ev, data)
             {
-                $scope.refreshstep();
+                templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal',
+                    parseInt(data.projectId), data.project_name);
             });
+
+            //commonBusiness.onMsg('reload-steps', $scope, function()
+            //{
+            //    //$scope.refreshstep();
+            //
+            //});
         }
 
 

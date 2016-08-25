@@ -168,6 +168,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     // Initialize
     function initialize(isNav, token)
     {
+        templateBusiness.initializeMessages($scope);
         if(isNav)
         {
             store.set('x-session-token', token);
@@ -242,11 +243,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         });
 
         templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
-    });
-
-
-    commonBusiness.onMsg('notify-renewal-workup-notification-center', $scope, function(ev, data) {
-        templateBusiness.pushNotification(data);
     });
 
     ///Work-Up Status
