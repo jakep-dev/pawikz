@@ -48,12 +48,13 @@
 
         function processNotification(notification)
         {
-            notification.status = 'close';
+
             switch (notification.type)
             {
                 case 'Renewal':
                 case 'Create-WorkUp':
                     $location.url('/overview/' + notification.url);
+                    notification.status = 'close';
                     break;
 
                 case 'PDF-Download':
@@ -64,6 +65,7 @@
                     else if (notification.status === 'error') {
                         toast.simpleToast("Issue with PDF Download. Please try again.");
                     }
+                    notification.status = 'close';
                     break;
             }
         }

@@ -172,7 +172,7 @@
 
                 //For IE 10+
                 if (window.navigator.msSaveOrOpenBlob) {
-                    window.navigator.msSaveOrOpenBlob(blob, filename);
+                    window.navigator.msSaveOrOpenBlob(blob, pdfName);
                 } else {
                     //For Chrome, Firefox, Safari
                     anchor.href = objectUrl;
