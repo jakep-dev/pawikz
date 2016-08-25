@@ -68,10 +68,18 @@
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
            loadComponents: loadComponents,
-           getComponentHeader: getComponentHeader
+           getComponentHeader: getComponentHeader,
+           initializeMessages: initializeMessages
         };
 
         return business;
+
+        function initializeMessages(scope)
+        {
+            commonBusiness.onMsg('notify-renewal-workup-notification-center', scope, function(ev, data) {
+                business.pushNotification(data);
+            });
+        }
 
         ///Get the component header details
         function getComponentHeader()
@@ -269,11 +277,16 @@
         {
             var notification = _.find(business.notifications, function(not)
                                     {
-                                       if(not.id === id && not.type === type)
+                                       if(parseInt(not.id) === parseInt(id) &&
+                                           not.type === type)
                                        {
                                            return not;
                                        }
                                     });
+
+            console.log('Update Notification - ');
+            console.log(notification);
+            console.log(business.notifications);
 
             if(notification)
             {
