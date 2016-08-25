@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function runBlock($rootScope, commonBusiness, store,
-                      logger, clientConfig, Idle, $location)
+                      logger, clientConfig, Idle, $location, $document)
     {
 		if (!clientConfig.socketInfo.socket) {
 			var socketCORSPath = $location.protocol() + '://' + $location.host();
@@ -53,6 +53,7 @@
                 }
 
                 var type = commonBusiness.socketType(toState);
+                $document[0].title = 'Advisen Template';
                 Idle.watch();
                 clientConfig.socketInfo.socket.emit('init-socket',{
                     token: token,

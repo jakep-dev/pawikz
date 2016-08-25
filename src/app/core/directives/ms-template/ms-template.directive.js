@@ -90,27 +90,6 @@
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
-                if(deviceDetector.browser === 'ie')
-                {
-
-                    var options = {
-                        wheelSpeed            : 1,
-                        wheelPropagation      : false,
-                        swipePropagation      : true,
-                        minScrollbarLength    : null,
-                        maxScrollbarLength    : null,
-                        useBothWheelAxes      : false,
-                        useKeyboard           : true,
-                        suppressScrollX       : false,
-                        suppressScrollY       : false,
-                        scrollXMarginOffset   : 0,
-                        scrollYMarginOffset   : 0,
-                        stopPropagationOnClick: true
-                    };
-                    PerfectScrollbar.initialize($('#template-steps')[0], options);
-                    PerfectScrollbar.destroy($('#main-content')[0]);
-                }
-
                 scope.loadMore = function()
                 {
                     //commonBusiness.emitMsg('step-load-initiated');
