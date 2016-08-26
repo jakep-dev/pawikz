@@ -3,11 +3,23 @@
 {
     var async = require('async');
     var u = require('underscore');
+    var fs = require('fs');
+
+    function getImageBase64Data(imagePath) {
+        var path = process.cwd() + '\\' + imagePath.replace(/\//g, '\\');
+        console.log('--->' + path);
+        var content = fs.readFileSync(path, 'base64');
+        return content;
+    };
 
     chartRoutes.init = function (app, config)
     {
         var client = config.restcall.client;
         var config = config;
+
+        var dividendImageData = getImageBase64Data('src/assets/icons/images/Stock_Dividend.jpg');
+        var earningsImageData = getImageBase64Data('src/assets/icons/images/Stock_Earnings.jpg');
+        var splitImageData = getImageBase64Data('src/assets/icons/images/Stock_Split.jpg');
 
         config.parallel([
             app.post('/api/getChartData', getChartData),
@@ -48,7 +60,8 @@
                 +'&dividends='+dividends
                 +'&earnings='+earnings
                 +'&date_start='+start_date
-                +'&date_end='+end_date;
+                + '&date_end=' + end_date;
+            //console.log(getChartDataVar);
 
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
                 +'?company_id='+companyId+'&peers='+encodeURIComponent(tickers)
@@ -602,7 +615,7 @@
                                 'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
                                 'marker': {
                                     'enabled': true,
-                                    'symbol': 'url(src/assets/icons/images/Stock_Dividend.jpg)'
+                                    'symbol': 'url(data:image/jpeg;base64,' + dividendImageData + ')'
                                 }
                             });
                         }
@@ -611,7 +624,7 @@
                                 'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
                                 'marker': {
                                     'enabled': true,
-                                    'symbol': 'url(src/assets/icons/images/Stock_Earnings.jpg)'
+                                    'symbol': 'url(data:image/jpeg;base64,' + earningsImageData + ')'
                                 }
                             });
                         }
@@ -620,7 +633,7 @@
                                 'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
                                 'marker': {
                                     'enabled': true,
-                                    'symbol': 'url(src/assets/icons/images/Stock_Split.jpg)'
+                                    'symbol': 'url(data:image/jpeg;base64,' + splitImageData + ')'
                                 }
                             });
                         }
@@ -1005,6 +1018,7 @@
                             function (chartSetting, index) {
                                 var filename;
                                 var chartObj;
+                                //var fs = require("fs");
 
                                 filename = chartSetting.output.chartName + '.part0.svg';
                                 chartObj = {
@@ -1013,6 +1027,7 @@
                                     constr: '',
                                     outfile: pdfRequest.chartPath + filename
                                 };
+                                //fs.writeFile(pdfRequest.chartPath + chartSetting.output.chartName + '.part0.txt', JSON.stringify(chartObj));
                                 chartObjArr.push(chartObj);
 
                                 filename = chartSetting.output.chartName + '.part1.svg';
