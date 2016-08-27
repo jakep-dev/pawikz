@@ -345,17 +345,16 @@
 
         function createTemplatePDFRequest(req, res, next) {
 
-            var service = getServiceDetails('charts');
-            var i;
-            var ssnid = req.headers['x-session-token'];
-            var project_id = req.body.project_id;
-            var user_id = req.body.user_id;
-            var file_name = encodeURIComponent((req.body.file_name).trim());
-            var company_name = encodeURIComponent(req.body.company_name.trim());
-            var user_name = encodeURIComponent((req.body.user_name).trim());
-            var request_id = 0;
-
-            var errorMessages = new Array();
+            var context = new Object();
+            context.service = getServiceDetails('charts');
+            context.ssnid = req.headers['x-session-token'];
+            context.project_id = req.body.project_id;
+            context.user_id = req.body.user_id;
+            context.file_name = encodeURIComponent((req.body.file_name).trim());
+            context.company_name = encodeURIComponent(req.body.company_name.trim());
+            context.user_name = encodeURIComponent((req.body.user_name).trim());
+//            context.request_id = 0;
+            context.errorMessages = new Array();
 
             function isDate(dateVal) {
                 var d = new Date(dateVal);
@@ -363,70 +362,62 @@
             };
 
             function createPath(reqID) {
-                var fs = require("fs");
-                var mkdirp = require('mkdirp');
-                var requestDir = service.exportOptions.pdfRequestDir + reqID;
-                var chartDir = requestDir + '/charts/';
-                if (!fs.existsSync(requestDir)) {
-                    mkdirp.sync(chartDir);
+                var subContext = new Object();
+                subContext.fs = require("fs");
+                subContext.mkdirp = require('mkdirp');
+                subContext.requestDir = context.service.exportOptions.pdfRequestDir + reqID;
+                subContext.chartDir = subContext.requestDir + '/charts/';
+                if (!subContext.fs.existsSync(subContext.requestDir)) {
+                    subContext.mkdirp.sync(subContext.chartDir);
                 }
-                return chartDir;
+                return subContext.chartDir;
             }
 
             function getAllChartSettings(callback) {
-
-                var methodName = '';
-                if (!u.isUndefined(service) && !u.isNull(service)) {
-                    methodName = service.methods.getAllChartSettings;
+                var subContext = new Object();
+                subContext.methodName = '';
+                if (!u.isUndefined(context.service) && !u.isNull(context.service)) {
+                    subContext.methodName = context.service.methods.getAllChartSettings;
                 }
 
-                var url = config.restcall.url + '/' + service.name + '/' + methodName + '?project_id=' + project_id + '&ssnid=' + ssnid;
+                subContext.url = config.restcall.url + '/' + context.service.name + '/' + subContext.methodName + '?project_id=' + context.project_id + '&ssnid=' + context.ssnid;
 
-                client.get(url,
+                client.get(subContext.url,
                     function (data, response) {
-                        var chartSettings = null;
+                        subContext.chartSettings = null;
                         try {
-                            chartSettings = getAllChartSettingsResponse(data);
+                            subContext.chartSettings = getAllChartSettingsResponse(data);
                         }
                         catch (exception) {
                             console.log(exception);
-                            errorMessages.push(exception.message);
+                            context.errorMessages.push(exception.message);
                         }
-                        callback(null, [chartSettings, errorMessages]);
+                        callback(null, [subContext.chartSettings, context.errorMessages]);
                     }
                 ).on('error', function (err) {
                         console.log(err);
-                        var message = 'Error connecting to getAllChartSettings. url:' + url;
-                        errorMessages.push(message);
-                        callback(null, [null, errorMessages]);
+                        subContext.message = 'Error connecting to getAllChartSettings. url:' + url;
+                        context.errorMessages.push(subContext.message);
+                        callback(null, [null, context.errorMessages]);
                     }
                 );
             }
 
             function getAllChartSettingsResponse(data) {
-
-                var i;
-                var n;
-                var chartSettings;
-                var chartDataObj;
-                //var chartDataObjs = [];
-
+                var subContext = new Object();
                 if (data && data.chartSettings) {
-                    chartSettings = data.chartSettings;
+                    subContext.chartSettings = data.chartSettings;
                 } else {
-                    chartSettings = [];
+                    subContext.chartSettings = [];
                 }
-                n = chartSettings.length;
-                for (i = 0; i < n; i++) {
-                    var chartSetting;
-
-                    chartSetting = chartSettings[i];
-                    chartSetting.output = {};
-                    var period;
-                    if (chartSetting.period) {
-                        period = chartSetting.period.toUpperCase();
+                subContext.n = subContext.chartSettings.length;
+                for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
+                    subContext.chartSetting = subContext.chartSettings[subContext.i];
+                    subContext.chartSetting.output = {};
+                    if (subContext.chartSetting.period) {
+                        subContext.period = subContext.chartSetting.period.toUpperCase();
                     } else {
-                        period = '';
+                        subContext.period = '';
                     }
 
                     /*
@@ -481,156 +472,152 @@
                      chartSetting.output.chartDataObj = chartDataObj;
                      */
 
-                    var start_date, end_date;
-                    var from;
-                    if (isDate(chartSetting.date_start)) {
-                        from = new Date(chartSetting.date_start);
+                    if (isDate(subContext.chartSetting.date_start)) {
+                        subContext.from = new Date(subContext.chartSetting.date_start);
                     }
-                    var to;
-                    if (isDate(chartSetting.date_end)) {
-                        to = new Date(chartSetting.date_end);
+                    if (isDate(subContext.chartSetting.date_end)) {
+                        subContext.to = new Date(subContext.chartSetting.date_end);
                     }
-                    if (period === 'CUSTOM') {
-                        if (from) {
-                            start_date = from.getFullYear() + '-' + (from.getMonth() + 1) + '-' + from.getDate();
+                    if (subContext.period === 'CUSTOM') {
+                        if (subContext.from) {
+                            subContext.start_date = subContext.from.getFullYear() + '-' + (subContext.from.getMonth() + 1) + '-' + subContext.from.getDate();
                         }
-                        if (to) {
-                            end_date = to.getFullYear() + '-' + (to.getMonth() + 1) + '-' + to.getDate();
+                        if (subContext.to) {
+                            subContext.end_date = subContext.to.getFullYear() + '-' + (subContext.to.getMonth() + 1) + '-' + subContext.to.getDate();
                         };
                     }
 
-                    var chartDataPeers;
-                    if (chartSetting.peers) {
-                        chartDataPeers = encodeURIComponent(chartSetting.peers);
+                    if (subContext.chartSetting.peers) {
+                        subContext.chartDataPeers = encodeURIComponent(subContext.chartSetting.peers);
                     } else {
-                        chartDataPeers = '';
+                        subContext.chartDataPeers = '';
                     }
 
                     //fetchChartData(chartSetting.peers, chartSetting.period.toUpperCase(), chartSetting.splits, chartSetting.earnings, chartSetting.dividends, start_date, end_date, chartSetting.company_id);
-                    chartSetting.output.url = config.restcall.url + '/' + service.name + '/' + service.methods.getStockData
-                        + '?company_id=' + chartSetting.company_id
-                        + '&peers=' + chartDataPeers
-                        + '&period=' + period
-                        + '&ssnid=' + ssnid
-                        + '&splits=' + chartSetting.splits
-                        + '&dividends=' + chartSetting.dividends
-                        + '&earnings=' + chartSetting.earnings
-                        + '&date_start=' + start_date
-                        + '&date_end=' + end_date;
+                    subContext.chartSetting.output.url = config.restcall.url + '/' + context.service.name + '/' + context.service.methods.getStockData
+                        + '?company_id=' + subContext.chartSetting.company_id
+                        + '&peers=' + subContext.chartDataPeers
+                        + '&period=' + subContext.period
+                        + '&ssnid=' + context.ssnid
+                        + '&splits=' + subContext.chartSetting.splits
+                        + '&dividends=' + subContext.chartSetting.dividends
+                        + '&earnings=' + subContext.chartSetting.earnings
+                        + '&date_start=' + subContext.start_date
+                        + '&date_end=' + subContext.end_date;
                 }
-                return chartSettings;
+                return subContext.chartSettings;
             }
 
             function setupGetChartDataPoints(input, callback) {
+                var subContext = new Object();
+                subContext.chartSettings = input[0];
+                subContext.errorMessages = input[1];
 
-                var chartSettings = input[0];
-                var errorMessages = input[1];
-
-                if ((chartSettings == null) || (errorMessages.length > 0)) {
-                    callback(null, [chartSettings, errorMessages]);
+                if ((subContext.chartSettings == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [subContext.chartSettings, subContext.errorMessages]);
                 } else {
-                    async.map(chartSettings, getChartDataPoints, function (err, results) {
+                    async.map(subContext.chartSettings, getChartDataPoints, function (err, results) {
                         u.each(results, function (item) {
                             if (item) {
-                                errorMessages.push(item);
+                                subContext.errorMessages.push(item);
                             }
                         });
-                        callback(null, [chartSettings, errorMessages]);
+                        callback(null, [subContext.chartSettings, subContext.errorMessages]);
                     });
                 }
             }
 
             function convServiceResptoChartFormat(data) {
-                var results = data;
-                if (results && results.stockChartPrimaryData) {
-                    var outArr = [];
+                var subContext = new Object();
+                subContext.results = data;
+                if (subContext.results && subContext.results.stockChartPrimaryData) {
+                    subContext.outArr = [];
+                    subContext.xdataArr = [];
+                    subContext.datasetArr = [];
+                    subContext.firstDatasetArr = [];
+                    subContext.secondDatasetArr = [];
+                    subContext.firstchartSerArr = [];
+                    subContext.seriesByVolumes = {};
+                    subContext.seriesByTickers = {};
+                    subContext.secondchartSerArr = [];
+                    subContext.primarTickerName = '';
+                    subContext.firstChartTitle = 'Price';
+                    if (subContext.results && subContext.results.stockChartPrimaryData && subContext.results.stockChartPrimaryData.length > 0)
+                        subContext.primarTickerName = subContext.results.stockChartPrimaryData[0].ticker;
+                    subContext.peerData = null;
+                    subContext.lengthDiff = false;
 
-                    var xdataArr = [];
-                    var datasetArr = [];
-                    var firstDatasetArr = [];
-                    var secondDatasetArr = [];
-                    var firstchartSerArr = [];
-                    var seriesByVolumes = {};
-                    var seriesByTickers = {};
-                    var secondchartSerArr = [];
-                    var primarTickerName = '';
-                    var firstChartTitle = 'Price';
-                    if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0)
-                        primarTickerName = results.stockChartPrimaryData[0].ticker;
-                    var peerData = null;
-                    var lengthDiff = false;
-
-                    if (results.stockChartPeerData && results.stockChartPeerData.length) {
-                        peerData = results.stockChartPeerData;
-                        if (results.stockChartPeerData.length > 0) {
-                            lengthDiff = true;
+                    if (subContext.results.stockChartPeerData && subContext.results.stockChartPeerData.length) {
+                        subContext.peerData = subContext.results.stockChartPeerData;
+                        if (subContext.results.stockChartPeerData.length > 0) {
+                            subContext.lengthDiff = true;
                         }
                     }
 
-                    if (peerData) {
-                        firstChartTitle = 'Percent Change';
+                    if (subContext.peerData) {
+                        subContext.firstChartTitle = 'Percent Change';
                     }
 
-                    for (var i = 0; i < results.stockChartPrimaryData.length; i++) {
+                    for (subContext.i = 0; subContext.i < subContext.results.stockChartPrimaryData.length; subContext.i++) {
 
-                        var stock = results.stockChartPrimaryData[i];
-                        var applyDividend = false;
-                        var applyEarning = false;
-                        var applySplit = false;
+                        subContext.stock = subContext.results.stockChartPrimaryData[subContext.i];
+                        subContext.applyDividend = false;
+                        subContext.applyEarning = false;
+                        subContext.applySplit = false;
                         //if(i%90 == 0)
-                        xdataArr[xdataArr.length] = stock.dataDate.substring(0, 10);
+                        subContext.xdataArr[subContext.xdataArr.length] = subContext.stock.dataDate.substring(0, 10);
 
-                        firstDatasetArr[firstDatasetArr.length] = parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose);
-                        secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
+                        subContext.firstDatasetArr[subContext.firstDatasetArr.length] = parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose);
+                        subContext.secondDatasetArr[subContext.secondDatasetArr.length] = parseFloat(subContext.stock.volume);
 
-                        if (!seriesByTickers[stock.ticker]) {
-                            seriesByTickers[stock.ticker] = [];
+                        if (!subContext.seriesByTickers[subContext.stock.ticker]) {
+                            subContext.seriesByTickers[subContext.stock.ticker] = [];
                         }
 
-                        if (results.dividends) {
-                            for (var dividendCntr = 0; dividendCntr < results.dividends.length; dividendCntr++) {
-                                if (stock.dataDate == results.dividends[dividendCntr].dataDate) {
-                                    applyDividend = true;
+                        if (subContext.results.dividends) {
+                            for (subContext.dividendCntr = 0; subContext.dividendCntr < subContext.results.dividends.length; subContext.dividendCntr++) {
+                                if (subContext.stock.dataDate == subContext.results.dividends[subContext.dividendCntr].dataDate) {
+                                    subContext.applyDividend = true;
                                 }
                             }
                         }
 
-                        if (results.earnings) {
-                            for (var earningCntr = 0; earningCntr < results.earnings.length; earningCntr++) {
-                                if (stock.dataDate == results.earnings[earningCntr].dataDate) {
-                                    applyEarning = true;
+                        if (subContext.results.earnings) {
+                            for (subContext.earningCntr = 0; subContext.earningCntr < subContext.results.earnings.length; subContext.earningCntr++) {
+                                if (subContext.stock.dataDate == subContext.results.earnings[subContext.earningCntr].dataDate) {
+                                    subContext.applyEarning = true;
                                 }
                             }
                         }
 
-                        if (results.splits) {
-                            for (var splitsCntr = 0; splitsCntr < results.splits.length; splitsCntr++) {
-                                if (stock.dataDate == results.splits[splitsCntr].dataDate) {
-                                    applySplit = true;
+                        if (subContext.results.splits) {
+                            for (subContext.splitsCntr = 0; subContext.splitsCntr < subContext.results.splits.length; subContext.splitsCntr++) {
+                                if (subContext.stock.dataDate == subContext.results.splits[subContext.splitsCntr].dataDate) {
+                                    subContext.applySplit = true;
                                 }
                             }
                         }
-                        if (applyDividend) {
-                            seriesByTickers[stock.ticker].push({
-                                'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
+                        if (subContext.applyDividend) {
+                            subContext.seriesByTickers[subContext.stock.ticker].push({
+                                'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
                                 'marker': {
                                     'enabled': true,
                                     'symbol': 'url(data:image/jpeg;base64,' + dividendImageData + ')'
                                 }
                             });
                         }
-                        else if (applyEarning) {
-                            seriesByTickers[stock.ticker].push({
-                                'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
+                        else if (subContext.applyEarning) {
+                            subContext.seriesByTickers[subContext.stock.ticker].push({
+                                'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
                                 'marker': {
                                     'enabled': true,
                                     'symbol': 'url(data:image/jpeg;base64,' + earningsImageData + ')'
                                 }
                             });
                         }
-                        else if (applySplit) {
-                            seriesByTickers[stock.ticker].push({
-                                'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
+                        else if (subContext.applySplit) {
+                            subContext.seriesByTickers[subContext.stock.ticker].push({
+                                'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
                                 'marker': {
                                     'enabled': true,
                                     'symbol': 'url(data:image/jpeg;base64,' + splitImageData + ')'
@@ -638,70 +625,70 @@
                             });
                         }
                         else {
-                            seriesByTickers[stock.ticker].push(parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose));
+                            subContext.seriesByTickers[subContext.stock.ticker].push(parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose));
                         }
 
-                        if (!seriesByVolumes[stock.ticker]) {
-                            seriesByVolumes[stock.ticker] = [];
+                        if (!subContext.seriesByVolumes[subContext.stock.ticker]) {
+                            subContext.seriesByVolumes[subContext.stock.ticker] = [];
                         }
-                        seriesByVolumes[stock.ticker].push(parseFloat(stock.volume));
+                        subContext.seriesByVolumes[subContext.stock.ticker].push(parseFloat(subContext.stock.volume));
                     }
 
-                    if (peerData) {
+                    if (subContext.peerData) {
 
-                        for (var i = 0; i < results.stockChartPeerData.length; i++) {
+                        for (subContext.i = 0; subContext.i < subContext.results.stockChartPeerData.length; subContext.i++) {
 
-                            var stock = results.stockChartPeerData[i];
-                            if (stock.ticker !== primarTickerName) {
-                                xdataArr[xdataArr.length] = stock.dataDate;
-                                firstDatasetArr[firstDatasetArr.length] = parseFloat(stock.percentChange);
+                            subContext.stock = subContext.results.stockChartPeerData[subContext.i];
+                            if (subContext.stock.ticker !== subContext.primarTickerName) {
+                                subContext.xdataArr[subContext.xdataArr.length] = subContext.stock.dataDate;
+                                subContext.firstDatasetArr[subContext.firstDatasetArr.length] = parseFloat(subContext.stock.percentChange);
                                 // secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
 
-                                if (!seriesByTickers[stock.ticker]) {
-                                    seriesByTickers[stock.ticker] = [];
+                                if (!subContext.seriesByTickers[subContext.stock.ticker]) {
+                                    subContext.seriesByTickers[subContext.stock.ticker] = [];
                                 }
-                                seriesByTickers[stock.ticker].push(parseFloat(stock.percentChange));
+                                subContext.seriesByTickers[subContext.stock.ticker].push(parseFloat(subContext.stock.percentChange));
 
-                                if (!seriesByVolumes[stock.ticker]) {
-                                    seriesByVolumes[stock.ticker] = [];
+                                if (!subContext.seriesByVolumes[subContext.stock.ticker]) {
+                                    subContext.seriesByVolumes[subContext.stock.ticker] = [];
                                 }
-                                seriesByVolumes[stock.ticker].push(parseFloat(stock.volume));
+                                subContext.seriesByVolumes[subContext.stock.ticker].push(parseFloat(subContext.stock.volume));
                             }
                         }
                     }
 
 
                     // var stockName = results.stockChartPeerData[0].ticker;
-                    var seriesSet = [];
-                    var dataSet = [];
-                    for (var key in seriesByTickers) {
-                        if (seriesByTickers.hasOwnProperty(key)) {
-                            seriesSet.push({
-                                data: seriesByTickers[key],
-                                name: key
+                    subContext.seriesSet = [];
+                    subContext.dataSet = [];
+                    for (subContext.key in subContext.seriesByTickers) {
+                        if (subContext.seriesByTickers.hasOwnProperty(subContext.key)) {
+                            subContext.seriesSet.push({
+                                data: subContext.seriesByTickers[subContext.key],
+                                name: subContext.key
                             });
-                            dataSet.push(data);
+                            subContext.dataSet.push(data);
                         }
                     }
-                    var volumeSet = [];
-                    for (var key in seriesByVolumes) {
-                        if (seriesByVolumes.hasOwnProperty(key)) {
-                            volumeSet.push({
-                                data: seriesByVolumes[key]
+                    subContext.volumeSet = [];
+                    for (subContext.key in subContext.seriesByVolumes) {
+                        if (subContext.seriesByVolumes.hasOwnProperty(subContext.key)) {
+                            subContext.volumeSet.push({
+                                data: subContext.seriesByVolumes[subContext.key]
                             });
-                            dataSet.push(data);
+                            subContext.dataSet.push(data);
                         }
                     }
                     //console.log('seriesSet----->',seriesSet);
                     // firstchartSerArr[firstchartSerArr.length] = {"name":stockName, "data": firstDatasetArr};
                     //console.log('peerData: ' + peerData);
 
-                    datasetArr[datasetArr.length] = {
+                    subContext.datasetArr[subContext.datasetArr.length] = {
                         "name": "",
-                        "yaxisTitle": firstChartTitle,
+                        "yaxisTitle": subContext.firstChartTitle,
                         "xaxisTitle": "",
-                        "series": seriesSet,
-                        "data": dataSet,
+                        "series": subContext.seriesSet,
+                        "data": subContext.dataSet,
                         "type": "spline",
                         "valueDecimals": 1,
                         "showlegend": true,
@@ -714,18 +701,18 @@
                             }
                         }
                     };
-                    secondchartSerArr[secondchartSerArr.length] = {
-                        "data": secondDatasetArr
+                    subContext.secondchartSerArr[subContext.secondchartSerArr.length] = {
+                        "data": subContext.secondDatasetArr
                         //,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
                         //,"pointStart": Date(xdataArr[0])
                         //,"pointInterval": 24 * 3600 * 1000
                     };
-                    datasetArr[datasetArr.length] = {
+                    subContext.datasetArr[subContext.datasetArr.length] = {
                         "name": "",
                         "yaxisTitle": "Volume (Millions)",
                         "xaxisTitle": "",
-                        "series": secondchartSerArr,
-                        "data": secondDatasetArr,
+                        "series": subContext.secondchartSerArr,
+                        "data": subContext.secondDatasetArr,
                         "type": "column",
                         "valueDecimals": 0,
                         "showlegend": false,
@@ -734,52 +721,51 @@
                         "spacingTop": 7
                     };
 
-                    outArr[outArr.length] = {
-                        "xData": xdataArr,
-                        "datasets": datasetArr
+                    subContext.outArr[subContext.outArr.length] = {
+                        "xData": subContext.xdataArr,
+                        "datasets": subContext.datasetArr
                     };
                     //console.log('================================' +JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data))
                     //console.log(JSON.stringify(data));
                     //console.log('JSON.stringify(outArr).slice(1,-1): ', JSON.stringify(outArr).slice(1,-1));
                     //console.log('secondchartSerArr.length after: ' + secondchartSerArr.length);
-                    return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
+                    return JSON.stringify(subContext.outArr).slice(1, -1) + '|' + JSON.stringify(data);
                 }
             }
 
             function getChartDataPoints(chartSetting, callback) {
-
+                var subContext = new Object();
                 if (chartSetting && chartSetting.output) {
-                    console.log(service.methods.getStockData + ' API call---->', chartSetting.output.url);
+                    console.log(context.service.methods.getStockData + ' API call---->', chartSetting.output.url);
                     client.get(chartSetting.output.url,
                         function (data, response) {
-
-                            var errorMessage = null;
+                            subContext.errorMessage = null;
                             try {
-                                var dataPointObj = convServiceResptoChartFormat(data);
-                                var dataPointList = dataPointObj.split('|');
-                                chartSetting.output.activity = JSON.parse(dataPointList[0]);
-                                chartSetting.output.primarystockresp = JSON.parse(dataPointList[1]);
+                                subContext.dataPointObj = convServiceResptoChartFormat(data);
+                                subContext.dataPointList = subContext.dataPointObj.split('|');
+                                chartSetting.output.activity = JSON.parse(subContext.dataPointList[0]);
+                                chartSetting.output.primarystockresp = JSON.parse(subContext.dataPointList[1]);
 
                                 //
                                 //activity.datasets[] =  dataset[i]
                                 //
-                                var activity = chartSetting.output.activity;
-                                var dataset = activity.datasets[0];
-                                var stockChartSetting = {
+                                subContext.activity = chartSetting.output.activity;
+                                subContext.dataset = subContext.activity.datasets[0];
+                                subContext.stockChartSetting = {
                                     chart: {
                                         marginRight: 80,
-                                        spacingTop: dataset.spacingTop,
+                                        spacingTop: subContext.dataset.spacingTop,
                                         spacingBottom: 4,
                                         zoomType: 'x',
-                                        type: dataset.type,
-                                        width: service.exportOptions.stockChartWidth,
-                                        height: service.exportOptions.stockChartHeight
+                                        type: subContext.dataset.type,
+                                        width: context.service.exportOptions.stockChartWidth,
+                                        height: context.service.exportOptions.stockChartHeight
                                     },
                                     exporting: {
                                         enabled: false
                                     },
                                     title: {
-                                        text: dataset.name,
+                                        text: subContext.dataset.name,
                                         align: 'left',
                                         margin: 0,
                                         x: 30
@@ -788,7 +774,7 @@
                                         enabled: false
                                     },
                                     legend: {
-                                        enabled: dataset.showlegend,
+                                        enabled: subContext.dataset.showlegend,
                                         align: 'top',
                                         verticalAlign: 'top',
                                         x: 220,
@@ -801,7 +787,7 @@
                                     },
                                     xAxis: {
                                         type: 'datetime',
-                                        categories: activity.xData,
+                                        categories: subContext.activity.xData,
                                         crosshair: {
                                             width: 1,
                                             color: 'gray',
@@ -811,7 +797,7 @@
                                             //rotation: 0,
                                             //distance: 10,
                                             align: 'center',
-                                            enabled: dataset.showxaxisLabel
+                                            enabled: subContext.dataset.showxaxisLabel
                                         }
                                     },
                                     plotOptions: {
@@ -821,7 +807,7 @@
                                     },
                                     yAxis: {
                                         title: {
-                                            text: dataset.yaxisTitle
+                                            text: subContext.dataset.yaxisTitle
                                         },
                                         crosshair: {
                                             width: 1,
@@ -830,32 +816,32 @@
                                         }
                                     },
                                     tooltip: {
-                                        valueDecimals: dataset.valueDecimals,
+                                        valueDecimals: subContext.dataset.valueDecimals,
                                         positioner: function () {
                                             return { x: 70, y: 0 }
                                         },
-                                        enabled: dataset.showtooltip
+                                        enabled: subContext.dataset.showtooltip
                                     },
-                                    series: dataset.series
+                                    series: subContext.dataset.series
                                 };
-                                chartSetting.output.stockChartSetting = stockChartSetting;
+                                chartSetting.output.stockChartSetting = subContext.stockChartSetting;
 
-                                dataset = activity.datasets[1];
-                                var volumeChartSetting = {
+                                subContext.dataset = subContext.activity.datasets[1];
+                                subContext.volumeChartSetting = {
                                     chart: {
                                         marginRight: 80,
-                                        spacingTop: dataset.spacingTop,
+                                        spacingTop: subContext.dataset.spacingTop,
                                         spacingBottom: 4,
                                         zoomType: 'x',
-                                        type: dataset.type,
-                                        width: service.exportOptions.volumeChartWidth,
-                                        height: service.exportOptions.volumeChartHeight
+                                        type: subContext.dataset.type,
+                                        width: context.service.exportOptions.volumeChartWidth,
+                                        height: context.service.exportOptions.volumeChartHeight
                                     },
                                     exporting: {
                                         enabled: false
                                     },
                                     title: {
-                                        text: dataset.name,
+                                        text: subContext.dataset.name,
                                         align: 'left',
                                         margin: 0,
                                         x: 30
@@ -864,7 +850,7 @@
                                         enabled: false
                                     },
                                     legend: {
-                                        enabled: dataset.showlegend,
+                                        enabled: subContext.dataset.showlegend,
                                         align: 'top',
                                         verticalAlign: 'top',
                                         x: 220,
@@ -877,7 +863,7 @@
                                     },
                                     xAxis: {
                                         type: 'datetime',
-                                        categories: activity.xData,
+                                        categories: subContext.activity.xData,
                                         crosshair: {
                                             width: 1,
                                             color: 'gray',
@@ -887,7 +873,7 @@
                                             //rotation: 0,
                                             //distance: 10,
                                             align: 'center',
-                                            enabled: dataset.showxaxisLabel
+                                            enabled: subContext.dataset.showxaxisLabel
                                         }
                                     },
                                     plotOptions: {
@@ -897,7 +883,7 @@
                                     },
                                     yAxis: {
                                         title: {
-                                            text: dataset.yaxisTitle
+                                            text: subContext.dataset.yaxisTitle
                                         },
                                         crosshair: {
                                             width: 1,
@@ -906,161 +892,156 @@
                                         }
                                     },
                                     tooltip: {
-                                        valueDecimals: dataset.valueDecimals,
+                                        valueDecimals: subContext.dataset.valueDecimals,
                                         positioner: function () {
                                             return { x: 70, y: 0 }
                                         },
-                                        enabled: dataset.showtooltip
+                                        enabled: subContext.dataset.showtooltip
                                     },
-                                    series: dataset.series
+                                    series: subContext.dataset.series
                                 };
-                                chartSetting.output.volumeChartSetting = volumeChartSetting;
+                                chartSetting.output.volumeChartSetting = subContext.volumeChartSetting;
                                 chartSetting.output.chartName = (chartSetting.step_id) +
                                     "." + (chartSetting.mnemonic) +
                                     "." + (chartSetting.item_id) +
                                     "." + (chartSetting.chart_id);
 
                             } catch (exception) {
-                                errorMessage = exception.message;
+                                subContext.errorMessage = exception.message;
                             }
 
                             //var chartDataFileName = chartSetting.output.chartName + ".txt";
-                            callback(null, errorMessage);
+                            callback(null, subContext.errorMessage);
                         }
                     ).on('error', function (err) {
                             console.log(err);
-                            var message = 'Error connecting to getStockData. url:' + chartSetting.output.url;
-                            callback(null, message);
+                            subContext.message = 'Error connecting to getStockData. url:' + chartSetting.output.url;
+                            callback(null, subContext.message);
                         }
                     );
                 } else {
-                    console.log(service.methods.getStockData + ' API call----> MISSING');
+                    console.log(context.service.methods.getStockData + ' API call----> MISSING');
                     callback(null, "Invalid getStockData url.");
                 }
             }
 
             function getPDFRequestId(input, callback) {
+                var subContext = new Object();
+                subContext.chartSettings = input[0];
+                subContext.errorMessages = input[1];
 
-                var chartSettings = input[0];
-                var errorMessages = input[1];
-
-                if ((chartSettings == null) || (errorMessages.length > 0)) {
-                    callback(null, [null, errorMessages]);
+                if ((subContext.chartSettings == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [null, subContext.errorMessages]);
                 } else {
 
-                    var service = getServiceDetails('templateManager');
-                    var methodName = '';
-                    if (!u.isUndefined(service) && !u.isNull(service)) {
-                        methodName = service.methods.createTemplatePDFRequest;
+                    subContext.service = getServiceDetails('templateManager');
+                    subContext.methodName = '';
+                    if (!u.isUndefined(subContext.service) && !u.isNull(subContext.service)) {
+                        subContext.methodName = subContext.service.methods.createTemplatePDFRequest;
                     }
 
-                    var stepArr = [];
-                    var args;
-                    var url;
-
+                    subContext.stepArr = [];
                     try {
-                        u.each(chartSettings,
+                        u.each(subContext.chartSettings,
                             function (chartSetting, index) {
-                                if (u.indexOf(stepArr, chartSetting.step_id) == -1) {
-                                    stepArr.push(chartSetting.step_id);
+                                if (u.indexOf(subContext.stepArr, chartSetting.step_id) == -1) {
+                                    subContext.stepArr.push(chartSetting.step_id);
                                 }
                             }
                         );
-                        args = 'project_id=' + project_id + '&user_id=' + user_id + '&step_ids=' + stepArr.join(',') + '&file_name=' + (file_name).split(' ').join('+') +
-                            '&company_name=' + (company_name).split(' ').join('+') + '&user_name=' + (user_name).split(' ').join('+') + '&ssnid=' + ssnid;
+                        subContext.args = 'project_id=' + context.project_id + '&user_id=' + context.user_id + '&step_ids=' + subContext.stepArr.join(',') + '&file_name=' + (context.file_name).split(' ').join('+') +
+                            '&company_name=' + (context.company_name).split(' ').join('+') + '&user_name=' + (context.user_name).split(' ').join('+') + '&ssnid=' + context.ssnid;
 
-                        url = config.restcall.url + '/' + service.name + '/' + methodName + '?' + args;
+                        subContext.url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName + '?' + subContext.args;
                     } catch (exception) {
-                        errorMessages.push(exception.message);
-                        callback(null, [null, errorMessages]);
+                        subContext.errorMessages.push(exception.message);
+                        callback(null, [null, subContext.errorMessages]);
                     }
 
-                    console.log(methodName + ' API call---->', url);
-                    client.get(url,
+                    console.log(subContext.methodName + ' API call---->', subContext.url);
+                    client.get(subContext.url,
                         function (data, response) {
-                            var pdfRequest = null;
+                            subContext.pdfRequest = null;
                             try {
-                                var request_id = data.request.requestNo;
-                                pdfRequest = {
-                                    request_id: request_id,
-                                    chartSettings: chartSettings,
+                                subContext.request_id = data.request.requestNo;
+                                subContext.pdfRequest = {
+                                    request_id: subContext.request_id,
+                                    chartSettings: subContext.chartSettings,
                                     chartPath: ''
                                 };
-                                console.log("Created PDF request: " + request_id);
-                                pdfRequest.chartPath = createPath(request_id);
+                                console.log("Created PDF request: " + subContext.request_id);
+                                subContext.pdfRequest.chartPath = createPath(subContext.request_id);
                             } catch (exception) {
-                                errorMessages.push(exception.message);
+                                subContext.errorMessages.push(exception.message);
                             }
-                            callback(null, [pdfRequest, errorMessages]);
+                            callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                         }
                     ).on('error', function (err) {
                             console.log(err);
-                            var message = 'Error connecting to getPDFRequestId. url:' + url;
-                            errorMessages.push(message);
-                            callback(null, [null, errorMessages]);
+                            subContext.message = 'Error connecting to getPDFRequestId. url:' + subContext.url;
+                            subContext.errorMessages.push(subContext.message);
+                            callback(null, [null, subContext.errorMessages]);
                         }
                     );
                 }
             }
 
             function setupGetChartImages(input, callback) {
+                var subContext = new Object();
+                subContext.pdfRequest = input[0];
+                subContext.errorMessages = input[1];
 
-                var pdfRequest = input[0];
-                var errorMessages = input[1];
-
-                if ((pdfRequest == null) || (errorMessages.length > 0)) {
-                    callback(null, [pdfRequest, errorMessages]);
+                if ((subContext.pdfRequest == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                 } else {
-                    var chartObjArr = [];
+                    subContext.chartObjArr = [];
 
                     try {
-                        u.each(pdfRequest.chartSettings,
+                        u.each(subContext.pdfRequest.chartSettings,
                             function (chartSetting, index) {
-                                var filename;
-                                var chartObj;
                                 //var fs = require("fs");
 
-                                filename = chartSetting.output.chartName + '.part0.svg';
-                                chartObj = {
+                                subContext.filename = chartSetting.output.chartName + '.part0.svg';
+                                subContext.chartObj = {
                                     infile: JSON.stringify(chartSetting.output.stockChartSetting),
                                     callback: '',
                                     constr: '',
-                                    outfile: pdfRequest.chartPath + filename
+                                    outfile: subContext.pdfRequest.chartPath + subContext.filename
                                 };
                                 //fs.writeFile(pdfRequest.chartPath + chartSetting.output.chartName + '.part0.txt', JSON.stringify(chartObj));
-                                chartObjArr.push(chartObj);
+                                subContext.chartObjArr.push(subContext.chartObj);
 
-                                filename = chartSetting.output.chartName + '.part1.svg';
-                                chartObj = {
+                                subContext.filename = chartSetting.output.chartName + '.part1.svg';
+                                subContext.chartObj = {
                                     infile: JSON.stringify(chartSetting.output.volumeChartSetting),
                                     callback: '',
                                     constr: '',
-                                    outfile: pdfRequest.chartPath + filename
+                                    outfile: subContext.pdfRequest.chartPath + subContext.filename
                                 };
-                                chartObjArr.push(chartObj);
+                                subContext.chartObjArr.push(subContext.chartObj);
                             }
                         );
                     } catch (exception) {
-                        errorMessages.push(exception.message);
-                        chartObjArr.length = 0;
-                        callback(null, [pdfRequest, errorMessages]);
+                        subContext.errorMessages.push(exception.message);
+                        subContext.chartObjArr.length = 0;
+                        callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                     }
 
-                    async.map(chartObjArr, getChartImage, function (err, results) {
+                    async.map(subContext.chartObjArr, getChartImage, function (err, results) {
 
                         u.each(results, function (item) {
                             if (item) {
-                                errorMessages.push(item);
+                                subContext.errorMessages.push(item);
                             }
                         });
-                        callback(null, [pdfRequest, errorMessages]);
+                        callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                     });
                 }
             }
 
             function getChartImage(chartObj, callback) {
-
-                var args = {
+                var subContext = new Object();
+                subContext.args = {
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -1068,7 +1049,7 @@
                 };
 
                 //console.log("Output File: " + chartObj.outfile);
-                client.post(service.exportOptions.phatomjsURL, args, function (data, response) {
+                client.post(context.service.exportOptions.phatomjsURL, subContext.args, function (data, response) {
                     console.log("Finished getChartImage call: " + data);
                     callback(null, null);
                 }).on('error', function (err) {
@@ -1078,158 +1059,156 @@
             }
 
             function setSVGFileStatus(input, callback) {
+                var subContext = new Object();
+                subContext.pdfRequest = input[0];
+                subContext.errorMessages = input[1];
 
-                var pdfRequest = input[0];
-                var errorMessages = input[1];
-
-                if ((pdfRequest == null) || (errorMessages.length > 0)) {
-                    callback(null, [pdfRequest, errorMessages]);
+                if ((subContext.pdfRequest == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                 } else {
-                    var service = getServiceDetails('templateManager');
-                    var methodName = '';
-                    if (!u.isUndefined(service) && !u.isNull(service)) {
-                        methodName = service.methods.setSVGFileStatus;
+                    subContext.service = getServiceDetails('templateManager');
+                    subContext.methodName = '';
+                    if (!u.isUndefined(subContext.service) && !u.isNull(subContext.service)) {
+                        subContext.methodName = subContext.service.methods.setSVGFileStatus;
                     }
 
-                    var args = 'request_id=' + pdfRequest.request_id + '&svg_files_ready=Y&ssnid=' + ssnid;
-                    var url = config.restcall.url + '/' + service.name + '/' + methodName + '?' + args;
-                    console.log(methodName + ' API call---->', url);
-                    client.get(url,
+                    subContext.args = 'request_id=' + subContext.pdfRequest.request_id + '&svg_files_ready=Y&ssnid=' + context.ssnid;
+                    subContext.url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName + '?' + subContext.args;
+                    console.log(subContext.methodName + ' API call---->', subContext.url);
+                    client.get(subContext.url,
                         function (data, response) {
                             try {
-                                pdfRequest.responseCode = response.statusCode;
+                                subContext.pdfRequest.responseCode = response.statusCode;
                                 //reduce the amount of data being sent back to client, we need it for debugging chart problems
-                                pdfRequest.chartSettings = undefined;
+                                subContext.pdfRequest.chartSettings = undefined;
                             } catch (exception) {
                                 console.log(exception);
-                                errorMessages.push(exception.message);
+                                subContext.errorMessages.push(exception.message);
                             }
-                            callback(null, [pdfRequest, errorMessages]);
+                            callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                         }
                     ).on('error', function (err) {
                             console.log(err);
-                            var message = 'Error connecting to setSVGFileStatus. url:' + url;
-                            errorMessages.push(message);
-                            callback(null, [pdfRequest, errorMessages]);
+                            subContext.message = 'Error connecting to setSVGFileStatus. url:' + subContext.url;
+                            errorMessages.push(subContext.message);
+                            callback(null, [subContext.pdfRequest, subContext.errorMessages]);
                         }
                     );
                 }
             }
 
             function getTemplatePDFStatus(result, next) {
-
-                var service = getServiceDetails('templateManager');
-                var methodName = '';
-                if (!u.isUndefined(service) && !u.isNull(service)) {
-                    methodName = service.methods.getTemplatePDFStatus;
+                var subContext = new Object();
+                subContext.service = getServiceDetails('templateManager');
+                subContext.methodName = '';
+                if (!u.isUndefined(subContext.service) && !u.isNull(subContext.service)) {
+                    subContext.methodName = subContext.service.methods.getTemplatePDFStatus;
                 }
 
-                var args = 'request_id=' + result.request_id + '&ssnid=' + ssnid;
-
-                var url = config.restcall.url + '/' + service.name + '/' + methodName + '?' + args;
+                subContext.args = 'request_id=' + result.request_id + '&ssnid=' + context.ssnid;
+                subContext.url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName + '?' + subContext.args;
                 //console.log(methodName + ' API call---->', url);
-                var statusResponse = {};
+                subContext.statusResponse = {};
 
-                client.get(url, function (data, response) {
+                client.get(subContext.url, function (data, response) {
                         try {
                             if (data.responseInfo.code === 200) {
-                                statusResponse.error = false;
+                                subContext.statusResponse.error = false;
                                 result.PDFStatusCode = data.request.status
                                 result.PDFHTTPResponseCode = data.responseInfo.code;
                                 result.PDFPercentComplete = data.request.percentComplete;
-                                console.log("Code: " + result.PDFStatusCode + " At " + data.request.percentComplete + "%");
+                                console.log('[' + result.request_id + "]Code: " + result.PDFStatusCode + " At " + data.request.percentComplete + "%");
                                 if (data.request.status === "C") {
-                                    console.log("PDF generation complete.");
-                                    statusResponse.pdfRequest = result;
-                                    console.log('[finished]getTemplatePDFStatus url:' +url);
-                                    next(statusResponse);
+                                    console.log('[' + result.request_id + "]PDF generation complete.");
+                                    subContext.statusResponse.pdfRequest = result;
+                                    console.log('[finished]getTemplatePDFStatus url:' + subContext.url);
+                                    next(subContext.statusResponse);
                                 } else {
-                                    console.log("PDF generation " + result.PDFPercentComplete + " complete.");
-                                    var room = 'pdf_' + result.request_id;
+                                    console.log('[' + result.request_id + "]PDF generation " + result.PDFPercentComplete + "% complete.");
+                                    subContext.room = 'pdf_' + result.request_id;
 
-                                    var data ={
+                                    subContext.data = {
                                         requestId: result.request_id,
                                         progress: result.PDFPercentComplete
                                     };
 
-                                    config.socketIO.socket.emit('pdf-download-status', data);
+                                    config.socketIO.socket.emit('pdf-download-status', subContext.data);
                                     setTimeout(function () {
                                         next();
                                     }, 1000);
                                 }
                             } else {
-                                statusResponse.error = true;
-                                console.log('[else]getTemplatePDFStatus return invalid status. url:' +url);
-                                next(statusResponse);
+                                subContext.statusResponse.error = true;
+                                console.log('[else]getTemplatePDFStatus return invalid status. url:' + subContext.url);
+                                next(subContext.statusResponse);
                             }
                         } catch (exception) {
-                            statusResponse.error = true;
-                            console.log('[try/catch]Error connecting to getTemplatePDFStatus. url:' +url);
-                            next(statusResponse);
+                            subContext.statusResponse.error = true;
+                            console.log('[try/catch]Error connecting to getTemplatePDFStatus. url:' + subContext.url);
+                            next(subContext.statusResponse);
                         }
                     }
                 ).on('error', function (err) {
                         console.log(err);
-                        console.log('[on error]Error connecting to getTemplatePDFStatus. url:' +url);
-                        statusResponse.error = true;
-                        next(statusResponse);
+                        console.log('[on error]Error connecting to getTemplatePDFStatus. url:' + subContext.url);
+                        subContext.statusResponse.error = true;
+                        next(subContext.statusResponse);
                     }
                 );
             }
 
-
             async.waterfall([getAllChartSettings, setupGetChartDataPoints, getPDFRequestId, setupGetChartImages, setSVGFileStatus],
                 function (err, input) {
 
-                    var result = input[0];
-                    var errorMessages = input[1];
+                    context.result = input[0];
+                    context.errorMessages = input[1];
 
                     console.log('Input --');
                     console.log(input);
 
-                    if ((result == null) || (errorMessages.length &&
-                                             errorMessages.length > 0)) {
+                    if ((context.result == null) || (context.errorMessages.length &&
+                                             context.errorMessages.length > 0)) {
                         console.log('Error occured in PDF Download request.');
-                        console.log(errorMessages);
-                        if (result == null) {
-                            result = { errorMessages: errorMessages };
+                        console.log(context.errorMessages);
+                        if (context.result == null) {
+                            context.result = { errorMessages: context.errorMessages };
                         } else {
-                            result.errorMessages = errorMessages;
+                            context.result.errorMessages = context.errorMessages;
                         }
                         console.log('Returning error results back to caller.');
-                        res.send(result);
+                        res.send(context.result);
                     } else {
-                        result.errorMessages = errorMessages;
-                        console.log('setSVGFileStatus returned status: ' + result.responseCode);
-                        if (result.responseCode == 200) {
+                        context.result.errorMessages = context.errorMessages;
+                        console.log('setSVGFileStatus returned status: ' + context.result.responseCode);
+                        if (context.result.responseCode == 200) {
                             async.forever(
                                 function (next) {
-                                    getTemplatePDFStatus(result, next);
+                                    getTemplatePDFStatus(context.result, next);
                                 },
                                 function (asyncResult) {
                                     if (asyncResult.error) {
-                                        console.log('---->Request ' + result.request_id + ' is incomplete.');
+                                        console.log('---->Request ' + context.result.request_id + ' is incomplete.');
                                         //indicate an error during status check
-                                        result.PDFPercentComplete = -1;
+                                        context.result.PDFPercentComplete = -1;
                                     } else {
-                                        console.log('---->Request ' + result.request_id + ' is complete.');
+                                        console.log('---->Request ' + context.result.request_id + ' is complete.');
                                     }
 
-                                    var data ={
-                                        requestId: result.request_id,
-                                        progress: result.PDFPercentComplete
+                                    context.data = {
+                                        requestId: context.result.request_id,
+                                        progress: context.result.PDFPercentComplete
                                     };
-
-                                    config.socketIO.socket.emit('pdf-download-status', data);
+                                    console.log('Sending socket message for request:' + context.data.requestId);
+                                    config.socketIO.socket.emit('pdf-download-status', context.data);
                                 }
                             );
 
                             //No errors, sent response back to call to add entry to notification center
-                            res.send(result);
+                            res.send(context.result);
                         } else {
-                            result.errorMessages.push('setSVGFileStatus returned status: ' + result.responseCode);
+                            context.result.errorMessages.push('setSVGFileStatus returned status: ' + context.result.responseCode);
                             console.log('Returning error setSVGStatus response code back to caller.');
-                            res.send(result);
+                            res.send(context.result);
                         }
                     }
                 }
@@ -1237,26 +1216,25 @@
         }
 
         function downloadTemplatePDF(req, res, next) {
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
+            context.ssnid = req.headers['x-session-token'];
+            context.request_id = req.body.request_id;
+            context.file_name = encodeURIComponent((req.body.file_name).trim());
 
-            var service = getServiceDetails('templateManager'),
-                methodName = '',
-                ssnid = req.headers['x-session-token'],
-                request_id = req.body.request_id,
-                file_name = encodeURIComponent((req.body.file_name).trim()),
-                url;
-
-            if (!u.isUndefined(service) && !u.isNull(service)) {
-                methodName = service.methods.downloadTemplatePDF;
+            if (!u.isUndefined(context.service) && !u.isNull(context.service)) {
+                context.methodName = context.service.methods.downloadTemplatePDF;
             }
 
-            url = config.restcall.url + '/' + service.name + '/' + methodName + '?request_id=' + request_id + '&fileName=' + file_name + '&ssnid=' + ssnid;
-
-            client.get(url, {responseType: 'arraybuffer'}, function(data, response) {
+            context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName + '?request_id=' + context.request_id + '&fileName=' + context.file_name + '&ssnid=' + context.ssnid;
+            console.log(context.url);
+            client.get(context.url, { responseType: 'arraybuffer' }, function (data, response) {
                 if (data) {
                     res.writeHead(200,
                         {
                             'Content-Type': 'application/pdf',
-                            'Content-Disposition': 'attachment; filename=' + file_name,
+                            'Content-Disposition': 'attachment; filename=' + context.file_name,
                             'Content-Transfer-Encoding': 'BINARY',
                             'Content-Length': data.length
                         }
@@ -1265,7 +1243,6 @@
                     res.end();
                 }
             });
-
         }
 
         function getServiceDetails(serviceName) {
