@@ -6,16 +6,18 @@
         .factory('workupService', workupService);
 
     /* @ngInject */
-    function workupService($http, clientConfig) {
+    function workupService($http, clientConfig, logger) {
         var readyPromise;
 
         var service = {
             create: create,
-            renew: renew
+            renew: renew,
+            getStatus: getStatus
         };
 
         return service;
 
+        ///Create the new workup
         function create(userId, templateId, companyId)
         {
             var input = {
@@ -31,13 +33,14 @@
                         contentType: "application/json; charset=utf-8",
                         dataType: "json"
                         }).then(function(data, status, headers, config) {
-                    return data;
+                    return data.data;
                 })
                 .catch(function(error) {
-
+                    logger.error(JSON.stringify(error));
                 });
         }
 
+        ///Renew the workup
         function renew(userId, projectId)
         {
             var input = {
@@ -47,6 +50,27 @@
 
             return $http({
                 url : clientConfig.endpoints.workUpEndPoint.renew,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+                });
+        }
+
+        ///Get the status of the create-workup.
+        function getStatus(projectId)
+        {
+            var input = {
+                projectId: projectId
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.status,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",

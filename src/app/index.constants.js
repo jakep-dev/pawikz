@@ -51,7 +51,8 @@
                 workUpEndPoint:
                 {
                     create: '/api/workup/create',
-                    renew: '/api/workup/renew'
+                    renew: '/api/workup/renew',
+                    status: '/api/workup/status'
                 }
             },
             appSettings:

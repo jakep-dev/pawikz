@@ -41,6 +41,7 @@ exports.restcall =
                    createWorkUp: 'createNewTemplateProject',
                    renewWorkUp: 'renewTemplateProject',
                    lockWorkUp: 'lockWorkUp',
+                   createWorkUpStatus: 'getTemplateProjectStatus',
                    createTemplatePDFRequest: 'createTemplatePDFRequest',
                    setSVGFileStatus: 'setSVGFileStatus',
                    getTemplatePDFStatus: 'getTemplatePDFStatus',

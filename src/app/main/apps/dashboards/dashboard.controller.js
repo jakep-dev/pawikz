@@ -48,6 +48,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         redrawDataTable();
     });
 
+    commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
+        templateBusiness.pushNotification(data);
+    });
+
     function renewTemplate()
     {
         $('.renewStyle').click(function()

@@ -10,7 +10,7 @@
 
     /* @ngInject */
     function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService, Papa, dialog, store, $window, $sce) {
+                              overviewBusiness, templateService, Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
@@ -61,6 +61,7 @@
            requestPdfDownload: requestPdfDownload,
            updateNotification: updateNotification,
            listenToPdfDownload: listenToPdfDownload,
+           listenToWorkUpStatus: listenToWorkUpStatus,
            downloadTemplatePdf:downloadTemplatePdf,
            pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
@@ -128,6 +129,7 @@
             }
         }
 
+        ///Listens to PDF download and update accordingly
         function listenToPdfDownload()
         {
             clientConfig.socketInfo.socket.on('pdf-download-status', function(response)
@@ -156,6 +158,47 @@
                         commonBusiness.emitMsg('update-notification-binding');
                     }
 
+                }
+            });
+        }
+
+        ///Listen to workup creation status and update accordingly
+        function listenToWorkUpStatus()
+        {
+            clientConfig.socketInfo.socket.on('create-workup-status', function(response)
+            {
+                if(response)
+                {
+
+                    var notification = _.first(business.notifications, function(not)
+                    {
+                        if(not.status === 'in-process' &&
+                            not.type === 'Create-WorkUp' &&
+                            not.id === response.projectId)
+                        {
+                            return not;
+                        }
+                    });
+
+                    if(notification)
+                    {
+                        notification.progress = response.progress;
+                        if(notification.progress === 100)
+                        {
+                            notification.status = 'complete';
+                            notification.disabled = false;
+                            notification.url = response.projectId;
+                            $rootScope.toastTitle = 'WorkUp Creation Completed!';
+                            $rootScope.toastProjectId = response.projectId;
+                            $mdToast.show({
+                                hideDelay: 8000,
+                                position: 'bottom right',
+                                controller: 'WorkUpToastController',
+                                templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+                            });
+                        }
+                        commonBusiness.emitMsg('update-notification-binding');
+                    }
                 }
             });
         }
@@ -305,11 +348,15 @@
         //Push the notification details
         function pushNotification(data)
         {
+            console.log('Push Notification-');
+            console.log(data);
+
             if(data)
             {
                 var notification = _.find(business.notifications, function(not)
                 {
-                    if(not.id === data.id && not.type === data.type)
+                    if(not.id === data.id &&
+                       not.type === data.type)
                     {
                         return not;
                     }
