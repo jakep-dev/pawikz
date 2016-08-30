@@ -15,7 +15,8 @@
         config.parallel([
             app.post('/api/workup/create', create),
             app.post('/api/workup/renew', renew),
-            app.post('/api/workup/lock', lock)
+            app.post('/api/workup/lock', lock),
+            app.post('/api/workup/status', status)
         ]);
 
 
@@ -31,10 +32,6 @@
                 methodName = service.methods.createWorkUp;
             }
 
-            console.log('MethodName- ' + methodName);
-            console.log('config.restcall.url - ' + config.restcall.url);
-            console.log('service.name - ' + service.name);
-
             var args =
             {
                 parameters: {
@@ -45,18 +42,17 @@
                 }
             };
 
+            var token = req.headers['x-session-token'];
+
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
-                interval = setInterval(function(token, data, key) {
-                    data.companyId = req.body.companyId;
-                    data.templateId = req.body.templateId;
-
-                    notifyStatus(token, data, key);
-
-                }, 1000, req.headers['x-session-token'], data, 'notify-create-workup-status');
-
+                //status(data.projectId, req.headers['x-session-token'], next);
+                console.log('Response - StatusCode');
+                console.log(data);
+                status(data.projectId, token, next);
+                res.status(response.statusCode).send(data);
             });
 
-            res.status('200').send('');
+
         }
 
         //Renew existing workup
@@ -120,6 +116,46 @@
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
                 res.status(response.statusCode).send(data);
+            });
+        }
+
+        //Get the create workup status
+        function status(projectId, token, next)
+        {
+            var service = getServiceDetails('templateManager');
+            var methodName = '';
+
+            if(!_.isUndefined(service) &&
+                !_.isNull(service))
+            {
+                methodName = service.methods.createWorkUpStatus;
+            }
+
+            var args =
+            {
+                parameters: {
+                    project_id: projectId,
+                    ssnid: token
+                }
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
+                console.log('Workup Status - ');
+                console.log(data);
+                if(data && data.templateStatus) {
+
+                    var compData = {
+                        projectId: projectId,
+                        progress: parseInt(data.templateStatus.percentage)
+                    };
+
+                    config.socketIO.socket.emit('create-workup-status', compData);
+                    if(parseInt(data.templateStatus.percentage) !== 100) {
+                        setTimeout(function () {
+                            status(projectId, token, next);
+                        }, 5000);
+                    }
+                }
             });
         }
 

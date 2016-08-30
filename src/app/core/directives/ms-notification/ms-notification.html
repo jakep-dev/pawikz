@@ -22,7 +22,8 @@
                         </table>
                     </md-button>
 
-                    <div class="progress-wrapper" ng-if="notification.progress < 100 && notification.istrackable">
+                    <div class="progress-wrapper"
+                         ng-if="notification.progress < 100 && notification.istrackable">
                         <round-progress max="100"
                                         current="notification.progress"
                                         color="#45ccce"
@@ -40,7 +41,8 @@
                         <div class="progress-value">{{notification.progress}}</div>
                     </div>
 
-                    <div ng-activity-indicator="DottedDark" skip-ng-show="yes" ng-if="notification.progress < 100 && !notification.istrackable"></div>
+                    <div ng-activity-indicator="CircledDark" skip-ng-show="yes"
+                         ng-if="notification.progress < 100 && !notification.istrackable"></div>
 
                     <div class="progress-wrapper" ng-if="notification.progress === 100">
                         <md-icon md-font-icon="icon-check-circle" ng-if="notification.status === 'complete'"

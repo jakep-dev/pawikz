@@ -57,21 +57,26 @@
 
         function createWorkUp(userId, companyId, templateId)
         {
-            workupService.create(userId, companyId, templateId);
-
-            NotifyNotificationCenter({
-                id: companyId + '_' + templateId,
-                title: 'Create Work-Up - ' + companyId,
-                type: 'Create-WorkUp',
-                icon: 'icon-library-plus',
-                progress: 15,
-                disabled: true,
-                tooltip: 'Create work-up still in-progress',
-                status: 'in-process',
-                userId: userId,
-                istrackable: false,
-                url: ''
-            }, 'notify-create-workup-notification-center');
+            workupService.create(userId, companyId, templateId).then(function(response)
+            {
+                console.log('CreateWorkUp-');
+                console.log(response);
+                if(response) {
+                    NotifyNotificationCenter({
+                        id: response.projectId,
+                        title: response.project_name || ('Project - ' + response.projectId),
+                        type: 'Create-WorkUp',
+                        icon: 'icon-library-plus',
+                        progress: 15,
+                        disabled: true,
+                        tooltip: 'Create work-up still in-progress',
+                        status: 'in-process',
+                        userId: userId,
+                        istrackable: true,
+                        url: ''
+                    }, 'notify-create-workup-notification-center');
+                }
+            });
         }
 
         function renew(userId, projectId, projectName, reloadEvent)

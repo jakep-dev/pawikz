@@ -19,31 +19,12 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
         $rootScope.passedToken = $stateParams.token;
     }
 
-    commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
-        templateBusiness.pushNotification(data);
-    });
-
     workupBusiness.initialize($stateParams.token);
     workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
-
-
+    templateBusiness.listenToWorkUpStatus();
 
     toast.simpleToast('Creating new workup in progress. Use notification center for updates');
 
     var token =  store.get('x-session-token');
     $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
-
-    clientConfig.socketInfo.socket.on('notify-create-workup-status', function(data)
-    {
-        $rootScope.toastTitle = 'WorkUp Creation Completed!';
-        $rootScope.toastProjectId = data.projectId;
-        $mdToast.show({
-            hideDelay: 5000,
-            position: 'bottom right',
-            controller: 'WorkUpToastController',
-            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
-        });
-
-        templateBusiness.updateNotification($stateParams.companyId + '_' + $stateParams.templateId, 'complete', 'Create-WorkUp', parseInt(data.projectId), null);
-    });
 }
