@@ -33,6 +33,7 @@
                 console.log(data);
                 if(data.token in config.userSocketInfo)
                 {
+                    console.log('Already In');
                     callback(false);
                 }
                 else {
@@ -41,6 +42,7 @@
                     socket.userid = data.userId;
                     socket.join('workup-room');
                     config.userSocketInfo[socket.nickname] = socket;
+                    console.log(config.userSocketInfo);
                 }
             });
         }

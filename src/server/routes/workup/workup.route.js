@@ -81,7 +81,7 @@
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
 
-                //data.projectId = req.body.projectId;
+               data.projectId = req.body.projectId;
 
                 //Notify Renewal Status to the user initiated the request.
                 notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status');
@@ -149,7 +149,11 @@
                         progress: parseInt(data.templateStatus.percentage)
                     };
 
-                    config.socketIO.socket.emit('create-workup-status', compData);
+                    if(token in config.userSocketInfo)
+                    {
+                        config.userSocketInfo[token].emit('create-workup-status', compData);
+                    }
+
                     if(parseInt(data.templateStatus.percentage) !== 100) {
                         setTimeout(function () {
                             status(projectId, token, next);
@@ -167,6 +171,7 @@
             clearInterval(interval);
             if(token in config.userSocketInfo)
             {
+                console.log('Emit');
                 config.userSocketInfo[token].emit(key, data);
             }
         }

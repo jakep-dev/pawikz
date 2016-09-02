@@ -246,6 +246,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             templateUrl: 'app/main/components/workup/toast/workup.toast.html'
         });
 
+        console.log('Renewal WorkUp');
+        console.log(data);
         templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
     });
 
