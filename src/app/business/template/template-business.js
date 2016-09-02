@@ -1382,18 +1382,16 @@
 		{
 			value = value.trim() || '';
 			
-			if( valueType.dataType &&
-                valueType.dataType == 'NUMBER' &&
-                valueType.dataSubtype &&
-				(valueType.dataSubtype == 'PERCENTAGE') ||
-                (valueType.dataSubtype == 'CURRENCY') )
+			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
 			{
 				value = numberWithCommas(value);
 			}
 			else if(valueType.dataType &&
                 valueType.dataType == 'DATE')
 			{				
-				value = formatDate(parseDate(value, 'DD-MMM-YY'), 'DD/MM/YYYY');
+				value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
 			}
 			
 			return value;
@@ -1404,14 +1402,15 @@
 		{
 			value = value.trim() || '';
 			
-			if( valueType && valueType.dataType && valueType.dataType == 'NUMBER' && valueType.dataSubtype &&
-				(valueType && valueType.dataSubtype == 'PERCENTAGE') || (valueType && valueType.dataSubtype == 'CURRENCY') )
+			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
 			{
 				value = removeCommaValue(value);
 			}
 			else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
 			{				
-				value = formatDate(parseDate(value, 'DD/MM/YYYY'), 'DD-MMM-YY');
+				value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
 			}
 			
 			return value;
