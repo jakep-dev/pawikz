@@ -81,7 +81,7 @@
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
 
-               data.projectId = req.body.projectId;
+               // data.projectId = req.body.projectId;
 
                 //Notify Renewal Status to the user initiated the request.
                 notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status');
