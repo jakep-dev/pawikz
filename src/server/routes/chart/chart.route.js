@@ -1126,13 +1126,11 @@
                                 } else {
                                     console.log('[' + result.request_id + "]PDF generation " + result.PDFPercentComplete + "% complete.");
                                     subContext.room = 'pdf_' + result.request_id;
-
                                     subContext.data = {
                                         requestId: result.request_id,
                                         progress: result.PDFPercentComplete
                                     };
-
-                                    config.socketIO.socket.emit('pdf-download-status', subContext.data);
+                                    config.socketIO.socket.emit('[' + subContext.room + ']pdf-download-status', subContext.data);
                                     setTimeout(function () {
                                         next();
                                     }, 1000);
@@ -1193,13 +1191,13 @@
                                     } else {
                                         console.log('---->Request ' + context.result.request_id + ' is complete.');
                                     }
-
+                                    context.room = 'pdf_' + context.result.request_id;
                                     context.data = {
                                         requestId: context.result.request_id,
                                         progress: context.result.PDFPercentComplete
                                     };
                                     console.log('Sending socket message for request:' + context.data.requestId);
-                                    config.socketIO.socket.emit('pdf-download-status', context.data);
+                                    config.socketIO.socket.emit('[' + context.room + ']pdf-download-status', context.data);
                                 }
                             );
 
