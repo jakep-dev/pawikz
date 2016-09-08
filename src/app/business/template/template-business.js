@@ -129,10 +129,10 @@
             }
         }
 
-        ///Listens to PDF download and update accordingly
-        function listenToPdfDownload()
+        function listenToPdfDownload(request_id)
         {
-            clientConfig.socketInfo.socket.on('pdf-download-status', function(response)
+            var room = 'pdf_' + request_id;
+            clientConfig.socketInfo.socket.on('[' + room + ']pdf-download-status', function (response)
             {
                 if(response)
                 {
@@ -302,7 +302,7 @@
                             }
                             toast.simpleToast("Issue with PDF Download. Please try again.");
                         } else {
-                            listenToPdfDownload();
+                            listenToPdfDownload(data.request_id);
 
                             if(notification)
                             {
