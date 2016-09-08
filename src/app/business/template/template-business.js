@@ -1324,7 +1324,7 @@
 		}
 
         //Get Mnemonic value based on itemId and Mnemonic
-        function getMnemonicValue(itemId, mnemonic)
+        function getMnemonicValue(itemId, mnemonic, format)
         {
             var value = '';
             if(business.mnemonics)
@@ -1340,7 +1340,14 @@
 
                 if(mnemonic)
                 {
-                    value = formatData(mnemonic.value, mnemonic);
+                    if(format)
+					{
+						value = formatData(mnemonic.value, mnemonic);
+					}
+					else
+					{
+						value = mnemonic.value;
+					}
                     value = _.escape(value);
                 }
             }

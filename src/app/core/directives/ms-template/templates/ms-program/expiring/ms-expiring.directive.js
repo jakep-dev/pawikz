@@ -268,7 +268,7 @@
                         var itemId = tearSheetItem.ItemId;
                         var mnemonicId = tearSheetItem.Mnemonic;
                         var newCopyItemId = templateBusiness.getCopyItemId(tearSheetItem.CopyItemId);
-                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
                         var newItemId = templateBusiness.getNewItemId(itemId);
                         var isDisabled = (itemId.indexOf('RATE') !== -1) ||
                                          (itemId.indexOf('ROL') !== -1) ||
@@ -321,7 +321,7 @@
                         }
                         else if (itemId.indexOf('CARRIER') > -1)
                         {
-                            makeColDef += '"' + value + '",';
+                            makeColDef += '"' + value.trim() + '",';
                         }
                         else
                         {
@@ -658,7 +658,7 @@
                         exp = '$scope.rows[count].' + header.name + '.id';
                     var id = eval(exp);
 
-                    var value = templateBusiness.getMnemonicValue(copyItemId, mnemonicId);
+                    var value = templateBusiness.getMnemonicValue(copyItemId, mnemonicId, false);
                     if ((header.name.indexOf('LIMIT') > -1) || (header.name.indexOf('PREMIUM') > -1) || (header.name.indexOf('RET') > -1))
                     {
                         if (value)
