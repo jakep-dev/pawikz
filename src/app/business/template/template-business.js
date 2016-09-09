@@ -1340,13 +1340,13 @@
 
                 if(mnemonic)
                 {
-                    if(format)
+                    if(format && format === false)
 					{
-						value = formatData(mnemonic.value, mnemonic);
+						value = mnemonic.value;
 					}
 					else
 					{
-						value = mnemonic.value;
+						value = formatData(mnemonic.value, mnemonic);
 					}
                     value = _.escape(value);
                 }
