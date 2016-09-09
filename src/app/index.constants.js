@@ -1,7 +1,6 @@
 (function ()
 {
     'use strict';
-    var socket = io.connect();
 
     angular
         .module('advisen')
@@ -52,23 +51,25 @@
                 workUpEndPoint:
                 {
                     create: '/api/workup/create',
-                    renew: '/api/workup/renew'
+                    renew: '/api/workup/renew',
+                    status: '/api/workup/status'
                 }
             },
             appSettings:
             {
                 autoSaveTimeOut: 10000,
-                textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk=='
+                textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
+                componentInitialLoad:  3
             },
             socketInfo: {
-                socket: socket
+                socket: undefined
             },
             activity:{
                 //In Seconds
                 idle: 600,
                 timeout: 120,
                 interval: 1200,
-                dialogtimeout: 5
+                dialogtimeout: 60
             }
         });
 })();

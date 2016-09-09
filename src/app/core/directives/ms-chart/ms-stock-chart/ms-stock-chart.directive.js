@@ -16,8 +16,6 @@
         vm.searchedStocks = [];
         vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
-        //console.log('hideFilters--------------------->',vm.hideFilters);
-        //variables
 
         vm.onFilterStateUpdate = function (){
             loadChartData();
@@ -227,9 +225,6 @@
                         dataSet.push(data);
                     }
                 }
-                //console.log('seriesSet----->',seriesSet);
-                // firstchartSerArr[firstchartSerArr.length] = {"name":stockName, "data": firstDatasetArr};
-                //console.log('peerData: ' + peerData);
 
                 datasetArr[datasetArr.length] = {
                     "name": "",
@@ -272,27 +267,20 @@
                     "xData": xdataArr,
                     "datasets": datasetArr
                 };
-                //console.log('================================' +JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data))
-                console.log('==================================');
-                //console.log(JSON.stringify(data));
-                //console.log('JSON.stringify(outArr).slice(1,-1): ', JSON.stringify(outArr).slice(1,-1));
-                //console.log('secondchartSerArr.length after: ' + secondchartSerArr.length);
+
                 return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
-                //return outArr;
             }
         }
         vm.fetchChartData = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
             stockService
                 .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId,  store.inMemoryCache['user-info'].token)
                 .then(function(data) {
-                    //console.log('seriesdata',data)
                     //@todo call logic for remove legend item on empty series data
                     $scope.$emit('ticker', {'ticker': data.stockChartPrimaryData[0].ticker});
                     vm.stockDataSet=convServiceResptoChartFormat(data);
                     if(data.stockChartPeerData && data.stockChartPeerData.length){
                         vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
                     }
-                    //console.log('selected stock', vm.selectedStockCount);
                 });
         };
 

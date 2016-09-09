@@ -1,0 +1,35 @@
+<md-dialog id="timeout-dialog" aria-label="Mango (Fruit)" ng-controller="LoginDialogController as vm">
+    <form>
+        <md-toolbar>
+            <div layout="row" layout-align="space-between center">
+                <div class="md-toolbar-tools">
+                    <h2>Authentication</h2>
+                </div>
+            </div>
+
+        </md-toolbar>
+        <md-progress-linear class="md-warn" md-mode="indeterminate"></md-progress-linear>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <p>Session already in use.</p>
+                <p>Either kill the in-use session or login using different credentials.</p>
+            </div>
+
+            <md-divider></md-divider>
+
+            <div layout="row">
+                <md-button
+                           ng-click="vm.stop()" layout-align="start center">
+                    <md-icon md-font-icon="icon-stop"></md-icon>
+                    Kill Session
+                </md-button>
+
+                <md-button
+                        ng-click="vm.logout()" layout-align="start center">
+                    <md-icon md-font-icon="icon-login"></md-icon>
+                    LogIn
+                </md-button>
+            </div>
+        </md-dialog-content>
+    </form>
+</md-dialog>

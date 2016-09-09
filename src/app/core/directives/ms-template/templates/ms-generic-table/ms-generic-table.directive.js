@@ -30,8 +30,6 @@
             {
                 var newScope = null;
                 var html = '';
-                console.log('GenericTableScope');
-                console.log(scope);
 
                 //Creating Rows for Generic-Table
                 angular.forEach(scope.tearsheet.rows, function(row)
@@ -48,12 +46,14 @@
                         {
                             columns = row;
                         }
-                        else {
+                        else if(row.col && row.col.length)  {
                             columns = row.col;
                         }
+                        else if(row.col) {
+                            columns = [];
+                            columns.push(row.col);
+                        }
 
-                        console.log('RowValues - ');
-                        console.log(scope.tearsheet.rows);
                         //Creating Columns for Generic-Table
                         angular.forEach(columns, function (col) {
 

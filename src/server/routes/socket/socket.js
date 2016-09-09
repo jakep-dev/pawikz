@@ -7,9 +7,9 @@
     {
         //Configure the websocket
         var io = require('socket.io').listen(server);
-        //io.set('origins', config.socketIO.host);
-        //io.set('transports', ['polling']);
-        //io.set('log level', 1);
+        io.set('origins', config.socketIO.host);
+        io.set('transports', config.client.transports);
+        io.set('log level', config.client.logLevel);
 
         config.socketIO.socket = io;
 
@@ -33,6 +33,7 @@
                 console.log(data);
                 if(data.token in config.userSocketInfo)
                 {
+                    console.log('Already In');
                     callback(false);
                 }
                 else {
@@ -41,6 +42,7 @@
                     socket.userid = data.userId;
                     socket.join('workup-room');
                     config.userSocketInfo[socket.nickname] = socket;
+                    console.log(config.userSocketInfo);
                 }
             });
         }

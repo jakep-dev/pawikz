@@ -98,13 +98,13 @@
                             case 'DateItem':
                                 html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
 								html += '<span style="display:none">{{formatDate(row.'+ tearSheetItem.ItemId + ', "YYYY-MM-DD")}}</span>'; //for easy sorting
-                                var calRow = '{{row.'+ tearSheetItem.ItemId + '}}';
+								var calRow = '{{formatSubMnemonic(row.'+ tearSheetItem.ItemId + ', "'+ tearSheetItem.ItemId + '")}}';
                                 html += '<span>' + calRow + '</span>';
 
                                 break;
                             default:
                                 html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
-                                var calRow = '{{row.'+ tearSheetItem.ItemId + '}}';
+                                var calRow = '{{formatSubMnemonic(row.'+ tearSheetItem.ItemId + ', "'+ tearSheetItem.ItemId + '")}}';
                                 html += '<span>' + calRow + '</span>';
 
                                 break;
@@ -358,6 +358,8 @@
                 var column = [];
                 var columns = '';
                 var header = null;
+				
+				scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics(scope.itemid, scope.mnemonicid);
 
                 if(scope.tearsheet.header && scope.tearsheet.header.col)
                 {
@@ -448,11 +450,11 @@
 							var date = moment(dateStr, 'DD-MMM-YY', true);
 							return date.isValid() ? date.format(format) : '';
 						};
-
-                        console.log('TableLayout Filter Link');
-                        console.log(scope);
-                        console.log('TableLayout Filter Data');
-                        console.log(data);
+						
+						scope.formatSubMnemonic = function(value, subMnemonic)
+						{
+							return templateBusiness.formatData(value, _.find(scope.subMnemonics, {mnemonic: subMnemonic}));
+						}
                     }
                     scope.$parent.$parent.isprocesscomplete = true;
                 });

@@ -19,8 +19,6 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-program/proposed/ms-proposed.html',
             link: function(scope, el, attrs)
             {
-                console.log('Proposed Program');
-                console.log(scope);
                 defineAction(scope);
                 initializeMsg(scope);
                 defineLayout(scope, el);
@@ -186,8 +184,6 @@
 
             $scope.upload = function()
             {
-                console.log('Upload Firing Only one time');
-                console.log($scope);
                 //Get the element and files.
                 var element = el.find('#proposed-upload');
                 if(element && element.length > 0)
@@ -196,8 +192,6 @@
 
                     if(files && files.length > 0)
                     {
-                        console.log('Files - ');
-                        console.log(files);
                         var data = [];
                         templateBusiness.parseCsvToJson(files[0], updateRows, $scope);
                     }
@@ -485,7 +479,6 @@
 
                 if (isNaN(rate) || !isFinite(rate)) 
                 {
-                    console.log('RATE is invalid [' + rate + ']');
                     rate = '';
                 }
                 else
@@ -514,7 +507,6 @@
 
                 if (isNaN(rol) || !isFinite(rol)) 
                 {
-                    console.log('ROL is invalid [' + rol + ']');
                     rol = '';
                 }
 
@@ -591,7 +583,6 @@
             if(data && linkElement && linkElement.length > 0)
             {
                 var fileName = 'ProposedProgram_' + commonBusiness.projectName.trim() + '.csv';
-                console.log(fileName);
                 linkElement[0].download = fileName;
                 linkElement[0].href = 'data:application/csv,' + escape(data);
                 linkElement[0].click();
@@ -746,8 +737,6 @@
 
         function updateRows(data, $scope)
         {
-            console.log('Update Rows');
-            console.log(data);
             if(data.data && data.data.length > 0)
             {
                 //Header Rows
@@ -833,7 +822,6 @@
                             });
                         }
                         rowCount++;
-                        console.log(rowCount);
                     });
 
                     //recompute formula for all rows
@@ -931,8 +919,6 @@
             {
                 element[0].value = '';
             }
-
-            console.log(element);
         }
     }
 

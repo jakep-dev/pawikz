@@ -9,15 +9,19 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService, Papa, dialog) {
+    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
+                              overviewBusiness, templateService, Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
+           notifications: [],
            autoSavePromise: [],
            isExpandAll: false,
+           componentStatus: [],
+           components:[],
+           remainingComponentCount: 0,
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
@@ -53,10 +57,345 @@
            getSubComponents: getSubComponents,
            buildSubComponent: buildSubComponent,
            showTemplateProgress: showTemplateProgress,
-           hideTemplateProgress: hideTemplateProgress
+           hideTemplateProgress: hideTemplateProgress,
+           requestPdfDownload: requestPdfDownload,
+           updateNotification: updateNotification,
+           listenToPdfDownload: listenToPdfDownload,
+           listenToWorkUpStatus: listenToWorkUpStatus,
+           downloadTemplatePdf:downloadTemplatePdf,
+           pushNotification: pushNotification,
+           pushComponentStatus: pushComponentStatus,
+		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
+		   formatData: formatData,
+		   removeFormatData: removeFormatData,
+           loadComponents: loadComponents,
+           getComponentHeader: getComponentHeader,
+           initializeMessages: initializeMessages
         };
 
         return business;
+
+        function initializeMessages(scope)
+        {
+            commonBusiness.onMsg('notify-renewal-workup-notification-center', scope, function(ev, data) {
+                business.pushNotification(data);
+            });
+        }
+
+        ///Get the component header details
+        function getComponentHeader()
+        {
+            var header = {
+                name: '',
+                subHeader: ''
+            };
+
+            if(business.components.header)
+            {
+                header.name = business.components.header.label;
+                header.subHeader = business.components.header.subheader || '';
+            }
+
+            return header;
+        }
+
+        function loadComponents()
+        {
+
+        }
+
+        function pushComponentStatus(id, status)
+        {
+            if(business.componentStatus)
+            {
+                var component = _.find(business.componentStatus, function(component)
+                {
+                   if(component.id === id)
+                   {
+                       return component;
+                   }
+                });
+
+                if(component)
+                {
+                    component.isLoaded = status;
+                }
+                else {
+                    business.componentStatus.push({
+                       id: id,
+                        isLoaded: status
+                    });
+                }
+            }
+        }
+
+        ///Listens to PDF download and update accordingly
+        function listenToPdfDownload()
+        {
+            clientConfig.socketInfo.socket.on('pdf-download-status', function(response)
+            {
+                if(response)
+                {
+
+                    var notification = _.first(business.notifications, function(not)
+                    {
+                        if(not.status === 'in-process' &&
+                            not.type === 'PDF-Download')
+                        {
+                            return not;
+                        }
+                    });
+
+                    if(notification)
+                    {
+                        notification.requestId = response.requestId;
+                        notification.progress = response.progress;
+                        if(notification.progress === 100)
+                        {
+                            notification.status = 'complete';
+                            notification.disabled = false;
+                        }
+                        commonBusiness.emitMsg('update-notification-binding');
+                    }
+
+                }
+            });
+        }
+
+        ///Listen to workup creation status and update accordingly
+        function listenToWorkUpStatus()
+        {
+            clientConfig.socketInfo.socket.on('create-workup-status', function(response)
+            {
+                if(response)
+                {
+
+                    var notification = _.first(business.notifications, function(not)
+                    {
+                        if(not.status === 'in-process' &&
+                            not.type === 'Create-WorkUp' &&
+                            not.id === response.projectId)
+                        {
+                            return not;
+                        }
+                    });
+
+                    if(notification)
+                    {
+                        notification.progress = response.progress;
+                        if(notification.progress === 100)
+                        {
+                            notification.status = 'complete';
+                            notification.disabled = false;
+                            notification.url = response.projectId;
+                            $rootScope.toastTitle = 'WorkUp Creation Completed!';
+                            $rootScope.toastProjectId = response.projectId;
+                            $mdToast.show({
+                                hideDelay: 8000,
+                                position: 'bottom right',
+                                controller: 'WorkUpToastController',
+                                templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+                            });
+                        }
+                        commonBusiness.emitMsg('update-notification-binding');
+                    }
+                }
+            });
+        }
+
+        //Download template pdf
+        function downloadTemplatePdf(requestId, workupName)
+        {
+            var pdfName = workupName.concat('.pdf');
+
+            templateService.downloadTemplatePdf(requestId, pdfName).then(function (data) {
+
+                //uses the browser specific Blob object
+                var blob = new Blob([data.data], { type: 'application/octet-stream' });
+
+                //get browser dependent url builder for Blob object
+                var url = $window.URL || $window.webkitURL || $window.mozURL;
+
+                var objectUrl = $sce.trustAsResourceUrl(url.createObjectURL(blob));
+
+                var anchor = $('#backgroundLink')[0];
+                anchor.download = pdfName;
+
+                //For IE 10+
+                if (window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveOrOpenBlob(blob, pdfName);
+                } else {
+                    //For Chrome, Firefox, Safari
+                    anchor.href = objectUrl;
+                    anchor.click();
+                }
+            });
+        }
+
+        function requestPdfDownload()
+        {
+            var inProgressNotification = _.find(business.notifications, function (notification) {
+                if(notification.type === 'PDF-Download' &&
+                    notification.status === 'in-process')
+                {
+                 return notification;
+                }
+            });
+
+            if (inProgressNotification) {
+                toast.simpleToast("PDF Download is in-progress. Please try after the PDF Download is complete");
+                return null;
+            }
+
+            var userDetails = store.get('user-info'),
+                userName = '',
+                userId = null;
+
+            if (userDetails) {
+                userName = userDetails.fullName;
+                userId = userDetails.userId;
+
+
+                var notification = _.find(business.notifications, function(not)
+                {
+                    if(not.id === commonBusiness.projectId &&
+                        not.type === 'PDF-Download')
+                    {
+                        return not;
+                    }
+                });
+
+                if(notification)
+                {
+                    notification.disabled = true;
+                    notification.progress = 0;
+                    notification.status = 'in-process';
+                    notification.requestId = 0;
+                }
+                else {
+                    business.notifications.push(addNotification(commonBusiness.projectId, commonBusiness.projectName, 'PDF-Download',
+                        'icon-file-pdf-box', 0, true, '', 'in-process', userId.toString(), true, 0));
+                }
+
+                templateService.createTemplatePdfRequest(commonBusiness.projectId, userId,
+                                                         commonBusiness.projectName,
+                                                         commonBusiness.companyName, userName)
+                    .then(function (data) {
+
+                        var notification = _.find(business.notifications, function(not)
+                        {
+                            if(not.id === commonBusiness.projectId &&
+                                not.type === 'PDF-Download')
+                            {
+                                return not;
+                            }
+                        });
+
+
+                        if (data && data.errorMessages &&
+                            data.errorMessages.length > 0) {
+                            if(notification)
+                            {
+                                notification.status = 'error';
+                                notification.progress = 100;
+                                notification.disabled = false;
+                            }
+                            toast.simpleToast("Issue with PDF Download. Please try again.");
+                        } else {
+                            listenToPdfDownload();
+
+                            if(notification)
+                            {
+                                notification.requestId = data.request_id;
+                            }
+
+                            toast.simpleToast('PDF download has been initiated.  Go to notification center for updates.');
+                        }
+                    });
+            }
+        }
+
+        //Update the notification details
+        function updateNotification(id, status, type, url, title)
+        {
+            var notification = _.find(business.notifications, function(not)
+                                    {
+                                       if(parseInt(not.id) === parseInt(id) &&
+                                           not.type === type)
+                                       {
+                                           return not;
+                                       }
+                                    });
+
+            console.log('Update Notification - ');
+            console.log(notification);
+            console.log(business.notifications);
+
+            if(notification)
+            {
+                notification.status = status;
+                notification.progress = 100;
+                notification.disabled = false;
+                notification.url = url;
+
+                if(title && title != '')
+                {
+                    notification.title = title;
+                }
+            }
+        }
+
+        //Push the notification details
+        function pushNotification(data)
+        {
+            console.log('Push Notification-');
+            console.log(data);
+
+            if(data)
+            {
+                var notification = _.find(business.notifications, function(not)
+                {
+                    if(not.id === data.id &&
+                       not.type === data.type)
+                    {
+                        return not;
+                    }
+                });
+
+                if(notification)
+                {
+                    notification.status = data.status;
+                    notification.progress = data.progress;
+                    notification.disabled = data.disabled;
+                    notification.istrackable = data.istrackable;
+                }
+                else {
+                    business.notifications.push(data);
+                }
+            }
+        }
+
+        ///Id - Needs to be unique.
+        ///title - Which displays on the notification center
+        ///type - PDF-Download, Renew, CreateWorkUp - will expand in future
+        ///icon - To display for actions icon-file-pdf-box (PDF Download), icon-rotate-3d (Renew)
+        ///progress - To show the progress of actions initiated
+        function addNotification(id, title, type, icon, progress, disabled, tooltip, status, userId, istrackable, requestId)
+        {
+            return {
+                id: id,
+                title: title,
+                type: type,
+                icon: icon,
+                progress: progress,
+                disabled: disabled,
+                tooltip: tooltip,
+                status: status,
+                userId: userId,
+                istrackable: istrackable,
+                requestId: requestId
+            };
+        }
 
         function showTemplateProgress()
         {
@@ -1001,13 +1340,116 @@
 
                 if(mnemonic)
                 {
-                    value = mnemonic.value.trim() || '';
+                    value = formatData(mnemonic.value, mnemonic);
                     value = _.escape(value);
                 }
             }
             return value;
         }
-
+		
+		//get all subMnemonics in table layouts to get its data types and sub data types
+		function getTableLayoutSubMnemonics(itemId, mnemonic)
+        {
+            var subMnemonics = [];
+            if(angular.isDefined(business.mnemonics))
+            {
+                angular.forEach(business.mnemonics, function(eachrow)
+                {
+                    if(eachrow.itemId === itemId && eachrow.dataSubtype)
+                    {
+						angular.forEach(eachrow.dataSubtype.split(','), function(eachColumn)
+						{
+							var mnemonic = eachColumn.split(' ');
+							if(mnemonic.length > 0)
+							{
+								subMnemonics.push({
+									mnemonic: mnemonic[0] || '',
+									dataType: mnemonic[1] || '',
+									dataSubtype: mnemonic[2] || ''
+								});
+							}
+						});
+						
+                    }
+                });
+            }
+			
+            return subMnemonics;
+        }
+		
+		//formats the data for NUMBER(PERCENTAGE & CURRENCY only) and DATE data types
+		function formatData(value, valueType)
+		{
+			value = value.trim() || '';
+			
+			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+			{
+				value = numberWithCommas(value);
+			}
+			else if(valueType.dataType &&
+                valueType.dataType == 'DATE')
+			{				
+				value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
+			}
+			
+			return value;
+		}
+		
+		//removes formatted data, used in savings and reformatting
+		function removeFormatData(value, valueType)
+		{
+			value = value.trim() || '';
+			
+			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+			{
+				value = removeCommaValue(value);
+			}
+			else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
+			{				
+				value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+			}
+			
+			return value;
+		}
+		
+		function parseDate(str, format)
+		{
+			var date = moment(str, format, true);
+			return date.isValid() ? date.toDate() : '';
+		}
+		
+		function formatDate(date, format)
+		{
+			var date = moment(date);
+			return date.isValid() ? date.format(format) : '';
+		}
+ 
+        function numberWithCommas(value)
+		{ 
+            var parts = value.toString().split("."); 
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+            return parts.join("."); 
+        }
+		
+		function removeCommaValue(inputValue)
+        {
+            var outputValue;
+            
+            if (inputValue)
+            {
+                outputValue = String(inputValue).replace(/\,/g, '');
+                return Number(outputValue);
+            }
+            else
+            {
+                return inputValue;
+            }
+        }
+		
         function getTemplateElement()
         {
 

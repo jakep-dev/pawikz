@@ -11,9 +11,11 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle, Keepalive)
+    function LoginController($window, $scope, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle, commonBusiness)
     {
         var vm = this;
+
+        commonBusiness.emitMsg('step-load-completed');
 
         $rootScope.isOperation = false;
         vm.LogIn = LogIn;
@@ -26,19 +28,15 @@
 
         function goUrl(url)
         {
-            console.log(url);
             $window.location.href = url;
         }
 
         function LogIn(userName, password)
         {
-
-            //var socket = io.connect();
             authService.authenticate(userName, password).then(function(response)
             {
-                if(angular.isDefined(response) &&
-                   angular.isDefined(response.responseInfo) &&
-                   angular.isDefined(response.userinfo))
+                if(response && response.responseInfo &&
+                   response.userinfo)
                 {
 
                     Idle.watch();
@@ -56,15 +54,10 @@
                         userId: userId
                     }, function(data)
                     {
-                        console.log('Return data');
-                        console.log(data);
                         if(data)
                         {
                             authBusiness.userInfo = response.userinfo;
                             authBusiness.userName = response.userinfo.fullName;
-
-                            console.log('authBusiness.userInfo');
-                            console.log(authBusiness.userInfo);
 
                             store.set('user-info', authBusiness.userInfo);
                             store.set('x-session-token', token);
@@ -74,6 +67,7 @@
                         }
                         else {
                             toast.simpleToast('Cannot open multiple sessions!');
+                            //dialog.status('app/main/pages/auth/login/dialog/login.dialog.html', false, false);
                         }
                     });
                 }

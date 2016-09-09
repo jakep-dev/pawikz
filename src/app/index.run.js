@@ -8,8 +8,16 @@
 
     /** @ngInject */
     function runBlock($rootScope, commonBusiness, store,
-                      logger, clientConfig, Idle, $location)
+                      logger, clientConfig, Idle, $location, $document)
     {
+		if (!clientConfig.socketInfo.socket) {
+			var socketCORSPath = $location.protocol() + '://' + $location.host();
+			if ($location.port != 80) {
+				socketCORSPath += ':' + $location.port();
+			}
+			clientConfig.socketInfo.socket = io.connect(socketCORSPath);
+		}
+
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
             ///Removing the token if user is at login page.
@@ -20,9 +28,6 @@
                 store.remove('x-session-token');
             }
 
-            console.log('toParams - ');
-            console.log(toParams);
-
             ///Initiate the socket for the client based on token.
             ///Placing it on the state change. b'coz for each state change and complete reload
             ///We need to make sure the user has a single socket available.
@@ -32,9 +37,6 @@
             logger.log(token, 'info');
             if(token)
             {
-
-                console.log('UserInfo');
-                console.log(userInfo);
                 var userId = '';
 
                 if(userInfo && userInfo.userId)
@@ -45,16 +47,13 @@
                     userId = toParams.userId;
                 }
 
-                console.log('userId--');
-                console.log(userId);
-
-
                 if(clientConfig.socketInfo.socket.disconnected)
                 {
                     clientConfig.socketInfo.socket.connect();
                 }
 
                 var type = commonBusiness.socketType(toState);
+                $document[0].title = 'Advisen Template';
                 Idle.watch();
                 clientConfig.socketInfo.socket.emit('init-socket',{
                     token: token,

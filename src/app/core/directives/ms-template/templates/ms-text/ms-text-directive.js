@@ -29,7 +29,6 @@
 
         $scope.textChange = function()
         {
-            //console.log('textChange --> value = "' + $scope.value + '"');
             if($scope.iskmb)
             {    
                var inputVal = $.trim($scope.value);
@@ -52,7 +51,7 @@
                     //     rowId: $scope.rowid, columnName: $scope.columnname
                     // });
                 }
-                else { console.log('Skipping over the procession of ' + inputVal); }
+                else { }
             }
         }
 
