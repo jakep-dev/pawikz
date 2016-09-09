@@ -29,8 +29,6 @@
 
         $scope.textChange = function()
         {
-            //console.log('textChange --> value = "' + $scope.value + '"');
-
             var inputVal = $.trim($scope.value);
 
             //if the number pattern matches numeric shortcuts ###[kmb] then skip the computation of the rest of the rows
@@ -60,15 +58,13 @@
                     element.val($scope.value);
                 }
             }
-            else { console.log('Skipping over the processing of ' + inputVal); }
+            else {  }
         }
 
         $scope.$watch(
             "value",
             function handleAutoSave(newValue, oldValue) {
-                //console.log('$watch on scope.value --> newValue = "' + newValue + '"' + ' oldValue ="' + oldValue + '"');
-
-                //In the scenario if the visible text field has value of ###[KMB] 
+                //In the scenario if the visible text field has value of ###[KMB]
                 //and the prior value is the same as converted value of the current visible value(###[KMB])
                 //scope.watch gets triggered with the 2m value and need to convert it
                 if (templateBusiness.isKMBValue(newValue))

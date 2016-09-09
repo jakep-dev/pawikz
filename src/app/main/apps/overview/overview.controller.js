@@ -15,7 +15,7 @@
     function OverviewController($rootScope, $stateParams, $scope,
                                 $mdMenu, overviewService,
                                 navConfig, breadcrumbBusiness, workupBusiness, commonBusiness,
-                                overviewBusiness, store, toast)
+                                overviewBusiness, templateBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
             $rootScope.projectId = $stateParams.projectId;
@@ -58,10 +58,15 @@
         vm.redo = redo;
         vm.saveAll = saveAll;
         vm.showOverviewDetails =showOverviewDetails;
+        vm.pdfDownload = pdfDownload;
         vm.renew = renew;
 
         //Data
         loadData();
+
+        function pdfDownload() {
+           templateBusiness.requestPdfDownload();
+        }
 
         function defineBottomSheet()
         {
@@ -78,10 +83,12 @@
         //Renew workup
         function renew(projectId)
         {
-            workupBusiness.renew(commonBusiness.userId, projectId, 'reload-overview');
-            commonBusiness.onMsg('reload-overview', $scope, function()
+            templateBusiness.initializeMessages($scope);
+            workupBusiness.renew(commonBusiness.userId, projectId, commonBusiness.projectName, 'reload-overview');
+            commonBusiness.onMsg('reload-overview', $scope, function(ev, data)
             {
-               loadData();
+               templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal',
+                   parseInt(data.projectId), data.project_name);
             });
         }
 
@@ -131,7 +138,7 @@
                     overviewBusiness.templateOverview = vm.templateOverview;
                     overviewBusiness.templateOverview.isChanged = false;
 
-                    angular.forEach(vm.templateOverview.steps, function(step)
+                    _.each(vm.templateOverview.steps, function(step)
                     {
                         navConfig.sideNavItems.push({
                             stepName: step.stepName,

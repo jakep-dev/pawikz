@@ -7,7 +7,7 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope, $mdMenu, $element, $compile,  commonBusiness,
+    function msComponentController($scope, commonBusiness,
                                    templateBusiness, overviewBusiness, toast)
     {
         var vm = this;
@@ -28,8 +28,6 @@
         $scope.$watch(
             "isprocesscomplete",
             function handleProgress(value) {
-                console.log('Progress Watch Triggered');
-                console.log(value);
                 vm.isProcessComplete = value;
             }
         );
@@ -45,9 +43,7 @@
                 vm.printer();
             }            
         });
-		
-        console.log('Component Scope');
-        console.log($scope);
+
 
         initialize();
 
@@ -123,7 +119,6 @@
         //Build the component actions if provided.
         function buildActions()
         {
-            console.log('Initialize Build Action');
             $scope.$watchCollection(
                 "actions",
                 function handleBuildActions(newValue, oldValue) {
@@ -142,10 +137,13 @@
 
         buildActions();
 
+        //$scope.$evalAsync( function() {
+        //    alert('component content loaded');
+        //});
     }
 
     /** @ngInject */
-    function msComponentDirective($compile, templateBusiness)
+    function msComponentDirective($compile, templateBusiness, commonBusiness)
     {
         return {
             restrict: 'E',
@@ -156,7 +154,9 @@
                 isnoneditable: '=?',
                 isprocesscomplete: '=?',
                 actions: '=',
-                subtype: '@'
+                subtype: '@',
+                islastcomponent: '=?',
+                itemid: '@'
             },
             controller: 'msComponentController',
             controllerAs: 'vm',
@@ -166,6 +166,7 @@
                 return function($scope)
                 {
                     $scope.title = $scope.tearheader.label;
+                    $scope.preLabel = $scope.tearheader.prelabel || '';
                     $scope.actions = null;
                     $scope.actions = [];
                     var comp = {
@@ -226,6 +227,11 @@
                     }
                     else {
                         bindComponents($scope, el, $scope.tearcontent);
+                    }
+
+                    if($scope.islastcomponent)
+                    {
+                        commonBusiness.emitMsg('step-load-completed');
                     }
                 };
             }

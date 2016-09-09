@@ -36,9 +36,6 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-radio-button/ms-radio-button.html',
             link:function(scope)
             {
-                console.log('Radio Button Scope');
-                console.log(scope);
-                console.log('Radio Button Scope End');
             }
         };
     }

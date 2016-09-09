@@ -23,7 +23,6 @@
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
         bottomSheetConfig.controller = $scope;
 
-
         vm.refreshstep = refreshStep;
 
         $scope.saveAll = saveAll;
@@ -81,11 +80,10 @@
         //Get Schema
         function getSchemaAndData()
         {
+            templateBusiness.showTemplateProgress();
             stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
             {
                 toast.simpleToast('AutoSave Enabled');
-                console.log('Defer Response Data ---');
-                console.log(response);
                 if(response)
                 {
                     angular.forEach(response, function(data)
@@ -123,14 +121,18 @@
         function initialize()
         {
             getSchemaAndData();
+
+            commonBusiness.onMsg('step-load-completed', $scope, function() {
+                templateBusiness.hideTemplateProgress();
+            });
+
+            commonBusiness.onMsg('step-load-initiated', $scope, function() {
+                templateBusiness.showTemplateProgress();
+            });
         }
 
         //Move to the previous step
         function previousStep() {
-
-            console.log('Previous Step - ');
-            console.log(overviewBusiness.templateOverview);
-
             if(overviewBusiness.templateOverview &&
                 overviewBusiness.templateOverview.steps)
             {
@@ -140,9 +142,6 @@
 
         //Move to the next step
         function nextStep() {
-            console.log('Previous Step - ');
-            console.log(overviewBusiness.templateOverview);
-
             if(overviewBusiness.templateOverview &&
                 overviewBusiness.templateOverview.steps)
             {

@@ -13,7 +13,9 @@
 
         var business = {
                 initialize: initialize,
-                renew: renew
+                renew: renew,
+                createWorkUp: createWorkUp,
+                renewFromDashboard: renewFromDashboard
         };
 
         return business;
@@ -29,9 +31,70 @@
             });
         }
 
-        function renew(userId, projectId, reloadEvent)
+        function NotifyNotificationCenter(notification, message)
+        {
+            commonBusiness.emitWithArgument(message, notification);
+        }
+
+        function renewFromDashboard(userId, projectId, projectName)
+        {
+            workupService.renew(userId, projectId);
+            toast.simpleToast(projectName + ' getting ready for renewal');
+            NotifyNotificationCenter({
+                id: projectId,
+                title: projectName,
+                type: 'Renewal',
+                icon: 'icon-rotate-3d',
+                progress: 15,
+                disabled: true,
+                tooltip: 'Renewal still in-progress',
+                status: 'in-process',
+                userId: userId,
+                istrackable: false,
+                url: projectId
+            }, 'notify-renewal-workup-notification-center');
+        }
+
+        function createWorkUp(userId, companyId, templateId)
+        {
+            workupService.create(userId, companyId, templateId).then(function(response)
+            {
+                console.log('CreateWorkUp-');
+                console.log(response);
+                if(response) {
+                    NotifyNotificationCenter({
+                        id: response.projectId,
+                        title: response.project_name || ('Project - ' + response.projectId),
+                        type: 'Create-WorkUp',
+                        icon: 'icon-library-plus',
+                        progress: 15,
+                        disabled: true,
+                        tooltip: 'Create work-up still in-progress',
+                        status: 'in-process',
+                        userId: userId,
+                        istrackable: true,
+                        url: ''
+                    }, 'notify-create-workup-notification-center');
+                }
+            });
+        }
+
+        function renew(userId, projectId, projectName, reloadEvent)
         {
             renewComplete(reloadEvent);
+            NotifyNotificationCenter({
+                id: projectId,
+                title: projectName,
+                type: 'Renewal',
+                icon: 'icon-rotate-3d',
+                progress: 15,
+                disabled: true,
+                tooltip: 'Renewal still in-progress',
+                status: 'in-process',
+                userId: userId,
+                istrackable: false,
+                url: projectId
+            }, 'notify-renewal-workup-notification-center');
             workupService.renew(userId, projectId);
             dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
         }
@@ -43,8 +106,7 @@
                 dialog.close();
                 if(reloadEvent !== '')
                 {
-                    console.log('Emit Msg - ' + reloadEvent);
-                    commonBusiness.emitMsg(reloadEvent);
+                    commonBusiness.emitWithArgument(reloadEvent, data);
                 }
             });
         }

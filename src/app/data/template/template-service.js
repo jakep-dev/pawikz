@@ -19,10 +19,46 @@
             getSchemaDefer: getSchemaDefer,
             getDataDefer: getDataDefer,
             save: save,
-			getScrapedHTML: getScrapedHTML
+			getScrapedHTML: getScrapedHTML,
+            createTemplatePdfRequest: createTemplatePdfRequest,
+            downloadTemplatePdf: downloadTemplatePdf
         };
 
         return service;
+
+        function createTemplatePdfRequest(project_id, user_id, file_name, company_name, user_name) {
+            return $http({
+                method: "POST",
+                url: "/api/createTemplatePDFRequest",
+                data: {
+                    project_id: project_id,
+                    user_id: user_id,
+                    file_name: file_name,
+                    company_name: company_name,
+                    user_name: user_name
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            }).catch(function (error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
+
+        function downloadTemplatePdf(request_id, file_name) {
+            return $http({
+                method: "POST",
+                url: "/api/downloadTemplatePDF",
+                responseType: 'arraybuffer',
+                data: {
+                    request_id: request_id,
+                    file_name: file_name
+                }
+            }).then(function (data, status, headers, config) {
+                return data;
+            }).catch(function (error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
 
         function getDynamicTableData(projectId, stepId,
                                      mnemonic, itemId, columns)

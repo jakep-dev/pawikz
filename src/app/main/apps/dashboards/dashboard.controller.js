@@ -13,7 +13,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                              DTColumnDefBuilder, DTColumnBuilder,
                              DTOptionsBuilder, dashboardService,
                              authService, authBusiness, commonBusiness,
-                             breadcrumbBusiness, dashboardBusiness, workupService, store, toast, $mdToast, clientConfig)
+                             breadcrumbBusiness, dashboardBusiness, workupBusiness, store, toast,
+                             $mdToast, clientConfig, templateBusiness, $interval)
 {
     var vm = this;
     vm.companyId = 0;
@@ -47,6 +48,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         redrawDataTable();
     });
 
+    commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
+        templateBusiness.pushNotification(data);
+    });
+
     function renewTemplate()
     {
         $('.renewStyle').click(function()
@@ -59,8 +64,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             {
                 var projectId = obj[0].attributes['projectId'].value;
                 var projectName = obj[0].attributes['projectName'].value;
-                workupService.renew($stateParams.userId, projectId);
-                toast.simpleToast(projectName + ' getting ready for renewal');
+                workupBusiness.renewFromDashboard($stateParams.userId, parseInt(projectId), projectName);
             }
         });
 
@@ -168,6 +172,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     // Initialize
     function initialize(isNav, token)
     {
+        templateBusiness.initializeMessages($scope);
         if(isNav)
         {
             store.set('x-session-token', token);
@@ -240,6 +245,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             controller: 'WorkUpToastController',
             templateUrl: 'app/main/components/workup/toast/workup.toast.html'
         });
+
+        console.log('Renewal WorkUp');
+        console.log(data);
+        templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
     });
 
     ///Work-Up Status
@@ -252,9 +261,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         else {
             workups.push(data);
         }
-
-        console.log('WorkupStatue');
-        console.log(workups);
 
         if(workups && _.size(workups) > 0)
         {

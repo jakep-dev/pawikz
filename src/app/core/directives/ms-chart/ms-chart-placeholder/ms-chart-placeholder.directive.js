@@ -7,7 +7,7 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($rootScope, $scope, dialog, $mdMedia, $mdDialog, commonBusiness) {
+    function msChartPlaceHolderController($rootScope, $scope, dialog, $mdDialog, commonBusiness) {
         var vm = this;
         var type = $scope.$parent.type;
         vm.title = $scope.chartTitle;
@@ -175,7 +175,6 @@
 
         ///Remove selected chart.
         function removeChart(id, event) {
-            console.log(id);
             dialog.confirm('Would you like to delete?', 'Selected Stock chart will be deleted. Please confirm.',event, {
                 ok: {
                     name: 'yes', callBack: function () {

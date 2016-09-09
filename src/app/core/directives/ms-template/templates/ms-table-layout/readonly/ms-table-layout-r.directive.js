@@ -8,13 +8,13 @@
 
 
     /** @ngInject */
-    function msTablelayoutRDirective($compile, templateService, commonBusiness, DTOptionsBuilder)
+    function msTablelayoutRDirective($compile, templateService, commonBusiness, templateBusiness, DTOptionsBuilder)
     {
         function tableLayoutFirstVariation(scope, el, header, column)
         {
             var html = '';
             var columns = '';
-
+			
             angular.forEach(column, function(col)
             {
                 if(col.TearSheetItem &&
@@ -24,17 +24,11 @@
                 }
             });
 
-            console.log('Table Layout ReadOnly-');
-            console.log(columns);
-
             templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                 scope.mnemonicid, scope.itemid, columns).then(function(response)
             {
                 html = '';
                 var data = response.dynamicTableDataResp;
-
-                console.log('Table Layout Readonly V1 Data-');
-                console.log(data);
 
                 if(!data)
                 {
@@ -43,7 +37,6 @@
                     html += '</div>';
                 }
                 else {
-
                     scope.dtOptions = DTOptionsBuilder
                         .newOptions()
                         .withOption('processing', true)
@@ -113,7 +106,7 @@
                                         html += '<span style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"></ms-link></span>';
                                     }
                                     else {
-                                        html += '<span style="font-weight: normal">' + value + '</span>';
+                                        html += '<span style="font-weight: normal">' + formatData(value, mnemonic, scope.subMnemonics) + '</span>';
                                     }
                                 }
 
@@ -152,10 +145,6 @@
             {
                 var data = response.dynamicTableDataResp;
 
-                console.log('Table Layout Readonly V2 Data-');
-                console.log(data);
-
-
                 if(!data)
                 {
                     html += '<div flex>';
@@ -163,9 +152,6 @@
                     html += '</div>';
                 }
                 else if(data.length >= 1) {
-
-                    console.log('Rendering V2 Layout');
-
                     html += '<table class="tb-v2-layout" width="100%" cellpadding="4" cellspacing="0">';
                     html += '<tbody>';
                     angular.forEach(row, function(eachRow)
@@ -191,7 +177,7 @@
                                var value = eval(exp);
 
                                if (value) {
-                                   html += value;
+                                   html += formatData(value, mnemonic, scope.subMnemonics);
                                }
                                html += '</td>';
                            }
@@ -207,6 +193,11 @@
 
             });
         }
+		
+		function formatData(value, subMnemonic, subMnemonics)
+		{
+			return templateBusiness.formatData(value, _.find(subMnemonics, {mnemonic: subMnemonic}));
+		}
 
         return {
             restrict: 'E',
@@ -220,13 +211,10 @@
             compile:function(el, attrs)
             {
                 return function($scope) {
-                   console.log('Table ReadOnly-');
-                    console.log($scope);
-
-
                     if($scope.tearsheet.columns)
                     {
                         $scope.$parent.$parent.isprocesscomplete = false;
+						$scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics($scope.itemid, $scope.mnemonicid);
                     }
 
                     var header = null;
@@ -234,7 +222,6 @@
 
                     if($scope.tearsheet.columns.col)
                     {
-                        console.log('Readonly Variation 1');
                         columns = $scope.tearsheet.columns.col;
 
                         if($scope.tearsheet.header &&
@@ -249,7 +236,6 @@
                     {
                         columns = [];
                         var rows = [];
-                        console.log('Readonly Variation 2');
                         angular.forEach($scope.tearsheet.columns, function(eachCol)
                         {
                            var row = [];
@@ -277,8 +263,6 @@
                                rows.push(row);
                            }
                         });
-                        console.log(columns);
-                        console.log(rows);
                         tableLayoutSecondVariation($scope, el, $scope.tearsheet.columns, columns);
                     }
                 };

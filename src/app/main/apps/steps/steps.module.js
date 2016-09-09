@@ -20,9 +20,6 @@
     /** @ngInject */
     function config($stateProvider)
     {
-        console.log('Config Steps- ');
-        console.log( angular.element('#main-content'));
-
         $stateProvider.state('app.steps', {
             url    : '/steps/{projectId}/{stepId}/{stepName}',
             params : {reloadCount:1},

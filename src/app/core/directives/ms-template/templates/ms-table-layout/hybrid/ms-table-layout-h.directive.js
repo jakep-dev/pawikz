@@ -103,7 +103,7 @@
 												'text="'+tearSheetItem.param.content+'" columnname="'+itemId+'"></ms-hybrid-checkbox>';
                                 break;
 							case 'GenericTextItem':
-								html += '<span style="display:none">{{row.' + itemId + '}}</span>'; // for easy sorting & searching
+								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
 								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
 								break;
                             default:
@@ -362,8 +362,7 @@
         }
 		
 		function addRows($scope)
-		{	
-			console.log('ADDING ' + $scope.rowNumber + ' row(s)');
+		{
 			var maxSequence = getMaxSequence($scope);
 			if(!angular.isUndefined($scope.rowNumber))
 			{
@@ -387,7 +386,6 @@
 		
 		function deleteRows($scope)
 		{
-			console.log('Deleting rows');
 			for(var index = $scope.rows.length - 1; index >= 0; index--)
 			{
 				var row = $scope.rows[index];
@@ -414,7 +412,6 @@
 		
 		function copyRows($scope)
 		{
-			console.log('Copying rows');
 			var maxSequence = getMaxSequence($scope);
 			angular.forEach($scope.rows, function(row)
 			{
@@ -443,7 +440,8 @@
 			{
 				insert.row.push({
 					columnName: key,
-					value: value
+					value: templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
+					//value: value
 				});
 			});
 			
@@ -467,7 +465,8 @@
 			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'IsChecked'), function(value, key){
 				save.row.push({
 					columnName: key,
-					value: value
+					value: templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
+					//value: value
 				});
 			});
 			
@@ -490,7 +489,6 @@
 		
 		function excelUpload($scope)
 		{
-			console.log('Uploading excel data');
 			toast.simpleToast("Please choose file!");
 
             var uploadElement = $('#hybrid-upload');
@@ -508,8 +506,6 @@
 		
 		function updateRows(data, $scope)
         {
-            console.log('Update Rows');
-            console.log(data);
             if(data.data && data.data.length > 0)
             {
 				//Header Rows
@@ -618,13 +614,10 @@
             {
                 element[0].value = '';
             }
-
-            console.log(element);
         }
 		
 		function excelDownload($scope)
 		{
-			console.log('Downloading data to excel');
 			var linkElement = $('#link-hybrid-download');
 			var dataInfo = [];
 			var data = null;
@@ -661,16 +654,10 @@
 					colCount++;
 				});
 				data += '}';
-				
-				console.log('Data \n' + data);
-				console.log(angular.fromJson(data));
-
 				dataInfo.push(angular.fromJson(data));
 			});
 			
 			data = templateBusiness.unParseJsonToCsv(dataInfo);
-			
-			console.log(data);
 
 			if(data && linkElement && linkElement.length > 0)
 			{
@@ -711,6 +698,8 @@
             /*if(scope.tearsheet.columns.length > 0)
             {*/
                 scope.$parent.$parent.isprocesscomplete = false;
+				scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics(scope.itemid, scope.mnemonicid);
+
                 var column = [];
                 var columns = '';
                 var header = null;
@@ -769,6 +758,11 @@
 						saveRow(scope, row);
 					};
 					
+					scope.removeFormatData = function(value, subMnemonic)
+					{
+						return templateBusiness.removeFormatData(value, _.find(scope.subMnemonics, {mnemonic: subMnemonic}));
+					};
+					
 					scope.upload = function(){
 						var element = el.find('#hybrid-upload');
 						if(element && element.length > 0)
@@ -777,8 +771,6 @@
 
 							if(files && files.length > 0)
 							{
-								console.log('Files - ');
-								console.log(files);
 								var data = [];
 								templateBusiness.parseCsvToJson(files[0], updateRows, scope);
 							}
@@ -786,13 +778,7 @@
 					};
 
                     scope.$parent.$parent.isprocesscomplete = true;
-
-					console.log('TableLayout Hybrid Link');
-					console.log(scope);
-					console.log('TableLayout Hybrid Data');
-					console.log(data);
                 });
-            //}
         }
     }
 

@@ -46,17 +46,12 @@
             {
                 return function($scope)
                 {
-                    console.log('DropDown - Compile');
-                    console.log($scope);
-
                     $scope.$watch(
                         "tearsheet",
                         function handleAutoSave(newValue, oldValue) {
                             if(newValue !== oldValue)
                             {
                                 $scope.tearsheetobj = angular.fromJson($scope.tearsheet);
-                                console.log('Changed');
-                                console.log($scope.tearsheetobj);
                             }
                         }
                     );

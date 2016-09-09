@@ -151,6 +151,7 @@
                      */
                     function updateScrollbar()
                     {
+                        //iElement.scrollTop(0);
                         PerfectScrollbar.update(iElement[0]);
                     }
 

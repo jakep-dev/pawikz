@@ -9,7 +9,7 @@
 
 /** @ngInject */
 function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrumbBusiness,
-                          workupBusiness, workupService, toast, store, clientConfig, $mdToast)
+                          workupBusiness, templateBusiness, commonBusiness, toast, store, clientConfig, $mdToast)
 {
     var vm = this;
 
@@ -20,23 +20,11 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
     }
 
     workupBusiness.initialize($stateParams.token);
-    workupService.create($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
+    workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
+    templateBusiness.listenToWorkUpStatus();
 
     toast.simpleToast('Creating new workup in progress. Use notification center for updates');
 
     var token =  store.get('x-session-token');
     $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
-
-    clientConfig.socketInfo.socket.on('notify-create-workup-status', function(data)
-    {
-        console.log('Notify-WorkUp-Status');
-        $rootScope.toastTitle = 'WorkUp Creation Completed!';
-        $rootScope.toastProjectId = data.projectId;
-        $mdToast.show({
-            hideDelay: 5000,
-            position: 'bottom right',
-            controller: 'WorkUpToastController',
-            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
-        });
-    });
 }
