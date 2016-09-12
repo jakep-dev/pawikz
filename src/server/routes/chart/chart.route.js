@@ -6,7 +6,7 @@
     var fs = require('fs');
 
     function getImageBase64Data(imagePath) {
-        var path = process.cwd() + '\\' + imagePath.replace(/\//g, '\\');
+        var path = process.cwd() + '/' + imagePath;
         console.log('--->' + path);
         var content = fs.readFileSync(path, 'base64');
         return content;
