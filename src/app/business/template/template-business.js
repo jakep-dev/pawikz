@@ -68,6 +68,8 @@
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
+		   formatDate: formatDate,
+		   parseDate: parseDate,
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
            initializeMessages: initializeMessages
@@ -563,7 +565,7 @@
         }
 
         ///Build hybrid table layout element
-        function buildHybridTableLayout(scope, itemId, mnemonicId, header, columns)
+        function buildHybridTableLayout(scope, itemId, mnemonicId, header, columns, footer)
         {
             var newScope  = scope.$new(true),
                 comp = {
@@ -576,6 +578,7 @@
 
             newScope.tearsheet = {
                 header: header,
+				footer: footer,
                 columns: columns
             };
 
@@ -616,7 +619,7 @@
 
                 case 'tablelayout4':
                     tableLayout = getHeaderAndColumnsForTableLayout4(scope.tearcontent);
-                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
                     //Hybrid Table
                     break;
 
@@ -727,6 +730,11 @@
                     tableLayout.itemId = content.ItemId;
                     tableLayout.mnemonicId = content.Mnemonic;
                 }
+				
+				if(content.id === 'GenericTableItem')
+				{
+					tableLayout.footer = content.row;
+				}
             });
 
             return tableLayout;
@@ -1387,18 +1395,21 @@
 		//formats the data for NUMBER(PERCENTAGE & CURRENCY only) and DATE data types
 		function formatData(value, valueType)
 		{
-			value = value.trim() || '';
-			
-			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
-                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
-                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+			if(!angular.isUndefined(valueType) && !angular.isUndefined(value))
 			{
-				value = numberWithCommas(value);
-			}
-			else if(valueType.dataType &&
-                valueType.dataType == 'DATE')
-			{				
-				value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
+				value = value+''.trim() || '';
+				
+				if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+					(valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+					(valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+				{
+					value = numberWithCommas(value);
+				}
+				else if(valueType.dataType &&
+					valueType.dataType == 'DATE')
+				{				
+					value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
+				}
 			}
 			
 			return value;
@@ -1407,17 +1418,20 @@
 		//removes formatted data, used in savings and reformatting
 		function removeFormatData(value, valueType)
 		{
-			value = value.trim() || '';
-			
-			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
-                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
-                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+			if(!angular.isUndefined(valueType) && !angular.isUndefined(value))
 			{
-				value = removeCommaValue(value);
-			}
-			else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
-			{				
-				value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+				value = value+''.trim() || '';
+				
+				if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+					(valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+					(valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+				{
+					value = removeCommaValue(value);
+				}
+				else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
+				{				
+					value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+				}
 			}
 			
 			return value;
