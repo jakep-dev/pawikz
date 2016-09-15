@@ -185,6 +185,9 @@
                             status(projectId, token, next);
                         }, 5000);
                     }
+                    else {
+                        clearTimeout(context.timeout);
+                    }
                 }
                 else if(!data.templateStatus) {
                     clearTimeout(context.timeout);

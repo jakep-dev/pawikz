@@ -539,6 +539,29 @@
             return comp;
         }
 
+        //Build read-only pivot table layout element
+        function buildReadOnlyPivotTableLayout(scope, itemId, mnemonicId, header, columns)
+        {
+            var newScope  = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
+
+            newScope.tearsheet = {
+                header: header,
+                columns: columns
+            };
+
+            comp.html = '<ms-tablelayout-r-p itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r-p>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
         ///Build edit table layout element
         function buildEditTableLayout(scope, content, header, columns)
         {
@@ -609,9 +632,9 @@
                     break;
 
                 case 'tablelayout3':
-                    //
-                    //tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
-                    //return buildReadOnlyTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    //ReadOnly-Pivot Table
+                    tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
+                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
                     break;
 
                 case 'tablelayout4':
@@ -692,6 +715,8 @@
         function getHeaderAndColumnsForTableLayout3(tearcontent)
         {
             var tableLayout = {
+                itemId: null,
+                mnemonicId: null,
                 header: null,
                 row: null
             };
@@ -700,6 +725,8 @@
             {
                 if(content.id === 'TableLayOut')
                 {
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
                     tableLayout.row = content.TableRowTemplate.row;
                 }
             });
