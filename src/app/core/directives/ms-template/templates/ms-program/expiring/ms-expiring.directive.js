@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, $filter, commonBusiness,
+    function msExpiringDirective($compile, $filter, $window, commonBusiness,
                                      templateBusiness, DTOptionsBuilder, toast)
     {
         return {
@@ -576,13 +576,21 @@
 
             data = templateBusiness.unParseJsonToCsv(dataInfo);
 
-            if(data && linkElement && linkElement.length > 0)
-            {
+            // IE 10+ 
+            if ($window.navigator.msSaveBlob){ 
+                console.log('IE 10 +'); 
                 var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
-                linkElement[0].download = fileName;
-                linkElement[0].href = 'data:application/csv,' + escape(data);
-                linkElement[0].click();
-                toast.simpleToast('Finished downloading - ' + fileName);
+                window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+            }else{
+                if(data && linkElement && linkElement.length > 0)
+                {
+                    var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
+                    linkElement[0].download = fileName;
+                    linkElement[0].href = 'data:application/csv,' + escape(data);
+                    linkElement[0].click();
+                    toast.simpleToast('Finished downloading - ' + fileName);
+                }
             }
         }
 
@@ -722,12 +730,19 @@
 
             if(uploadElement && uploadElement.length > 0)
             {
-                uploadElement.change(function()
-                {
-                    $(this).off('change');
-                    $('#btn-expiring-upload').click();
-                });
-                uploadElement.click();
+                setTimeout(function () {
+                        uploadElement.change(function(e)
+                        {
+                            $(this).off('change');
+                            setTimeout(function () {
+                                angular.element('#btn-expiring-upload').trigger('click');
+                            }, 0);
+                            // $('#btn-expiring-upload').click();
+                            console.log("sulod dria");
+                        });
+
+                        uploadElement.click();
+                    }, 500);
             }
         }
 
