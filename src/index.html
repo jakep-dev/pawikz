@@ -362,7 +362,7 @@
         your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <body md-theme="{{vm.themes.active.name}}" ms-window-exit md-theme-watch ng-controller="AppController as vm">
+    <body md-theme="{{vm.themes.active.name}}" md-theme-watch ng-controller="AppController as vm">
 
         <div ng-cloak id="splash-screen">
             <div class="center">
@@ -391,7 +391,7 @@
             <!--</div>-->
         </div>
 
-        <div id="main" class="animate slide-up" flex layout="row" ui-view="main"></div>
+        <div id="main" class="animate slide-up" ms-window-exit flex layout="row" ui-view="main"></div>
        <!-- <script type="application/javascript" src="../bower_components/socket.io/lib/socket.js"></script>
         <script>
             var socket = io.connect('http://localhost:3000');
