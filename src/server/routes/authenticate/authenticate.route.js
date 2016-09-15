@@ -48,19 +48,13 @@
         //Logout user
         function logout(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
-
             var service = getServiceDetails('templateManager');
             var methodName = '';
 
             if(!u.isUndefined(service) && !u.isNull(service))
             {
-                console.log(service.name);
                 methodName = service.methods.logout;
             }
-
-            console.log(methodName);
 
             var args =
             {
@@ -69,8 +63,6 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            console.log(args);
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {

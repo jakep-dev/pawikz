@@ -30,7 +30,6 @@
             console.log('Init socket');
             socket.on('init-socket', function(data, callback)
             {
-                console.log(data);
                 if(data.token in config.userSocketInfo)
                 {
                     console.log('Already In');
@@ -42,7 +41,7 @@
                     socket.userid = data.userId;
                     socket.join('workup-room');
                     config.userSocketInfo[socket.nickname] = socket;
-                    console.log(config.userSocketInfo);
+                    console.log('Adding to userSocketInfo');
                 }
             });
         }
@@ -51,9 +50,9 @@
         ///Leave the room as well.
         function disConnectionSocket(socket)
         {
-            console.log('Disconnected Socket');
             socket.on('disconnect', function(data)
             {
+                console.log('Disconnected Socket');
                 if(!socket.nickname)
                     return;
 
@@ -61,6 +60,8 @@
                 socket.leave('workup-room');
                 delete config.userSocketInfo[socket.nickname];
             });
+
+
         }
 
         function checkWorkUpInfo(socket)
