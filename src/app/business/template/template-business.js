@@ -137,7 +137,7 @@
                 if(response)
                 {
 
-                    var notification = _.first(business.notifications, function(not)
+                    var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
                             not.type === 'PDF-Download')
@@ -170,7 +170,7 @@
                 if(response)
                 {
 
-                    var notification = _.first(business.notifications, function(not)
+                    var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
                             not.type === 'Create-WorkUp' &&
