@@ -66,8 +66,16 @@
            pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
+		   getMnemonicPrefix: getMnemonicPrefix,
+		   getMnemonicPostfix: getMnemonicPostfix,
+		   getMnemonicParameters: getMnemonicParameters,
+           getMnemonicPrecision: getMnemonicPrecision,
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
+           removeCommaValue: removeCommaValue,
+           numberWithCommas: numberWithCommas,
+		   parenthesisForNegative: parenthesisForNegative,
+		   removeParenthesis: removeParenthesis,
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
            initializeMessages: initializeMessages
@@ -1423,6 +1431,171 @@
 			return value;
 		}
 		
+		//check if subtype is CURRENCY to add prefix (currency symbol)
+		function isCurrencySubtype(mnemonicValue)
+		{
+			var isCurrency = false;
+			if(business.mnemonics)
+            {
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                                {
+                                  if(m.mnemonic === mnemonicValue)
+                                  {
+                                      return m;
+                                  }
+                                });
+
+                if(mnemonic)
+                {
+                    isCurrency = mnemonic.dataSubtype === 'CURRENCY';
+                }
+            }
+			
+			return isCurrency;
+		}
+		
+		//get currency symbol prefix
+		function getMnemonicPrefix(tearSheet)
+		{
+			var prefix = '';
+			
+			if(isCurrencySubtype(tearSheet.Mnemonic) && overviewBusiness.templateOverview && overviewBusiness.templateOverview.defaultCurrency)
+			{
+				var currency = overviewBusiness.templateOverview.defaultCurrency;
+				switch (currency) {
+					case 'USD':					
+					case 'CAD':
+						prefix = '$';
+						break;
+					case 'JPY':
+						prefix = '&yen;';
+						break;
+					case 'EUR':
+						prefix = '&euro;';
+						break;
+					case 'GBP':
+						prefix = '&pound;';
+						break;
+					case 'CHF':
+						prefix = 'CHF';
+						break;
+					default:
+						prefix = '';
+				}
+			}
+			return prefix;
+		}
+
+		//get decimal places for NUMBER types
+        function getMnemonicPrecision(tearSheet)
+        {
+            var precision = null;
+            
+            //xml precision value set
+            var xmlParameters = getMnemonicParameters(tearSheet);
+			
+            if(xmlParameters && xmlParameters.precision_in)
+            {
+                return xmlParameters.precision_in;
+            }
+            
+            //webservice default precision value
+            if(business.mnemonics)
+            {
+                var mnemonic = _.find(business.mnemonics, function(m)
+                {
+                    if(m.mnemonic === tearSheet.Mnemonic)
+                    {
+                        return m;
+                    }
+                });
+
+                if(mnemonic && mnemonic.dataType === 'NUMBER')
+                {
+                    return mnemonic.precision;
+                }
+            }
+            return precision;
+        }
+		
+		//get parameters set in XML
+		function getMnemonicParameters(tearSheet)
+		{
+			if(tearSheet.Parameters && tearSheet.Parameters.length > 0) {
+				var parameters = [];
+				angular.forEach(tearSheet.Parameters.split(','), function(parameter)
+				{
+					if(parameter && parameter.length && parameter.indexOf('=') > -1){
+						var param = parameter.split('=');
+						var strParam = '';
+						
+						strParam += '"' + param[0] + '"' ;  //key
+						strParam += ':"' + param[1] + '"' ;  //value
+						
+						parameters.push(strParam);
+					}
+				});
+				
+				return angular.fromJson('{' + parameters.join(', ') + '}');
+			}
+			
+			return null;
+		}
+		
+		//get KMB indicators for NUMBER types
+		function getMnemonicPostfix(tearSheet)
+		{
+			var postFix = '';
+			
+			//xml units value set
+			var xmlParameters = getMnemonicParameters(tearSheet);
+			if(xmlParameters && xmlParameters.unit_in)
+			{
+				return getKMBIndicator(xmlParameters.unit_in);
+			}
+			
+			//webservice default units value
+			if(business.mnemonics)
+            {
+				var mnemonic = _.find(business.mnemonics, function(m)
+				{
+					if(m.mnemonic === tearSheet.Mnemonic)
+					{
+						return m;
+					}
+				});
+
+                if(mnemonic)
+                {
+					return getKMBIndicator(mnemonic.units);
+                }
+            }
+			return postFix;
+		}
+		
+		//KMB Indicator value 
+		function getKMBIndicator(unitValue)
+		{
+			var unit = '';
+			if(unitValue && unitValue.length > 0)
+			{
+				var unitLength = unitValue.length;
+				
+				if (unitLength > 9)
+				{
+					unit = "B";
+				} else if (unitLength > 6)
+				{
+					unit = "M";
+				} else if (unitLength > 3)
+				{
+					unit = "K";
+				}
+			}
+			return unit;
+		}
+		
 		function parseDate(str, format)
 		{
 			var date = moment(str, format, true);
@@ -1456,6 +1629,26 @@
                 return inputValue;
             }
         }
+ 
+		//add parenthesis for negative values
+		function parenthesisForNegative(value)
+		{
+			if(parseFloat(value) < 0)
+			{
+				value = value.replace('-', '(') + ')';
+			}
+			return value;
+		}
+		
+		//remove parenthesis for negative values
+		function removeParenthesis(value)
+		{
+			if(value+''.match(/^\(\d*\)/g))
+			{
+				value = value.replace('(', '-').replace(')','');
+			}
+			return value;
+		}
 		
         function getTemplateElement()
         {
