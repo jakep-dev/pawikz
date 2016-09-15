@@ -16,7 +16,8 @@
             app.post('/api/workup/create', create),
             app.post('/api/workup/renew', renew),
             app.post('/api/workup/lock', lock),
-            app.post('/api/workup/status', status)
+            app.post('/api/workup/status', status),
+            app.post('/api/workup/unlock', unlock)
         ]);
 
 
@@ -93,7 +94,7 @@
             res.status('200').send('');
         }
 
-        //Check the workup is being worked by other user
+        //Lock the workup is being worked by other user
         function lock(req, res, next)
         {
             var service = getServiceDetails('templateManager');
@@ -103,6 +104,32 @@
                 !_.isNull(service))
             {
                 methodName = service.methods.lockWorkUp;
+            }
+
+            var args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    user_id: req.body.userId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
+                res.status(response.statusCode).send(data);
+            });
+        }
+
+        //UnLock the workup is being worked by other user
+        function unlock(req, res, next)
+        {
+            var service = getServiceDetails('templateManager');
+            var methodName = '';
+
+            if(!_.isUndefined(service) &&
+                !_.isNull(service))
+            {
+                methodName = service.methods.unlockWorkUp;
             }
 
             var args =

@@ -3,6 +3,7 @@
 {
 
     var _ = require('underscore');
+    var workupBusiness = require('../workup/workup.business');
 
     overviewRoute.init = function(app, config)
     {
@@ -67,8 +68,15 @@
                 }
             };
 
+            if(req.body.prevProjectId) {
+                //Unlock previously loaded work-up
+                workupBusiness.unlock(req.body.prevProjectId, req.body.userId, req.headers['x-session-token']);
+            }
+
+
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
             {
+                workupBusiness.lock(req.body.projectId, req.body.userId, req.headers['x-session-token']);
                 broadcastWorkUpInfo(req.headers['x-session-token'], req.body.userId, req.body.projectId, 'in-process');
                 res.status(response.statusCode).send(setOverViewDetails(data));
             });
