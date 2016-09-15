@@ -23,17 +23,17 @@
 
         //Create new workup
         function create(req, res, next) {
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
 
-            var service = getServiceDetails('templateManager');
-            var methodName = '';
-
-            if(!_.isUndefined(service) &&
-               !_.isNull(service))
+            if(!_.isUndefined(context.service) &&
+               !_.isNull(context.service))
             {
-                methodName = service.methods.createWorkUp;
+                context.methodName = context.service.methods.createWorkUp;
             }
 
-            var args =
+            context.args =
             {
                 parameters: {
                     user_id: req.body.userId,
@@ -43,17 +43,14 @@
                 }
             };
 
-            var token = req.headers['x-session-token'];
+            context.token = req.headers['x-session-token'];
 
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
-                //status(data.projectId, req.headers['x-session-token'], next);
+            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
                 console.log('Response - StatusCode');
                 console.log(data);
-                status(data.projectId, token, next);
+                status(data.projectId, context.token, next);
                 res.status(response.statusCode).send(data);
             });
-
-
         }
 
         //Renew existing workup
@@ -149,16 +146,17 @@
         //Get the create workup status
         function status(projectId, token, next)
         {
-            var service = getServiceDetails('templateManager');
-            var methodName = '';
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
 
-            if(!_.isUndefined(service) &&
-                !_.isNull(service))
+            if(!_.isUndefined(context.service) &&
+                !_.isNull(context.service))
             {
-                methodName = service.methods.createWorkUpStatus;
+                context.methodName = context.service.methods.createWorkUpStatus;
             }
 
-            var args =
+            context.args =
             {
                 parameters: {
                     project_id: projectId,
@@ -166,26 +164,30 @@
                 }
             };
 
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
+            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
                 console.log('Workup Status - ');
                 console.log(data);
+                console.log(projectId);
                 if(data && data.templateStatus) {
 
-                    var compData = {
+                    context.compData = {
                         projectId: projectId,
                         progress: parseInt(data.templateStatus.percentage)
                     };
 
                     if(token in config.userSocketInfo)
                     {
-                        config.userSocketInfo[token].emit('create-workup-status', compData);
+                        config.userSocketInfo[token].emit('create-workup-status', context.compData);
                     }
 
                     if(parseInt(data.templateStatus.percentage) !== 100) {
-                        setTimeout(function () {
+                       context.timeout = setTimeout(function () {
                             status(projectId, token, next);
                         }, 5000);
                     }
+                }
+                else if(!data.templateStatus) {
+                    clearTimeout(context.timeout);
                 }
             });
         }
