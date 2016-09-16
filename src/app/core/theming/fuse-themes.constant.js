@@ -104,7 +104,7 @@
           }
         },
         accent    : {
-          name: 'orange',
+          name: 'blue', // orange
           hues: {
             'default': '500',
             'hue-1'  : '400',
@@ -112,7 +112,7 @@
             'hue-3'  : 'A100'
           }
         },
-        warn      : {name: 'deep-orange'},
+        warn      : {name: 'green'}, //deep-orange
         background: {
           name: 'grey',
           hues: {

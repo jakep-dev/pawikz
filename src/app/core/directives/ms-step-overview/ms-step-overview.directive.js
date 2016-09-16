@@ -10,7 +10,7 @@
 
     function MsStepOverviewController($scope, commonBusiness)
     {
-        $scope.isExpanded = true;
+        $scope.isExpanded = false;
 
         $scope.toggleExpanded = toggleExpanded;
         $scope.singleSelection = singleSelection;
