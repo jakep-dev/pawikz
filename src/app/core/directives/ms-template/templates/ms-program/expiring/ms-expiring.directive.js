@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, $filter, $window, commonBusiness,
+    function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector
                                      templateBusiness, DTOptionsBuilder, toast)
     {
         return {
@@ -577,20 +577,19 @@
             data = templateBusiness.unParseJsonToCsv(dataInfo);
 
             // IE 10+ 
-            if ($window.navigator.msSaveBlob){ 
+            if (deviceDetector.browser === 'ie')
+            { 
                 console.log('IE 10 +'); 
                 var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
                 window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
                 toast.simpleToast('Finished downloading - ' + fileName); 
-            }else{
-                if(data && linkElement && linkElement.length > 0)
-                {
-                    var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
-                    linkElement[0].download = fileName;
-                    linkElement[0].href = 'data:application/csv,' + escape(data);
-                    linkElement[0].click();
-                    toast.simpleToast('Finished downloading - ' + fileName);
-                }
+            }else if(data && linkElement && linkElement.length > 0)
+            {
+                var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
+                linkElement[0].download = fileName;
+                linkElement[0].href = 'data:application/csv,' + escape(data);
+                linkElement[0].click();
+                toast.simpleToast('Finished downloading - ' + fileName);
             }
         }
 
@@ -730,15 +729,12 @@
 
             if(uploadElement && uploadElement.length > 0)
             {
-                setTimeout(function () {
+                    setTimeout(function () {
                         uploadElement.change(function(e)
                         {
                             $(this).off('change');
-                            setTimeout(function () {
                                 angular.element('#btn-expiring-upload').trigger('click');
-                            }, 0);
                             // $('#btn-expiring-upload').click();
-                            console.log("sulod dria");
                         });
 
                         uploadElement.click();
