@@ -120,7 +120,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     {
         $('#dashBoardDetails_filter input').unbind();
         $('#dashBoardDetails_filter input').bind('keyup', function(e) {
-            if(e.keyCode == 13) {
+            if(e.keyCode == 13 || this.value.length == 0) {
                 var oTable = $('#dashBoardDetails').dataTable();
                 oTable.fnFilter(this.value);
             }
