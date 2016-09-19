@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector
+    function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector,
                                      templateBusiness, DTOptionsBuilder, toast)
     {
         return {

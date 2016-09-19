@@ -7,7 +7,8 @@
         .directive('msProposed', msProposedDirective);
 
     /** @ngInject */
-    function msProposedDirective($compile, $filter, $window, deviceDetector, commonBusiness, templateBusiness, DTOptionsBuilder, toast)
+    function msProposedDirective($compile, $filter, $window, deviceDetector,
+                                 commonBusiness, templateBusiness, DTOptionsBuilder, toast)
     {
         return {
             restrict: 'E',
