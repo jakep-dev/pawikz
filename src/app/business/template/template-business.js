@@ -1383,14 +1383,13 @@
 
                 if(mnemonic)
                 {
-                    if(format && format === false)
-					{
-						value = mnemonic.value;
-					}
-					else
-					{
-						value = formatData(mnemonic.value, mnemonic);
-					}
+                    if(!format ||
+                        format === false) {
+                        value = mnemonic.value;
+                    }
+                    else {
+                        value = formatData(mnemonic.value, mnemonic);
+                    }
                     value = _.escape(value);
                 }
             }
