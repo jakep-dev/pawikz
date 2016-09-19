@@ -36,7 +36,7 @@
         var redoData = [];
 
         var vm = this;
-        vm.isExpanded = true;
+        vm.isExpanded = false;
         commonBusiness.isStepExpandAll = vm.isExpanded;
         vm.expandClass = 'expand';
         vm.isOverviewLoaded = false;

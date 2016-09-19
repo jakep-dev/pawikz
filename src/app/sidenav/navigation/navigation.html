@@ -3,7 +3,7 @@
         <span class="logo-image">
 
         </span>
-        <span class="logo-text">Advisen</span>
+        <!--<span class="logo-text">Advisen</span>-->
     </div>
 </md-toolbar>
 
@@ -12,14 +12,14 @@
     <ms-nav-item>
         <a ms-nav-button ui-sref="app.myWork({userId:$root.passedUserId})" ui-sref-active="active md-accent-bg" md-ink-ripple>
             <i class="icon-worker s16"></i>
-            <span class="ms-nav-label">My Workups</span>
+            <span class="ms-nav-label">My Work-ups</span>
         </a>
     </ms-nav-item>
 
     <ms-nav-item ng-if="(!!vm.sideNavItems && vm.sideNavItems.length > 0)">
         <a ms-nav-button ui-sref="app.overview({projectId:$root.projectId})" ui-sref-active="active md-accent-bg" md-ink-ripple>
             <i class="icon-view-agenda s16"></i>
-            <span class="ms-nav-label">Project Overview</span>
+            <span class="ms-nav-label">Work-up Overview</span>
         </a>
     </ms-nav-item>
 

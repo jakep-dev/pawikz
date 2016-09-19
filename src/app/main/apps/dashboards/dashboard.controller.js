@@ -23,7 +23,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
     }
-    breadcrumbBusiness.title = 'My Workups';
+    breadcrumbBusiness.title = 'My Work-ups';
     $rootScope.projectOverview = [];
     commonBusiness.userId = $stateParams.userId;
 
@@ -224,7 +224,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         //Defining columns for dashboard
         vm.dtColumns = [
             DTColumnBuilder.newColumn('companyName', 'Company Name'),
-            DTColumnBuilder.newColumn('projectName', 'Project Name'),
+            DTColumnBuilder.newColumn('projectName', 'Work-up Name'),
             DTColumnBuilder.newColumn('status', 'Status'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
