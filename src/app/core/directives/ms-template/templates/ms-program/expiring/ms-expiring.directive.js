@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, $filter, commonBusiness,
+    function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector
                                      templateBusiness, DTOptionsBuilder, toast)
     {
         return {
@@ -576,7 +576,14 @@
 
             data = templateBusiness.unParseJsonToCsv(dataInfo);
 
-            if(data && linkElement && linkElement.length > 0)
+            // IE 10+ 
+            if (deviceDetector.browser === 'ie')
+            { 
+                console.log('IE 10 +'); 
+                var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
+                window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+            }else if(data && linkElement && linkElement.length > 0)
             {
                 var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
                 linkElement[0].download = fileName;
@@ -722,12 +729,16 @@
 
             if(uploadElement && uploadElement.length > 0)
             {
-                uploadElement.change(function()
-                {
-                    $(this).off('change');
-                    $('#btn-expiring-upload').click();
-                });
-                uploadElement.click();
+                    setTimeout(function () {
+                        uploadElement.change(function(e)
+                        {
+                            $(this).off('change');
+                                angular.element('#btn-expiring-upload').trigger('click');
+                            // $('#btn-expiring-upload').click();
+                        });
+
+                        uploadElement.click();
+                    }, 500);
             }
         }
 
