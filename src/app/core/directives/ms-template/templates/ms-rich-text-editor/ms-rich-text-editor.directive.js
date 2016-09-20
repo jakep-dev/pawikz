@@ -10,9 +10,10 @@
 
 
     /** @ngInject */
-    function MsRichTextEditorDialogController($scope, templateBusiness, clientConfig, commonBusiness)
+    function MsRichTextEditorDialogController($scope, templateBusiness, clientConfig, commonBusiness, dialog)
     {
         var vm = this;
+        vm.close = close;
         var mainHeight = $('#main').height();
         vm.myHtml = "";
         vm.value = $scope.value;
@@ -60,6 +61,11 @@
                 }
             }
         );
+
+        function close()
+        {
+            dialog.close();
+        }
     }
 
     /** @ngInject */
