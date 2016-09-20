@@ -872,7 +872,7 @@
                     html: '',
                     scope: null
                 },
-                value = getMnemonicValue(itemId, mnemonicId);
+                value = getMnemonicValueNoEscape(itemId, mnemonicId);
 
             if(content.prompt &&
                 typeof(content.prompt) !== 'object')
@@ -886,9 +886,18 @@
                 answer = content.answer;
             }
 
-            var newScope  = scope.$new();
-            comp.html = '<ms-rich-text-editor itemid="'+itemId+'" ' +
-                'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
+            var newScope  = scope.$new(true);
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
+            newScope.prompt = prompt;
+            newScope.value = _.escape(value);
+            newScope.isdisabled = false;
+            newScope.answer = answer;
+
+
+            comp.html = '<ms-rich-text-editor itemid="'+ newScope.itemid + '" ' +
+                'mnemonicid="' + newScope.mnemonicid + '" prompt="' + newScope.prompt + '" ' +
+                'value="' + newScope.value + '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
             comp.scope = newScope;
 
             return comp;
@@ -1395,6 +1404,37 @@
             }
             return value;
         }
+
+        //Get Mnemonic value based on itemId and Mnemonic
+        function getMnemonicValueNoEscape(itemId, mnemonic, format)
+        {
+            var value = '';
+            if(business.mnemonics)
+            {
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                {
+                    if(m.itemId === itemId)
+                    {
+                        return m;
+                    }
+                });
+
+                if(mnemonic)
+                {
+                    if(!format ||
+                        format === false) {
+                        value = mnemonic.value;
+                    }
+                    else {
+                        value = formatData(mnemonic.value, mnemonic);
+                    }
+                    value = value;
+                }
+            }
+            return value;
+        }
+
 		
 		//get all subMnemonics in table layouts to get its data types and sub data types
 		function getTableLayoutSubMnemonics(itemId, mnemonic)

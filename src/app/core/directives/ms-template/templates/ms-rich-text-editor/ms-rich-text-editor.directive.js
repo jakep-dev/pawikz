@@ -5,17 +5,118 @@
     angular
         .module('app.core')
         .controller('MsRichTextEditorController', MsRichTextEditorController)
+        .controller('MsRichTextEditorDialogController', MsRichTextEditorDialogController)
         .directive('msRichTextEditor', msRichTextEditorDirective);
 
 
     /** @ngInject */
-    function MsRichTextEditorController($scope, templateBusiness, clientConfig)
+    function MsRichTextEditorDialogController($scope, templateBusiness, clientConfig, commonBusiness)
     {
+        var vm = this;
+        var mainHeight = $('#main').height();
+        vm.myHtml = "";
+        vm.value = $scope.value;
+        vm.froalaOptions = {
+            toolbarButtons: [
+                "bold"
+                , "italic"
+                , "underline"
+                , "strikeThrough"
+                , "subscript"
+                , "superscript"
+                , "fontFamily"
+                , "fontSize"
+                , "color"
+                , "inlineStyle"
+                , "paragraphStyle"
+                , "paragraphFormat"
+                , "align"
+                , "formatOL"
+                , "formatUL"
+                , "outdent"
+                , "indent"
+                , "quote"
+                , "insertHR"
+                , "insertLink"
+                , "insertImage"
+                , "insertTable"
+                , "undo"
+                , "redo"
+                , "clearFormatting"
+                , "selectAll"
+            ],
+            toolbarInline: false,
+            height: mainHeight * .65,
+            charCounterCount: false,
+            placeholderText: $scope.answer || 'Enter text here',
+            key: clientConfig.appSettings.textEditorApiKey
+        };
+        $scope.$watch(
+            "vm.value",
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue) {
+                    commonBusiness.emitWithArgument('RichTextEditor_' + $scope.itemid, newValue);
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                }
+            }
+        );
+    }
+
+    /** @ngInject */
+    function MsRichTextEditorController($scope, templateBusiness, clientConfig, $mdDialog, commonBusiness)
+    {
+        $scope.newScope = $scope.$new();
+        $scope.newScope.itemid = $scope.itemid;
+        $scope.newScope.mnemonicid = $scope.mnemonicid;
+        $scope.newScope.prompt = $scope.prompt;
+        $scope.newScope.value = $scope.value;
+        $scope.newScope.isdisabled = $scope.isdisabled;
+        $scope.newScope.answer = $scope.answer;
+        $scope.textDialogScope = MsRichTextEditorDialogController;
+
+        var textEditorId = 'textEditor_' + $scope.itemid;
+
+        $.FroalaEditor.DefineIconTemplate('full_screen_icon_template', '<i class="icon-fullscreen s18"></i>');
+        $.FroalaEditor.DefineIcon('custom-fullscreen-icon', {NAME: 'full_screen_custom', template: 'full_screen_icon_template'});
+        $.FroalaEditor.RegisterCommand('custom-fullscreen', {
+            title: 'Full Screen',
+            icon: 'custom-fullscreen-icon',
+            focus: false,
+            undo: false,
+            refreshAfterCallback: true,
+            callback: function () {
+                var editor = this,
+                    obj = $(this.selection.element()).closest('#textEditor'),
+                    itemid = obj[0].attributes['itemid'].value,
+                    mnemonicid = obj[0].attributes['mnemonicid'].value,
+                    answer = obj[0].attributes['answer'].value;
+                $scope.newScope.itemid = itemid;
+                $scope.newScope.mnemonicid = mnemonicid;
+                $scope.newScope.value = this.html.get();
+                $scope.newScope.answer = answer;
+                commonBusiness.onMsg('RichTextEditor_' + itemid, $scope.newScope, function(ev, data) {
+                    editor.html.set(data);
+                });
+                $mdDialog.show({
+                    scope: $scope.newScope,
+                    controller: MsRichTextEditorDialogController,
+                    preserveScope:true,
+                    animate: 'full-screen-dialog',
+                    controllerAs: 'vm',
+                    templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/dialog/ms-rich-text-editor.dialog.html',
+                    //parent: angular.element(document.body),
+                    //targetEvent: ev,
+                    clickOutsideToClose:true,
+                    fullscreen: true
+                });
+            }
+        });
+
         $scope.myHtml = "";
         $scope.froalaOptions = {
             toolbarButtons: [
-                  "fullscreen"
-                , "bold"
+                  "custom-fullscreen"
+                ,  "bold"
                 , "italic"
                 , "underline"
                 , "strikeThrough"
@@ -47,12 +148,14 @@
             key: clientConfig.appSettings.textEditorApiKey
         };
 
+
+
         $scope.$watch(
             "value",
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, (newValue));
                 }
             }
         );
@@ -73,36 +176,20 @@
             },
             controller: 'MsRichTextEditorController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/ms-rich-text-editor.html',
-            link: function (scope, element, attibutes) {
-                element.find('#textEditor')
-                    .on('froalaEditor.commands.before', function (e, editor, cmd, param1, param2) {
-                        if (cmd == 'fullscreen') {
-                            var obj = $(this).parents('[ms-scroll]')[0];
-                            if (!(obj === undefined) && !$(this).froalaEditor('fullscreen.isActive')) {
-                                scope.offset = $(obj).scrollTop();
-                                $(obj).scrollTop(0);
-                            }
-                        }
-                    });
-                element.find('#textEditor')
-                    .on('froalaEditor.commands.after', function (e, editor, cmd, param1, param2) {
-                        if (cmd == 'fullscreen') {
-                            var obj = $(this).parents('[ms-scroll]')[0];
-                            if (!(obj === undefined) && !$(this).froalaEditor('fullscreen.isActive')) {
-                                $(obj).scrollTop(scope.offset);
-                            }
-                        }
-                    });
-
-                var html = '';
-
-                if(scope.prompt && scope.prompt !== '')
+            compile: function(el, attrs)
+            {
+                return function($scope)
                 {
-                    html += '<div><ms-label value="' + scope.prompt + '"></ms-label></div>';
-                }
+                    var html = '',
+                        textEditorId = 'textEditor_' + $scope.itemid;
 
-                html += '<div id="textEditor" froala="froalaOptions" ng-model="value"></div>';
-                element.find('#textEditorContent').append($compile(html)(scope));
+                    if($scope.prompt && $scope.prompt !== '') {
+                        html += '<div><ms-label value="' + $scope.prompt + '"></ms-label></div>';
+                    }
+                    html += '<div id="textEditor" froala="froalaOptions" itemid="'+ $scope.itemid +'" ' +
+                        'mnemonicid="' + $scope.mnemonicid + '" answer="'+ $scope.answer +'"  ng-model="value"></div>';
+                    el.find('#textEditorContent').append($compile(html)($scope));
+                };
             }
         };
     }
