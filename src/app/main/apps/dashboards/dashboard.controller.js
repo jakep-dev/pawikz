@@ -58,13 +58,16 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         {
             var obj = $(this);
             var row = obj.closest('tr');
-            row.addClass('not-active');
 
-            if(obj)
+            if(!row.hasClass('not-active'))
             {
-                var projectId = obj[0].attributes['projectId'].value;
-                var projectName = obj[0].attributes['projectName'].value;
-                workupBusiness.renewFromDashboard($stateParams.userId, parseInt(projectId), projectName);
+                row.addClass('not-active');
+                if(obj)
+                {
+                    var projectId = obj[0].attributes['projectId'].value;
+                    var projectName = obj[0].attributes['projectName'].value;
+                    workupBusiness.renewFromDashboard($stateParams.userId, parseInt(projectId), projectName);
+                }
             }
         });
 
