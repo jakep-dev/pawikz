@@ -47,7 +47,7 @@
                 , "selectAll"
             ],
             toolbarInline: false,
-            height: mainHeight * .65,
+            height: mainHeight * .9,
             charCounterCount: false,
             placeholderText: $scope.answer || 'Enter text here',
             key: clientConfig.appSettings.textEditorApiKey
