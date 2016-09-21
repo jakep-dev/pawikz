@@ -1392,8 +1392,7 @@
 
                 if(mnemonic)
                 {
-                    if(!format ||
-                        format === false) {
+                    if(format && format === false) {
                         value = mnemonic.value;
                     }
                     else {
@@ -1422,8 +1421,7 @@
 
                 if(mnemonic)
                 {
-                    if(!format ||
-                        format === false) {
+                    if(format && format === false) {
                         value = mnemonic.value;
                     }
                     else {
