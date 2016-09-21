@@ -1476,6 +1476,7 @@
 					(valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
 				{
 					value = numberWithCommas(value);
+					value = parenthesisForNegative(value);
 				}
 				else if(valueType.dataType &&
 					valueType.dataType == 'DATE')
