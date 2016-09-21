@@ -732,9 +732,11 @@
                     setTimeout(function () {
                         uploadElement.change(function(e)
                         {
-                            $(this).off('change');
+                            setTimeout(function () {
+                                $(this).off('change');
                                 angular.element('#btn-expiring-upload').trigger('click');
-                            // $('#btn-expiring-upload').click();
+                                // $('#btn-expiring-upload').click();
+                            }, 500);
                         });
 
                         uploadElement.click();
