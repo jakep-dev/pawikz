@@ -737,9 +737,11 @@
                 setTimeout(function () {              
                     uploadElement.change(function()
                     {
-                        $(this).off('change');
+                        setTimeout( function() {
+                            $(this).off('change');
                             angular.element('#btn-proposed-upload').trigger('click');
-			            // $('#btn-proposed-upload').click();
+                            // $('#btn-proposed-upload').click();    
+                        }, 500);
                     });
                     uploadElement.click();
                 }, 500);
