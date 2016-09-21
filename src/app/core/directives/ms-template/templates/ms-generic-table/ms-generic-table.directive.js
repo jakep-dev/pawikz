@@ -219,6 +219,16 @@
                                             'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
                                         html += '</div>';
                                         break;
+                                    case 'GenericTableItem':
+                                        newScope = scope.$new();
+                                        newScope.tearsheet = {
+                                            rows: tearSheetItem.row
+                                        };
+                                        newScope.isnoneditable = false;
+                                        html += '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
+                                        html += '</div>';
+
+                                        break;
                                 }
                             }
                             html += '</div>';
