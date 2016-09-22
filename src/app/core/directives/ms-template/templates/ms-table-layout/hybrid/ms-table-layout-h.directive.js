@@ -236,7 +236,7 @@
 									$scope.footerMnemonics[footerIndex].mnemonic = mnemonicId;
 									$scope.footerMnemonics[footerIndex].value = value;
 									
-									html += '<span>{{footerMnemonics[' + footerIndex + '].value}}</span>';
+									html += '<span>{{numberWithCommas(footerMnemonics[' + footerIndex + '].value)}}</span>';
 									break;
 								case 'LabelItem':
 									html += '<span>' + tearSheetItem.Label + '</span>';
@@ -600,7 +600,7 @@
 			{
 				if(eachRow[summation]) 
 				{
-					totalValue += parseInt(eachRow[summation]);
+					totalValue += parseInt(templateBusiness.removeFormatData(eachRow[summation], _.find($scope.subMnemonics, {mnemonic: summation})));
 				}
 			});
 			
@@ -889,6 +889,11 @@
 							value = templateBusiness.parseDate(value, 'DD-MMM-YY');
 						}
 						return templateBusiness.formatDate(value, format);
+					};
+					
+					scope.numberWithCommas = function(value)
+					{
+						return templateBusiness.numberWithCommas(value);
 					};
 					
 					scope.removeFormatData = function(value, subMnemonic)
