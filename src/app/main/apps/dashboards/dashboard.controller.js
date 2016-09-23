@@ -14,7 +14,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                              DTOptionsBuilder, dashboardService,
                              authService, authBusiness, commonBusiness,
                              breadcrumbBusiness, dashboardBusiness, workupBusiness, store, toast,
-                             $mdToast, clientConfig, templateBusiness, $interval)
+                             $mdToast, clientConfig, templateBusiness, $location, $interval)
 {
     var vm = this;
     vm.companyId = 0;
@@ -71,6 +71,72 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             }
         });
 
+        $('.overviewStyle').click(function()
+        {
+            var obj = $(this);
+            var row = obj.closest('tr');
+
+            if(!row.hasClass('not-active') && obj) {
+                var projectId = obj[0].attributes['projectId'].value;
+                $location.url('/overview/' + projectId);
+            }
+        });
+
+        console.log('Find-');
+        console.log($('#dashBoardDetails tbody tr:first td').length);
+
+        if($('#dashBoardDetails tbody tr:first td').length > 0) {
+            $('#dashBoardDetails tbody tr[role="row"]').click(function()
+            {
+               var overviewPromise = $interval(function()
+               {
+                   if($('.overviewStyle').length > 0)
+                   {
+                       $('.overviewStyle').click(function()
+                       {
+                           var obj = $(this);
+                           var row = obj.closest('tr');
+
+                           if(!row.hasClass('not-active') && obj) {
+                               var projectId = obj[0].attributes['projectId'].value;
+                               $location.url('/overview/' + projectId);
+                           }
+                       });
+                       $interval.cancel(overviewPromise);
+                   }
+               }, 100);
+
+
+
+                var renewPromise = $interval(function()
+                {
+                    if($('.renewStyle').length > 0)
+                    {
+                        $('.renewStyle').click(function()
+                        {
+                            var obj = $(this);
+                            var row = obj.closest('tr');
+
+                            if(!row.hasClass('not-active'))
+                            {
+                                row.addClass('not-active');
+                                if(obj)
+                                {
+                                    var projectId = obj[0].attributes['projectId'].value;
+                                    var projectName = obj[0].attributes['projectName'].value;
+                                    workupBusiness.renewFromDashboard($stateParams.userId, parseInt(projectId), projectName);
+                                }
+                            }
+                        });
+                        $interval.cancel(renewPromise);
+                    }
+                }, 100);
+
+            });
+        }
+
+
+
         var token = store.get('x-session-token');
 
         clientConfig.socketInfo.socket.emit("init-workup", {
@@ -93,12 +159,12 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     // Action Html
     function actionHtml(data, type, full, meta)
     {
-        return '<a  ui-sref="app.overview({projectId:' + full.projectId + '})" href="/overview/'+ full.projectId  +'">' + data + '</a>';
+        return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
     }
 
     function renewHtml(data, type, full, meta)
     {
-        return '<a href="#" class="renewStyle" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Renew</a>';
+        return '<a href="#" class="renewStyle" renew="true" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Renew</a>';
     }
 
     // Clear search
