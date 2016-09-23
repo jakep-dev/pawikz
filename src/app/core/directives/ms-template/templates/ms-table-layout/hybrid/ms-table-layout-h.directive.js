@@ -9,8 +9,8 @@
     /** @ngInject */
     function msTablelayoutHDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
-                                     DTOptionsBuilder,
-                                     DTColumnDefBuilder, toast)
+                                     DTOptionsBuilder, DTColumnDefBuilder, 
+									 toast, deviceDetector)
     {
         return {
             restrict: 'E',
@@ -106,7 +106,8 @@
 								mnemonic: null,
 								itemId: totalItemId,
 								value: 0,
-								summation: itemId
+								summation: itemId,
+								header: ''
 							});
 						}
 						
@@ -207,6 +208,7 @@
 		function defineFooterLayout($scope)
 		{
 			var html = '';
+			var label = '';
 			
 			if($scope.tearsheet && $scope.tearsheet.footer && $scope.tearsheet.footer.length > 0)
 			{	
@@ -235,11 +237,14 @@
 									
 									$scope.footerMnemonics[footerIndex].mnemonic = mnemonicId;
 									$scope.footerMnemonics[footerIndex].value = value;
+									$scope.footerMnemonics[footerIndex].header = label;
+									label = '';
 									
 									html += '<span>{{numberWithCommas(footerMnemonics[' + footerIndex + '].value)}}</span>';
 									break;
 								case 'LabelItem':
 									html += '<span>' + tearSheetItem.Label + '</span>';
+									label = tearSheetItem.Label;
 									break;
 								default:
 									html += '<span>Under Construction</span>';
@@ -619,12 +624,17 @@
 
             if(uploadElement && uploadElement.length > 0)
             {
-                uploadElement.change(function()
-                {
-                    $(this).off('change');
-                    $('#btn-hybrid-upload').click();
-                });
-                uploadElement.click();
+				setTimeout(function () {
+					uploadElement.change(function()
+					{
+						setTimeout(function () {
+							$(this).off('change');
+							angular.element('#btn-hybrid-upload').trigger('click');
+							//$('#btn-hybrid-upload').click();
+						}, 500);
+					});
+					uploadElement.click();
+				}, 500);
             }
 		}
 		
@@ -781,9 +791,34 @@
 				dataInfo.push(angular.fromJson(data));
 			});
 			
+			if($scope.footerMnemonics && $scope.footerMnemonics.length > 0)
+			{
+				angular.forEach($scope.footerMnemonics, function(footer)
+				{
+					data = '';
+					data += '{';	
+					if($scope.header && $scope.header[0] && $scope.header[0].HLabel ){
+						data +=  '"'+ $scope.header[0].HLabel +'":';
+						data +=  '"'+ footer.header +'",';
+					}
+					
+					if($scope.header && $scope.header[1] && $scope.header[1].HLabel ){
+						data +=  '"'+ $scope.header[1].HLabel +'":';
+						data +=  '"'+ footer.value +'"';
+					}
+					data += '}';
+					dataInfo.push(angular.fromJson(data));
+				});
+			}
+			
 			data = templateBusiness.unParseJsonToCsv(dataInfo);
 
-			if(data && linkElement && linkElement.length > 0)
+			if (deviceDetector.browser === 'ie')
+            {
+				var fileName = 'hybrid_table_' + commonBusiness.projectName.trim() + '.csv';
+                window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+			} else if(data && linkElement && linkElement.length > 0)
 			{
 				var fileName = 'hybrid_table_' + commonBusiness.projectName.trim() + '.csv';
 				linkElement[0].download = fileName;
