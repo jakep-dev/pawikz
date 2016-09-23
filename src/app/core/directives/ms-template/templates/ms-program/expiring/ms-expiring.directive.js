@@ -702,11 +702,11 @@
 
 
                     if(id === 'SingleDropDownItem'){
-                        if(value && value !== 'undefined'){
-                            exp = '$scope.rows[count].' + header.name + '.tearsheet.selectedValue = "' + value + '";';
-                        } else {
+                        if(!value || value === 'undefined')
+                        {
                             value = ' ';
                         }
+                        exp = '$scope.rows[count].' + header.name + '.tearsheet.selectedValue = "' + value + '";';
                         eval(exp);
                     }
                     exp = '$scope.rows[count].' + header.name + '.value = "' + value  + '";';
