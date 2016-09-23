@@ -1392,7 +1392,7 @@
 
                 if(mnemonic)
                 {
-                    if(format && format === false) {
+                    if(!format && format === false) { //ensures format is false & not null/undefined
                         value = mnemonic.value;
                     }
                     else {
@@ -1421,7 +1421,7 @@
 
                 if(mnemonic)
                 {
-                    if(format && format === false) {
+                    if(!format && format === false) { //ensures format is false & not null/undefined
                         value = mnemonic.value;
                     }
                     else {
@@ -1689,9 +1689,15 @@
  
         function numberWithCommas(value)
 		{ 
-            var parts = value.toString().split("."); 
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
-            return parts.join("."); 
+			//ensure that value is number
+			if(value.match(/^-?\d*[\.]?\d+$/))
+			{
+				var parts = value.toString().split("."); 
+				parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+				return parts.join("."); 
+			}
+			
+			return value;
         }
 		
 		function removeCommaValue(inputValue)
