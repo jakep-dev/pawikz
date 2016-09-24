@@ -702,7 +702,7 @@
 
 
                     if(id === 'SingleDropDownItem'){
-                        if(value === 'undefined')
+                        if(!value || value === 'undefined')
                         {
                             value = ' ';
                         }
