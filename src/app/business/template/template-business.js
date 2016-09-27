@@ -80,7 +80,8 @@
 		   parseDate: parseDate,
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
-           initializeMessages: initializeMessages
+           initializeMessages: initializeMessages,
+		   isMnemonicNumberType: isMnemonicNumberType
         };
 
         return business;
@@ -1510,6 +1511,30 @@
 			return value;
 		}
 		
+		//check if the mnemonic type is number
+		function isMnemonicNumberType(mnemonicValue)
+		{
+			var isNumber = false;
+			if(business.mnemonics)
+            {
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                                {
+                                  if(m.mnemonic === mnemonicValue)
+                                  {
+                                      return m;
+                                  }
+                                });
+
+                if(mnemonic)
+                {
+                    isNumber = mnemonic.dataType === 'NUMBER';
+                }
+            }
+			
+			return isNumber;
+		}
+		
 		//check if subtype is CURRENCY to add prefix (currency symbol)
 		function isCurrencySubtype(mnemonicValue)
 		{
@@ -1690,7 +1715,7 @@
         function numberWithCommas(value)
 		{ 
 			//ensure that value is number
-			if(value.match(/^-?\d*[\.]?\d+$/))
+			if(value+''.match(/^-?[0-9]*[\.]?[0-9]+$/))
 			{
 				var parts = value.toString().split("."); 
 				parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
