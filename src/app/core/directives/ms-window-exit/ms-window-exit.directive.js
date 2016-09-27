@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app.core')
-            .directive('msWindowExit', function($window, $state, authBusiness, overviewBusiness, templateBusiness) {
+            .directive('msWindowExit', function($window, $state, authBusiness, overviewBusiness, templateBusiness, clientConfig) {
                 return {
                     restrict: 'AE',
                     link: function(element, attrs){
@@ -12,11 +12,12 @@
                                 chkunload = $window.attachEvent ? 'onunload' : 'unload';
 
                             myEvent(chkevent, function (e) { // For >=IE7, Chrome, Firefox
+                                clientConfig.socketInfo.socket.disconnect();
                                 overviewBusiness.save();
                                 templateBusiness.save();
                                 templateBusiness.saveTable();
                                 templateBusiness.saveHybridTable();
-                                console.log('Inside');
+
                             });
 
                             myEvent(chkunload, function (e) { // For >=IE7, Chrome, Firefox
