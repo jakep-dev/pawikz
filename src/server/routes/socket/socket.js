@@ -31,6 +31,7 @@
             console.log('Init socket');
             socket.on('init-socket', function(data, callback)
             {
+                console.log('Token - ' + data.token);
                 if(data.token in config.userSocketInfo)
                 {
                     console.log('Already In');
@@ -60,6 +61,7 @@
                 releaseWorkUp(socket.userid, socket.nickname);
                 socket.leave('workup-room');
                 delete config.userSocketInfo[socket.nickname];
+                console.log(config.userSocketInfo);
             });
         }
 
@@ -80,6 +82,8 @@
 
         function releaseWorkUp(userId, token)
         {
+            console.log('Release Workup - ');
+            console.log('UserId - ' + userId);
             if(userId && config.socketData.workup &&
                 config.socketData.workup.length > 0 )
             {
@@ -96,8 +100,8 @@
                     else {
                         availableWorkUp.push(work);
                     }
-
                 });
+
                 broadcastWorkUpRelease();
                 unlock(unLock, token);
                 deleteWorkUp(availableWorkUp);
@@ -126,6 +130,8 @@
         * */
         function deleteWorkUp(availableWorkUp)
         {
+            console.log('AvailableWorkup after release - ');
+            console.log(availableWorkUp);
             config.socketData.workup = [];
             config.socketData.workup.push.apply(config.socketData.workup, availableWorkUp);
         }
@@ -136,6 +142,7 @@
         function broadcastWorkUpRelease()
         {
             console.log('broadcastWorkUpRelease');
+            console.log(config.socketData.workup);
             config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                 type: 'workup-info',
                 data: config.socketData.workup
