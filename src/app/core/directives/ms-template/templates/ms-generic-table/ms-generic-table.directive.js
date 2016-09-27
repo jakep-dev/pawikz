@@ -159,11 +159,11 @@
                                         break;
 
                                     case 'DateItem':
-                                        var itemId = tearSheetItem.ItemId;
-                                        var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-										var parseFormat = 'DD-MMM-YY'; //assume that the webservice returns this date format
-                                        html += '<ms-calendar itemid="'+ itemId +'" mnemonicid="'+ mnemonicId +'" value="'+ value +'" isdisabled="false" parseformat="'+ parseFormat +'"></ms-calendar>';
+                                        newScope = scope.$new();
+                                        newScope.itemId = tearSheetItem.ItemId;
+                                        newScope.mnemonicId = tearSheetItem.Mnemonic;
+                                        newScope.value = templateBusiness.parseDate(templateBusiness.getMnemonicValue(newScope.itemId, newScope.mnemonicId, false), 'DD-MMM-YY');
+                                        html += '<ms-calendar itemid="'+ newScope.itemId +'" mnemonicid="'+ newScope.mnemonicId +'" value="value" isdisabled="false"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
                                         var itemId = tearSheetItem.ItemId;
