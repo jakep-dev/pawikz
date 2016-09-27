@@ -22,11 +22,12 @@
 
 
         //Get Overview Details
-        function get(projectId, userId)
+        function get(projectId, userId, prevProjectId)
         {
             var input = {
                 userId: userId,
-                projectId: projectId
+                projectId: projectId,
+                prevProjectId: prevProjectId
             };
 
             return $http({

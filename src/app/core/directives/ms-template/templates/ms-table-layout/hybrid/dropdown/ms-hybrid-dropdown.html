@@ -1,0 +1,6 @@
+<md-select ng-disabled="disabled" aria-label="Select Field" style="margin: 0px"
+		   ng-model="row[columnname]" ng-change="selectionChange()" class="md-accent">
+	<md-option layout-padding ng-repeat="value in selections track by $index" value="{{value}}">
+		<span class="ms-dropdown-font-size">{{value}}</span>
+	</md-option>
+</md-select 

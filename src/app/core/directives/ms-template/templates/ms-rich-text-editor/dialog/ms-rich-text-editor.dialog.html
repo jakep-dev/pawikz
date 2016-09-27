@@ -1,0 +1,19 @@
+<md-dialog id="md-dialog-main" aria-label="Text Box Editor" style="height: 100%; width: 100%">
+    <form>
+        <md-toolbar>
+            <div layout="row" layout-align="space-between center">
+                <div class="md-toolbar-tools">
+                    <h2>Full Screen Mode</h2>
+                </div>
+                <div>
+                    <md-button class="md-icon-button" aria-label="Close" ng-click="vm.close()">
+                        <md-icon class="icon-window-close"></md-icon>
+                    </md-button>
+                </div>
+            </div>
+        </md-toolbar>
+        <md-dialog-content layout-padding>
+            <div id="textEditorDialog" froala="vm.froalaOptions" ng-model="vm.value"></div>
+        </md-dialog-content>
+    </form>
+</md-dialog>

@@ -95,19 +95,33 @@
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-                                        // var iskmb = (tearSheetItem.onBlur === 'transformKMB(this)' || tearSheetItem.onkeyup === 'transformKMB(this)' || tearSheetItem.onChange === 'transformKMB(this)');
+                                        var prefix = templateBusiness.getMnemonicPrefix(tearSheetItem); 
+										var postfix = templateBusiness.getMnemonicPostfix(tearSheetItem); 
+                                        var precision = templateBusiness.getMnemonicPrecision(tearSheetItem);
                                         var iskmb = ((tearSheetItem.onBlur && (tearSheetItem.onBlur.indexOf('transformKMB(this)') > -1 )) ||
                                                     (tearSheetItem.onkeyup && (tearSheetItem.onkeyup.indexOf('transformKMB(this)') > -1 )) ||
                                                     (tearSheetItem.onChange && (tearSheetItem.onChange.indexOf('transformKMB(this)') > -1 ))) || false;
 
 
-                                        if(iskmb)
+                                        if(iskmb && value && value.length > 0)
                                         {
                                            value = $filter("currency")(value, '', 0);
                                         }
+										if(value && value.length > 0)
+										{
+											if(precision)
+											{
+												value = templateBusiness.removeParenthesis(value);
+												value = templateBusiness.numberWithCommas(parseFloat(templateBusiness.removeCommaValue(value)).toFixed(precision));
+												value = templateBusiness.parenthesisForNegative(value);
+											}
+											value = prefix + value + postfix;
+										}
                                         html += '<ms-text value="'+ value +'" ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
+                                            'precision="'+ precision +'"  ' +
+                                            'prefix="'+ prefix +'" postfix="' + postfix +'" ' +
                                             'isdisabled="'+ scope.isnoneditable +'" ' +
                                             'iskmb="' + iskmb + '"></ms-text>';
                                         break;
@@ -204,6 +218,16 @@
                                         html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
                                             'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
                                         html += '</div>';
+                                        break;
+                                    case 'GenericTableItem':
+                                        newScope = scope.$new();
+                                        newScope.tearsheet = {
+                                            rows: tearSheetItem.row
+                                        };
+                                        newScope.isnoneditable = false;
+                                        html += '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
+                                        html += '</div>';
+
                                         break;
                                 }
                             }
