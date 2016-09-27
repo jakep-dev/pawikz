@@ -56,7 +56,7 @@
                 else { }
             }
 			
-			if($scope.value && $scope.value.length > 0)
+			if(templateBusiness.isMnemonicNumberType($scope.mnemonicid) && $scope.value && $scope.value.length > 0)
 			{
 				if($scope.precision)
 				{
@@ -94,16 +94,19 @@
 		//remove prefix, postfix and parenthesis for negatives
 		function removeFixes(value)
 		{
-			value = templateBusiness.removeParenthesis(value);			
-			
-			if($scope.prefix && $scope.prefix.length > 0)
+			if(templateBusiness.isMnemonicNumberType($scope.mnemonicid))
 			{
-				value = value.replace($scope.prefix, '');
-			}
-			
-			if($scope.postfix && $scope.postfix.length > 0)
-			{
-				value = value.replace($scope.postfix, '');
+				value = templateBusiness.removeParenthesis(value);			
+				
+				if($scope.prefix && $scope.prefix.length > 0)
+				{
+					value = value.replace($scope.prefix, '');
+				}
+				
+				if($scope.postfix && $scope.postfix.length > 0)
+				{
+					value = value.replace($scope.postfix, '');
+				}
 			}
 			
 			return value;

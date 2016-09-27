@@ -323,6 +323,9 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     ///Work-Up Status
     function workUpStatus(data)
     {
+        console.log('Workup Status - ');
+        console.log(data);
+
         var workups = [];
         if(data && data.length) {
             workups.push.apply(workups, data);
