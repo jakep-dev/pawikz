@@ -165,11 +165,10 @@
                                         break;
 
                                     case 'DateItem':
-                                        newScope = scope.$new();
-                                        newScope.itemId = tearSheetItem.ItemId;
-                                        newScope.mnemonicId = tearSheetItem.Mnemonic;
-                                        newScope.value = templateBusiness.parseDate(templateBusiness.getMnemonicValue(newScope.itemId, newScope.mnemonicId, false), 'DD-MMM-YY');
-                                        html += '<ms-calendar itemid="'+ newScope.itemId +'" mnemonicid="'+ newScope.mnemonicId +'" value="value" isdisabled="false"></ms-calendar>';
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        html += '<ms-calendar itemid="'+ itemId +'" mnemonicid="'+ mnemonicId +'" value="'+ value +'" isdisabled="false"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
                                         var itemId = tearSheetItem.ItemId;
