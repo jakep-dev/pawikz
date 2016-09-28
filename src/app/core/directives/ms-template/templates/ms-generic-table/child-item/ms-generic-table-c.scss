@@ -4,17 +4,19 @@ $generic-table-hover-color: rgba(15, 185, 255, 0.35);
 $generic-table-input-height: 25px;
 
 
-#generic-table-layout
+#child-generic-table-layout
 {
-  border:1px dotted lightgrey;
-  border-radius: 2px;
+  border:0px;
+  border-radius: 0px;
 
   md-input-container {
-      margin:0px 0;
+    margin:0px 0;
   }
 
   .row
   {
+    // padding-left: $generic-table-padding-left;
+    //height: 40px;
     font-weight: bold;
   }
 
@@ -23,5 +25,3 @@ $generic-table-input-height: 25px;
     border-radius: $generic-table-border-radius;
   }
 }
-
-
