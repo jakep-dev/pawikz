@@ -11,7 +11,7 @@
     function MsDropdownController($scope, templateBusiness)
     {
         $scope.$watch(
-            "tearsheet.selectedValue",
+            "tearsheetobj.selectedValue",
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
@@ -29,7 +29,7 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                tearsheet: '='
+                tearsheet: '@'
             },
             controller: 'MsDropdownController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-dropdown/ms-dropdown.html',
@@ -37,6 +37,17 @@
             {
                 return function($scope)
                 {
+                    //$scope.$watch(
+                    //    "tearsheet",
+                    //    function tearSheetObj(newValue, oldValue) {
+                    //        if(newValue !== oldValue)
+                    //        {
+                    //            $scope.tearsheetobj = angular.fromJson($scope.tearsheet);
+                    //        }
+                    //    }
+                    //);
+
+                    $scope.tearsheetobj = angular.fromJson(_.unescape($scope.tearsheet));
                 };
             }
         };

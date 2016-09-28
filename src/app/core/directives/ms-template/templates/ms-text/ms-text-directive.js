@@ -133,7 +133,7 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-text/ms-text.html',
             link: function(scope)
             {
-
+                $('.md-errors-spacer').remove();
             }
         };
     }
