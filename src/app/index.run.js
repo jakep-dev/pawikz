@@ -32,29 +32,31 @@
             ///Placing it on the state change. b'coz for each state change and complete reload
             ///We need to make sure the user has a single socket available.
             ///If its already created we won't create it again.
-            var token = store.get('x-session-token');
-            var userInfo = store.get('user-info');
-            logger.log(token, 'info');
 
-            if(!token &&
-                toParams &&
+            if(toParams &&
                 toParams.token)
             {
                 logger.log('Setting Token', 'info');
                 logger.log(toParams.token, 'info');
-                token = toParams.token;
+                store.remove('x-session-token');
+                store.set('x-session-token',toParams.token);
             }
+
+
+            var token = store.get('x-session-token');
+            var userInfo = store.get('user-info');
+            logger.log(token, 'info');
+
+
 
             if(token)
             {
                 var userId = '';
-
-                if(userInfo && userInfo.userId)
+                if(toParams && toParams.userId) {
+                    userId = toParams.userId;
+                }else if(userInfo && userInfo.userId)
                 {
                     userId = userInfo.userId;
-                }
-                else if(toParams && toParams.userId) {
-                    userId = toParams.userId;
                 }
 
                 if(clientConfig.socketInfo.socket.disconnected)

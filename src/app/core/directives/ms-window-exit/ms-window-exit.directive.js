@@ -13,14 +13,10 @@
 
                             myEvent(chkevent, function (e) { // For >=IE7, Chrome, Firefox
                                 clientConfig.socketInfo.socket.disconnect();
-                                store.remove('x-session-token');
-                                store.remove('user-info');
                             });
 
                             myEvent(chkunload, function (e) { // For >=IE7, Chrome, Firefox
                                 clientConfig.socketInfo.socket.disconnect();
-                                store.remove('x-session-token');
-                                store.remove('user-info');
                             });
                         }
                     }
