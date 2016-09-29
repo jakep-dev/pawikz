@@ -97,7 +97,7 @@
                                         break;
                                     case 'GenericTextItem':
 
-                                        newScope = scope.$new();
+
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
@@ -123,6 +123,13 @@
 											}
 											value = prefix + value + postfix;
 										}
+
+                                        if(scope.isnoneditable)
+                                        {
+                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
+                                            return;
+                                        }
+
                                         html += '<ms-text value="'+ value +'" ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
@@ -139,6 +146,11 @@
                                         var tearsheet = {};
                                         var values = [];
                                         var selectedValue = '';
+                                        if(scope.isnoneditable)
+                                        {
+                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
+                                            return;
+                                        }
                                         _.each(tearSheetItem.param, function(each)
                                         {
                                             if(each.checked === 'yes')
@@ -169,6 +181,12 @@
                                         newScope.itemId = tearSheetItem.ItemId;
                                         newScope.mnemonicId = tearSheetItem.Mnemonic;
                                         newScope.value = templateBusiness.parseDate(templateBusiness.getMnemonicValue(newScope.itemId, newScope.mnemonicId, false), 'DD-MMM-YY');
+
+                                        if(scope.isnoneditable)
+                                        {
+                                            html += '<ms-label style="font-weight: normal" value="' + newScope.value + '"></ms-label>';
+                                            return;
+                                        }
                                         html += '<ms-calendar itemid="'+ newScope.itemId +'" mnemonicid="'+ newScope.mnemonicId +'" value="value" isdisabled="false"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
