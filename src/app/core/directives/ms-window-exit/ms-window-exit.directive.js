@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app.core')
-            .directive('msWindowExit', function($window, $state, authBusiness, overviewBusiness, templateBusiness, clientConfig) {
+            .directive('msWindowExit', function($window, $state, authBusiness, overviewBusiness, templateBusiness, clientConfig, store) {
                 return {
                     restrict: 'AE',
                     link: function(element, attrs){
@@ -13,10 +13,14 @@
 
                             myEvent(chkevent, function (e) { // For >=IE7, Chrome, Firefox
                                 clientConfig.socketInfo.socket.disconnect();
+                                store.remove('x-session-token');
+                                store.remove('user-info');
                             });
 
                             myEvent(chkunload, function (e) { // For >=IE7, Chrome, Firefox
                                 clientConfig.socketInfo.socket.disconnect();
+                                store.remove('x-session-token');
+                                store.remove('user-info');
                             });
                         }
                     }

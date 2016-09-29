@@ -35,6 +35,16 @@
             var token = store.get('x-session-token');
             var userInfo = store.get('user-info');
             logger.log(token, 'info');
+
+            if(!token &&
+                toParams &&
+                toParams.token)
+            {
+                logger.log('Setting Token', 'info');
+                logger.log(toParams.token, 'info');
+                token = toParams.token;
+            }
+
             if(token)
             {
                 var userId = '';
