@@ -10,8 +10,10 @@
     /** @ngInject */
     function MsCalendarController($scope, templateBusiness)
     {
+		$scope.dateValue = templateBusiness.parseDate($scope.value, 'DD-MMM-YY');
+		
 		$scope.$watch(
-            "value",
+            "dateValue",
             function handleAutoSave(newValue, oldValue) {
 				newValue = templateBusiness.formatDate(newValue, 'DD-MMM-YY');
 				oldValue = templateBusiness.formatDate(oldValue, 'DD-MMM-YY');
@@ -31,7 +33,7 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                value: '=',
+                value: '@',
                 isdisabled: '=?'
             },
             controller: 'MsCalendarController',

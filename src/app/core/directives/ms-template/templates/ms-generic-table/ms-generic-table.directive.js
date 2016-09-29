@@ -28,7 +28,6 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-generic-table/ms-generic-table.html',
             link:function(scope, el, attrs)
             {
-                var newScope = null;
                 var html = '';
 
                 console.log('Generic Table Item Scope');
@@ -40,7 +39,6 @@
                 _.each(scope.tearsheet.rows, function(row)
                 {
                     if(!row.id || row.id !== 'toolbar_links') {
-                        newScope = null;
 
                         html += '<tr class="row">';
 
@@ -71,15 +69,12 @@
 
                                 switch (tearSheetItem.id) {
                                     case 'LabelItem':
-                                        newScope = scope.$new();
                                         html += '<ms-label style="font-weight: bold" value="' + tearSheetItem.Label + '"></ms-label>';
                                         break;
                                     case 'LinkItemNoWord':
-                                        newScope = scope.$new();
                                         html += '<ms-link value="' + tearSheetItem.Label + '" href="'+ tearSheetItem.url +'"></ms-link>';
                                         break;
                                     case 'LinkItem':
-                                        newScope = scope.$new();
                                         var value = '';
                                         var link = '';
                                         if(angular.isDefined(tearSheetItem.Label))
@@ -177,17 +172,15 @@
                                         break;
 
                                     case 'DateItem':
-                                        newScope = scope.$new();
-                                        newScope.itemId = tearSheetItem.ItemId;
-                                        newScope.mnemonicId = tearSheetItem.Mnemonic;
-                                        newScope.value = templateBusiness.parseDate(templateBusiness.getMnemonicValue(newScope.itemId, newScope.mnemonicId, false), 'DD-MMM-YY');
-
+                                        var itemId = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
                                         if(scope.isnoneditable)
                                         {
-                                            html += '<ms-label style="font-weight: normal" value="' + newScope.value + '"></ms-label>';
+                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
                                             return;
                                         }
-                                        html += '<ms-calendar itemid="'+ newScope.itemId +'" mnemonicid="'+ newScope.mnemonicId +'" value="value" isdisabled="false"></ms-calendar>';
+                                        html += '<ms-calendar itemid="'+ itemId +'" mnemonicid="'+ mnemonicId +'" value="'+ value +'" isdisabled="false"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
                                         var itemId = tearSheetItem.ItemId;
