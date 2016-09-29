@@ -22,8 +22,8 @@
             },
             set: function(value) {
                 userName = value;
-                store.set('x-session-user', userName);
-                commonBusiness.emitMsg('UserName');
+                //store.set('x-session-user', userName);
+                //commonBusiness.emitMsg('UserName');
             }
         });
 

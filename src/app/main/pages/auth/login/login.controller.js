@@ -58,6 +58,7 @@
                         {
                             authBusiness.userInfo = response.userinfo;
                             authBusiness.userName = response.userinfo.fullName;
+                            commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
 
                             store.set('user-info', authBusiness.userInfo);
                             store.set('x-session-token', token);

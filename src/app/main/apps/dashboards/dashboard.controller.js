@@ -33,6 +33,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.renewTemplate = renewTemplate;
     vm.toggleSidenav = toggleSidenav;
 
+
+
     // Make Initial call
     vm.initialize($stateParams.isNav, $stateParams.token);
 
@@ -82,8 +84,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             }
         });
 
-        console.log('Find-');
-        console.log($('#dashBoardDetails tbody tr:first td').length);
 
         if($('#dashBoardDetails tbody tr:first td').length > 0) {
             $('#dashBoardDetails tbody tr[role="row"]').click(function()
@@ -249,11 +249,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             {
                 response.token = token;
                 store.set('user-info', response);
-                authBusiness.userName = response.fullName;
+                commonBusiness.emitWithArgument('UserFullName', response.fullName);
             });
-        }
-        else {
-            authBusiness.userName  = authBusiness.userName
         }
 
         dataTableConfiguration();

@@ -20,10 +20,10 @@
             vm.userName = userDetails.fullName;
         }
 
-        //Set user-name
-        commonBusiness.onMsg('UserName', $scope, function() {
-            vm.userName = authBusiness.userName;
+        commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
+            vm.userName = data;
         });
+
 
         vm.selectedLanguage = {
             'title'      : 'English',
