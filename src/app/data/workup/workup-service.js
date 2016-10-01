@@ -12,10 +12,52 @@
         var service = {
             create: create,
             renew: renew,
-            getStatus: getStatus
+            getStatus: getStatus,
+            lock: lock,
+            unlock: unlock
         };
 
         return service;
+
+        function lock(projectId, userId) {
+            var input = {
+                userId: userId,
+                projectId: projectId
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.lock,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+                });
+        }
+
+        function unlock(projectId, userId) {
+            var input = {
+                userId: userId,
+                projectId: projectId
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.unlock,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+                });
+        }
 
         ///Create the new workup
         function create(userId, templateId, companyId)

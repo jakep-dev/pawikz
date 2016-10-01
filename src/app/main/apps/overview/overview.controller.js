@@ -13,7 +13,7 @@
 
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope,
-                                $mdMenu, overviewService,
+                                $mdMenu, overviewService, workupService,
                                 navConfig, breadcrumbBusiness, workupBusiness, commonBusiness,
                                 overviewBusiness, templateBusiness, store, toast)
     {
@@ -36,7 +36,7 @@
         var redoData = [];
 
         var vm = this;
-        vm.isExpanded = true;
+        vm.isExpanded = false;
         commonBusiness.isStepExpandAll = vm.isExpanded;
         vm.expandClass = 'expand';
         vm.isOverviewLoaded = false;
@@ -124,7 +124,7 @@
         //Load data for project-section and step-section
         function loadData()
         {
-            overviewService.get($stateParams.projectId, $rootScope.passedUserId).then(function(data)
+            overviewService.get($stateParams.projectId, $rootScope.passedUserId, commonBusiness.prevProjectId).then(function(data)
             {
                 if(data.templateOverview)
                 {
@@ -149,6 +149,8 @@
                     });
 
                     autoSave();
+
+                    commonBusiness.prevProjectId = commonBusiness.projectId;
                 }
                 else {
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));

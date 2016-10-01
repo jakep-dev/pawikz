@@ -9,8 +9,8 @@
     /** @ngInject */
     function msTablelayoutHDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
-                                     DTOptionsBuilder,
-                                     DTColumnDefBuilder, toast)
+                                     DTOptionsBuilder, DTColumnDefBuilder, 
+									 toast, deviceDetector)
     {
         return {
             restrict: 'E',
@@ -51,6 +51,7 @@
             //Defining the header here.
             html += defineHeaderLayout($scope);
             html += defineBodyLayout($scope);
+			html += defineFooterLayout($scope);
             html += '</table>';
 
             el.find('#ms-table-layout-hybrid').append($compile(html)($scope));
@@ -74,6 +75,7 @@
         function defineBodyLayout($scope)
         {
            $scope.rows = [];
+		   $scope.footerMnemonics = [];
 
            var html = '<tbody>';
            html += '<tr ng-repeat="row in rows">';
@@ -89,6 +91,25 @@
 
 						var itemId = tearSheetItem.ItemId;
 						var mnemonicId = tearSheetItem.Mnemonic;
+						var onChange = tearSheetItem.onChange;
+						var computationSearchStr = 'javascript:computeTotal(';
+						var computation = '';
+						
+						if(onChange && onChange.indexOf(computationSearchStr) > -1) {
+							computation = onChange.substring(onChange.indexOf(computationSearchStr) + computationSearchStr.length);
+							computation = computation.substring(0, computation.indexOf(')'));
+							var tempArr = computation.split(',');
+							var addtemId = tempArr[0].replace(/'/g,"").trim() || '';
+							var totalItemId = tempArr[1].replace(/'/g,"").trim() || '';
+							
+							$scope.footerMnemonics.push({
+								mnemonic: null,
+								itemId: totalItemId,
+								value: 0,
+								summation: itemId,
+								header: ''
+							});
+						}
 						
 						if(mnemonicId && mnemonicId === 'ACTION'){
 							return;
@@ -105,6 +126,37 @@
 							case 'GenericTextItem':
 								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
 								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
+								break;
+							case 'DateItem':
+								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "MM/DD/YYYY")}}</span>'; // remove formats for easy sorting & searching
+								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-calendar>';
+								break;
+							case 'SingleDropDownItem':
+								var defaultValue = '';
+								
+								$scope.selections = [];
+								
+								angular.forEach(tearSheetItem.param, function(each)
+								{
+									if(angular.lowercase(each.checked) === 'yes')
+									{
+										defaultValue = each.content;
+									}
+									
+									$scope.selections.push(
+										each.content
+									);
+								});
+								
+								html += '<span style="display:none">{{row.' + itemId + '}}</span>'; // for easy sorting & searching
+								html += '<ms-hybrid-dropdown ' +
+									'row="row" ' +
+									'save="saveRow(row)" ' +
+									'itemid="'+ itemId +'" ' +
+									'mnemonicid="'+ mnemonicId +'" ' +
+									'columnname="'+itemId+'" ' +
+									'selections="selections" '+
+									'defaultvalue="' + defaultValue + '" ></ms-hybrid-dropdown>';
 								break;
                             default:
                                 html += '<span>Under Construction</span>';
@@ -152,6 +204,64 @@
 			
 			return html;
         }
+		
+		function defineFooterLayout($scope)
+		{
+			var html = '';
+			var label = '';
+			
+			if($scope.tearsheet && $scope.tearsheet.footer && $scope.tearsheet.footer.length > 0)
+			{	
+				html += '<tfoot>';
+				
+				angular.forEach($scope.tearsheet.footer, function(row) 
+				{
+					html += '<tr>';
+					var colspan = $scope.columns.length / row.col.length;
+					angular.forEach(row.col, function(eachCol)
+					{
+						var tearSheetItem = eachCol.TearSheetItem;
+						if(tearSheetItem)
+						{
+							html += '<td colspan="' + colspan + '">';
+							
+							var itemId = tearSheetItem.ItemId;
+							var mnemonicId = tearSheetItem.Mnemonic;
+							
+							switch (tearSheetItem.id)
+							{
+								case 'GenericTextItem':
+									var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+									var footerIndex = _.findIndex($scope.footerMnemonics, {itemId : itemId});
+									
+									
+									$scope.footerMnemonics[footerIndex].mnemonic = mnemonicId;
+									$scope.footerMnemonics[footerIndex].value = value;
+									$scope.footerMnemonics[footerIndex].header = label;
+									label = '';
+									
+									html += '<span>{{numberWithCommas(footerMnemonics[' + footerIndex + '].value)}}</span>';
+									break;
+								case 'LabelItem':
+									html += '<span>' + tearSheetItem.Label + '</span>';
+									label = tearSheetItem.Label;
+									break;
+								default:
+									html += '<span>Under Construction</span>';
+									break;
+							}
+							
+							html += '</td>';
+						}
+					});
+					html += '</tr>';
+				});
+				
+				html += '</tfoot>';
+			}
+			
+			return html;
+		}
 
         function defineActions($scope)
         {			
@@ -399,11 +509,10 @@
 						columnName: 'SEQUENCE',
 						value: row.SEQUENCE
 					});
-
-					autoSave($scope, deleteRow, 'deleted', row.SEQUENCE);
 					
 					$scope.rows.splice(index, 1);
 					$scope.data.splice(getRowIndexBySequence($scope.data, row.SEQUENCE), 1);
+					autoSave($scope, deleteRow, 'deleted', row.SEQUENCE);
 					
 					calculateHeaderSelection($scope);
 				}
@@ -440,8 +549,7 @@
 			{
 				insert.row.push({
 					columnName: key,
-					value: templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
-					//value: value
+					value: (angular.isDate(value)) ?  templateBusiness.formatDate(value, 'DD-MMM-YY') : templateBusiness.removeFormatData(value, _.find($scope.subMnemonics, {mnemonic: key}))
 				});
 			});
 			
@@ -465,8 +573,7 @@
 			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'IsChecked'), function(value, key){
 				save.row.push({
 					columnName: key,
-					value: templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
-					//value: value
+					value: (angular.isDate(row[key])) ?  templateBusiness.formatDate(row[key], 'DD-MMM-YY') : templateBusiness.removeFormatData(row[key], _.find($scope.subMnemonics, {mnemonic: key}))
 				});
 			});
 			
@@ -484,7 +591,29 @@
 
 		function autoSave($scope, rowObject, action, sequence)
 		{
+			angular.forEach($scope.footerMnemonics, function(mnemonic)
+			{
+				computeTotal($scope, mnemonic.summation, mnemonic.itemId);
+			});
 			templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
+		}
+		
+		function computeTotal($scope, summation, total)
+		{
+			var totalValue = 0;
+			angular.forEach($scope.rows, function(eachRow)
+			{
+				if(eachRow[summation]) 
+				{
+					totalValue += parseInt(templateBusiness.removeFormatData(eachRow[summation], _.find($scope.subMnemonics, {mnemonic: summation})));
+				}
+			});
+			
+			var footerIndex = _.findIndex($scope.footerMnemonics, {itemId : total});
+			
+			$scope.footerMnemonics[footerIndex].value = totalValue;
+			templateBusiness.getReadyForAutoSave($scope.footerMnemonics[footerIndex].itemId, $scope.footerMnemonics[footerIndex].mnemonic, totalValue);
+			
 		}
 		
 		function excelUpload($scope)
@@ -495,12 +624,17 @@
 
             if(uploadElement && uploadElement.length > 0)
             {
-                uploadElement.change(function()
-                {
-                    $(this).off('change');
-                    $('#btn-hybrid-upload').click();
-                });
-                uploadElement.click();
+				setTimeout(function () {
+					uploadElement.change(function()
+					{
+						setTimeout(function () {
+							$(this).off('change');
+							angular.element('#btn-hybrid-upload').trigger('click');
+							//$('#btn-hybrid-upload').click();
+						}, 500);
+					});
+					uploadElement.click();
+				}, 500);
             }
 		}
 		
@@ -657,9 +791,34 @@
 				dataInfo.push(angular.fromJson(data));
 			});
 			
+			if($scope.footerMnemonics && $scope.footerMnemonics.length > 0)
+			{
+				angular.forEach($scope.footerMnemonics, function(footer)
+				{
+					data = '';
+					data += '{';	
+					if($scope.header && $scope.header[0] && $scope.header[0].HLabel ){
+						data +=  '"'+ $scope.header[0].HLabel +'":';
+						data +=  '"'+ footer.header +'",';
+					}
+					
+					if($scope.header && $scope.header[1] && $scope.header[1].HLabel ){
+						data +=  '"'+ $scope.header[1].HLabel +'":';
+						data +=  '"'+ footer.value +'"';
+					}
+					data += '}';
+					dataInfo.push(angular.fromJson(data));
+				});
+			}
+			
 			data = templateBusiness.unParseJsonToCsv(dataInfo);
 
-			if(data && linkElement && linkElement.length > 0)
+			if (deviceDetector.browser === 'ie')
+            {
+				var fileName = 'hybrid_table_' + commonBusiness.projectName.trim() + '.csv';
+                window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+			} else if(data && linkElement && linkElement.length > 0)
 			{
 				var fileName = 'hybrid_table_' + commonBusiness.projectName.trim() + '.csv';
 				linkElement[0].download = fileName;
@@ -756,6 +915,20 @@
 					{
 						setTLStatus(row);
 						saveRow(scope, row);
+					};
+					
+					scope.formatDate = function(value, format)
+					{
+						if(!angular.isDate(value))
+						{
+							value = templateBusiness.parseDate(value, 'DD-MMM-YY');
+						}
+						return templateBusiness.formatDate(value, format);
+					};
+					
+					scope.numberWithCommas = function(value)
+					{
+						return templateBusiness.numberWithCommas(value);
 					};
 					
 					scope.removeFormatData = function(value, subMnemonic)

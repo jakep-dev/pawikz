@@ -10,12 +10,18 @@
 
     function MsStepOverviewController($scope, commonBusiness)
     {
-        $scope.isExpanded = true;
+        $scope.isExpanded = false;
 
         $scope.toggleExpanded = toggleExpanded;
         $scope.singleSelection = singleSelection;
         $scope.setStepSelection = setStepSelection;
-
+        $scope.includeStepSelection = includeStepSelection;
+        
+        includeStepSelection();
+        
+        function includeStepSelection(){
+            recalculateSelection();
+        } 
         //set the step select and unselect feature.
         function setStepSelection()
         {
@@ -47,7 +53,7 @@
             if(angular.isDefined($scope.step) &&
                angular.isDefined($scope.step.sections))
             {
-                $scope.step.value = _.every($scope.step.sections,
+                $scope.step.value = _.some($scope.step.sections,
                     _.identity({value: true}));
             }
         }

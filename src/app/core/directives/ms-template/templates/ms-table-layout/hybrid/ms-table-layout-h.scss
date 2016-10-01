@@ -24,6 +24,18 @@ $table-layout-input-height: 25px;
   md-input-container .md-errors-spacer {
     min-height: 0;
   }
+  
+  tfoot {	
+	td {
+		border: none;
+		background-color: rgba(15, 185, 255, 0.11);
+		font-weight: bold;
+		/*
+		border-collapse: collapse;
+		border-top: 1px solid rgba(0, 0, 0, 0.12);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.12);*/
+	}
+  }
 }
 
 .no-padding-margin

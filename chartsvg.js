@@ -33,6 +33,8 @@
     var args;
     var chartConfig;
 
+    //console.log('Working Directory: ' + fs.workingDirectory);
+
     function mapCLArguments() {
         var map = {};
         var i;
@@ -98,6 +100,10 @@
             if (exitCallback !== null) {
                 exitCallback(msg);
             }
+        };
+
+        page.onLoadFinished = function () {
+            //console.log('Page Load Complete.');
         };
 
         function exit(result) {
@@ -206,8 +212,8 @@
                         //Display xAxis Labels conditionally based on selected period - START
                         var objLastLbl = xAxisLabels;
                         var lastValue = objLastLbl.length - 1;
-                        var startDate = moment(objLastLbl[0].textContent);
-                        var endDate = moment(objLastLbl[lastValue].textContent);
+                        var startDate = moment(objLastLbl[0].textContent, 'YYYY-MM-DD');
+                        var endDate = moment(objLastLbl[lastValue].textContent, 'YYYY-MM-DD');
                         var duration = moment.duration(moment(endDate).diff(moment(startDate)));
                         var diffDays = duration.asDays();
                         var diffMonths = Math.floor(duration.asMonths());
@@ -222,7 +228,7 @@
                             if (diffMonths <= 1 && diffDays > 7) {
                                 if (currentPeriod && nextDispDate) {
                                     //console.log("[1,7]");
-                                    currentPeriod = moment(currentPeriod);
+                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
                                     if (nextDispDate - currentPeriod === 0) {
                                         nextDispDate = moment(nextDispDate).add(7, 'days');
                                     } else {
@@ -237,7 +243,7 @@
                             } else if (diffMonths <= 3 && diffMonths > 1) {
                                 if (currentPeriod && nextDispDate) {
                                     //console.log("[3,1]");
-                                    currentPeriod = moment(currentPeriod);
+                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
 
                                     if (nextDispDate <= currentPeriod) {
                                         element.firstChild.textContent = moment(nextDispDate).format('YYYY-MM-DD');
@@ -249,7 +255,7 @@
                             } else if (diffMonths <= 18 && diffMonths > 3) {
                                 if (currentPeriod && nextDispDate) {
                                     //console.log("[18,3]");
-                                    currentPeriod = moment(currentPeriod);
+                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
 
                                     if (nextDispDate <= currentPeriod) {
                                         element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
@@ -261,7 +267,7 @@
                             } else if (diffMonths <= 24 && diffMonths > 18) {
                                 if (currentPeriod && nextDispDate) {
                                     //console.log("[24,18]");
-                                    currentPeriod = moment(currentPeriod);
+                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
 
                                     if (nextDispDate <= currentPeriod) {
                                         element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
@@ -275,7 +281,7 @@
                             } else if (diffMonths <= 36 && diffMonths > 24) {
                                 if (currentPeriod && nextDispDate) {
                                     //console.log("[36,24]");
-                                    currentPeriod = moment(currentPeriod);
+                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
 
                                     if (nextDispDate <= currentPeriod) {
                                         element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
@@ -289,7 +295,7 @@
                             } else if (diffMonths <= 120 && diffMonths > 36) {
                                 if (currentPeriod && nextDispDate) {
                                     //console.log("[120,36]");
-                                    currentPeriod = moment(currentPeriod);
+                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
 
                                     if (nextDispDate <= currentPeriod) {
                                         element.firstChild.textContent = moment(nextDispDate).format('YYYY');
@@ -464,12 +470,20 @@
                     addLabelBoxes(chart);
                 }
                 else if (chart.options.chart.type == 'column') {
-                    //adjustXAxisLabels(chart);
+                    adjustXAxisLabels(chart);
                 }
 
                 var elem = document.getElementsByTagName('svg')[0];
                 var svgElement;
                 if (elem) {
+                    //xmlns: xlink = "http://www.w3.org/1999/xlink"
+                    svgElement = $('svg')[0];
+                    $(svgElement).attr('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+                    $('image').each(function (index, element) {
+                        $(element).attr('height', 21);
+                        $(element).attr('width', 21);
+                    });
+
                     //console.log('SVG element found');
                     //console.log('SVG element found:' + elem.parentElement.innerHTML);
                     svgElement = elem.parentElement.innerHTML;
@@ -485,9 +499,10 @@
             var SVG_DOCTYPE = '<?xml version=\"1.0" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">';
             // Saving SVG to a file
             fs.write(filename, SVG_DOCTYPE + svg);
+
+            // Saving as PDF
+            //page.render(filename.replace(/\.svg/, '.pdf'));
             exit(filename);
-            // Saving diagram as PDF
-            //page.render('demo1.pdf');
         });
     }
 
@@ -507,30 +522,49 @@
                     response.write(msg);
                     response.close();
                 }
-                var jsonStr = request.postRaw || request.post;
-                var params;
-                try {
-                    params = JSON.parse(jsonStr);
-                    if (params.status) {
-                        // for server health validation
-                        response.statusCode = 200;
-                        response.write('OK');
-                        response.close();
-                    } else {
-                        render(params, function (result) {
+
+                console.log(request.url);
+                if (request.method == 'GET') {
+                    //var cleanedUrl = request.url;
+                    //var pagePath = fs.workingDirectory + cleanedUrl;
+                    //console.log('-->' + pagePath.replace(/\//g, '\\'));
+                    //response.setHeader("Content-Type", "image/jpeg");
+                    //try {
+                    //    var content = fs.read(pagePath.replace(/\//g, '\\'), 'b');
+                    //    response.setHeader('Content-Length', content.length);
+                    //    response.setEncoding('binary');
+                    //    console.log("Read " + content.length + " bytes");
+                    //    response.write(content);
+                    //} catch (err) {
+                    //    console.error('Error while reading ' + cleanedUrl + '(requested URL : ' + request.url + ')');
+                    //}
+                    response.close();
+                } else {
+                    var jsonStr = request.postRaw || request.post;
+                    var params;
+
+                    try {
+                        params = JSON.parse(jsonStr);
+                        if (params.status) {
+                            // for server health validation
                             response.statusCode = 200;
-                            response.write(result);
+                            response.write('OK');
                             response.close();
-                        }, onError);
+                        } else {
+                            params.url = 'http://' + host + ':' + port;
+                            render(params, function (result) {
+                                response.statusCode = 200;
+                                response.write(result);
+                                response.close();
+                            }, onError);
+                        }
+                    } catch (e) {
+                        onError('Failed rendering chart', e);
                     }
-                } catch (e) {
-                    onError('Failed rendering chart', e);
                 }
             }); // end server.listen
         console.log('OK, PhantomJS is ready.');
     };
-
-
 
     if (args.port !== undefined) {
         startServer(args.host, args.port);

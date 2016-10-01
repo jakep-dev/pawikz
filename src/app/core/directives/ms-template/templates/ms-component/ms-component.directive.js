@@ -180,11 +180,9 @@
                         {
                             case 'Expiring':
                             case 'Proposed':
-                                _.each($scope.tearcontent, function(content)
-                                {
+                                _.each($scope.tearcontent, function(content) {
                                     comp = templateBusiness.buildComponents($scope, content, content.subtype);
-                                    if(comp && comp.html !== '')
-                                    {
+                                    if (comp && comp.html !== '') {
                                         el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                     }
                                 });
@@ -192,6 +190,7 @@
 
                             case 'TableLayOut1':
                             case 'TableLayOut2':
+                            case 'TableLayOut3':
                             case 'TableLayOut5':
                                 comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
                                 if(comp && comp.html !== '')

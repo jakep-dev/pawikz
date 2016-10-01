@@ -52,7 +52,9 @@
                 {
                     create: '/api/workup/create',
                     renew: '/api/workup/renew',
-                    status: '/api/workup/status'
+                    status: '/api/workup/status',
+                    lock: '/api/workup/lock',
+                    unlock: '/api/workup/unlock'
                 }
             },
             appSettings:

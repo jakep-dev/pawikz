@@ -14,6 +14,7 @@
         this.userId = null;
         this.stepId = null;
         this.companyId = null;
+        this.prevcompanyId = null;
         this.projectName = null;
         this.companyName = null;
 

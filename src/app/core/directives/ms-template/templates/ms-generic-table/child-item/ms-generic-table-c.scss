@@ -1,0 +1,27 @@
+$generic-table-padding-left:10px;
+$generic-table-border-radius: 2px;
+$generic-table-hover-color: rgba(15, 185, 255, 0.35);
+$generic-table-input-height: 25px;
+
+
+#child-generic-table-layout
+{
+  border:0px;
+  border-radius: 0px;
+
+  md-input-container {
+    margin:0px 0;
+  }
+
+  .row
+  {
+    // padding-left: $generic-table-padding-left;
+    //height: 40px;
+    font-weight: bold;
+  }
+
+  .row:nth-child(odd) {
+    background-color: rgba(15, 185, 255, 0.11);
+    border-radius: $generic-table-border-radius;
+  }
+}

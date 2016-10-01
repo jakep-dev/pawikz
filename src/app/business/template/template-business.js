@@ -66,11 +66,22 @@
            pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
+		   getMnemonicPrefix: getMnemonicPrefix,
+		   getMnemonicPostfix: getMnemonicPostfix,
+		   getMnemonicParameters: getMnemonicParameters,
+           getMnemonicPrecision: getMnemonicPrecision,
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
+           removeCommaValue: removeCommaValue,
+           numberWithCommas: numberWithCommas,
+		   parenthesisForNegative: parenthesisForNegative,
+		   removeParenthesis: removeParenthesis,
+		   formatDate: formatDate,
+		   parseDate: parseDate,
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
-           initializeMessages: initializeMessages
+           initializeMessages: initializeMessages,
+		   isMnemonicNumberType: isMnemonicNumberType
         };
 
         return business;
@@ -129,15 +140,15 @@
             }
         }
 
-        ///Listens to PDF download and update accordingly
-        function listenToPdfDownload()
+        function listenToPdfDownload(request_id)
         {
-            clientConfig.socketInfo.socket.on('pdf-download-status', function(response)
+            var room = 'pdf_' + request_id;
+            clientConfig.socketInfo.socket.on('[' + room + ']pdf-download-status', function (response)
             {
                 if(response)
                 {
 
-                    var notification = _.first(business.notifications, function(not)
+                    var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
                             not.type === 'PDF-Download')
@@ -170,7 +181,7 @@
                 if(response)
                 {
 
-                    var notification = _.first(business.notifications, function(not)
+                    var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
                             not.type === 'Create-WorkUp' &&
@@ -302,7 +313,7 @@
                             }
                             toast.simpleToast("Issue with PDF Download. Please try again.");
                         } else {
-                            listenToPdfDownload();
+                            listenToPdfDownload(data.request_id);
 
                             if(notification)
                             {
@@ -539,6 +550,29 @@
             return comp;
         }
 
+        //Build read-only pivot table layout element
+        function buildReadOnlyPivotTableLayout(scope, itemId, mnemonicId, header, columns)
+        {
+            var newScope  = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
+
+            newScope.tearsheet = {
+                header: header,
+                columns: columns
+            };
+
+            comp.html = '<ms-tablelayout-r-p itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r-p>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
         ///Build edit table layout element
         function buildEditTableLayout(scope, content, header, columns)
         {
@@ -563,7 +597,7 @@
         }
 
         ///Build hybrid table layout element
-        function buildHybridTableLayout(scope, itemId, mnemonicId, header, columns)
+        function buildHybridTableLayout(scope, itemId, mnemonicId, header, columns, footer)
         {
             var newScope  = scope.$new(true),
                 comp = {
@@ -576,6 +610,7 @@
 
             newScope.tearsheet = {
                 header: header,
+				footer: footer,
                 columns: columns
             };
 
@@ -609,14 +644,14 @@
                     break;
 
                 case 'tablelayout3':
-                    //
-                    //tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
-                    //return buildReadOnlyTableLayout(scope, content, tableLayout.header, tableLayout.row);
+                    //ReadOnly-Pivot Table
+                    tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
+                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
                     break;
 
                 case 'tablelayout4':
                     tableLayout = getHeaderAndColumnsForTableLayout4(scope.tearcontent);
-                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
                     //Hybrid Table
                     break;
 
@@ -692,6 +727,8 @@
         function getHeaderAndColumnsForTableLayout3(tearcontent)
         {
             var tableLayout = {
+                itemId: null,
+                mnemonicId: null,
                 header: null,
                 row: null
             };
@@ -700,6 +737,8 @@
             {
                 if(content.id === 'TableLayOut')
                 {
+                    tableLayout.itemId = content.ItemId;
+                    tableLayout.mnemonicId = content.Mnemonic;
                     tableLayout.row = content.TableRowTemplate.row;
                 }
             });
@@ -727,6 +766,11 @@
                     tableLayout.itemId = content.ItemId;
                     tableLayout.mnemonicId = content.Mnemonic;
                 }
+				
+				if(content.id === 'GenericTableItem')
+				{
+					tableLayout.footer = content.row;
+				}
             });
 
             return tableLayout;
@@ -829,7 +873,7 @@
                     html: '',
                     scope: null
                 },
-                value = getMnemonicValue(itemId, mnemonicId);
+                value = getMnemonicValueNoEscape(itemId, mnemonicId);
 
             if(content.prompt &&
                 typeof(content.prompt) !== 'object')
@@ -843,9 +887,18 @@
                 answer = content.answer;
             }
 
-            var newScope  = scope.$new();
-            comp.html = '<ms-rich-text-editor itemid="'+itemId+'" ' +
-                'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
+            var newScope  = scope.$new(true);
+            newScope.itemid = itemId;
+            newScope.mnemonicid = mnemonicId;
+            newScope.prompt = prompt;
+            newScope.value = _.escape(value);
+            newScope.isdisabled = false;
+            newScope.answer = answer;
+
+
+            comp.html = '<ms-rich-text-editor itemid="'+ newScope.itemid + '" ' +
+                'mnemonicid="' + newScope.mnemonicid + '" prompt="' + newScope.prompt + '" ' +
+                'value="' + newScope.value + '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
             comp.scope = newScope;
 
             return comp;
@@ -1324,7 +1377,7 @@
 		}
 
         //Get Mnemonic value based on itemId and Mnemonic
-        function getMnemonicValue(itemId, mnemonic)
+        function getMnemonicValue(itemId, mnemonic, format)
         {
             var value = '';
             if(business.mnemonics)
@@ -1340,12 +1393,47 @@
 
                 if(mnemonic)
                 {
-                    value = formatData(mnemonic.value, mnemonic);
+                    if(!format && format === false) { //ensures format is false & not null/undefined
+                        value = mnemonic.value;
+                    }
+                    else {
+                        value = formatData(mnemonic.value, mnemonic);
+                    }
                     value = _.escape(value);
                 }
             }
             return value;
         }
+
+        //Get Mnemonic value based on itemId and Mnemonic
+        function getMnemonicValueNoEscape(itemId, mnemonic, format)
+        {
+            var value = '';
+            if(business.mnemonics)
+            {
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                {
+                    if(m.itemId === itemId)
+                    {
+                        return m;
+                    }
+                });
+
+                if(mnemonic)
+                {
+                    if(!format && format === false) { //ensures format is false & not null/undefined
+                        value = mnemonic.value;
+                    }
+                    else {
+                        value = formatData(mnemonic.value, mnemonic);
+                    }
+                    value = value;
+                }
+            }
+            return value;
+        }
+
 		
 		//get all subMnemonics in table layouts to get its data types and sub data types
 		function getTableLayoutSubMnemonics(itemId, mnemonic)
@@ -1380,18 +1468,22 @@
 		//formats the data for NUMBER(PERCENTAGE & CURRENCY only) and DATE data types
 		function formatData(value, valueType)
 		{
-			value = value.trim() || '';
-			
-			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
-                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
-                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+			if(!angular.isUndefined(valueType) && !angular.isUndefined(value))
 			{
-				value = numberWithCommas(value);
-			}
-			else if(valueType.dataType &&
-                valueType.dataType == 'DATE')
-			{				
-				value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
+				value = value+''.trim() || '';
+				
+				if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+					(valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+					(valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+				{
+					value = numberWithCommas(value);
+					value = parenthesisForNegative(value);
+				}
+				else if(valueType.dataType &&
+					valueType.dataType == 'DATE')
+				{				
+					value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
+				}
 			}
 			
 			return value;
@@ -1400,20 +1492,212 @@
 		//removes formatted data, used in savings and reformatting
 		function removeFormatData(value, valueType)
 		{
-			value = value.trim() || '';
-			
-			if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
-                (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
-                (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+			if(!angular.isUndefined(valueType) && !angular.isUndefined(value))
 			{
-				value = removeCommaValue(value);
-			}
-			else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
-			{				
-				value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+				value = value+''.trim() || '';
+				
+				if( valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
+					(valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') || 
+					(valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO') )
+				{
+					value = removeCommaValue(value);
+				}
+				else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
+				{				
+					value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+				}
 			}
 			
 			return value;
+		}
+		
+		//check if the mnemonic type is number
+		function isMnemonicNumberType(mnemonicValue)
+		{
+			var isNumber = false;
+			if(business.mnemonics)
+            {
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                                {
+                                  if(m.mnemonic === mnemonicValue)
+                                  {
+                                      return m;
+                                  }
+                                });
+
+                if(mnemonic)
+                {
+                    isNumber = mnemonic.dataType === 'NUMBER';
+                }
+            }
+			
+			return isNumber;
+		}
+		
+		//check if subtype is CURRENCY to add prefix (currency symbol)
+		function isCurrencySubtype(mnemonicValue)
+		{
+			var isCurrency = false;
+			if(business.mnemonics)
+            {
+
+                var mnemonic = _.find(business.mnemonics, function(m)
+                                {
+                                  if(m.mnemonic === mnemonicValue)
+                                  {
+                                      return m;
+                                  }
+                                });
+
+                if(mnemonic)
+                {
+                    isCurrency = mnemonic.dataSubtype === 'CURRENCY';
+                }
+            }
+			
+			return isCurrency;
+		}
+		
+		//get currency symbol prefix
+		function getMnemonicPrefix(tearSheet)
+		{
+			var prefix = '';
+			
+			if(isCurrencySubtype(tearSheet.Mnemonic) && overviewBusiness.templateOverview && overviewBusiness.templateOverview.defaultCurrency)
+			{
+				var currency = overviewBusiness.templateOverview.defaultCurrency;
+				switch (currency) {
+					case 'USD':					
+					case 'CAD':
+						prefix = '$';
+						break;
+					case 'JPY':
+						prefix = '&yen;';
+						break;
+					case 'EUR':
+						prefix = '&euro;';
+						break;
+					case 'GBP':
+						prefix = '&pound;';
+						break;
+					case 'CHF':
+						prefix = 'CHF';
+						break;
+					default:
+						prefix = '';
+				}
+			}
+			return prefix;
+		}
+
+		//get decimal places for NUMBER types
+        function getMnemonicPrecision(tearSheet)
+        {
+            var precision = null;
+            
+            //xml precision value set
+            var xmlParameters = getMnemonicParameters(tearSheet);
+			
+            if(xmlParameters && xmlParameters.precision_in)
+            {
+                return xmlParameters.precision_in;
+            }
+            
+            //webservice default precision value
+            if(business.mnemonics)
+            {
+                var mnemonic = _.find(business.mnemonics, function(m)
+                {
+                    if(m.mnemonic === tearSheet.Mnemonic)
+                    {
+                        return m;
+                    }
+                });
+
+                if(mnemonic && mnemonic.dataType === 'NUMBER')
+                {
+                    return mnemonic.precision;
+                }
+            }
+            return precision;
+        }
+		
+		//get parameters set in XML
+		function getMnemonicParameters(tearSheet)
+		{
+			if(tearSheet.Parameters && tearSheet.Parameters.length > 0) {
+				var parameters = [];
+				angular.forEach(tearSheet.Parameters.split(','), function(parameter)
+				{
+					if(parameter && parameter.length && parameter.indexOf('=') > -1){
+						var param = parameter.split('=');
+						var strParam = '';
+						
+						strParam += '"' + param[0] + '"' ;  //key
+						strParam += ':"' + param[1] + '"' ;  //value
+						
+						parameters.push(strParam);
+					}
+				});
+				
+				return angular.fromJson('{' + parameters.join(', ') + '}');
+			}
+			
+			return null;
+		}
+		
+		//get KMB indicators for NUMBER types
+		function getMnemonicPostfix(tearSheet)
+		{
+			var postFix = '';
+			
+			//xml units value set
+			var xmlParameters = getMnemonicParameters(tearSheet);
+			if(xmlParameters && xmlParameters.unit_in)
+			{
+				return getKMBIndicator(xmlParameters.unit_in);
+			}
+			
+			//webservice default units value
+			if(business.mnemonics)
+            {
+				var mnemonic = _.find(business.mnemonics, function(m)
+				{
+					if(m.mnemonic === tearSheet.Mnemonic)
+					{
+						return m;
+					}
+				});
+
+                if(mnemonic)
+                {
+					return getKMBIndicator(mnemonic.units);
+                }
+            }
+			return postFix;
+		}
+		
+		//KMB Indicator value 
+		function getKMBIndicator(unitValue)
+		{
+			var unit = '';
+			if(unitValue && unitValue.length > 0)
+			{
+				var unitLength = unitValue.length;
+				
+				if (unitLength > 9)
+				{
+					unit = "B";
+				} else if (unitLength > 6)
+				{
+					unit = "M";
+				} else if (unitLength > 3)
+				{
+					unit = "K";
+				}
+			}
+			return unit;
 		}
 		
 		function parseDate(str, format)
@@ -1430,9 +1714,15 @@
  
         function numberWithCommas(value)
 		{ 
-            var parts = value.toString().split("."); 
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
-            return parts.join("."); 
+			//ensure that value is number
+			if(value+''.match(/^-?[0-9]*[\.]?[0-9]+$/))
+			{
+				var parts = value.toString().split("."); 
+				parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+				return parts.join("."); 
+			}
+			
+			return value;
         }
 		
 		function removeCommaValue(inputValue)
@@ -1449,6 +1739,26 @@
                 return inputValue;
             }
         }
+ 
+		//add parenthesis for negative values
+		function parenthesisForNegative(value)
+		{
+			if(parseFloat(value) < 0)
+			{
+				value = value.replace('-', '(') + ')';
+			}
+			return value;
+		}
+		
+		//remove parenthesis for negative values
+		function removeParenthesis(value)
+		{
+			if(value+''.match(/^\(\d*\)/g))
+			{
+				value = value.replace('(', '-').replace(')','');
+			}
+			return value;
+		}
 		
         function getTemplateElement()
         {

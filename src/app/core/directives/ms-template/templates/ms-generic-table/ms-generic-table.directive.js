@@ -28,17 +28,19 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-generic-table/ms-generic-table.html',
             link:function(scope, el, attrs)
             {
-                var newScope = null;
                 var html = '';
 
+                console.log('Generic Table Item Scope');
+                console.log(scope);
+
+                html += '<table id="generic-table" cellspacing="0" cellpadding="0" width="100%">';
+
                 //Creating Rows for Generic-Table
-                angular.forEach(scope.tearsheet.rows, function(row)
+                _.each(scope.tearsheet.rows, function(row)
                 {
                     if(!row.id || row.id !== 'toolbar_links') {
-                        html = '';
-                        newScope = null;
-                        html += '<div class="row" layout-align="center center" style="min-height: 30px"  ' +
-                            'layout="row" flex>';
+
+                        html += '<tr class="row">';
 
                         var columns = null;
 
@@ -55,25 +57,24 @@
                         }
 
                         //Creating Columns for Generic-Table
-                        angular.forEach(columns, function (col) {
+                        _.each(columns, function (col) {
 
-                            html += '<div flex>';
-                            var tearSheetItem = col.TearSheetItem;
+                            var tearSheetItem = col.TearSheetItem,
+                                colspan = col.colspan || 0;
+                            html += '<td colspan="'+ colspan +'">';
+
 
                             if (tearSheetItem &&
                                 typeof(tearSheetItem.Label) !== 'object') {
 
                                 switch (tearSheetItem.id) {
                                     case 'LabelItem':
-                                        newScope = scope.$new();
-                                        html += '<ms-label value="' + tearSheetItem.Label + '"></ms-label>';
+                                        html += '<ms-label style="font-weight: bold" value="' + tearSheetItem.Label + '"></ms-label>';
                                         break;
                                     case 'LinkItemNoWord':
-                                        newScope = scope.$new();
                                         html += '<ms-link value="' + tearSheetItem.Label + '" href="'+ tearSheetItem.url +'"></ms-link>';
                                         break;
                                     case 'LinkItem':
-                                        newScope = scope.$new();
                                         var value = '';
                                         var link = '';
                                         if(angular.isDefined(tearSheetItem.Label))
@@ -91,23 +92,44 @@
                                         break;
                                     case 'GenericTextItem':
 
-                                        newScope = scope.$new();
+
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-                                        // var iskmb = (tearSheetItem.onBlur === 'transformKMB(this)' || tearSheetItem.onkeyup === 'transformKMB(this)' || tearSheetItem.onChange === 'transformKMB(this)');
+                                        var prefix = templateBusiness.getMnemonicPrefix(tearSheetItem); 
+										var postfix = templateBusiness.getMnemonicPostfix(tearSheetItem); 
+                                        var precision = templateBusiness.getMnemonicPrecision(tearSheetItem);
                                         var iskmb = ((tearSheetItem.onBlur && (tearSheetItem.onBlur.indexOf('transformKMB(this)') > -1 )) ||
                                                     (tearSheetItem.onkeyup && (tearSheetItem.onkeyup.indexOf('transformKMB(this)') > -1 )) ||
                                                     (tearSheetItem.onChange && (tearSheetItem.onChange.indexOf('transformKMB(this)') > -1 ))) || false;
 
 
-                                        if(iskmb)
+                                        if(iskmb && value && value.length > 0)
                                         {
                                            value = $filter("currency")(value, '', 0);
                                         }
+										if(value && value.length > 0)
+										{
+											if(precision)
+											{
+												value = templateBusiness.removeParenthesis(value);
+												value = templateBusiness.numberWithCommas(parseFloat(templateBusiness.removeCommaValue(value)).toFixed(precision));
+												value = templateBusiness.parenthesisForNegative(value);
+											}
+											value = prefix + value + postfix;
+										}
+
+                                        if(scope.isnoneditable)
+                                        {
+                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
+                                            return;
+                                        }
+
                                         html += '<ms-text value="'+ value +'" ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
+                                            'precision="'+ precision +'"  ' +
+                                            'prefix="'+ prefix +'" postfix="' + postfix +'" ' +
                                             'isdisabled="'+ scope.isnoneditable +'" ' +
                                             'iskmb="' + iskmb + '"></ms-text>';
                                         break;
@@ -116,10 +138,15 @@
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
 
-                                        newScope = scope.$new();
+                                        var tearsheet = {};
                                         var values = [];
                                         var selectedValue = '';
-                                        angular.forEach(tearSheetItem.param, function(each)
+                                        if(scope.isnoneditable)
+                                        {
+                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
+                                            return;
+                                        }
+                                        _.each(tearSheetItem.param, function(each)
                                         {
                                             if(each.checked === 'yes')
                                             {
@@ -132,14 +159,14 @@
                                             });
                                         });
 
-                                        newScope.tearsheet = {
+                                        tearsheet = {
                                             label: '',
                                             values: values,
                                             isdisabled: false,
                                             selectedValue: value || selectedValue
                                         };
 
-                                        html += '<ms-dropdown tearsheet="tearsheet"' +
+                                        html += '<ms-dropdown tearsheet="'+ _.escape(angular.toJson(tearsheet)) +'"' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ></ms-dropdown>';
                                         break;
@@ -147,19 +174,23 @@
                                     case 'DateItem':
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-										var parseFormat = 'DD-MMM-YY'; //assume that the webservice returns this date format
-                                        html += '<ms-calendar itemid="'+ itemId +'" mnemonicid="'+ mnemonicId +'" value="'+ value +'" isdisabled="false" parseformat="'+ parseFormat +'"></ms-calendar>';
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        if(scope.isnoneditable)
+                                        {
+                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
+                                            return;
+                                        }
+                                        html += '<ms-calendar itemid="'+ itemId +'" mnemonicid="'+ mnemonicId +'" value="'+ value +'" isdisabled="false"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
 
-                                        newScope = scope.$new();
+                                        var tearsheet = {};
                                         var values = [];
                                         var selectedValue = '';
-                                        angular.forEach(tearSheetItem.param, function(each)
+                                        _.each(tearSheetItem.param, function(each)
                                         {
                                             if(each.checked === 'yes')
                                             {
@@ -171,13 +202,14 @@
                                                 name: each.content
                                             });
                                         });
-                                        newScope.tearsheet = {
+
+                                        tearsheet = {
                                             values: values,
                                             isdisabled: false,
                                             value: value || selectedValue
                                         };
 
-                                        html += '<ms-radio-button tearsheet="tearsheet"' +
+                                        html += '<ms-radio-button tearsheet="'+ _.escape(angular.toJson(tearsheet)) +'"' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ></ms-radio-button>';
                                         break;
@@ -203,26 +235,29 @@
 
                                         html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
                                             'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
-                                        html += '</div>';
+
+                                        break;
+                                    case 'GenericTableItem':
+                                        var rows = tearSheetItem.row,
+                                            isnoneditable = false;
+
+                                        html += '<ms-generic-table-c tearsheet="'+ _.escape(angular.toJson(rows)) +'" isnoneditable="'+ isnoneditable +'"></ms-generic-table-c>';
+                                        break;
+
+                                    default:
+                                        html += '<div>&nbsp;</div>';
                                         break;
                                 }
                             }
-                            html += '</div>';
+                            html += '</td>';
                         });
-
-
-                        html += '</div>';
-                        if(newScope !== null)
-                        {
-                            el.find('#generic-table-layout').append($compile(html)(newScope));
-                        }
-                        else {
-                            el.find('#generic-table-layout').append($compile(html)(scope));
-                        }
+                        html += '</tr>';
                     }
                 });
 
+                html += '</table>';
 
+                el.find('#generic-table-layout').append($compile(html)(scope));
             }
         };
     }

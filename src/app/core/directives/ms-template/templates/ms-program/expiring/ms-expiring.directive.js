@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msExpiringDirective($compile, $filter, commonBusiness,
+    function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector,
                                      templateBusiness, DTOptionsBuilder, toast)
     {
         return {
@@ -97,7 +97,7 @@
             angular.forEach($scope.tearsheet.row[0].col, function(eachCol)
             {
                 var tearSheetItem = eachCol.TearSheetItem;
-                html += '<th>';
+                html += '<th style="width: 15%;">';
                 html += tearSheetItem.Label;
                 html += '</th>';
             });
@@ -268,7 +268,7 @@
                         var itemId = tearSheetItem.ItemId;
                         var mnemonicId = tearSheetItem.Mnemonic;
                         var newCopyItemId = templateBusiness.getCopyItemId(tearSheetItem.CopyItemId);
-                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
                         var newItemId = templateBusiness.getNewItemId(itemId);
                         var isDisabled = (itemId.indexOf('RATE') !== -1) ||
                                          (itemId.indexOf('ROL') !== -1) ||
@@ -321,7 +321,7 @@
                         }
                         else if (itemId.indexOf('CARRIER') > -1)
                         {
-                            makeColDef += '"' + value + '",';
+                            makeColDef += '"' + value.trim() + '",';
                         }
                         else
                         {
@@ -576,7 +576,14 @@
 
             data = templateBusiness.unParseJsonToCsv(dataInfo);
 
-            if(data && linkElement && linkElement.length > 0)
+            // IE 10+ 
+            if (deviceDetector.browser === 'ie')
+            { 
+                console.log('IE 10 +'); 
+                var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
+                window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+            }else if(data && linkElement && linkElement.length > 0)
             {
                 var fileName = 'ExpiringProgram_' + commonBusiness.projectName.trim() + '.csv';
                 linkElement[0].download = fileName;
@@ -658,7 +665,7 @@
                         exp = '$scope.rows[count].' + header.name + '.id';
                     var id = eval(exp);
 
-                    var value = templateBusiness.getMnemonicValue(copyItemId, mnemonicId);
+                    var value = templateBusiness.getMnemonicValue(copyItemId, mnemonicId, false);
                     if ((header.name.indexOf('LIMIT') > -1) || (header.name.indexOf('PREMIUM') > -1) || (header.name.indexOf('RET') > -1))
                     {
                         if (value)
@@ -695,7 +702,7 @@
 
 
                     if(id === 'SingleDropDownItem'){
-                        if(value === 'undefined')
+                        if(!value || value === 'undefined')
                         {
                             value = ' ';
                         }
@@ -722,12 +729,18 @@
 
             if(uploadElement && uploadElement.length > 0)
             {
-                uploadElement.change(function()
-                {
-                    $(this).off('change');
-                    $('#btn-expiring-upload').click();
-                });
-                uploadElement.click();
+                    setTimeout(function () {
+                        uploadElement.change(function(e)
+                        {
+                            setTimeout(function () {
+                                $(this).off('change');
+                                angular.element('#btn-expiring-upload').trigger('click');
+                                // $('#btn-expiring-upload').click();
+                            }, 500);
+                        });
+
+                        uploadElement.click();
+                    }, 500);
             }
         }
 

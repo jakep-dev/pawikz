@@ -20,8 +20,19 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
     }
 
     workupBusiness.initialize($stateParams.token);
-    workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
-    templateBusiness.listenToWorkUpStatus();
+
+
+    clientConfig.socketInfo.socket.emit('init-socket', {
+        token: $stateParams.token,
+        userId: $stateParams.userId
+    }, function(data)
+    {
+        templateBusiness.listenToWorkUpStatus();
+        workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
+    });
+
+
+
 
     toast.simpleToast('Creating new workup in progress. Use notification center for updates');
 

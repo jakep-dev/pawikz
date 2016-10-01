@@ -10,27 +10,19 @@
     /** @ngInject */
     function MsCalendarController($scope, templateBusiness)
     {
-		$scope.value = parseDate($scope.value, $scope.parseFormat);
-
-        $scope.$watch(
-            "value",
+		$scope.dateValue = templateBusiness.parseDate($scope.value, 'DD-MMM-YY');
+		
+		$scope.$watch(
+            "dateValue",
             function handleAutoSave(newValue, oldValue) {
+				newValue = templateBusiness.formatDate(newValue, 'DD-MMM-YY');
+				oldValue = templateBusiness.formatDate(oldValue, 'DD-MMM-YY');
                 if(newValue !== oldValue)
                 {
                     templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }
         );
-		
-		function parseDate(str, format){
-			var date = moment(str, format, true);
-			return date.isValid() ? date.toDate() : '';
-		}
-		
-		function formatDate(str, format){
-			var date = moment(date);
-			return date.isValid() ? date.format(format) : '';
-		}
     }
 
     /** @ngInject */
@@ -42,8 +34,7 @@
                 itemid: '@',
                 mnemonicid: '@',
                 value: '@',
-                isdisabled: '=?',
-				parseformat : '@'
+                isdisabled: '=?'
             },
             controller: 'MsCalendarController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-calendar/ms-calendar.html'

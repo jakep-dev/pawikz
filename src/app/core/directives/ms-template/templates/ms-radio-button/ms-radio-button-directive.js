@@ -11,7 +11,7 @@
     function MsRadioButtonController($scope, templateBusiness)
     {
         $scope.$watch(
-            "tearsheet.value",
+            "tearsheetobj.value",
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
@@ -30,12 +30,16 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                tearsheet: '='
+                tearsheet: '@'
             },
             controller: 'MsRadioButtonController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-radio-button/ms-radio-button.html',
-            link:function(scope)
+            compile: function(el, attrs)
             {
+                return function($scope)
+                {
+                    $scope.tearsheetobj = angular.fromJson(_.unescape($scope.tearsheet));
+                };
             }
         };
     }
