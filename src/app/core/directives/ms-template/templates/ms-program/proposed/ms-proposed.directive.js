@@ -124,6 +124,29 @@
                     eval(rowExp);
                 }
             };
+            
+            $scope.updateDropdown = function(value, column, rowId)
+            {
+                var rowNumber = parseInt(rowId);
+
+                var findRow = _.filter($scope.rows, function (row) {
+                    if (row.rowid === rowNumber) {
+                        return row;
+                    }
+                });
+
+                if (findRow &&
+                   findRow.length === 1) {
+                    if (value === '') {
+                        value = '""';
+                    }
+                    else {
+                        value = '"' + value + '"';
+                    }
+                    var rowExp = 'findRow[0].' + column + '.tearsheet.selectedValue = ' + value + ';';
+                    eval(rowExp);
+                }
+            };
 
             $scope.calculate = function (currentRow, value, rowId, columnName)
             {
@@ -180,6 +203,31 @@
 
                         computeOthers($scope.rows, rowId);
                     }
+                } else {
+                    var rowNumber = parseInt(rowId);
+
+                    var findRow = _.filter($scope.rows, function(row)
+                    {
+                        if(row.rowid === rowNumber)
+                        {
+                            return row;
+                        }
+                    });
+
+                    if(findRow &&
+                        findRow.length === 1)
+                    {
+                        if(value === '')
+                        {
+                            value = '""';
+                        }
+                        else 
+                        {
+                            value = '"' + value + '"';
+                        }
+                        var rowExp = 'findRow[0].' + columnName + '.value = ' + value + ';';
+                        eval(rowExp);
+                    }
                 }
             };
 
@@ -227,7 +275,7 @@
                         html += '<ms-program-dropdown tearsheet="{{row.'+ newItemId +'.tearsheet}}" ' +
                             'mnemonicid="{{row.' + newItemId + '.mnemonicid}}" ' +
                             'rowid="{{row.rowid}}" ' +
-                            'compute="updateCarrier(value, rowId)" ' +
+                            'compute="updateDropdown(value, \'' + newItemId + '\', rowId)" ' +
                             'itemid="{{row.' + newItemId + '.itemid}}"></ms-program-dropdown>';
                         break;
 
