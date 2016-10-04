@@ -144,12 +144,7 @@
 
                 if (updateRow)
                 {
-                    if (value === '') {
-                        value = '""';
-                    }
-                    else {
-                        value = '"' + value + '"';
-                    }
+                    value = (value === '') ? '""' : '"'+ value +'"';
                     var rowExp = 'updateRow.' + column + '.tearsheet.selectedValue = ' + value + ';';
                     eval(rowExp);
                 }
