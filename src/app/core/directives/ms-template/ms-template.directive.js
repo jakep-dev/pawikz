@@ -7,7 +7,8 @@
         .controller('msTemplateController', msTemplateController)
         .directive('msTemplate', msTemplateDirective);
 
-    function msTemplateController($rootScope, $scope, $mdMenu, templateBusiness, commonBusiness, workupBusiness)
+    function msTemplateController($rootScope, $scope, $mdMenu, $window,
+                                  templateBusiness, commonBusiness, workupBusiness)
     {
         var vm = this;
 
@@ -76,7 +77,8 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, templateBusiness, commonBusiness, deviceDetector, clientConfig)
+    function msTemplateDirective($compile, $rootScope, templateBusiness, $mdDialog, dialog,
+                                 commonBusiness, $interval, clientConfig)
     {
         return {
             restrict: 'E',
@@ -97,34 +99,52 @@
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
+
                 scope.loadMore = function()
                 {
-                    //commonBusiness.emitMsg('step-load-initiated');
 
-                    var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
-                        components = [],
-                        loadSize = clientConfig.appSettings.componentInitialLoad,
-                        compSize = 0;
+                    if(!scope.isLoadMoreDisabled) {
 
-                    components.push.apply(components, templateBusiness.components.content);
-                    components = components.splice(loadedIndex, _.size(components));
 
-                    compSize = _.size(components);
+                        $mdDialog.show(
+                            $mdDialog.alert({
+                                clickOutsideToClose: true,
+                                templateUrl: 'app/core/directives/ms-template/dialog/ms-template.dialog.html'
+                            })
+                        );
 
-                    if(compSize < clientConfig.appSettings.componentInitialLoad)
-                    {
-                        loadSize = compSize
+                       var comPromise = $interval(function(){//using $interval seems to work fine
+                            var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
+                                components = [],
+                                loadSize = clientConfig.appSettings.componentInitialLoad,
+                                compSize = 0;
+
+                            components.push.apply(components, templateBusiness.components.content);
+                            components = components.splice(loadedIndex, _.size(components));
+
+                            compSize = _.size(components);
+
+                            if(compSize < clientConfig.appSettings.componentInitialLoad)
+                            {
+                                loadSize = compSize
+                            }
+                            bindComponent(scope, el, components, loadSize);
+
+                            var newLoadedIndex = loadedIndex + loadSize;
+
+                            if(_.size(templateBusiness.components.content) === newLoadedIndex)
+                            {
+                                scope.isLoadMoreDisabled = true;
+                            }
+
+                            el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
+                           $interval.cancel(comPromise);
+                        }.bind(this), 10);
+
+
                     }
-                    bindComponent(scope, el, components, loadSize);
 
-                    var newLoadedIndex = loadedIndex + loadSize;
 
-                    if(_.size(templateBusiness.components.content) === newLoadedIndex)
-                    {
-                        scope.isLoadMoreDisabled = true;
-                    }
-
-                    el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
                 };
 
                 bindHeader(scope);
@@ -138,6 +158,11 @@
                 }
                 bindComponent(scope, el, scope.components.content, compCount);
                 el.find('#btnLoadMore').attr('loadedIndex', compCount);
+
+                commonBusiness.onMsg('reached-page-bottom', scope, function(){
+                    scope.loadMore();
+                });
+
             }
 
         };
