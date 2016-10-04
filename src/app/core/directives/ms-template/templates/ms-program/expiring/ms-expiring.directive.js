@@ -136,21 +136,21 @@
             {
                 var rowNumber = parseInt(rowId);
 
-                var findRow = _.filter($scope.rows, function (row) {
+                var updateRow = _.find($scope.rows, function (row) {
                     if (row.rowid === rowNumber) {
                         return row;
                     }
                 });
 
-                if (findRow &&
-                   findRow.length === 1) {
+                if (updateRow)
+                {
                     if (value === '') {
                         value = '""';
                     }
                     else {
                         value = '"' + value + '"';
                     }
-                    var rowExp = 'findRow[0].' + column + '.tearsheet.selectedValue = ' + value + ';';
+                    var rowExp = 'updateRow.' + column + '.tearsheet.selectedValue = ' + value + ';';
                     eval(rowExp);
                 }
             };
