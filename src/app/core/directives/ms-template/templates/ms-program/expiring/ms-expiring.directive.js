@@ -97,7 +97,7 @@
             angular.forEach($scope.tearsheet.row[0].col, function(eachCol)
             {
                 var tearSheetItem = eachCol.TearSheetItem;
-                html += '<th style="width: 15%;">';
+                html += '<th style="width: 10%;">';
                 html += tearSheetItem.Label;
                 html += '</th>';
             });
