@@ -460,8 +460,7 @@
                                                 // $rootScope.$broadcast('autosave');
                                             }},
 
-                                        //marginLeft: 80, // Keep all charts left aligned
-                                        //marginRight: 90,
+                                        marginLeft: 80, // Keep all charts left aligned
                                         marginRight: 80,
                                         spacingTop: dataset.spacingTop,
                                         spacingBottom: 4,

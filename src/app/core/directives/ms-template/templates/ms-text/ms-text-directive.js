@@ -131,9 +131,10 @@
             },
             controller: 'MsTextController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-text/ms-text.html',
-            link: function(scope)
+            link: function(scope, el)
             {
-                $('.md-errors-spacer').remove();
+                // $('.md-errors-spacer').remove();
+                el.find('.md-errors-spacer').remove();
             }
         };
     }
