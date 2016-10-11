@@ -95,6 +95,7 @@
 
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
+                                        var defaultVal = tearSheetItem.answer;
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                         var prefix = templateBusiness.getMnemonicPrefix(tearSheetItem); 
 										var postfix = templateBusiness.getMnemonicPostfix(tearSheetItem); 
@@ -107,6 +108,10 @@
                                         if(iskmb && value && value.length > 0)
                                         {
                                            value = $filter("currency")(value, '', 0);
+                                        }
+                                        if((!value && value.length === 0) && (defaultVal && defaultVal.length > 0))
+                                        {
+                                            value = defaultVal;
                                         }
 										if(value && value.length > 0)
 										{
