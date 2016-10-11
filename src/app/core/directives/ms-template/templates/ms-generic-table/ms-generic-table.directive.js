@@ -61,7 +61,7 @@
 
                             var tearSheetItem = col.TearSheetItem,
                                 colspan = col.colspan || 0;
-                            html += '<td colspan="'+ colspan +'">';
+                            html += '<td style="padding-left: 3px" colspan="'+ colspan +'">';
 
 
                             if (tearSheetItem &&
