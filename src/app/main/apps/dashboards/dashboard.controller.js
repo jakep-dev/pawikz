@@ -188,7 +188,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function searchOnEnter()
     {
         $('#dashBoardDetails_filter input').unbind();
-        $('#dashBoardDetails_filter input').bind('keyup', function(e) {
+        $('#dashBoardDetails_filter input').bind('keyup input propertychange', function(e) {
             if(e.keyCode == 13 || this.value.length == 0) {
                 var oTable = $('#dashBoardDetails').dataTable();
                 oTable.fnFilter(this.value);
