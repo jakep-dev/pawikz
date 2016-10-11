@@ -10,7 +10,7 @@
     /** @ngInject */
     function MsCalendarController($scope, templateBusiness)
     {
-		$scope.dateValue = templateBusiness.parseDate($scope.value, 'DD-MMM-YY');
+		$scope.dateValue = templateBusiness.parseDate($scope.value, 'MM/DD/YYYY');
 		
 		$scope.$watch(
             "dateValue",

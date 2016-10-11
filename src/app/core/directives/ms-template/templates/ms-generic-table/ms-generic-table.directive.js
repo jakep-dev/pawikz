@@ -174,7 +174,7 @@
                                     case 'DateItem':
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                         if(scope.isnoneditable)
                                         {
                                             html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
