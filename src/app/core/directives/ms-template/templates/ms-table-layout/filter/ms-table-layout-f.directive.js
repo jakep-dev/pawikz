@@ -65,7 +65,7 @@
 
             angular.forEach(data, function(eachData)
             {
-               eachData.IsChecked = (eachData.TL_STATUS === 'Y');
+               eachData.IsChecked = (eachData.TL_STATUS === 'N');
             });
 
             $scope.data.push.apply($scope.data, data);
@@ -329,7 +329,7 @@
 			
 			save.row.push({
 				columnName: 'TL_STATUS',
-				value: (row.IsChecked) ? 'Y' : 'N'
+				value: (row.IsChecked) ? 'N' : 'Y'
 			});
 			
 			save.condition.push({
