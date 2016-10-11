@@ -169,7 +169,7 @@
                                     case 'DateItem':
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                         html += '<ms-calendar itemid="'+ itemId +'" mnemonicid="'+ mnemonicId +'" value="'+ value +'" isdisabled="false"></ms-calendar>';
                                         break;
                                     case 'GenericRadioGroup':
