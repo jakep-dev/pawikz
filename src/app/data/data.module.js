@@ -10,6 +10,7 @@
             [
                 'app.auth.service',
                 'app.chart.service',
+                'app.financial.chart.service',
                 'app.dashboard.service',
                 'app.overview.service',
                 'app.template.service',

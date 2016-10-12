@@ -107,6 +107,12 @@
                     html = '<ms-image-chart url="' + $scope.chart.tearsheet.url + '"></ms-image-chart>';
                     break;
 
+                case 'financial':
+                    html = '<ms-financial-chart chart-id="id" item-id="chart.tearsheet.itemId" ' +
+                            'mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" ' +
+                            'hide-filters="hideFilters"></ms-financial-chart>';
+                    break;
+
                 case 'bar':
                     break;
             }
@@ -165,6 +171,23 @@
                         });
 
                     break;
+
+                case 'financial':
+                    if (chartIndex < 5) { //limit the chart count
+                        var ele = $('#ms-chart-container');
+                        var chartToBeAdded = angular.copy($scope.chart);
+                        $scope.addNewChart(chartToBeAdded, $scope.index);
+                    } else {
+                        dialog.alert('Error', "Max5 charts could be added!", null, {
+                            ok: {
+                                name: 'ok', callBack: function () {
+                                    console.warn('excess chart tried to be added');
+                                }
+                            }
+                        });
+                    }
+                    break;
+
                 default:
                     break;
             }
@@ -237,6 +260,10 @@
                         case 'image':
 							vm.disableTitle = true;
                             html = '<ms-image-chart url="' + scope.chart.tearsheet.url + '"></ms-image-chart>';
+                            break;
+
+                        case 'financial':
+                            html = '<ms-financial-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" on-chart-save="onChartSave"></ms-financial-chart>';
                             break;
 
                         case 'bar':

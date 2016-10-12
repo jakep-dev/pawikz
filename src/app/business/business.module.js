@@ -13,6 +13,7 @@
                 'app.menu.business',
                 'app.dashboard.business',
                 'app.chart.stockchart.business',
+                'app.chart.financialchart.business',
                 'app.breadcrumb.business',
                 'app.auth.business'
             ]);

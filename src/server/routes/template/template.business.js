@@ -46,14 +46,17 @@
       };
         _.each(components, function(component)
         {
+            //console.log('Component ID:' + component.id);
            var tearSheetItem = component.TearSheetItem;
            if(tearSheetItem && tearSheetItem.subtype &&
                (tearSheetItem.subtype === 'Header1' ||
                 tearSheetItem.subtype === 'Header2'))
            {
+               //console.log('Pushing Header Component ID:' + component.id);
                comp.headers.push(component);
            }
-            else {
+           else {
+               //console.log('Pushing Content Component ID:' + component.id);
                comp.contents.push(component);
            }
         });
@@ -121,6 +124,7 @@
                 isReadyToProcess = false;
             }
 
+
             if(isReadyToProcess)
             {
                 component = getComponents(contentComponents, comp);
@@ -139,6 +143,11 @@
                 });
 
                 contents.push(component);
+            }
+            else if (comp.id === 'WU_RATIOS_CHART') {
+                comp.TearSheetItem.id = 'WU_RATIOS_CHART';
+                comp.TearSheetItem.type = comp.type;
+                contents.push(comp.TearSheetItem);
             }
             else if(comp.TearSheetItem &&
                 comp.TearSheetItem.id === 'LinkItem')
