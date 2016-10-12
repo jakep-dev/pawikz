@@ -77,6 +77,8 @@
                                     case 'LinkItem':
                                         var value = '';
                                         var link = '';
+                                        var gotoStepValue = '';
+
                                         if(angular.isDefined(tearSheetItem.Label))
                                         {
                                             value = tearSheetItem.Label;
@@ -88,7 +90,14 @@
                                             var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                             link = value;
                                         }
-                                        html += '<ms-link value="'+value+'" href="//'+link+'" isdisabled="false"></ms-link>';
+
+                                        if(tearSheetItem && typeof(tearSheetItem.GoBack) != 'object'){
+                                            if(angular.isDefined(tearSheetItem.GoBack)){
+                                                gotoStepValue = tearSheetItem.GoBack;    
+                                            }
+                                        }
+
+                                        html += '<ms-link value="'+value+'" href="//'+link+'" isdisabled="false" gotostep="'+ gotoStepValue +'"></ms-link>';
                                         break;
                                     case 'GenericTextItem':
 

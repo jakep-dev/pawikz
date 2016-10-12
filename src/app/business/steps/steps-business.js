@@ -18,10 +18,47 @@
             getNextStep: getNextStep,
             getPrevStep: getPrevStep,
             isPreviousStep: isPreviousStep,
-            isNextStep: isNextStep
+            isNextStep: isNextStep,
+            goToStep: goToStep
         };
 
         return business;
+
+        //Go back step
+        function goToStep(stepId, steps)
+        {
+            var stepIdInt = parseInt(stepId);
+
+            if(steps)
+            {
+                var count = -1;
+                var goToIndex = -1;
+                angular.forEach(steps, function(step)
+                {
+                    count ++;
+                    if(step.stepId === stepIdInt)
+                    {
+                        goToIndex = count;
+                    }
+                });
+
+                if(goToIndex !== -1)
+                {
+                    var goToStepObj =  steps[goToIndex];
+
+                    if(goToStepObj)
+                    {
+                        var stateConfig = {
+                            projectId: $rootScope.projectId,
+                            stepId: parseInt(goToStepObj.stepId),
+                            stepName: goToStepObj.stepName
+                        };
+
+                        $state.go('app.steps', stateConfig);
+                    }
+                }
+            }
+        }
 
         //Go to previous step
         function getPrevStep(stepId, steps)
