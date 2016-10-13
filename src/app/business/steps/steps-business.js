@@ -31,31 +31,25 @@
 
             if(steps)
             {
-                var count = -1;
-                var goToIndex = -1;
-                angular.forEach(steps, function(step)
-                {
-                    count ++;
-                    if(step.stepId === stepIdInt)
+               
+                var goToStepVal = _.find(steps, function(stepsObj){
+
+                    if(stepsObj.stepId === stepIdInt)
                     {
-                        goToIndex = count;
+                        return stepsObj;
                     }
+
                 });
 
-                if(goToIndex !== -1)
+                if(goToStepVal)
                 {
-                    var goToStepObj =  steps[goToIndex];
+                    var stateConfig = {
+                        projectId: $rootScope.projectId,
+                        stepId: parseInt(goToStepVal.stepId),
+                        stepName: goToStepVal.stepName
+                    };
 
-                    if(goToStepObj)
-                    {
-                        var stateConfig = {
-                            projectId: $rootScope.projectId,
-                            stepId: parseInt(goToStepObj.stepId),
-                            stepName: goToStepObj.stepName
-                        };
-
-                        $state.go('app.steps', stateConfig);
-                    }
+                    $state.go('app.steps', stateConfig);
                 }
             }
         }
