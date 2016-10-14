@@ -269,7 +269,7 @@
                                 case 'LinkItem':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
-                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '"></ms-link>';
+                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="'+ renderContent.GoBack +'"></ms-link>';
                                     html += '</div>';
                                     el.find('#template-content').append($compile(html)(newScope));
                                     break;
