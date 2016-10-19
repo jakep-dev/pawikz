@@ -26,3 +26,9 @@ ms-chart-placeholder:nth-child(2) .md-icon-button .icon-arrow-up, ms-chart-place
   color: #aaa;
   cursor: not-allowed;
 }
+
+//margin left is menu-content width attribute * 64 - 16 (padding right of md-menu-item )
+.md-virtual-repeat-container.md-autocomplete-suggestions-container {
+    margin-left:246px;
+    margin-top:-100px;
+}

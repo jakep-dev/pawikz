@@ -1,13 +1,17 @@
 <ms-content class="ms-financial-chart">
     <ms-financial-chart-tool-bar chart-id="vm.chartId" filter-state="vm.filterState" ng-show="!vm.hideFilters"
-                             on-filter-state-update="vm.onFilterStateUpdate">
+                                 on-filter-state-update="vm.onFilterStateUpdate">
 
     </ms-financial-chart-tool-bar>
 
     <md-divider layout-padding layout-margin></md-divider>
 
     <ms-content>
-        <div id = "financial-chart" ms-financial-chart-feature config="vm.financialDataSet" on-peer-remove="vm.onPeerRemove">
+        <div id="financial-chart" ms-financial-chart-feature config="vm.financialDataSet"
+<!--
+             on-peer-remove="vm.onPeerRemove"
+-->
+        >
 
         </div>
     </ms-content>

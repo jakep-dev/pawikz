@@ -20,14 +20,16 @@
             vm.onChartSave();
         };
 
+/**
         $scope.$on('filterSateUpdate', function (event) {
             $scope.$broadcast('resetEvents');
             loadChartData();
         });
+*/
 
         function loadChartData() {
             var filterState = vm.filterState;
-            vm.fetchChartData(filterState.compareNames, filterState.compareIds, vm.companyId, filterState.chartMode, filterState.chartType, filterState.chartTypeLabel, filterState.chartPeriod, filterState.isCustomDate, filterState.startDate, filterState.endDate);
+            vm.fetchChartData(filterState.compareNames, filterState.shortNames, filterState.compareIds, vm.companyId, filterState.chartMode, filterState.chartType, filterState.chartTypeLabel, filterState.chartPeriod, filterState.isCustomDate, filterState.startDate, filterState.endDate);
         }
 
         function groupChartData(data) {
@@ -49,12 +51,17 @@
                         if (!ratioNames[chartSetting.ratio_name]) {
                             currentObj = new Object();
                             currentObj._count = 1;
+                            currentObj.shortName = chartSetting.ratio_short_name;
                             currentObj.data = new Array();
                             ratioNames[chartSetting.ratio_name] = currentObj;
                             ratioNameArr.push(chartSetting.ratio_name);
                         } else {
                             currentObj = ratioNames[chartSetting.ratio_name];
                             currentObj._count = currentObj._count + 1;
+                            if (currentObj.shortName != chartSetting.ratio_short_name) {
+                                console.log(chartSetting.ratio_name + "'s short_name changed from " + currentObj.shortName + ' to ' + chartSetting.ratio_short_name);
+                            }
+                            currentObj.shortName = chartSetting.ratio_short_name;
                         }
                     }
                     if (chartSetting.datadate) {
@@ -95,15 +102,21 @@
 
             ratioNameArr.forEach(function (ratioName) {
                 currentObj = ratioNames[ratioName];
+                var finalName;
+                if (currentObj.shortName) {
+                    finalName = currentObj.shortName;
+                } else {
+                    finalName = ratioName;
+                }
                 datasets.push({
-                    name: ratioName,
+                    name: finalName,
                     data: currentObj.data,
-                    type: "spline",
+                    type: "line",
                     valueDecimals: 1
                 });
                 seriesSet.push({
                     data: currentObj.data,
-                    name: ratioName
+                    name: finalName
                 });
             });
             return {
@@ -111,12 +124,13 @@
                 ratioNameArr: ratioNameArr,
                 ratioNames: ratioNames,
                 xData: dateArr,
-                name: "",
+                name: vm.chartId,
+                //name: "",
                 yaxisTitle: "",
                 xaxisTitle: "",
                 datasets: datasets,
                 series: seriesSet,
-                type: "spline",
+                type: "line",
                 valueDecimals: 1,
                 showlegend: true,
                 showxaxisLabel: true,
@@ -125,9 +139,9 @@
             };
         }
 
-        vm.fetchChartData = function (compareNames, compareIds, companyId, singleMultiple, ratioSelect, chartTypeLabel, timePeriod, isCustomDate, startDate, endDate) {
+        vm.fetchChartData = function (compareNames, shortNames, compareIds, companyId, singleMultiple, ratioSelect, chartTypeLabel, timePeriod, isCustomDate, startDate, endDate) {
             var yAxisLabel = chartTypeLabel;
-            financialChartService.financialData(financialChartBusiness.getFinancialDataInputObject(compareNames, compareIds, companyId, singleMultiple, ratioSelect, timePeriod, isCustomDate, startDate, endDate))
+            financialChartService.financialData(financialChartBusiness.getFinancialDataInputObject(compareNames, shortNames, compareIds, companyId, singleMultiple, ratioSelect, timePeriod, isCustomDate, startDate, endDate))
                 .then(function (data) {
                     //console.log(data);
                     //$scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
@@ -139,8 +153,25 @@
 
         loadChartData();
 
+/**
         vm.onPeerRemove = function (peer) {
+            var targetIndex;
+            var i;
+            var n;
+
+            n = vm.filterState.compareNames.length;
+            for (i = 1; i < n; i++) {
+                if (vm.filterState.compareNames[i] === peer) {
+                    targetIndex = i;
+                    break;
+                }
+            }
+            if (targetIndex) {
+                vm.filterState.compareNames.slice(targetIndex, 1);
+                vm.filterState.compareIds.slice(targetIndex, 1);
+            }
         };
+*/
     }
 
     /** @ngInject */

@@ -44,6 +44,7 @@
             var n = vm.filterState.compareIds.length;
             var peerIndustryId;
             var peerIndustryLabel;
+            var peerIndustryShortName;
             var competitorItem;
 
             if (Array.isArray(vm.peerIndustries)) {
@@ -51,6 +52,7 @@
                     competitorItem = new Object();
                     competitorItem.value = item.value;
                     competitorItem.label = item.label;
+                    competitorItem.shortName = item.shortName;
                     competitorItem.selectedCompetitorCheck = false;
                     vm.competitorMap[item.value] = competitorItem;
                     vm.competitorList.push(competitorItem);
@@ -65,11 +67,13 @@
                     competitorItem.selectedCompetitorCheck = true;
                 } else {
                     peerIndustryLabel = vm.filterState.compareNames[i];
+                    peerIndustryShortName = vm.filterState.shortNames[i];
                     competitorItem = new Object();
                     competitorItem.value = peerIndustryId;
                     competitorItem.label = peerIndustryLabel;
+                    competitorItem.shortName = peerIndustryShortName;
                     competitorItem.selectedCompetitorCheck = true;
-                    vm.competitorList.splice(0,0, competitorItem);
+                    vm.competitorList.splice(0, 0, competitorItem);
                     vm.competitorMap[peerIndustryId] = competitorItem;
                 }
             }
@@ -102,10 +106,12 @@
                 var competitorItem;
                 vm.filterState.compareIds.splice(1, n - 1);
                 vm.filterState.compareNames.splice(1, n - 1);
+                vm.filterState.shortNames.splice(1, n - 1);
                 vm.selectedCompetitors.forEach(function (item) {
                     vm.filterState.compareIds.push(item);
                     competitorItem = vm.competitorMap[item];
                     vm.filterState.compareNames.push(competitorItem.label);
+                    vm.filterState.shortNames.push(competitorItem.shortName);
                 });
                 if (vm.filterState.compareIds.length > 1) {
                     vm.filterState.chartMode = 'm';
@@ -126,6 +132,7 @@
                     competitorItem = new Object();
                     competitorItem.value = value;
                     competitorItem.label = item.display;
+                    competitorItem.shortName = item.shortName;
                     competitorItem.selectedCompetitorCheck = true;
                     vm.competitorList.splice(0, 0, competitorItem);
                     vm.competitorMap[value] = competitorItem;
@@ -150,9 +157,19 @@
                     if (data.tickerResp) {
                         vm.peers = [];
                         angular.forEach(data.tickerResp, function (ticker) {
+                            var tickerParts = ticker.ticker;
+                            var tickerArr;
+                            var shortName = ticker.companyName;
+                            if (tickerParts) {
+                                tickerArr = tickerParts.split('#');
+                                if (tickerArr && Array.isArray(tickerArr) && (tickerArr.length > 0)) {
+                                    shortName = tickerArr[0];
+                                }
+                            }
                             vm.peers.push({
                                 value: ticker.companyId,
-                                display: ticker.companyName
+                                display: ticker.companyName,
+                                shortName: shortName
                             });
                         });
                         return vm.peers;
@@ -177,6 +194,7 @@
             var n = vm.filterState.compareIds.length;
             vm.filterState.compareIds.splice(1, n - 1);
             vm.filterState.compareNames.splice(1, n - 1);
+            vm.filterState.shortNames.splice(1, n - 1);
             vm.filterState.chartMode = 's';
             vm.selectedCompetitors = [];
             vm.competitorList.forEach(function (item) {
@@ -260,11 +278,13 @@
         }
         vm.customDateChange = customDateChange;
 
+/**
         $scope.$on('resetEvents', function (event) {
-            //vm.splits = false;
-            //vm.earnings = false;
-            //vm.dividends = false;
+            vm.splits = false;
+            vm.earnings = false;
+            vm.dividends = false;
         });
+*/
 
         /* Peers Logic End*/
     }

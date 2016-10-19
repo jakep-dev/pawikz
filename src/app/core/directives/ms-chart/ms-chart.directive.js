@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store)
+    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, overviewBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store)
     {
         return {
             restrict: 'E',
@@ -588,19 +588,25 @@
 
                         case 'financial':
 
+                            function getDefaultTicker() {
+                                var ticker;
+
+                                if (overviewBusiness.templateOverview && overviewBusiness.templateOverview.ticker) {
+                                    ticker = overviewBusiness.templateOverview.ticker;
+                                } else {
+                                    ticker = '';
+                                }
+                                return ticker;
+                            }
+
                             function getSavedFinancialChart() {
                                 financialChartService.getSavedFinancialChart(financialChartBusiness.getSavedChartSettingsInputObject(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid))
                                     .then(function (data) {
                                         //console.log(data);
-                                        var date1 = new Date();
-                                        var month1 = '00' + (date1.getMonth() + 1);
-                                        month1 = month1.substr(month1.length - 2);
-                                        var year1 = date1.getFullYear();
-                                        var day1 = '00' + date1.getDate();
-                                        day1 = day1.substr(day1.length - 2);
                                         scope.jsCharts = [];
                                         if (data && data.chartSettings) {
                                             //Default Financial Chart
+
                                             scope.jsCharts.push(
                                                 {
                                                     tearsheet: {
@@ -614,13 +620,14 @@
                                                         chartTitle: commonBusiness.companyName,
                                                         compareNames: [commonBusiness.companyName],
                                                         compareIds: [commonBusiness.companyId],
+                                                        shortNames: [getDefaultTicker()],
                                                         chartMode: 's',
                                                         //chartType: 'MARKET_CAP_DAILY',
                                                         chartType: financialChartBusiness.defaultRatio,
                                                         chartPeriod: '3',
                                                         isCustomDate: false,
-                                                        startDate: month1 + '/' + day1 + '/' + year1,
-                                                        endDate: month1 + '/' + day1 + '/' + (year1 - 3),
+                                                        startDate: '',
+                                                        endDate: '',
                                                         chartId: 0,
                                                         sequence: 0,
                                                         chartTypeLabel: financialChartBusiness.defaultRatioLabel
@@ -744,6 +751,7 @@
                                             filterState.chartTitle = commonBusiness.companyName;
                                             filterState.compareNames = [commonBusiness.companyName];
                                             filterState.compareIds = [commonBusiness.companyId];
+                                            filterState.shortNames = [getDefaultTicker()];
                                             filterState.chartMode = 'S';
                                             filterState.chartType = financialChartBusiness.defaultRatio;
                                             filterState.chartPeriod = '3';
@@ -768,6 +776,7 @@
                                                     if (matchingChart) { 
                                                         selectedChart.filterState.chartTitle = matchingChart.filterState.chartTitle;
                                                         selectedChart.filterState.compareNames = angular.copy(matchingChart.filterState.compareNames);
+                                                        selectedChart.filterState.shortNames = angular.copy(matchingChart.filterState.shortNames);
                                                         selectedChart.filterState.compareIds = angular.copy(matchingChart.filterState.compareIds);
                                                         selectedChart.filterState.chartMode = matchingChart.filterState.chartMode;
                                                         selectedChart.filterState.chartType = matchingChart.filterState.chartType;

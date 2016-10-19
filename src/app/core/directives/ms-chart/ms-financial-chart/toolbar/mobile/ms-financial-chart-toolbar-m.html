@@ -1,66 +1,54 @@
 <ms-content show-sm show-xs hide-gt-sm>
-    <div layout="column" layout-align="start center">
+    <div layout="column" layout-sm="column" layout-align="start center">
         <div flex="50">
             <md-menu-bar layout="row" layout-margin layout-align="center center">
                 <md-menu flex="33" style="text-align: center">
                     <button ng-click="$mdOpenMenu();" style="width:130px; border: 1px solid rgba(0,0,0,0.12);">
-                        EVENTS
+                        RATIO TYPE
                         <md-icon md-font-icon="icon-chevron-down" aria-label="icon-chevron-down"></md-icon>
                     </button>
-                    <md-menu-content width="3" class="advison-events-menu-content">
+                    <md-menu-content class="md-menu-content-height">
                         <md-menu-item>
-
-                            <md-switch  ng-model="vm.splits" aria-label="Splits" ng-change="vm.changedSplitsEvents()">
-                                Splits
-                            </md-switch>
-
-                        </md-menu-item>
-                        <md-menu-item>
-
-                            <md-switch ng-model="vm.earnings" aria-label="Earnings"
-                                       ng-change="vm.changedEarningsEvents()">
-                                Earnings
-                            </md-switch>
-
-                        </md-menu-item>
-                        <md-menu-item>
-
-                            <md-switch ng-model="vm.dividends" aria-label="Dividends"
-                                       ng-change="vm.changedDividendsEvents()">
-                                Dividends
-                            </md-switch>
-
+                            <md-radio-group ng-model="vm.filterState.chartType" style="padding-bottom: 25px; padding-left: 15px;">
+                                <md-radio-button class="md-icon-button" ng-repeat="item in vm.ratioTypes" aria-label="{{item.label}}"
+                                                 ng-value="item.value"
+                                                 ng-disabled="{{item.value == null}}"
+                                                 ng-click="vm.changedRatioSelection(item.value, item.label)">
+                                    {{item.label}}
+                                </md-radio-button>
+                            </md-radio-group>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
                 <md-menu flex="33" style="text-align: center">
-                    <button ng-click="vm.presetComparisonMenu();$mdOpenMenu();" style="width:130px; border: 1px solid rgba(0,0,0,0.12);">
-                        COMPARISON
+                    <button ng-click="$mdOpenMenu();" style="width:140px; border: 1px solid rgba(0,0,0,0.12);">
+                        COMPETITORS
                         <md-icon md-font-icon="icon-chevron-down" aria-label="icon-chevron-down"></md-icon>
                     </button>
                     <md-menu-content width="4" class="advison-comparison-menu-content">
                         <md-menu-item>
                             <md-menu md-offset="13 3">
                                 <md-button ng-click="$mdOpenMenu();" md-theme="indigo"
-                                           class="md-raised btncomp">Search Indices
+                                           class="md-raised btncomp">
+                                    Peers &amp; Industries
                                 </md-button>
                                 <md-menu-content class="md-menu-content-height">
-                                    <md-menu-item ng-repeat="item in vm.indices" style="padding-bottom: 25px; padding-left: 15px;">
-                                        <md-checkbox ng-change="vm.indicesOrCompetitorDropDownChange('INDICE', item)"
-                                                     ng-model="item.selectedIndicecheck"
-                                                     aria-label="{{item.display}}">
-                                            {{item.display}}
+                                    <md-menu-item ng-repeat="item in vm.competitorList" style="padding-bottom: 25px; padding-left: 15px;">
+                                        <md-checkbox ng-change="vm.updatePeerIds(item)"
+                                                     ng-model="item.selectedCompetitorCheck"
+                                                     ng-disabled="{{item.value == null}}"
+                                                     aria-label="{{item.label}}">
+                                            {{item.label}}
                                         </md-checkbox>
-
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
                         </md-menu-item>
                         <md-menu-divider></md-menu-divider>
                         <md-menu-item>
-                            <md-autocomplete
-                                    md-no-cache="vm.noCache"
-                                    md-search-text-change="vm.searchTextChange(vm.searchText)"
+                            <md-autocomplete 
+                                    md-no-cache="false"
+                                    md-search-text-change=""
                                     md-search-text="vm.searchPeerText"
                                     md-selected-item-change="vm.selectedPeerChange(item)"
                                     md-items="item in vm.queryPeerSearch(vm.searchPeerText)"
@@ -70,8 +58,8 @@
                                     md-menu-class="autocomplete-config"
                                     placeholder="Search Peers">
                                 <md-item-template>
-                                <span md-highlight-text="vm.searchPeerText"
-                                      md-highlight-flags="^i">{{item.display}}</span>
+                                    <span md-highlight-text="vm.searchPeerText"
+                                          md-highlight-flags="^i">{{item.display}}</span>
                                 </md-item-template>
                                 <md-not-found>
                                     No matches found for "{{vm.searchPeerText}}".
@@ -80,26 +68,8 @@
                         </md-menu-item>
                         <md-menu-divider></md-menu-divider>
                         <md-menu-item>
-                            <md-menu md-offset="13 3">
-                                <md-button ng-click="$mdOpenMenu();" md-theme="indigo"
-                                           class="md-raised btncomp">Search Competitors
-                                </md-button>
-                                <md-menu-content class="md-menu-content-height">
-                                    <md-menu-item ng-repeat="item in vm.competitors" style="padding-bottom: 25px; padding-left: 15px;">
-                                        <md-checkbox
-                                                ng-change="vm.indicesOrCompetitorDropDownChange('COMPETITOR', item)"
-                                                ng-model="item.selectedCompetitorcheck"
-                                                aria-label="{{item.display}}">
-                                            {{item.display}}
-                                        </md-checkbox>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                        <md-menu-divider></md-menu-divider>
-                        <md-menu-item>
                             <section layout="row" layout-sm="column" layout-align="space-around center">
-                                <md-button style="text-align:center" class="md-raised md-cornered" ng-click="vm.add();"> Apply</md-button>
+                                <md-button style="text-align:center" class="md-raised md-cornered" ng-click="vm.commitChanges();"> Apply</md-button>
                                 <md-button style="text-align:center" class="md-raised md-cornered" ng-click="vm.clear();"> Clear</md-button>
                             </section>
                         </md-menu-item>
@@ -112,11 +82,11 @@
                     </button>
                     <md-menu-content width="3" class="advison-date-range-menu-content">
                         <md-menu-item>
-                            <md-datepicker ng-model="vm.startDate" md-max-date="vm.maxDate"
+                            <md-datepicker ng-model="vm.startDate" md-max-date="vm.maxDate" class="md-accent" style="background-color: transparent"
                                            ng-change="vm.customDateChange();"></md-datepicker>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-datepicker ng-model="vm.endDate" md-max-date="vm.maxDate"
+                            <md-datepicker ng-model="vm.endDate" md-max-date="vm.maxDate" class="md-accent" style="background-color: transparent"
                                            ng-change="vm.customDateChange();"></md-datepicker>
                         </md-menu-item>
                     </md-menu-content>
@@ -125,32 +95,25 @@
         </div>
         <div id="toolbar-date" flex>
             <md-radio-group ng-model="vm.range" layout="row">
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '1W'}"
-                           ng-click="vm.changedPeriod('1W')">1W
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.chartPeriod === '1'}"
+                           ng-click="vm.changedPeriod('1')">
+                    1Y
                 </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '1M'}"
-                           ng-click="vm.changedPeriod('1M')"> 1M
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.chartPeriod === '2'}"
+                           ng-click="vm.changedPeriod('2')">
+                    2Y
                 </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '3M'}"
-                           ng-click="vm.changedPeriod('3M')"> 3M
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.chartPeriod === '3'}"
+                           ng-click="vm.changedPeriod('3')">
+                    3Y
                 </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '18M'}"
-                           ng-click="vm.changedPeriod('18M')"> 18M
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.chartPeriod === '5'}"
+                           ng-click="vm.changedPeriod('5')">
+                    5Y
                 </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '1Y'}"
-                           ng-click="vm.changedPeriod('1Y')"> 1Y
-                </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '2Y'}"
-                           ng-click="vm.changedPeriod('2Y')"> 2Y
-                </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '3Y'}"
-                           ng-click="vm.changedPeriod('3Y')"> 3Y
-                </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '5Y'}"
-                           ng-click="vm.changedPeriod('5Y')"> 5Y
-                </md-button>
-                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.interval === '10Y'}"
-                           ng-click="vm.changedPeriod('10Y')"> 10Y
+                <md-button class="md-icon-button" flex ng-class="{'period-selected': vm.filterState.chartPeriod === '10'}"
+                           ng-click="vm.changedPeriod('10')">
+                    10Y
                 </md-button>
             </md-radio-group>
         </div>

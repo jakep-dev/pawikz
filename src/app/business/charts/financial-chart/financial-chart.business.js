@@ -16,7 +16,13 @@
         var defaultRatio = null;
         var defaultRatioLabel = null;
 
+        //Each item has
+        //label
+        //value
+        //shortName
         var peerIndustries = [];
+        //Peer/Industry Mapping
+        //value --> shortName
         var peerIndustryMap = null;
 
         function getRatioTypeLabel(ratioType) {
@@ -46,6 +52,7 @@
                     chartSetting = new Object();
                     chartSetting.chartTitle = chartData.chart_title;
                     chartSetting.compareNames = chartData.compare_name;
+                    chartSetting.shortNames = chartData.short_name;
                     chartSetting.compareIds = chartData.compare_id;
                     chartSetting.chartMode = chartData.single_multi;
                     chartSetting.chartType = chartData.ratioselect;
@@ -89,10 +96,11 @@
             return m.format(format);
         }
         
-        function getFinancialDataInputObject(compareNames, compareIds, companyId, singleMultiple, ratioSelect, timePeriod, isCustomDate, startDate, endDate) {
+        function getFinancialDataInputObject(compareNames, shortNames, compareIds, companyId, singleMultiple, ratioSelect, timePeriod, isCustomDate, startDate, endDate) {
             var inputObject = new Object();
             inputObject.compare_name = compareNames;
             inputObject.compare_id = compareIds;
+            inputObject.short_name = shortNames;
             inputObject.company_id = companyId;
             inputObject.single_multi = singleMultiple;
             inputObject.ratioselect = ratioSelect;
@@ -134,6 +142,7 @@
                     saveObject.ifChartSettings.push({
                         chart_title: item.filterState.chartTitle,
                         compare_name: item.filterState.compareNames,
+                        short_name: item.filterState.shortNames,
                         compare_id: item.filterState.compareIds,
                         single_multi: item.filterState.chartMode,
                         ratioselect: item.filterState.chartType,
@@ -150,9 +159,11 @@
         var business = {
             getRatioTypeLabel: getRatioTypeLabel,
             getPeerIndustryLabel: getPeerIndustryLabel,
+
             getSaveChartInputObject: getSaveChartInputObject,
             getFinancialDataInputObject: getFinancialDataInputObject,
             getSavedChartSettingsInputObject: getSavedChartSettingsInputObject,
+
             convertFinancialChartSettings: convertFinancialChartSettings,
             toDateString: toDateString
         };
@@ -169,7 +180,7 @@
                 peerIndustries.forEach(function (peerIndustryItem) {
                     if (peerIndustryItem.value) {
                         if (!peerIndustryMap[peerIndustryItem.value]) {
-                            peerIndustryMap[peerIndustryItem.value] = peerIndustryItem.label;
+                            peerIndustryMap[peerIndustryItem.value] = peerIndustryItem.shortName;
                         }
                     }
                 });

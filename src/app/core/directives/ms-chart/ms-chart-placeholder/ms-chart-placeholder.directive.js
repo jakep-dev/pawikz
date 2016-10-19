@@ -31,20 +31,25 @@
                 }
             });
         }
-        $scope.$watch('vm.title',function(newValue,oldValue){
-        if(oldValue!=newValue){
-            if($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title)
-			{			
-				$scope.chart.filterState.title = vm.title;
-			} 
-			else if ($scope.chart && $scope.chart.title) 
-			{
-				$scope.chart.title = vm.title;
-			}
-            if(!vm.isMainChart){
-                commonBusiness.emitMsg('autosave');
+
+        $scope.$watch('vm.title',function(newValue,oldValue) {
+            if (oldValue != newValue) {
+                if (($scope.chart.chartType === "JSCHART") || ($scope.chart.chartType === "IMGURL")) {
+                    if ($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title) {
+                        $scope.chart.filterState.title = vm.title;
+                    }
+                    else if ($scope.chart && $scope.chart.title) {
+                        $scope.chart.title = vm.title;
+                    }
+                    if (!vm.isMainChart) {
+                        commonBusiness.emitMsg('autosave');
+                    }
+                } else if ($scope.chart.chartType === "IFCHART") {
+                    $scope.chart.title = vm.title;
+                    $scope.chart.filterState.chartTitle = vm.title;
+                    saveChart();
+                }
             }
-        }
         });
 
 		if( $scope.chart && $scope.chart.filterState && $scope.chart.filterState.chart_id )
@@ -82,11 +87,11 @@
                 $scope.chartMoved(direction, $scope.index);
             //}
         };
+
         //save chart function
         function saveChart() {
             vm.onChartSave();
         }
-
 
         //Maximize the chart
         function maximizeChart() {
@@ -178,7 +183,7 @@
                         var chartToBeAdded = angular.copy($scope.chart);
                         $scope.addNewChart(chartToBeAdded, $scope.index);
                     } else {
-                        dialog.alert('Error', "Max5 charts could be added!", null, {
+                        dialog.alert('Error', "Maximum 5 charts could be added!", null, {
                             ok: {
                                 name: 'ok', callBack: function () {
                                     console.warn('excess chart tried to be added');

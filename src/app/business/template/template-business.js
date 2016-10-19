@@ -1803,10 +1803,9 @@
 
 				templateService.save(input).then(function(response)
 				{
+                    business.saveMnemonics = [];
 					toast.simpleToast('Saved successfully');
 				});
-                
-                business.saveMnemonics = [];
 			}
         }
 		
@@ -1819,11 +1818,10 @@
                     templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                         tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
                     {
+                        business.saveTableMnemonics = [];
                         toast.simpleToast('Saved successfully');
                     });
                 });
-
-                business.saveTableMnemonics = [];
             }
         }
 		

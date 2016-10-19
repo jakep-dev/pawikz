@@ -77,6 +77,7 @@
             var args = {
                 data: {
                     compare_name: req.body.compare_name,
+                    short_name: req.body.short_name,
                     compare_id: req.body.compare_id,
                     company_id: req.body.company_id,
                     single_multi: req.body.single_multi,
@@ -93,6 +94,7 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             console.log('[getFinancialChartData]' + url);
             console.log('[getFinancialChartData][compart_name]' + args.data.compare_name);
+            console.log('[getFinancialChartData][short_name]' + args.data.short_name);
             console.log('[getFinancialChartData][compare_id]' + args.data.compare_id);
             console.log('[getFinancialChartData][company_id]' + args.data.company_id);
             console.log('[getFinancialChartData][single_multi]' + args.data.single_multi);
