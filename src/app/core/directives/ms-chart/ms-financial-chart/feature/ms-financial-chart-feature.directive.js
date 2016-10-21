@@ -16,8 +16,6 @@
             restrict: 'EA',
             scope: {
                 'config': '='
-//                    ,
-//                    'onPeerRemove': '='
             },
             controller: 'msFinancialChartFeatureController',
             controllerAs: 'vm',
@@ -37,25 +35,6 @@
 
                     var activity = scope.config;
                     scope.enableLabelRewrite = true;
-/**
-                    $timeout(function () {
-                        $(elem).find('.highcharts-legend-item').off('mouseover').on('mouseover',function(evt){
-                            var text = $(this).find('tspan').text();
-                            $('.highcharts-legend-box').css({
-                                //left:evt.clientX-$(this).position().left+200,
-                                left:evt.clientX - 320,
-                                top:evt.clientY-$(this).position().top + 25
-                            }).parent().css({'position':'relative'})
-
-                            if(!$('.highcharts-legend-box').html()){
-                                $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                                    '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                                    '</div><div class="delete"><i class="fa fa-trash-o fa-lg pointer"></i></div>').show();
-                            }
-                            $('.highcharts-legend-box .name').text(text);
-                        });
-                    },500);
-*/
 
                     $(elem).empty();
                     $.each(activity.datasets, function (i, dataset) {
@@ -127,11 +106,12 @@
                     }
 
                     function setupXAxisLabels(list) {
-                        console.log('[setupXAxisLabels]Rewriting xAxisLabels start');
+                        //console.log('[setupXAxisLabels]Rewriting xAxisLabels start');
                         var context = new Object();
                         //context.xAxisLabels = $(elem).find('.highcharts-xaxis-labels').find("text");
                         context.xAxisLabels = list;
                         context.blankCount = 0;
+                        context.labelsChanged = false;
                         if (context.xAxisLabels && (context.xAxisLabels.length > 0)) {
 
                             context.i = 0;
@@ -139,7 +119,7 @@
                             context.totalSkip = 0;
                             context.targetLabels = [];
 
-                            console.log('Found ' + context.n + ' labels.');
+                            //console.log('Found ' + context.n + ' labels.');
 
                             context.startDate = moment(context.xAxisLabels[0].textContent, 'YYYY-MM-DD');
                             context.endDate = moment(context.xAxisLabels[context.n - 1].textContent, 'YYYY-MM-DD');
@@ -178,6 +158,7 @@
                             context.prevDiff;
 
                             for (context.i = 0; context.i < context.n; context.i++) {
+                                //console.log(context.xAxisLabels[context.i].textContent);
                                 context.prevDiff = context.currentDiff;
                                 context.currentDate = moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD');
                                 context.currentDiff = context.currentDate.diff(context.nextDispDate, 'days');
@@ -258,17 +239,10 @@
                                 }
                             }
 
-/**
-                            xAxisLabels.each(function (i, xAxisLabel) {
-                                if (!xAxisLabel.firstChild.textContent) {
-                                    blankCount++;
-                                }
-                            });
-*/
-
-                            console.log('Found ' + context.blankCount + ' blanks.');
+                            //console.log('Found ' + context.blankCount + ' blanks.');
                             if (context.blankCount == 0) {
                                 context.useAutoCorrect = true;
+                                context.labelsChanged = true;
                                 if (context.targetLabels.length > 0) {
                                     //we need to show the first label so we don't count the first label to skip 
                                     context.targetLabels[0].skipCount--;
@@ -327,128 +301,23 @@
                                     for (context.i = 0; context.i < context.n; context.i++) {
                                         context.beforeText = context.xAxisLabels[context.i].textContent;
                                         if ((context.j < context.labelCount) && (context.i == context.targetLabels[context.j].index)) {
-                                            context.xAxisLabels[context.i].textContent = moment(context.targetLabels[context.j].originalLabel, 'YYYY-MM-DD').format(context.labelFormat);
+                                            //$(context.xAxisLabels[context.i].firstChild).attr('content', context.xAxisLabels[context.i].firstChild.textContent);
+                                            context.xAxisLabels[context.i].firstChild.textContent = moment(context.targetLabels[context.j].originalLabel, 'YYYY-MM-DD').format(context.labelFormat);
                                             context.j++;
                                         } else {
-                                            context.xAxisLabels[context.i].textContent = '';
+                                            //$(context.xAxisLabels[context.i].firstChild).attr('content', context.xAxisLabels[context.i].firstChild.textContent);
+                                            context.xAxisLabels[context.i].firstChild.textContent = '';
                                         }
                                         context.afterText = context.xAxisLabels[context.i].textContent;
-                                        console.log('[' + context.beforeText + ',' + context.afterText + ']');
+                                        //console.log('[' + context.beforeText + ',' + context.afterText + ']');
                                     };
                                 }
-                                console.log(context.targetLabels);
-
-/**
-                                //Display xAxis Labels conditionally based on selected period - START
-                                var objLastLbl = xAxisLabels;
-                                var lastValue = objLastLbl.length - 1;
-                                var startDate = moment(objLastLbl[0].textContent, 'YYYY-MM-DD');
-                                var endDate = moment(objLastLbl[lastValue].textContent, 'YYYY-MM-DD');
-                                var duration = moment.duration(moment(endDate).diff(moment(startDate)));
-                                var diffDays = duration.asDays();
-                                var diffMonths = Math.floor(duration.asMonths());
-                                var nextDispDate = startDate;
-                                var beforeText, afterText;
-
-                                objLastLbl.each(function (txtCntr, element) {
-                                    var currentPeriod = element.textContent;
-                                    beforeText = element.firstChild.textContent;
-                                    if (diffMonths <= 1 && diffDays > 7) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate - currentPeriod === 0) {
-                                                nextDispDate = moment(nextDispDate).add(7, 'days');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            if (txtCntr == lastValue) {
-                                                element.firstChild.textContent = moment(currentPeriod).format('YYYY-MM-DD');
-                                            }
-                                        }
-                                    } else if (diffMonths <= 3 && diffMonths > 1) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate <= currentPeriod) {
-                                                element.firstChild.textContent = moment(nextDispDate).format('YYYY-MM-DD');
-                                                nextDispDate = moment(nextDispDate).add(14, 'days');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            //if (txtCntr == lastValue)
-                                            //    $(this)[0].innerHTML = '<tspan>' + moment(currentPeriod).format('YYYY-MM-DD') + '</tspan>';
-                                        }
-                                    } else if (diffMonths <= 12 && diffMonths > 3) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate <= currentPeriod) {
-                                                element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                                nextDispDate = moment(nextDispDate).add(2, 'months');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            //if (txtCntr == lastValue)
-                                            //    $(this)[0].innerHTML = '<tspan>' + moment(currentPeriod).format('MMM-YYYY') + '</tspan>';
-                                        }
-                                    } else if (diffMonths <= 24 && diffMonths > 12) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate <= currentPeriod) {
-                                                element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                                nextDispDate = moment(nextDispDate).add(3, 'months');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            //if (txtCntr == lastValue)
-                                            //    $(this)[0].innerHTML = '<tspan>' + moment(currentPeriod).format('MMM-YYYY') + '</tspan>';
-                                        }
-                                    } else if (diffMonths <= 36 && diffMonths > 24) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate <= currentPeriod) {
-                                                element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                                nextDispDate = moment(nextDispDate).add(3, 'months');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            if (txtCntr == lastValue) {
-                                                element.firstChild.textContent = moment(currentPeriod).format('MMM-YYYY');
-                                            }
-                                        }
-                                    } else if (diffMonths <= 60 && diffMonths > 36) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate <= currentPeriod) {
-                                                element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                                nextDispDate = moment(nextDispDate).add(1, 'years');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            if (txtCntr == lastValue) {
-                                                element.firstChild.textContent = moment(currentPeriod).format('MMM-YYYY');
-                                            }
-                                        }
-                                    } else if (diffMonths <= 120 && diffMonths > 60) {
-                                        if (currentPeriod && nextDispDate) {
-                                            currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                            if (nextDispDate <= currentPeriod) {
-                                                element.firstChild.textContent = moment(nextDispDate).format('YYYY');
-                                                nextDispDate = moment(nextDispDate).add(1, 'years');
-                                            } else {
-                                                element.firstChild.textContent = '';
-                                            }
-                                            if (txtCntr == lastValue) {
-                                                element.firstChild.textContent = moment(currentPeriod).format('YYYY');
-                                            }
-                                        }
-                                    }
-                                    afterText = element.firstChild.textContent;
-                                    console.log('[' + beforeText +',' + afterText + ']');
-                                });
-*/
+                                //console.log(context.targetLabels);
 
                             }
                         }
-                        console.log('[setupXAxisLabels]Rewriting xAxisLabels end');
+                        //console.log('[setupXAxisLabels]Rewriting xAxisLabels end');
+                        return context.labelsChanged;
                     }
  
                     //$('<div style="min-height: 270px;">')
@@ -470,16 +339,6 @@
                                         addSeriesLabels(currentChart);
                                         //setupXAxisLabels();
 
-                                        //var xAxisLabels = $(elem).find('.highcharts-xaxis-labels').find("text");
-                                        //var blankCount = 0;
-                                        //console.log('Found ' +xAxisLabels.length + ' labels.');
-                                        //xAxisLabels.each(function (i, xAxisLabel) {
-                                        //    if (!xAxisLabel.firstChild.textContent) {
-                                        //        console.log(xAxisLabel.textContent);
-                                        //        blankCount++;
-                                        //    }
-                                        //});
-                                        //console.log('Found ' + blankCount + ' blanks.');
                                     }, 
 
                                     // side labels tooltip and legends to show the stock & peer name ticker in sorted order with custom dates
@@ -522,17 +381,6 @@
                                                 })(legendNum);
                                             }
                                         }
-
-/**
-                                        $timeout(function () {
-                                            addSeriesLabels(chart);
-                                            setupXAxisLabels();
-                                            if (chart.xAxis != null && chart.xAxis.length > 0) {
-                                                chart.xAxis[0].labelRotation = 0;
-                                                chart.isDirty = true;
-                                            }
-                                        }, 500);
-*/
 
                                     }
                                 },
@@ -686,50 +534,33 @@
                         });
 
                     activity.chartElement = elem.find('#container');
+                    activity.previousSize = 0;
+
                     resizeSensor = new ResizeSensor(elem.find('#container')[0], function () {
-                        //console.log('Calling reflow!');
-                        //$('#container').highcharts().xAxis[0].labelRotation = 0;
-                        //$('#container').highcharts().isDirty = true;
-                                
-                        console.log('[1]Calling reflow for ' + activity.name);
-                        var context = new Object();
-                        context.chart = activity.chartElement.highcharts();
-                        if (context.chart.xAxis != null && context.chart.xAxis.length > 0) {
-                            context.chart.xAxis[0].setCategories(activity.xData);
-//                            chart.xAxis[0].labelRotation = 0;
-//                            chart.isDirty = true;
-                        }
-                        $timeout(function (params) {
-                            setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
-                            console.log('Chart ' + params.name + ':width:' + params.chart.chartWidth);
-                            if (params.chart.xAxis != null && params.chart.xAxis.length > 0) {
-                                params.chart.xAxis[0].labelRotation = 0;
-                                params.chart.isDirty = true;
-                                params.chart.redraw();
+
+                            var context = new Object();
+                            context.chart = activity.chartElement.highcharts();
+                            activity.currentSize = context.chart.chartWidth;
+                            console.log('[1]Chart ' + activity.name + ':' + activity.previousSize + ':' + activity.currentSize);
+
+                            if (context.chart.xAxis != null && context.chart.xAxis.length > 0) {
+                                context.chart.xAxis[0].setCategories(activity.xData);
                             }
-                        }, 500, false, { chart: context.chart, name: activity.name });
-                        console.log('[2]Calling reflow for ' + activity.name);
-                        context.chart.reflow();
+                            $timeout(function (params) {
+                                params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
+
+                                console.log('[3]Chart ' + params.name + ':Labels Changed:' + params.labelsChanged + ':width:' + params.chart.chartWidth);
+                                if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
+                                    params.chart.xAxis[0].labelRotation = 0;
+                                    params.chart.isDirty = true;
+                                    params.chart.redraw();
+                                }
+                            }, 500, false, { chart: context.chart, name: activity.name });
+                            console.log('[2]Calling reflow for ' + activity.name);
+                            context.chart.reflow();
+
                     });
 
-/**
-                        if (!$(elem).find('.highcharts-legend-box').length)
-                            $(elem).append('<div class="highcharts-legend-box" style="display:none;"></div>');
-
-                        $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                            '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                            '</div><div class="delete"><a href="javascript:" class="trashIconTooltip"><i class="fa fa-trash-o fa-lg pointer"></i></a></div>');
-
-                        $('.trashIconTooltip').click(function(){
-                            var peer = $(this).parent().parent().find('.name').text().replace('&amp;','&');
-                            peer = peer.substring(0,peer.lastIndexOf(' ')).trim();
-                            scope.onPeerRemove(peer);
-                        });
-*/
-
-                        //});
-                        //Auto Save functionality
-                        //commonBusiness.emitMsg('autosave');
                 }
             }
         };
