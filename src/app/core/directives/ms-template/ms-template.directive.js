@@ -99,7 +99,6 @@
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
-
                 scope.loadMore = function()
                 {
 
@@ -254,6 +253,19 @@
                             }
 
                             switch (renderContent.id) {
+                                case 'WU_RATIOS_CHART':
+                                    var newScope = scope.$new();
+                                    newScope.iscollapsible = true;
+                                    newScope.isprocesscomplete = true;
+                                    newScope.isnoneditable = (renderContent.type === 'nonEditableUnmark');
+                                    newScope.tearheader = renderContent.row.col[0].TearSheetItem;
+                                    newScope.tearcontent = [];
+                                    newScope.tearcontent.push(renderContent.row.col[1].TearSheetItem);
+                                    var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                                        'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
+                                    el.find('#template-content').append($compile(html)(newScope));
+                                    break;
+                                
                                 case 'LinkItem':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';

@@ -1,0 +1,493 @@
+.ms-financial-chart .clearfix {
+  clear:both;
+}
+
+.ms-financial-chart .highcharts-button {
+  display: none;
+}
+.ms-financial-chart .red-color {
+  color : red !important;
+}
+
+.ms-financial-chart #dashBoard-Menu {
+  float:right;
+  margin-right: 3em;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.filters md-sidenav,
+.filters md-sidenav.md-locked-open,
+.filters md-sidenav.md-closed.md-locked-open-add-active {
+  min-width:370px !important;
+  width: 85vw !important;
+  max-width: 400px !important;
+}
+
+.ms-financial-chart md-icon {
+  color : black;
+}
+
+.ms-financial-chart .highcharts-legend-box {
+  border: 2px solid #7a7a7a;
+  border-radius: 5px;
+  color: rgb(85, 85, 85);
+  font-family: "Lucida Grande","Lucida Sans Unicode",Arial,Helvetica,sans-serif;
+  font-size: 12px;
+  left: 100px;
+  margin-left: 0;
+  margin-top: 0;
+  padding: 5px;
+  position: absolute;
+  top: 40px;
+  white-space: nowrap;
+  width:150px;
+  box-sizing:border-box;
+  background:#ffffff;
+}
+
+.ms-financial-chart .highcharts-legend-box * {
+  box-sizing:border-box;
+}
+
+.ms-financial-chart .highcharts-legend-box .name, .ms-financial-chart .highcharts-legend-box  .size {
+  width:80%;
+  float:left;
+  padding:5px;
+  white-space: normal;
+}
+
+.ms-financial-chart .highcharts-legend-box .delete, .ms-financial-chart .highcharts-legend-box  .view {
+  width:20%;
+  padding:5px;
+  float:left;
+}
+
+.ms-financial-chart .highcharts-legend-box .view .fa-eye {
+  display: table-cell;
+  vertical-align: bottom;
+}
+
+.ms-financial-chart .highcharts-legend-box .size .size-val {
+  width:25%;
+  float:left;
+  border:1px solid black;
+  cursor:pointer;
+  text-align:center;
+}
+
+.ms-financial-chart {
+
+  &.icon-dots-vertical {
+    font-size:30px !important;
+    margin-top:4px;
+  }
+
+  &.selected {
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  &.graph-content {
+    padding: 15px;
+    width:100%;
+    position: relative;
+  }
+
+  &.normal-font {
+    font-size: 14px;
+  }
+
+  &.text-left {
+    text-align: left;
+  }
+
+  &.text-right {
+    text-align: right;
+  }
+
+  &.date-range-container {
+    margin-left: 100px;
+    z-index: 2;
+    margin-top: -3px;
+    cursor: pointer;
+  }
+
+  &.icon-datepicker {
+    display: inline-block;
+    height: 35px;
+    width: 100px;
+    background-repeat: no-repeat;
+    -webkit-background-size: contain;
+    background-size: 20px auto;
+    background-position: center;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+  }
+
+  &.option-items {
+    padding:5px 10px 5px 10px;
+    border:1px solid #E5E5E5;
+    position: absolute;
+    top : 93px;
+    z-index: 9999;
+    width: 200px;
+    background:#F5F5F5;
+    font-size: 16px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+  }
+
+  &.date-range-container:hover {
+    background-color:#e5e5e5;
+  }
+
+  &.date-periods {
+    margin-left: 30px;
+    z-index: 3;
+  }
+
+  &.date-periods > div:hover {
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer
+  }
+
+  &.option-items.event-options {
+    left:35px;
+    padding-left: 0;
+  }
+
+  &.option-items.comparison-options {
+    left:115px;
+    width: 250px;
+  }
+
+  &.option-items.dates-options {
+    left:365px;
+    width: auto;
+  }
+
+  &.option-items > .option-item {
+    padding: 5px 5px;
+    cursor: pointer;
+  }
+
+  &.option-items > .option-item:after {
+    clear: both;
+  }
+
+  &.option-items > .option-item .option-label {
+    font-size: 13px;
+  }
+
+  &.option-items > .option-item .option-control {
+    width: 100%;
+  }
+
+  &.option-items > .option-item .option-control select, .option-items > .option-item .option-control input {
+    width: 100%;
+    border:1px solid #E5E5E5;
+    font-size: 14px;
+    height:25px;
+  }
+
+  &.option-items > .option-item input[type="button"] {
+    font-size: 14px;
+    border:1px solid #E5E5E5;
+    padding: 5px 8px;
+  }
+
+  &.option-items > .option-item .date-container {
+    border:1px solid #CCC;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 7px;
+    padding:2px 10px;
+    font-size: 14px;
+    float:left;
+    margin-left:10px;
+    margin-bottom: 15px;
+    min-width: 200px;
+  }
+
+  &.option-items > .option-item .date-container .date-label {
+    font-size:13px;
+    padding-right:5px;
+  }
+
+  &.option-items > .option-item .date-container select {
+    border:none;
+  }
+
+  &.no-border {
+    border: none;
+  }
+
+  &.md-toolbar-tools .date-range-container {
+    margin-left:35px;
+    margin-top:1px;
+  }
+
+  &.md-button {
+    font-weight: normal;
+    font-size:13px;
+    vertical-align: top;
+    padding: 0;
+    margin: 0;
+  }
+
+  &.timeRange {
+    padding: 5px;
+  }
+
+  &.current-financial-details {
+    font-size: 18px;
+    padding-left: 25px;
+    padding-right: 15px;
+  }
+
+  & .current-financial-details span {
+    padding-left: 6px;
+  }
+
+  &.company-name {
+    border: 1px #969494 solid !important;
+    background: whitesmoke;
+    width:94%;
+  }
+
+  &.small-date-periods {
+    display: none;
+  }
+
+  &.options-row, .options-row-2 {
+    display: flex;
+  }
+
+  a chart-legend {
+      display: none; 
+      position: absolute; 
+      color: #fff; 
+      background: #000; 
+      padding: 5px;
+  }
+
+  a {
+      position: relative;
+  }
+
+  a:hover chart-legend {
+      display: block; 
+      text-align: center;
+  }
+
+  button.default {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    background: initial;
+    border: 1px solid #ccc;
+    padding:3px 10px
+  }
+
+  &.peer-search > input {
+    border: 1px solid #E5E5E5 !important;
+    padding: 3px 3px 5px !important;
+    font-size: 14px;
+    width: 175px;
+  }
+
+  &.peer-search .search-icon {
+    float: right;
+    width:40px;
+    border:1px solid #e5e5e5;
+  }
+
+
+}
+//Apple Ipad both portrait and landscape view.
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (-webkit-min-device-pixel-ratio: 2) {
+  .ms-financial-chart {
+    &.company-name {
+      border: 1px #969494 solid !important;
+      background: whitesmoke;
+      width: 78%;
+    }
+  }
+}
+
+@media only screen
+and (min-device-width: 600px)
+and (max-device-width: 960px) {
+  .ms-financial-chart {
+    &.graph-content {
+      padding: 0;
+      padding-top:15px;
+      width: 100%;
+    }
+
+    &.date-periods{
+      margin-left: 0;
+    }
+
+    &.options-row, .options-row-2 {
+      display: flex;
+      min-width: 100%;
+    }
+
+    &.tab-block-display {
+      display: block;
+      min-height: 85px;
+      padding-left: 11px;
+      padding-top: 10px;
+    }
+  }
+}
+
+@media only screen
+and (min-device-width: 768px)
+and (max-device-width: 1024px)
+and (-webkit-min-device-pixel-ratio: 1) {
+
+  .ms-financial-chart #dashBoard-Menu {
+    float: right;
+    margin-right: 10em;
+    margin-top: 3px;
+  }
+}
+
+@media only screen
+and (min-device-width: 375px)
+and (max-device-width: 667px)
+and (-webkit-min-device-pixel-ratio: 2) {
+  .ms-financial-chart #dashBoard-Menu {
+    float: right;
+    margin-right: 48px;
+    margin-top: 2px;
+  }
+}
+
+@media only screen
+and (max-device-width: 599px) {
+
+  .long-date-periods {
+    display: none;
+  }
+
+  .small-date-periods {
+    display: block;
+    padding-top:4px;
+  }
+
+  .small-date-periods select {
+    min-width: 75px;
+  }
+
+  .graph-content {
+    padding: 0;
+    padding-top:15px;
+    width: 100%;
+  }
+
+  .date-periods {
+    margin-left: 0;
+  }
+
+  .options-row, .options-row-2 {
+    display: flex;
+    min-width: 100%;
+  }
+
+  .tab-block-display {
+    display: block;
+    min-height: 85px;
+    padding-top:10px;
+    padding-left: 11px;
+  }
+
+  .option-items.event-options {
+    top:80px;
+    left:15px;
+    right:15px;
+    width:auto;
+  }
+
+  .option-items.comparison-options {
+    top:80px;;
+    left:15px;
+    right:15px;
+    width:auto;
+  }
+
+  .option-items.dates-options {
+    top: 121px;
+    left:15px;
+    right:15px;
+  }
+
+  .md-toolbar-tools .date-range-container {
+    margin-left: 2px;
+  }
+
+  .current-stock-details {
+    font-size: 15px;
+    padding-right: 20px;
+  }
+
+  .company-name {
+    display: block;
+    width: 85%;
+    width: calc(100% - 33px);
+  }
+
+  .icon-dots-vertical {
+    font-size: 28px !important;
+    margin-top: 0;
+  }
+
+  .icon-datepicker {
+    width:50px;
+  }
+
+  .refresh-widget .refresh-btn {
+    min-width: inherit;
+  }
+
+  .ms-financial-chart #dashBoard-Menu {
+    margin-right: 0;
+  }
+
+  .md-menu-content {
+    min-width: 56px;
+  }
+
+  md-menu-item > .md-button {
+    min-width: 34px;
+    padding: 0 8px 0 8px;
+  }
+
+  .peer-search > input {
+    width:85%;
+  }
+}
+
+.saved-chart-container md-content {
+  padding: 50px;
+}
+
+@media only screen
+and (min-device-width: 300px)
+and (max-device-width: 330px)
+and (-webkit-min-device-pixel-ratio: 2) {
+  #content-container{
+    width: 320px;
+  }
+}

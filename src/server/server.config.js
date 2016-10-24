@@ -12,9 +12,8 @@ exports.webservice =
 
 exports.client = {
     protocol: 'http',
-    domain: '192.168.1.216',
-    //domain: 'localhost',
-    port: '4000',
+    domain: 'localhost',
+    port: '3001',
     loglevel: 1,
     transports: ['polling']
 };
@@ -72,7 +71,12 @@ exports.restcall =
                 getIndices:'getIndices',
                 getSavedChartData : 'getChartSettings',
                 saveChartSettings : 'saveChartSettings_v2',
-                getAllChartSettings: 'getAllChartSettings'
+                getAllChartSettings: 'getAllChartSettings',
+                getFinancialChartData: 'getInteractiveFinancialRatiosData',
+                getSavedFinancialChartData: 'getSavedIFChartSettings',
+                getFinancialChartRatioTypes: 'getRatiosType',
+                saveFinancialChartSettings: 'saveIFChartSettings',
+                getFinancialChartPeerAndIndustries: 'getPeerAndIndustries'
             },
             exportOptions: {
                 phatomjsURL: 'http://localhost:8888',

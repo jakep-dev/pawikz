@@ -31,20 +31,25 @@
                 }
             });
         }
-        $scope.$watch('vm.title',function(newValue,oldValue){
-        if(oldValue!=newValue){
-            if($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title)
-			{			
-				$scope.chart.filterState.title = vm.title;
-			} 
-			else if ($scope.chart && $scope.chart.title) 
-			{
-				$scope.chart.title = vm.title;
-			}
-            if(!vm.isMainChart){
-                commonBusiness.emitMsg('autosave');
+
+        $scope.$watch('vm.title',function(newValue,oldValue) {
+            if (oldValue != newValue) {
+                if (($scope.chart.chartType === "JSCHART") || ($scope.chart.chartType === "IMGURL")) {
+                    if ($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title) {
+                        $scope.chart.filterState.title = vm.title;
+                    }
+                    else if ($scope.chart && $scope.chart.title) {
+                        $scope.chart.title = vm.title;
+                    }
+                    if (!vm.isMainChart) {
+                        commonBusiness.emitMsg('autosave');
+                    }
+                } else if ($scope.chart.chartType === "IFCHART") {
+                    $scope.chart.title = vm.title;
+                    $scope.chart.filterState.chartTitle = vm.title;
+                    saveChart();
+                }
             }
-        }
         });
 
 		if( $scope.chart && $scope.chart.filterState && $scope.chart.filterState.chart_id )
@@ -82,11 +87,11 @@
                 $scope.chartMoved(direction, $scope.index);
             //}
         };
+
         //save chart function
         function saveChart() {
             vm.onChartSave();
         }
-
 
         //Maximize the chart
         function maximizeChart() {
@@ -105,6 +110,12 @@
 
                 case 'image':
                     html = '<ms-image-chart url="' + $scope.chart.tearsheet.url + '"></ms-image-chart>';
+                    break;
+
+                case 'financial':
+                    html = '<ms-financial-chart chart-id="id" item-id="chart.tearsheet.itemId" ' +
+                            'mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" ' +
+                            'hide-filters="hideFilters"></ms-financial-chart>';
                     break;
 
                 case 'bar':
@@ -165,6 +176,23 @@
                         });
 
                     break;
+
+                case 'financial':
+                    if (chartIndex < 5) { //limit the chart count
+                        var ele = $('#ms-chart-container');
+                        var chartToBeAdded = angular.copy($scope.chart);
+                        $scope.addNewChart(chartToBeAdded, $scope.index);
+                    } else {
+                        dialog.alert('Error', "Maximum 5 charts could be added!", null, {
+                            ok: {
+                                name: 'ok', callBack: function () {
+                                    console.warn('excess chart tried to be added');
+                                }
+                            }
+                        });
+                    }
+                    break;
+
                 default:
                     break;
             }
@@ -237,6 +265,10 @@
                         case 'image':
 							vm.disableTitle = true;
                             html = '<ms-image-chart url="' + scope.chart.tearsheet.url + '"></ms-image-chart>';
+                            break;
+
+                        case 'financial':
+                            html = '<ms-financial-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" on-chart-save="onChartSave"></ms-financial-chart>';
                             break;
 
                         case 'bar':

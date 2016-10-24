@@ -37,6 +37,7 @@
     "ngActivityIndicator": "^0.1.10",
     "ng-device-detector": "^3.0.1",
     "ng-lodash": "^0.5.0",
+    "resize-sensor": "~0.0.5",
     "angular-material": "1.1.1"
   },
   "devDependencies": {

@@ -9,13 +9,15 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService, Papa, dialog, store, $window, $sce, $mdToast) {
+    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, 
+                              overviewBusiness, financialChartBusiness, templateService, financialChartService,
+                              Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
+           saveInteractiveFinancialChartMnemonics: [],
            notifications: [],
            autoSavePromise: [],
            isExpandAll: false,
@@ -25,12 +27,14 @@
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
+           saveInteractiveFinancialCharts: saveInteractiveFinancialCharts,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
 		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
 		   getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
+		   getReadyForAutoSaveInteractiveFinancialChart: getReadyForAutoSaveInteractiveFinancialChart,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
            getEvalMnemonicValue: getEvalMnemonicValue,
            getNewItemId: getNewItemId,
@@ -147,7 +151,6 @@
             {
                 if(response)
                 {
-
                     var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
@@ -302,8 +305,14 @@
                             }
                         });
 
-
-                        if (data && data.errorMessages &&
+                        if (!data) {
+                            if (notification) {
+                                notification.status = 'error';
+                                notification.progress = 100;
+                                notification.disabled = false;
+                            }
+                            toast.simpleToast("Issue with PDF Download. Please try again.");
+                        } else if (data && data.errorMessages &&
                             data.errorMessages.length > 0) {
                             if(notification)
                             {
@@ -1775,6 +1784,7 @@
                     save();
 					saveTable();
 					saveHybridTable();
+					saveInteractiveFinancialCharts();
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -1793,10 +1803,9 @@
 
 				templateService.save(input).then(function(response)
 				{
+                    business.saveMnemonics = [];
 					toast.simpleToast('Saved successfully');
 				});
-                
-                business.saveMnemonics = [];
 			}
         }
 		
@@ -1809,11 +1818,10 @@
                     templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                         tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
                     {
+                        business.saveTableMnemonics = [];
                         toast.simpleToast('Saved successfully');
                     });
                 });
-
-                business.saveTableMnemonics = [];
             }
         }
 		
@@ -1898,5 +1906,47 @@
             $interval.cancel(business.autoSavePromise);
             business.autoSavePromise = [];
         }
+
+        //Get ready for interactive financial chart auto save.
+        function getReadyForAutoSaveInteractiveFinancialChart(companyId, projectId, stepId, mnemonicId, itemId, newChartArr) {
+            var mnemonicItem = _.find(business.saveInteractiveFinancialChartMnemonics, function (currentMnemonic) {
+                if((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId) ) {
+                    return currentMnemonic;
+                }
+            });
+
+            if (angular.isUndefined(mnemonicItem)) {
+                business.saveInteractiveFinancialChartMnemonics.push({
+                    companyId: companyId,
+                    projectId: projectId,
+                    stepId: stepId,
+                    mnemonicId: mnemonicId,
+                    itemId: itemId,
+                    value: newChartArr
+                })
+            }
+            else {
+                mnemonicItem.value = newChartArr;
+            }
+            initiateAutoSave();
+        }
+
+        //Save interactive financial chart details
+        function saveInteractiveFinancialCharts() {
+            if (business.saveInteractiveFinancialChartMnemonics.length > 0) {
+
+                _.each(business.saveInteractiveFinancialChartMnemonics, function (mnemonicItem) {
+                    var input = financialChartBusiness.getSaveChartInputObject(mnemonicItem);
+
+                    financialChartService.saveInteractiveFinancialChart(input)
+                        .then(function (response) {
+                            //TODO: send message to update chart id
+                            toast.simpleToast('Saved successfully');
+                        });
+                });
+                business.saveInteractiveFinancialChartMnemonics = [];
+            }
+        }
+
     }
 })();
