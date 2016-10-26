@@ -1,6 +1,5 @@
 
-(function(chartRoutes)
-{
+(function(chartRoutes) {
     var async = require('async');
     var u = require('underscore');
     var fs = require('fs');
@@ -12,8 +11,7 @@
         return content;
     };
 
-    chartRoutes.init = function (app, config)
-    {
+    chartRoutes.init = function (app, config) {
         var client = config.restcall.client;
         var config = config;
 
@@ -35,122 +33,117 @@
 
         function getChartData(req, res, next) {
             var service = getServiceDetails('charts');
-
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getStockData;
             }
 
-            var  tickers= req.body.tickers,
-                period= req.body.period,
-                ssnid= req.body.ssnid,
-                companyId = req.body.companyId,
-                splits= req.body.splits,
-                dividends= req.body.dividends,
-                earnings= req.body.earnings,
-                end_date = req.body.end_date,
-                start_date = req.body.start_date;
+            var tickers = req.body.tickers;
+            var period = req.body.period;
+            var ssnid = req.body.ssnid;
+            var companyId = req.body.companyId;
+            var splits = req.body.splits;
+            var dividends = req.body.dividends;
+            var earnings = req.body.earnings;
+            var end_date = req.body.end_date;
+            var start_date = req.body.start_date;
 
             var getChartDataVar = config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id='+companyId+'&peers='+encodeURIComponent(tickers)
-                + '&period=' +period
-                + '&ssnid=' +ssnid
-                +'&splits='+splits
-                +'&dividends='+dividends
-                +'&earnings='+earnings
-                +'&date_start='+start_date
+                + '?company_id=' + companyId
+                + '&peers=' + encodeURIComponent(tickers)
+                + '&period=' + period
+                + '&ssnid=' + ssnid
+                + '&splits=' + splits
+                + '&dividends=' + dividends
+                + '&earnings=' + earnings
+                + '&date_start=' + start_date
                 + '&date_end=' + end_date;
-            //console.log(getChartDataVar);
 
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id='+companyId+'&peers='+encodeURIComponent(tickers)
-                + '&period=' +period
-                + '&ssnid=' +ssnid
-                +'&splits='+splits
-                +'&dividends='+dividends
-                +'&earnings='+earnings
-                +'&date_start='+start_date
-                +'&date_end='+end_date
-                , function (data, response) {
+                    + '?company_id=' + companyId
+                    + '&peers=' + encodeURIComponent(tickers)
+                    + '&period=' + period
+                    + '&ssnid=' + ssnid
+                    + '&splits=' + splits
+                    + '&dividends=' + dividends
+                    + '&earnings=' + earnings
+                    + '&date_start=' + start_date
+                    + '&date_end=' + end_date,
+                function (data, response) {
                     res.send(data);
-                });
+                }
+            );
         }
 
         //this creates new charts or remove not iterated ones
         function saveChartAllSettings(req, res, next) {
             var service = getServiceDetails('charts');
-
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.saveChartSettings;
             }
 
-            var projectId = req.body.project_id,
-                companyId = req.body.company_id,
-                stepId = req.body.step_id,
-                mnemonicId = req.body.mnemonic,
-                itemId = req.body.item_id,
-                ssnid= req.headers['x-session-token'],
-                chartSettings = req.body.chartSettings;
+            var projectId = req.body.project_id;
+            var companyId = req.body.company_id;
+            var stepId = req.body.step_id;
+            var ssnid = req.headers['x-session-token'];
+            var chartSettings = req.body.chartSettings;
+            console.log('***************** ONEAL CHART SETTINGS START ONEAL *****************');
+            console.log(chartSettings);
+            console.log('***************** ONEAL CHART SETTINGS  END  ONEAL *****************');
             //chartsettings should be a array and and defined
             var args = {
                 data: {
                     project_id: parseInt(projectId),
                     company_id: parseInt(companyId),
                     step_id: parseInt(stepId),
-                    mnemonic : mnemonicId,
-                    item_id : itemId,
-                    ssnid:ssnid,
-                    delete_ignored:true,
-                    chartSettings : chartSettings
+                    ssnid: ssnid,
+                    chartSettings: chartSettings
                 },
-                headers: {"Content-Type": "application/json"}
-
+                headers: { "Content-Type": "application/json" }
             };
 
-            var saveChartSettingsAPI = config.restcall.url + '/' + service.name + '/' + methodName,args;
-            client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
-                res.send(data);
-            });
+            var saveChartSettingsAPI = config.restcall.url + '/' + service.name + '/' + methodName, args;
+
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
         //this ceates a single chart
         function saveChartSettings(req, res, next) {
             var service = getServiceDetails('charts');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.saveChartSettings;
             }
 
-            var  tickers= req.body.tickers,
-                period= req.body.period,
-                ssnid= req.headers['x-session-token'],
-                splits= req.body.splits,
-                dividends= req.body.dividends,
-                earnings= req.body.earnings,
-                end_date = req.body.end_date,
-                start_date = req.body.start_date,
-                chart_title = req.body.chartTitle,
-                chart_id = req.body.chart_id;
-
-
+            var tickers = req.body.tickers;
+            var period = req.body.period;
+            var ssnid = req.headers['x-session-token'];
+            var splits = req.body.splits;
+            var dividends = req.body.dividends;
+            var earnings = req.body.earnings;
+            var end_date = req.body.end_date;
+            var start_date = req.body.start_date;
+            var chart_title = req.body.chartTitle;
+            var chart_id = req.body.chart_id;
             var chartSetting = {
                 chart_title: chart_title,
                 peers: tickers,
-                period:period,
-                date_start:start_date,
-                date_end:end_date,
+                period: period,
+                date_start: start_date,
+                date_end: end_date,
                 dividends: dividends,
                 earnings: earnings,
-                splits:splits,
-                chart_id:chart_id
+                splits: splits,
+                chart_id: chart_id
             };
 
-            if(chart_id){
-                chartSetting.chartId  = parseInt(chart_id);
+            if (chart_id) {
+                chartSetting.chartId = parseInt(chart_id);
             }
 
             var args = {
@@ -158,147 +151,140 @@
                     project_id: parseInt(projectId),
                     company_id: parseInt(companyId),
                     step_id: parseInt(stepId),
-                    ssnid:ssnid,
-                    data : [chartSetting],
+                    ssnid: ssnid,
+                    data: [chartSetting],
                     delete_ignored: false
                 },
                 headers: { "Content-Type": "application/json" }
             };
-            client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
-                res.send(data);
-            });
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function(data, response) {
+                    res.send(data);
+                }
+            );
         }
 
         function getTickers(req, res, next) {
             var service = getServiceDetails('templateSearch');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.findTickers;
             }
 
-            var  keyword= req.body.keyword,
-                ssnid= req.headers['x-session-token'];
+            var  keyword = req.body.keyword, ssnid= req.headers['x-session-token'];
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?keyword='+keyword +'&ssnid=' +ssnid, function (data, response) {
-                res.send(data);
-            });
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?keyword=' + keyword + '&ssnid=' + ssnid,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
-        function getIndices (req, res , next ) {
+        function getIndices(req, res, next) {
             var service = getServiceDetails('charts');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getIndices;
             }
 
-            var  ssnid= req.headers['x-session-token'];
+            var ssnid = req.headers['x-session-token'];
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?ssnid=' +ssnid, function (data, response) {
-                res.send(data);
-            });
-
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?ssnid=' + ssnid,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
-        function getCompetitors (req, res , next ) {
+        function getCompetitors(req, res, next) {
             var service = getServiceDetails('templateSearch');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getCompetitors;
             }
 
-            var  ssnid= req.headers['x-session-token'];
+            var  ssnid = req.headers['x-session-token'];
             var companyId = req.body.companyId;
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id=' + companyId + '&ssnid=' +ssnid, function (data, response) {
-                res.send(data);
-            });
-
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?company_id=' + companyId + '&ssnid=' + ssnid,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
-        function getSavedChartData  (req, res , next ) {
+        function getSavedChartData(req, res, next) {
             var service = getServiceDetails('charts');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getSavedChartData;
             }
 
             var ssnid = req.body.ssnid;
-            var  stepId= req.body.step_id;
-            var  projectId= req.body.project_id;
-            var  mnemonic= req.body.mnemonic;
-            var  itemId= req.body.item_id;
+            var stepId = req.body.step_id;
+            var projectId = req.body.project_id;
+            var mnemonic = req.body.mnemonic;
+            var itemId = req.body.item_id;
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?project_id='+projectId+'&step_id='+stepId+ '&mnemonic='+mnemonic+ '&item_id='+ itemId + '&ssnid=' +ssnid,
-                function (data, response)
-                {
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?project_id=' + projectId + '&step_id=' + stepId + '&mnemonic=' + mnemonic + '&item_id=' + itemId + '&ssnid=' + ssnid,
+                function (data, response) {
                     res.status(response.statusCode).send(getChartSettings(data));
-                });
-
+                }
+            );
         }
 
-        function getChartSettings(data){
+        function getChartSettings(data) {
             var result = {
                 newCharts: [],
                 legacyCharts: []
             };
 
-            if(data && data.chartSettings)
-            {
-                u.each(data.chartSettings, function(savedChart)
-                {
-                    if (savedChart.chartType  === 'IMGURL'){
+            if (data && data.chartSettings) {
+                u.each(data.chartSettings, function(savedChart) {
+                    if (savedChart.chartType === 'IMGURL') {
                         result.legacyCharts.push(savedChart);
-                    }
-                    else  if (savedChart.chartType  === 'JSCHART'){
+                    } else if (savedChart.chartType  === 'JSCHART') {
                         var chart = {};
                         chart.chartType = 'JSCHART';
+                        chart.isMainChart = savedChart.isDefault === 'Y';
                         chart.settings = {
-                            mainStock : "",
-                            companyName : savedChart.chart_title,
-                            selectedPeriod : savedChart.period.toUpperCase(),
-                            selectedIndicesList : [],
-                            selectedPeerList : [],
-                            selectedCompetitorsList : [],
-                            searchedStocks : [],
+                            mainStock: "",
+                            mnemonic: savedChart.mnemonic,
+                            item_id: savedChart.item_id,
+                            company_id: savedChart.company_id,
+                            companyName: savedChart.chart_title,
+                            selectedPeriod: savedChart.period.toUpperCase(),
+                            chart_id: savedChart.chart_id,
+                            chart_date: savedChart.chart_date,
+                            date_start: savedChart.date_start,
+                            date_end: savedChart.date_end,
+                            selectedIndicesList: [],
+                            selectedPeerList: [],
+                            selectedCompetitorsList: [],
+                            searchedStocks: [],
                             to: {},
                             from: {},
-                            isSplits : (savedChart.dividends === 'Y')? true : false,
-                            isEarnings : (savedChart.earnings === 'Y')? true : false,
-                            isDividents : (savedChart.splits === 'Y')? true : false,
-                            eventOptionVisibility : false,
-                            dateOptionVisibility : false,
-                            comparisonOptionVisibility : false,
-                            company_id : savedChart.company_id,
-                            chart_id : savedChart.chart_id,
-                            chart_date : savedChart.chart_date,
-                            date_start : savedChart.date_start,
-                            date_end : savedChart.date_end,
-
+                            isSplits: (savedChart.dividends === 'Y') ? true : false,
+                            isEarnings: (savedChart.earnings === 'Y') ? true : false,
+                            isDividents: (savedChart.splits === 'Y') ? true : false,
+                            eventOptionVisibility: false,
+                            dateOptionVisibility: false,
+                            comparisonOptionVisibility: false,
+                            isDefault: savedChart.isDefault
                         };
 
-                        if(savedChart.peers){
+                        if (savedChart.peers) {
                             var peers = savedChart.peers.split(',');
-                            for (var i = 0; i < peers.length;  i++) {
+                            for (var i = 0; i < peers.length; i++) {
                                 var peer = peers[i].trim();
-                                if(peer.charAt(0) === '^') {
+                                if (peer.charAt(0) === '^') {
                                     chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
                                     //chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
-
                                 }
-                                if(peer.charAt(0) === '@') {
+                                if (peer.charAt(0) === '@') {
                                     //chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
                                     chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
-
-                                }
-                                else if(peer.charAt(0)!=='^' && peer.charAt(0)!=='@') {
+                                } else if (peer.charAt(0) !== '^' && peer.charAt(0) !== '@') {
                                     chart.settings.selectedPeerList.push(peer);
                                 }
                             }
@@ -324,7 +310,6 @@
                 });
             }
             return result;
-
         }
 
         function writeFile(fileName,fileData,reqID) {

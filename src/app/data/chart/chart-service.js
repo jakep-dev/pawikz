@@ -1,23 +1,19 @@
 /**
  * Created by sherindharmarajan on 12/16/15.
  */
-(function () {
+(function() {
     'use strict';
 
-    angular
-        .module('app.chart.service', [])
-        .factory('stockService', stockService);
+    angular.module('app.chart.service', [])
+           .factory('stockService', stockService);
 
     /* @ngInject */
-    function stockService($http, logger)
-    {
+    function stockService($http, logger) {
         /*
          * Added Variables to implement reset functionality 5/11/2016
          * */
         var initalStateData = {};
         var manualSaveData = {};
-
-
         var service = {
             stockData: stockData,
             getSavedChartData: getSavedChartData,
@@ -32,45 +28,40 @@
             GetManualSaveData: getmanualSaveData,    //End of reset functionality options
             DeleteSpecificChart: deleteSpecificChart,
             createTemplatePDFRequest:createTemplatePDFRequest
-
         };
-        function createTemplatePDFRequest(project_id, user_id, stepId, file_name, company_name, user_name,chart_name, chart_data, ssnid) {
+
+        function createTemplatePDFRequest(project_id, user_id, stepId, file_name, company_name, user_name, chart_name, chart_data, ssnid) {
             return $http({
                 method: "POST",
                 url: "/api/createTemplatePDFRequest",
                 data: {
-                    project_id : project_id,
-                    user_id : user_id,
-                    step_ids : stepId,
-                    file_name : file_name,
-                    company_name : company_name,
-                    user_name : user_name,
+                    project_id: project_id,
+                    user_id: user_id,
+                    step_ids: stepId,
+                    file_name: file_name,
+                    company_name: company_name,
+                    user_name: user_name,
                     chart_name: chart_name,
                     chart_data: chart_data,
                     ssnid: ssnid
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         return service;
 
-        //chartSettings: chartSettings
-        function saveChartAllSettings(companyId, stepId, projectId, mnemonicId, itemId, ssnid, chartSettings) {
-
+        function saveChartAllSettings(companyId, stepId, projectId, ssnid, chartSettings) {
             var tmpdata =  {
                 //Changing keynames as per jake plaras email on 26/5/2016
-                  company_id: companyId,
-                    step_id: stepId,
-                    project_id: projectId,
-                    mnemonic: mnemonicId,
-                    item_id: itemId,
-                    ssnid:ssnid,
-                    data: chartSettings
+                company_id: companyId,
+                step_id: stepId,
+                project_id: projectId,
+                ssnid: ssnid,
+                data: chartSettings
             };
             return $http({
                 method: "POST",
@@ -81,17 +72,14 @@
                     company_id: companyId,
                     step_id: stepId,
                     project_id: projectId,
-                    mnemonic: mnemonicId,
-                    item_id: itemId,
-                    ssnid:ssnid,
+                    ssnid: ssnid,
                     chartSettings: chartSettings
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function saveChartSettings(tickers, timeFrame, splits, dividends, earnings, start_date, end_date, chart_id, chartTitle) {
@@ -109,16 +97,14 @@
                     chart_id: chart_id,
                     chart_title: chartTitle,
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function stockData(tickers, timeFrame, splits, earnings, dividends, start_date, end_date, companyId, ssnid) {
-
             return $http({
                 method: "POST",
                 url: "/api/getChartData",
@@ -133,12 +119,11 @@
                     companyId: companyId,
                     ssnid: ssnid
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function getSavedChartData(projectId, stepId, mnemonic, itemId, ssnid, $cookies) {
@@ -151,17 +136,15 @@
                     mnemonic: mnemonic,
                     item_id: itemId,
                     ssnid: ssnid
-                    //chart_id: chartId
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
                     $cookies.putObject('tempChartData', data.data);
                 }]);
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function findTickers(keyword) {
@@ -171,12 +154,11 @@
                 data: {
                     keyword: keyword
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function getIndices(keyword) {
@@ -184,12 +166,11 @@
                 method: "POST",
                 url: "/api/getIndices",
                 data: {}
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function getCompetitors(companyId) {
@@ -199,16 +180,15 @@
                 data: {
                     companyId: companyId
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
 
         function addInitialStateData(array) {
-//            initalStateData.newCharts = [];
+            // initalStateData.newCharts = [];
             initalStateData.newCharts = array.slice();
         }
 
@@ -238,18 +218,16 @@
                     chart_id: chartId,
                     ssnid: ssnId
                 }
-            }).then(function (data, status, headers, config) {
+            }).then(function(data, status, headers, config) {
                 //saveChartAllSettings();
-                angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
+                angular.injector(['ngCookies']).invoke(['$cookies', function($cookies) {
                     debugger;
                     $cookies.putObject('tempChartData', data.data);
                 }]);
                 return data.data;
-            })
-                .catch(function (error) {
-                    logger.error(JSON.stringify(error));
-                });
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
         }
     }
-
 })();
