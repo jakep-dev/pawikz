@@ -48,7 +48,7 @@ exports.restcall = {
         },
         {
             name: 'templateSearch',
-            methods:{
+            methods: {
                 templateList: 'getTemplateList',
                 userLookUp: 'getUserLookup',
                 companyLookUp: 'getCompanyLookup',
@@ -64,13 +64,13 @@ exports.restcall = {
         },
         {
             name: 'charts',
-            methods:{
+            methods: {
                 getStockData:'getStockData',
                 getIndices:'getIndices',
-                getSavedChartData : 'getChartSettingsPerStep', //getChartSettings
-                saveChartSettings : 'saveCharts', //saveChartSettings_v2
-                getAllChartSettings: 'getAllChartSettings',
-				getFinancialChartData: 'getInteractiveFinancialRatiosData',
+                getSavedChartData : 'getChartSettingsPerStep', // getChartSettings
+                saveChartSettings : 'saveCharts', // saveChartSettings_v2
+                getAllChartSettings: 'getAllCharts', // getAllChartSettings
+                getFinancialChartData: 'getInteractiveFinancialRatiosData',
                 getSavedFinancialChartData: 'getSavedIFChartSettings',
                 getFinancialChartRatioTypes: 'getRatiosType',
                 saveFinancialChartSettings: 'saveIFChartSettings',
