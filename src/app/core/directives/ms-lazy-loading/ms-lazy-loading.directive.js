@@ -14,7 +14,7 @@
             link: function(scope, element, attrs) {
                 var raw = element[0];
                 element.bind('scroll', function () {
-                    if(raw.scrollTop + raw.offsetHeight >= raw.scrollHeight) {
+                    if((raw.scrollTop + raw.offsetHeight) + 50 >= raw.scrollHeight) {
                         console.log('Reached Bottom-');
                         commonBusiness.emitMsg('reached-page-bottom');
                     }

@@ -148,22 +148,22 @@
 
                 bindHeader(scope);
                 var compCount = clientConfig.appSettings.componentInitialLoad,
-                    compSize = _.size(scope.components.content);
+                    compSize = getNumberOfComp(scope.components.content);
 
-                if(compSize < clientConfig.appSettings.componentInitialLoad)
+                if(compSize < compCount)
                 {
                     compCount = compSize;
                     scope.isLoadMoreDisabled = true;
                 }
-                bindComponent(scope, el, scope.components.content, compCount);
-                el.find('#btnLoadMore').attr('loadedIndex', compCount);
+
+                var actualCompCount = bindComponent(scope, el, scope.components.content, compCount);
+
+                el.find('#btnLoadMore').attr('loadedIndex', actualCompCount);
 
                 commonBusiness.onMsg('reached-page-bottom', scope, function(){
                     scope.loadMore();
                 });
-
             }
-
         };
 
         ///Bind header details for the component
@@ -183,7 +183,7 @@
         {
             if(contents) {
                 var totalComponent = componentLoadCount;
-                var currentComponent = 1;
+                var currentComponent = 0;
                 var isSkip = false;
 
                 _.each(contents, function (renderContent) {
@@ -196,7 +196,6 @@
                             var newScope = scope.$new(true);
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
-
                             _.each(renderContent.sections, function (section) {
                                 newScope.isnoneditable = (section.type === 'nonEditableUnmark');
                                 newScope.subtype = section.subtype || renderContent.header.subtype || '';
@@ -215,7 +214,6 @@
                                     newScope.tearcontent.push(section);
                                 }
                             });
-
                             if (newScope.tearcontent) {
                                 newScope.iscollapsible = true;
                                 newScope.isprocesscomplete = true;
@@ -223,7 +221,7 @@
                                 var isChartComp = false;
 
                                 //Check for chart component
-                                angular.forEach(newScope.tearcontent, function (each) {
+                               _.each(newScope.tearcontent, function (each) {
                                     if (each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
                                         isChartComp = true;
                                         return;
@@ -244,14 +242,9 @@
 
                                 el.find('#template-content').append($compile(html)(newScope));
                             }
+                            currentComponent++;
                         }
                         else {
-
-                            if(currentComponent >= totalComponent)
-                            {
-                                commonBusiness.emitMsg('step-load-completed');
-                            }
-
                             switch (renderContent.id) {
                                 case 'WU_RATIOS_CHART':
                                     var newScope = scope.$new();
@@ -276,14 +269,33 @@
                             }
                         }
 
-                        if(currentComponent == totalComponent)
+                        if(currentComponent >= totalComponent)
                         {
                             isSkip = true;
+                            commonBusiness.emitMsg('step-load-completed');
                         }
                     }
-                    currentComponent++;
                 });
+
+                return currentComponent;
             }
+        }
+
+        function getNumberOfComp(contents)
+        {
+            var totalComp = 0;
+
+            _.each(contents, function(content)
+            {
+                if (content.header &&
+                    content.sections &&
+                    content.sections.length > 0)
+                {
+                    totalComp++;
+                }
+            });
+
+            return totalComp;
         }
     }
 })();
