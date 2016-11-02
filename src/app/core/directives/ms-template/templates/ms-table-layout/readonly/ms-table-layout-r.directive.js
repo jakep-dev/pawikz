@@ -8,7 +8,7 @@
 
 
     /** @ngInject */
-    function msTablelayoutRDirective($compile, templateService, commonBusiness, templateBusiness, DTOptionsBuilder)
+    function msTablelayoutRDirective($compile, templateService, commonBusiness, templateBusiness, DTOptionsBuilder, templateBusinessFormat)
     {
         function tableLayoutFirstVariation(scope, el, header, column)
         {
@@ -64,8 +64,11 @@
 
                                 switch (tearSheetItem.id) {
                                     case 'LabelItem':
+                                        var classValue = 'align-left-for-label';
+                                        classValue = templateBusinessFormat.getAlignmentForLabelItem(tearSheetItem, classValue);
+                                    
                                         html += '<th>';
-                                        html += '<span><strong>' + tearSheetItem.Label  +'</strong></span>';
+                                        html += '<span class="'+ classValue +'"><strong>' + tearSheetItem.Label  +'</strong></span>';
                                         html += '</th>';
                                         break;
                                 }
@@ -100,10 +103,14 @@
 
                                 var exp = "data[count]." + mnemonic;
                                 var value = eval(exp);
+                                var classValue = 'align-left-tablelayout-r';
+                                classValue = templateBusinessFormat.getAlignmentForTableLayoutR(col, classValue);
 
                                 if (value) {
-                                    if(mnemonic == 'URL') {
-                                        html += '<span style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"></ms-link></span>';
+                                    if(mnemonic == 'URL' && classValue === 'align-right-tablelayout-r') {
+                                        html += '<span class="'+ classValue +'" style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"></ms-link></span>';
+                                    }else if(classValue === 'align-right-tablelayout-r'){
+                                        html += '<span class="'+ classValue +'" style="font-weight: normal">' +formatData(value, mnemonic, scope.subMnemonics) + '</span>';
                                     }
                                     else {
                                         html += '<span style="font-weight: normal">' + formatData(value, mnemonic, scope.subMnemonics) + '</span>';

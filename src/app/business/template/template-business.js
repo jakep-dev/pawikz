@@ -73,7 +73,9 @@
 		   getMnemonicPrefix: getMnemonicPrefix,
 		   getMnemonicPostfix: getMnemonicPostfix,
 		   getMnemonicParameters: getMnemonicParameters,
-           getMnemonicPrecision: getMnemonicPrecision,
+		   getMnemonicPrecision: getMnemonicPrecision,
+		   getMnemonicDataType: getMnemonicDataType,
+		   getMnemonicDataSubtype: getMnemonicDataSubtype,
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
            removeCommaValue: removeCommaValue,
@@ -1028,7 +1030,7 @@
 
         function isKMBValue(inputVal) 
         {
-            var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
+            var regEx = /^\-?[0-9]+\.?[0-9]*[kKmMbB]$/;
             if (regEx.test(inputVal))
             {
                 return true;
@@ -1543,7 +1545,41 @@
 			
 			return isNumber;
 		}
-		
+
+		function getMnemonicDataType(tearSheet) {
+		    var dataType = null;
+
+		    if (business.mnemonics) {
+		        var mnemonic = _.find(business.mnemonics, function (m) {
+		            if (m.mnemonic === tearSheet.Mnemonic) {
+		                return m;
+		            }
+		        });
+
+		        if (mnemonic) {
+		            return mnemonic.dataType;
+		        }
+		    }
+		    return dataType;
+		}
+
+		function getMnemonicDataSubtype(tearSheet) {
+		    var dataSubtype = null;
+
+		    if (business.mnemonics) {
+		        var mnemonic = _.find(business.mnemonics, function (m) {
+		            if (m.mnemonic === tearSheet.Mnemonic) {
+		                return m;
+		            }
+		        });
+
+		        if (mnemonic) {
+		            return mnemonic.dataSubtype;
+		        }
+		    }
+		    return dataSubtype;
+		}
+
 		//check if subtype is CURRENCY to add prefix (currency symbol)
 		function isCurrencySubtype(mnemonicValue)
 		{
