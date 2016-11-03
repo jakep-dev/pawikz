@@ -116,6 +116,7 @@
                 });
                 seriesSet.push({
                     data: currentObj.data,
+                    connectNulls: true,
                     name: finalName
                 });
             });
