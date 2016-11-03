@@ -11,7 +11,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, overviewBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store) {
+    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, overviewBusiness, stockChartBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store) {
         return {
             restrict: 'E',
             scope : {
@@ -28,8 +28,12 @@
                     toast.simpleToast("Auto Save Enabled");
                     switch (angular.lowercase(scope.type)) {
                         case 'stock':
-                            stockService.getSavedChartData(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, store.get('x-session-token'))
-                            .then(function(data) {
+                            stockService.getSavedChartDefer(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, store.get('x-session-token'))
+                            .then(function(defferedData) {
+                                var data = defferedData[0];
+                                var sigDevTable = defferedData[1].item;
+                                stockChartBusiness.sigDevSources = defferedData[2].source;
+
                                 var idCount = 1;
                                 //Creating Legacy Charts
                                 if (data.legacyCharts) {
@@ -90,6 +94,41 @@
                                     var newCharts = data.newCharts;
                                     if (!stockService.GetInitialStateData().hasOwnProperty("newCharts")) {
                                         stockService.AddInitalStateData(angular.copy(data.newCharts));
+                                    }
+
+                                    var getTableInfo = function getTableInfo(index) {
+
+                                        var tableInfo = [];
+                                        var savedTable = _.find(sigDevTable, function(table)
+                                            {
+                                                if(table.seqNo === index) {
+                                                    return table;
+                                                }
+                                            }
+                                        );
+
+                                        if(savedTable)
+                                        {
+                                            if(savedTable.sigdev && savedTable.sigdev.length > 0)
+                                            {
+                                                tableInfo.push({
+                                                    source: stockChartBusiness.getSourceByValue('SIGDEV'),
+                                                    rows: savedTable.sigdev,
+                                                    isDefaultChart: false
+                                                });
+                                            }
+
+                                            if(savedTable.mascad && savedTable.mascad.length > 0)
+                                            {
+                                                tableInfo.push({
+                                                    source: stockChartBusiness.getSourceByValue('MASCAD'),
+                                                    rows: savedTable.mascad,
+                                                    isDefaultChart: false
+                                                });
+                                            }
+                                        }
+
+                                        return tableInfo;
                                     }
 
                                     scope.chartMoved = function(direction, index) {
@@ -215,7 +254,8 @@
                                             filterState: filterState,
                                             msChartPlaceHolderId: msChartPlaceHolderId,
                                             title: chartSettings.companyName,
-                                            chartType: chartType
+                                            chartType: chartType,
+                                            tableInfo: getTableInfo(id)
                                         };
                                     };
 
@@ -306,7 +346,8 @@
                                                 filterState: filterState,
                                                 msChartPlaceHolderId: msChartPlaceHolderId,
                                                 title: chartSettings.companyName,
-                                                chartType: chartType
+                                                chartType: chartType,
+                                                tableInfo: getTableInfo(i)
                                             });
                                         }
                                     };
@@ -364,7 +405,8 @@
                                                 filterState: filterState,
                                                 msChartPlaceHolderId: msChartPlaceHolderId,
                                                 title: chartSettings.companyName,
-                                                chartType: chartType
+                                                chartType: chartType,
+                                                tableInfo: getTableInfo(i)
                                             });
                                         }
                                         $rootScope.savedChartData = scope.jsCharts;
@@ -428,6 +470,7 @@
 
                                 var saveAllCharts = function saveAllCharts() {
                                     var startArr = [];
+                                    var savedTable = [];
                                     if (scope.jsCharts != null) {
                                         scope.jsCharts.forEach(function(chart) {
                                             var stockString = '';
@@ -476,6 +519,49 @@
                                                 }
                                                 startArr.push(obj);
                                             // }
+                                            if(jsChart.isDefault === 'N')
+                                            {
+                                                var perChart = {
+                                                    sigdevId: [],
+                                                    mascadId: [],
+                                                };
+                                                angular.forEach(chart.tableInfo, function(table)
+                                                {
+
+                                                    switch(table.source.value)
+                                                    {
+                                                        case 'SIGDEV':
+                                                            if(table.rows && table.rows.length > 0){
+                                                                perChart.sigdevId = _.map(table.rows, function(row)
+                                                                {
+                                                                    return row.sigDevId;
+                                                                });
+                                                            }
+                                                            break;
+                                                        case 'MASCAD':
+                                                            if(table.rows && table.rows.length > 0){
+                                                                 perChart.mascadId = _.map(table.rows, function(row)
+                                                                {
+                                                                    return row.mascadId;
+                                                                });
+                                                            }
+                                                            break;
+                                                    }
+                                                    
+                                                });
+
+                                                //As per WS team, add null if empty
+                                                if(perChart.sigdevId.length === 0)
+                                                {
+                                                    perChart.sigdevId.push(null);
+                                                }
+                                                if(perChart.mascadId.length === 0)
+                                                {
+                                                    perChart.mascadId.push(null);
+                                                }
+
+                                                savedTable.push(perChart);
+                                            }
                                         });
                                     }
 
@@ -502,7 +588,7 @@
                                     stockService.saveChartAllSettings(commonBusiness.companyId, commonBusiness.stepId, commonBusiness.projectId, store.get('x-session-token'), startArr)
                                     .then(function(response) {
                                         scope.chart_ids = [];
-                                        toast.simpleToast("Saved Successfully");
+                                        //toast.simpleToast("Saved Successfully");
                                         angular.forEach(response.data,
                                             function(respData) {
                                                 scope.chart_ids.push(respData.chart_id);
@@ -510,7 +596,17 @@
                                         )
                                         defer.resolve();
                                     });
-                                    return defer.promise;
+                                    
+                                    var deferTableSave = $q.defer();
+                                    stockService.saveSigDevItems(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, savedTable)
+                                    .then(function(response) {
+                                        //toast.simpleToast("Saved Successfully");
+                                        deferTableSave.resolve();
+                                    });
+
+                                    return $q.all([defer.promise, deferTableSave.promise]).then(function() {
+                                        toast.simpleToast("Saved Successfully");
+                                    });
                                 };
 
                                 scope.saveAllCharts = saveAllCharts;
@@ -537,7 +633,10 @@
                                         saveAllCharts().then(function() {
                                             stockService.getSavedChartData(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, store.get('x-session-token'))
                                             .then(function(data) {
-                                                stockService.AddManualSaveData(data.newCharts);
+                                                if(data && data[0])
+                                                {
+                                                    stockService.AddManualSaveData(data.newCharts);
+                                                }
                                             });
                                         });
                                     }

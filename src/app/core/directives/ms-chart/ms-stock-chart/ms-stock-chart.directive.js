@@ -14,6 +14,11 @@
         vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
 
+        //for stock table variables
+        vm.selectedSources = null;
+        vm.selectedRange = null;
+        vm.selectedDate = null;
+
         vm.onFilterStateUpdate = function() {
             loadChartData();
         };
@@ -21,6 +26,12 @@
         $scope.$on('filterSateUpdate', function(event) {
             $scope.$broadcast('resetEvents');
             loadChartData();
+        });
+
+        $scope.$watch('vm.selectedSources + vm.selectedRange + vm.selectedDate', function (newValue, oldValue) {
+            if(newValue !== oldValue){
+               vm.tableInfo = defineTableInfo();
+            }
         });
 
         function loadChartData() {
@@ -321,6 +332,112 @@
 
             loadChartData();
         };
+
+        function defineTableInfo()
+        {
+            var table = [];
+            angular.forEach(vm.selectedSources, function(source)
+            {
+                var info = {};
+                info.source = source;
+                info.range = vm.selectedRange;
+                info.date = vm.selectedDate;
+                info.isDefaultChart = true;
+                getTableInfo(info);
+
+                table.push(info);
+            });
+
+            return table;
+        }
+
+        function getTableInfo(info)
+        {
+            switch (info.source.value)
+            {
+                case 'SIGDEV' :
+                    getSigDevAllList(info);
+                    break;
+                case 'MASCAD' :
+                    getMSCAdLossesAllList(info);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function getSigDevAllList(info)
+        {
+            info.isLoading = true;
+            var dateRange = getDateRange(vm.selectedDate, vm.selectedRange);
+            stockService.getSignificantDevelopmentList(commonBusiness.companyId, dateRange.startDate, dateRange.endDate)
+                .then(function(response) {
+                    if(response && response.sigdevList)
+                    {
+                        info.rows = response.sigdevList;
+                        info.isLoading = false;
+                    }
+
+                }
+            );
+        }
+
+        function getMSCAdLossesAllList(info)
+        {
+            info.isLoading = true;
+            var dateRange = getDateRange(vm.selectedDate, vm.selectedRange);
+            stockService.getMascadLargeLosseList(commonBusiness.companyId, dateRange.startDate, dateRange.endDate)
+                .then(function(response) {
+                    if(response && response.mscad)
+                    {
+                        info.rows = response.mscad;
+                        info.isLoading = false;
+                    }
+
+                }
+            );
+        }
+
+        function getDateRange(selectedDate, selectedRange)
+        {
+            var num = 3;
+            var range = 'months';
+
+            switch(selectedRange)
+            {
+                case '+/- 1 week' :
+                    num = 1;
+                    range = 'weeks';
+                    break;
+                case '+/- 1 month' :
+                    num = 1;
+                    range = 'months';
+                    break;
+                case '+/- 3 months' :
+                    num = 3;
+                    range = 'months';
+                    break;
+                case '+/- 6 months' : 
+                    num = 6;
+                    range = 'months';
+                    break;
+                case '+/- 1 year' :
+                    num = 1;
+                    range = 'years';
+                    break;
+                default:
+                    break;
+            }
+
+            var date = moment(selectedDate);
+            if(date.isValid())
+            {
+                return {
+                    startDate : date.add(num * -1, range).format('MM/DD/YYYY'),
+                    endDate: date.add(num * 2, range).format('MM/DD/YYYY')
+                };
+            }
+        }
     }
 
     /** @ngInject */
@@ -333,7 +450,8 @@
                 mnemonicId: '=',
                 itemId: '=',
                 chartId: '=',
-                hideFilters : '='
+                hideFilters : '=',
+                tableInfo: '='  
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
             controller: 'msStockChartController',

@@ -74,7 +74,14 @@ exports.restcall = {
                 getSavedFinancialChartData: 'getSavedIFChartSettings',
                 getFinancialChartRatioTypes: 'getRatiosType',
                 saveFinancialChartSettings: 'saveIFChartSettings',
-                getFinancialChartPeerAndIndustries: 'getPeerAndIndustries'
+                getFinancialChartPeerAndIndustries: 'getPeerAndIndustries',
+                getSignificantDevelopmentList: 'getSignificantDevelopmentList',
+                getSignificantDevelopmentDetail: 'getSignificantDevelopmentDetail',
+                getMascadLargeLosseDetail: 'getMascadLargeLosseDetail',
+                getMascadLargeLosseList: 'getMascadLargeLosseList',
+                getSavedSigDevItems: 'getSavedSigDevItems',
+                getSigDevSource: 'getSigDevSource',
+                saveSigDevItems: 'saveSigDevItems'
             },
             exportOptions: {
                 phatomjsURL: 'http://localhost:8888',

@@ -4,7 +4,7 @@
 (function () {
     'use strict';
     angular.module('app.core')
-        .directive('msStockChartFeature', ['$timeout','$rootScope','$filter','commonBusiness', function ($timeout,$rootScope,$filter,commonBusiness) {
+        .directive('msStockChartFeature', ['$timeout','$rootScope','$filter','$mdDialog','stockService','commonBusiness','stockChartBusiness', function ($timeout,$rootScope,$filter,$mdDialog,stockService,commonBusiness,stockChartBusiness) {
 
             return {
                 restrict: 'EA',
@@ -24,6 +24,7 @@
 
                     var hoveredChart = '';
                     var hoveredChartIndex = 0;
+                    scope.sourceOptions = stockChartBusiness.sigDevSources;
                     function initializeChart (elem) {
                         $timeout(function(){
                             Highcharts.each(Highcharts.charts, function(p, i) {
@@ -568,8 +569,74 @@
                                                                 }
                                                             }
                                                         });
+                                                    },
+                                                    click: function (evt) {
+                                                        var series = this.series.chart.series;
+                                                        var xIndex = this.x;
+                                                        Highcharts.each(series, function(p, n) {
+                                                            if(scope.$parent.vm.chartId === 'chart-0') { //if(n==0) {
+                                                                $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
+
+                                                                    if (legCntr == xIndex) {
+                                                                        var top = evt.layerY;
+                                                                        var left = evt.layerX - 380;
+                                                                        var width = 300;
+                                                                        var html = ''+
+                                                                        '<div layout="row" layout-align="space-around center"> ' +
+                                                                        '   <h6><span>Sources</span></h6> ' +
+                                                                        '   <md-select ng-model="selectedSources" multiple aria-label="Significant Sources"> ' +
+                                                                        '       <md-option ng-repeat="source in sourceOptions" ng-value="source">{{source.label}}</md-option> ' +
+                                                                        '   </md-select> ' +
+                                                                        '</div> ' +
+                                                                        '<div layout="row" layout-align="space-around center"> ' +
+                                                                        '   <h6><span>Range</span></h6> ' +
+                                                                        '   <md-select ng-model="selectedRange" aria-label="Significant Range">' +
+                                                                        '       <md-option ng-repeat="range in rangeOptions" value="{{range}}">{{range}}</md-option> ' +
+                                                                        '   </md-select> ' +
+                                                                        '</div>' +
+                                                                        '';
+                                                                        $mdDialog.show({
+                                                                            scope: scope,
+                                                                            template: '<md-dialog style="background: white; top: ' + top + 'px; left: ' + left + 'px; min-width:' + width + 'px">' + 
+                                                                            '   <md-toolbar style="text-align: center;">' + 
+                                                                            '       <h2><span> Get More Information </span>' + 
+                                                                            '       <span> {{selectedDate | date:"MM/dd/yyyy"}} </span> </h2>' + 
+                                                                            '   </md-toolbar>' + 
+                                                                            '   <md-dialog-content>' + html + '</md-dialog-content>' + 
+                                                                            '   <md-dialog-actions>' +  
+                                                                            '       <md-button ng-click="showInfo()" style="text-transform: capitalize; background-color: #1e2129; color: #ffffff;"> Show Information </md-button>' + 
+                                                                            '       <md-button ng-click="closeDialog()" style="text-transform: capitalize; background-color: #1e2129; color: #ffffff"> Close </md-button>' + 
+                                                                            '   </md-dialog-actions>' +  
+                                                                            '</md-dialog>',
+                                                                            preserveScope:true,
+                                                                            animate: 'full-screen-dialog',
+                                                                            clickOutsideToClose:true,
+                                                                            controller: function DialogController($scope, $mdDialog) {
+
+                                                                                $scope.selectedSources = $scope.$parent.vm.selectedSources || [scope.sourceOptions[0]];
+                                                                                $scope.selectedRange = $scope.$parent.vm.selectedRange || '+/- 3 months';
+                                                                                $scope.rangeOptions = '+/- 1 week, +/- 1 month, +/- 3 months, +/- 6 months, +/- 1 year'.split(', ');
+                                                                                $scope.selectedDate = new Date(v.dataDate);
 
 
+                                                                                $scope.closeDialog = function () {
+                                                                                    $mdDialog.hide();
+                                                                                };
+
+                                                                                $scope.showInfo = function () {
+                                                                                    $scope.$parent.vm.selectedSources = $scope.selectedSources;
+                                                                                    $scope.$parent.vm.selectedRange = $scope.selectedRange;
+                                                                                    $scope.$parent.vm.selectedDate = v.dataDate;
+
+                                                                                    $mdDialog.hide();
+                                                                                };
+                                                                            }
+                                                                        });
+
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
                                                     }
                                                 }
                                             }

@@ -11,5 +11,9 @@
 
         </div>
     </ms-content>
+    <div ng-repeat="table in vm.tableInfo">
+        <ms-stock-table source="source" range="vm.selectedRange" date="vm.selectedDate" table="table" disabled="false"></ms-stock-table>
+        <md-divider layout-padding layout-margin></md-divider>
+    </div>
 
 </ms-content>

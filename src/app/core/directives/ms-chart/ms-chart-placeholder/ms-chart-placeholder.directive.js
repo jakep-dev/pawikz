@@ -144,6 +144,31 @@
 
         };
 
+        function getSelectedRows() {
+            var tableInfo = [];
+            angular.forEach($scope.chart.tableInfo, function(table)
+            {
+                var selected = _.filter(table.rows, function(eachRow)
+                {
+                    if(eachRow.IsChecked === true)
+                    {
+                        return eachRow;
+                    }
+                });
+
+                if(selected.length > 0)
+                {
+                    tableInfo.push({
+                        isDefaultChart : false,
+                        source: table.source,
+                        rows: angular.copy(selected)
+                    });
+                }
+            });
+
+            return tableInfo;
+        }
+
         //Add new chart.
         function addChart() {
             var self = this;
@@ -162,6 +187,7 @@
                                 itemId: $scope.chart.tearsheet.itemId
                             },
                             filterState: angular.copy($scope.chart.filterState),
+                            tableInfo: getSelectedRows(),
                             msChartPlaceHolderId: msChartPlaceHolderId,
                             title: $scope.chartTitle
                         }
@@ -259,7 +285,7 @@
                     var html = '';
                     switch (scope.chart.tearsheet.type) {
                         case 'stock':
-                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState"></ms-stock-chart>';
+                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" table-info="chart.tableInfo"></ms-stock-chart>';
                             break;
 
                         case 'image':
