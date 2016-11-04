@@ -9,6 +9,7 @@
                 'app.workup.business',
                 'app.overview.business',
                 'app.template.business',
+                'app.template.business.format',
                 'app.steps.business',
                 'app.menu.business',
                 'app.dashboard.business',

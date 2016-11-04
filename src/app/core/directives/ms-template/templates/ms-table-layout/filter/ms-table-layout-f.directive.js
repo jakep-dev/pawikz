@@ -10,7 +10,8 @@
     function msTablelayoutFDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder,
-                                     DTColumnDefBuilder, toast)
+                                     DTColumnDefBuilder, toast,
+                                     templateBusinessFormat)
     {
         return {
             restrict: 'E',
@@ -87,7 +88,8 @@
                     var tearSheetItem = eachCol.TearSheetItem;
                     if(tearSheetItem)
                     {
-
+                        var classValue = 'align-left';
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutGenericTextItem(eachCol, classValue);
                         switch (tearSheetItem.id)
                         {
                             case 'GenericSelectItem':
@@ -96,14 +98,14 @@
                                     'class="no-padding-margin"></md-checkbox>';
                                 break;
                             case 'DateItem':
-                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
+                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)" class="'+ classValue +'">';
 								html += '<span style="display:none">{{formatDate(row.'+ tearSheetItem.ItemId + ', "YYYY-MM-DD")}}</span>'; //for easy sorting
 								var calRow = '{{formatSubMnemonic(row.'+ tearSheetItem.ItemId + ', "'+ tearSheetItem.ItemId + '")}}';
                                 html += '<span>' + calRow + '</span>';
 
                                 break;
                             default:
-                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)">';
+                                html += '<td ng-click="showChildInfo(row.ROW_SEQ,$event)" class="'+ classValue +'">';
                                 var calRow = '{{formatSubMnemonic(row.'+ tearSheetItem.ItemId + ', "'+ tearSheetItem.ItemId + '")}}';
                                 html += '<span>' + calRow + '</span>';
 
@@ -131,7 +133,7 @@
                     'class="no-padding-margin"></md-checkbox></th>';
                 angular.forEach(header, function (col) {
                     html += '<th>';
-                    html += '<strong>' + col  +'</strong>';
+                    html += '<span class="'+ col.alignment +'"><strong>' + col .label +'</strong></span>';
                     html += '</th>';
                 });
                 html += '</tr>';
@@ -373,15 +375,29 @@
 
 							switch (tearSheetItem.id) {
 								case 'LabelItem':
-									header.push(tearSheetItem.Label);
+									// header.push(tearSheetItem.Label);
+                                    var classValue = 'align-left-for-label';
+                                    header.push({
+                                        alignment : templateBusinessFormat.getAlignmentForLabelItem(tearSheetItem , classValue) ,
+                                        label : tearSheetItem.Label
+                                    });
 								break;
 							}
 						}
 					});
                 }else if(scope.mnemonicid === 'SIG_DEV'){
 					header = [];
-					header.push('Event Date');
-					header.push('Event Summary');
+					// header.push('Event Date');
+					// header.push('Event Summary');
+                    header.push({
+                        alignment : 'align-left-for-label',
+                        label : 'Event Date'
+                    });
+
+                    header.push({
+                        alignment : 'align-left-for-label',
+                        label : 'Event Summary'
+                    });
 				}
 
                 if(scope.tearsheet.columns.length >=2 )

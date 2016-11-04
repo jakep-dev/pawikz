@@ -15,7 +15,7 @@
     }
 
     /** @ngInject */
-    function msGenericTableCDirective($compile, $filter, templateBusiness, $document)
+    function msGenericTableCDirective($compile, $filter, templateBusiness, templateBusinessFormat, $document)
     {
         return {
             restrict: 'E',
@@ -100,38 +100,33 @@
                                         html += '<ms-link value="'+value+'" href="//'+link+'" isdisabled="false"></ms-link>';
                                         break;
                                     case 'GenericTextItem':
+                                        var classValue;
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
+                                        //raw value from database
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-                                        var prefix = templateBusiness.getMnemonicPrefix(tearSheetItem);
-                                        var postfix = templateBusiness.getMnemonicPostfix(tearSheetItem);
-                                        var precision = templateBusiness.getMnemonicPrecision(tearSheetItem);
-                                        var iskmb = ((tearSheetItem.onBlur && (tearSheetItem.onBlur.indexOf('transformKMB(this)') > -1 )) ||
-                                            (tearSheetItem.onkeyup && (tearSheetItem.onkeyup.indexOf('transformKMB(this)') > -1 )) ||
-                                            (tearSheetItem.onChange && (tearSheetItem.onChange.indexOf('transformKMB(this)') > -1 ))) || false;
+                                        var formats = templateBusinessFormat.getFormatObject(tearSheetItem);
 
+                                        if (scope.isnoneditable) {
+                                            //default label alignment
+                                            classValue = "align-left-non-editable-table";
+                                            classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(col, classValue);
+                                            value = templateBusinessFormat.formatData(value, formats);
+                                            html += '<ms-label class="' + classValue + '" classtype="' + classValue + '" style="font-weight: normal" value="' + value + '"></ms-label>';
+                                        } else {
+                                            //default text box alignment
+                                            classValue = 'align-left';
+                                            value = templateBusinessFormat.removeFixes(value, formats);
+                                            classValue = templateBusinessFormat.getAlignmentForGenericTableItem(col, classValue);
 
-                                        if(iskmb && value && value.length > 0)
-                                        {
-                                            value = $filter("currency")(value, '', 0);
+                                            html += '<ms-text ' +
+                                                'itemid="' + itemId + '" ' +
+                                                'mnemonicid="' + mnemonicId + '"  ' +
+                                                'isdisabled="' + scope.isnoneditable + '" ' +
+                                                'classtype="' + classValue + '" ' +
+                                                'value="' + value + '"' +
+                                                'formats="' + _.escape(angular.toJson(formats)) + '"></ms-text>';
                                         }
-                                        if(value && value.length > 0)
-                                        {
-                                            if(precision)
-                                            {
-                                                value = templateBusiness.removeParenthesis(value);
-                                                value = templateBusiness.numberWithCommas(parseFloat(templateBusiness.removeCommaValue(value)).toFixed(precision));
-                                                value = templateBusiness.parenthesisForNegative(value);
-                                            }
-                                            value = prefix + value + postfix;
-                                        }
-                                        html += '<ms-text value="'+ value +'" ' +
-                                            'itemid="'+ itemId +'" ' +
-                                            'mnemonicid="'+ mnemonicId +'"  ' +
-                                            'precision="'+ precision +'"  ' +
-                                            'prefix="'+ prefix +'" postfix="' + postfix +'" ' +
-                                            'isdisabled="'+ scope.isnoneditable +'" ' +
-                                            'iskmb="' + iskmb + '"></ms-text>';
                                         break;
                                     case 'SingleDropDownItem':
                                         var itemId = tearSheetItem.ItemId;
