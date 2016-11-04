@@ -28,7 +28,14 @@
             app.post('/api/saveChartSettings', saveChartSettings),
             app.post('/api/saveChartAllSettings', saveChartAllSettings),
             app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest),
-            app.post('/api/downloadTemplatePDF', downloadTemplatePDF)
+            app.post('/api/downloadTemplatePDF', downloadTemplatePDF),
+            app.post('/api/getSavedChartTable', getSavedChartTable),
+            app.post('/api/getSignificantDevelopmentList', getSignificantDevelopmentList),
+            app.post('/api/getSignificantDevelopmentDetail', getSignificantDevelopmentDetail),
+            app.post('/api/getMascadLargeLosseDetail', getMascadLargeLosseDetail),
+            app.post('/api/getMascadLargeLosseList', getMascadLargeLosseList),
+            app.post('/api/getSigDevSource', getSigDevSource),
+            app.post('/api/saveSigDevItems', saveSigDevItems)
         ]);
 
         function getChartData(req, res, next) {
@@ -1226,6 +1233,193 @@
                     res.end();
                 }
             });
+        }
+        
+        function saveSigDevItems(req, res, next) {
+            var service = getServiceDetails('charts');
+            var methodName = '';
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.saveSigDevItems;
+            }
+
+            var projectId = req.body.project_id;
+            var stepId = req.body.step_id;
+            var mnemonic = req.body.mnemonic;
+            var itemId = req.body.item_id;
+            var token = req.headers['x-session-token'];
+            var items = req.body.items;
+            var args = {
+                data: {
+                    project_id: parseInt(projectId),
+                    step_id: parseInt(stepId),
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    token: token,
+                    items: items
+                },
+                headers: { "Content-Type": "application/json" }
+            };
+
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
+        }
+
+        function getSavedChartTable(req, res, next) {
+            var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSavedSigDevItems;
+            }
+
+            var args =
+            {
+                parameters: {
+                    project_id: req.body.project_id,
+                    step_id: req.body.step_id,
+                    mnemonic: req.body.mnemonic,
+                    item_id: req.body.item_id,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+        }
+
+        function getSignificantDevelopmentList(req, res, next) {
+            var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSignificantDevelopmentList;
+            }
+
+            var args =
+            {
+                parameters: {
+                    company_id: req.body.companyId,
+                    start_date: req.body.startDate,
+                    end_date: req.body.endDate,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getMascadLargeLosseList(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getMascadLargeLosseList;
+            }
+
+            var args =
+            {
+                parameters: {
+                    company_id: req.body.companyId,
+                    start_date: req.body.startDate,
+                    end_date: req.body.endDate,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getSignificantDevelopmentDetail(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSignificantDevelopmentDetail;
+            }
+
+            var args =
+            {
+                parameters: {
+                    sigdev_id: req.body.sigdevId,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getMascadLargeLosseDetail(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getMascadLargeLosseDetail;
+            }
+
+            var args =
+            {
+                parameters: {
+                    mascad_id: req.body.mascadId,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+            
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getSigDevSource(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSigDevSource;
+            }
+
+            var args =
+            {
+                parameters: {
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
         }
 
         function getServiceDetails(serviceName) {

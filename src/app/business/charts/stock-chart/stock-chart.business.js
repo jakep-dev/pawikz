@@ -9,7 +9,7 @@
         .service('stockChartBusiness', stockChartBusiness);
 
     /* @ngInject */
-    function stockChartBusiness(commonBusiness) {
+    function stockChartBusiness(commonBusiness, stockService) {
 
         var splits = false;
         var earnings = false;
@@ -20,6 +20,24 @@
         var selectedPeers = [];
         var startDate;
         var endDate;
+        var business = {
+            sigDevSources: [],
+            getSourceByValue: getSourceByValue
+        }
+
+        return business;
+
+        function getSourceByValue(value)
+        {
+            var source = _.find(business.sigDevSources, function(source)
+            {
+                if(source.value === value){
+                    return source;
+                }
+            });
+
+            return source;
+        }
 
         Object.defineProperty(this, 'mainStock', {
             enumerable: true,

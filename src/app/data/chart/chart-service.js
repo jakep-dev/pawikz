@@ -8,7 +8,7 @@
            .factory('stockService', stockService);
 
     /* @ngInject */
-    function stockService($http, logger) {
+    function stockService($http, $q, logger) {
         /*
          * Added Variables to implement reset functionality 5/11/2016
          * */
@@ -27,7 +27,16 @@
             AddManualSaveData: addmanualSaveData,
             GetManualSaveData: getmanualSaveData,    //End of reset functionality options
             DeleteSpecificChart: deleteSpecificChart,
-            createTemplatePDFRequest:createTemplatePDFRequest
+            createTemplatePDFRequest:createTemplatePDFRequest,
+            getSavedChartDefer: getSavedChartDefer,
+            getSavedChartDataDefer: getSavedChartDataDefer,
+            getSavedChartTableDefer: getSavedChartTableDefer,
+            getSignificantDevelopmentList: getSignificantDevelopmentList,
+            getSignificantDevelopmentDetail: getSignificantDevelopmentDetail,
+            getMascadLargeLosseList: getMascadLargeLosseList,
+            getMascadLargeLosseDetail: getMascadLargeLosseDetail,
+            getSigDevSource: getSigDevSource,
+            saveSigDevItems: saveSigDevItems
         };
 
         function createTemplatePDFRequest(project_id, user_id, stepId, file_name, company_name, user_name, chart_name, chart_data, ssnid) {
@@ -228,6 +237,166 @@
             }).catch(function(error) {
                 logger.error(JSON.stringify(error));
             });
+        }
+
+        function saveSigDevItems(projectId, stepId, mnemonic, itemId, sigDevItems) {
+            return $http({
+                method: "POST",
+                url: "/api/saveSigDevItems",
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    items: sigDevItems
+                }
+            }).then(function(data, status, headers, config) {
+                return data.data;
+            }).catch(function(error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
+
+        function getSavedChartDefer(projectId, stepId, mnemonic, itemId, ssnid)
+        {
+             var all = $q.all([getSavedChartDataDefer(projectId, stepId, mnemonic, itemId, ssnid).promise,
+                                getSavedChartTableDefer(projectId, stepId, mnemonic, itemId, ssnid).promise,
+                                getSigDevSource().promise]);
+
+            return all;
+        }
+
+        function getSavedChartDataDefer(projectId, stepId, mnemonic, itemId, ssnid)
+        {
+            var deffered = $q.defer();
+            
+            $http({
+                method: "POST",
+                url: "/api/getSavedChartData",
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    ssnid: ssnid
+                }
+            }).then(function(data, status, headers, config) {
+                angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
+                    $cookies.putObject('tempChartData', data.data);
+                }]);
+                deffered.resolve(data.data);
+            }).catch(function(error) {
+                deffered.reject();
+                logger.error(JSON.stringify(error));
+            });
+
+            return deffered;
+        }
+
+        function getSavedChartTableDefer(projectId, stepId, mnemonic, itemId, ssnid)
+        {
+            var deffered = $q.defer();
+            
+            $http({
+                method: "POST",
+                url: "/api/getSavedChartTable",
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    ssnid: ssnid
+                }
+            }).then(function(data, status, headers, config) {
+                deffered.resolve(data.data);
+            }).catch(function(error) {
+                deffered.reject();
+                logger.error(JSON.stringify(error));
+            });
+
+            return deffered;
+        }
+
+        function getSignificantDevelopmentList(companyId, startDate, endDate) {
+            return $http({
+                method: "POST",
+                url : "/api/getSignificantDevelopmentList",
+                data: {
+                    companyId: companyId,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+            .catch(function (error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
+
+        function getSignificantDevelopmentDetail(sigdevId) {
+            return $http({
+                method: "POST",
+                url : "/api/getSignificantDevelopmentDetail",
+                data: {
+                    sigdevId: sigdevId
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+            .catch(function (error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
+
+        function getMascadLargeLosseList(companyId, startDate, endDate) {
+            return $http({
+                method: "POST",
+                url : "/api/getMascadLargeLosseList",
+                data: {
+                    companyId: companyId,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+            .catch(function (error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
+
+        function getMascadLargeLosseDetail(mascadId) {
+            return $http({
+                method: "POST",
+                url : "/api/getMascadLargeLosseDetail",
+                data: {
+                    mascadId: mascadId
+                }
+            }).then(function (data, status, headers, config) {
+                return data.data;
+            })
+            .catch(function (error) {
+                logger.error(JSON.stringify(error));
+            });
+        }
+
+        function getSigDevSource() {
+
+            var deffered = $q.defer();
+                
+            $http({
+                method: "POST",
+                url : "/api/getSigDevSource",
+                data: {}
+            }).then(function (data, status, headers, config) {
+                deffered.resolve(data.data);
+            }).catch(function(error) {
+                deffered.reject();
+                logger.error(JSON.stringify(error));
+            });
+
+            return deffered;
         }
     }
 })();
