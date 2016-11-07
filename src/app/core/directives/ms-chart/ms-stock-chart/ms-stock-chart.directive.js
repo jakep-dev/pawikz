@@ -210,6 +210,7 @@
                     if (seriesByTickers.hasOwnProperty(key)) {
                         seriesSet.push({
                             data: seriesByTickers[key],
+                            connectNulls: true,
                             name: key
                         });
                         dataSet.push(data);
