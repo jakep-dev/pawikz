@@ -81,7 +81,8 @@ exports.restcall = {
                 getMascadLargeLosseList: 'getMascadLargeLosseList',
                 getSavedSigDevItems: 'getSavedSigDevItems',
                 getSigDevSource: 'getSigDevSource',
-                saveSigDevItems: 'saveSigDevItems'
+                saveSigDevItems: 'saveSigDevItems',
+                getAllSavedSigDevItems: 'getAllSavedSigDevItems'
             },
             exportOptions: {
                 phatomjsURL: 'http://localhost:8888',

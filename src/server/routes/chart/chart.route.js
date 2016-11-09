@@ -993,22 +993,24 @@
                             function (chartSetting, index) {
                                 //var fs = require("fs");
 
-                                subContext.filename = chartSetting.output.chartName + '.part0.svg';
+                                subContext.filename = chartSetting.output.chartName + '.part0.png';
                                 subContext.chartObj = {
                                     infile: JSON.stringify(chartSetting.output.stockChartSetting),
                                     callback: '',
                                     constr: '',
-                                    outfile: subContext.pdfRequest.chartPath + subContext.filename
+                                    outfile: subContext.pdfRequest.chartPath + subContext.filename,
+                                    page: 'STOCK_CHART'
                                 };
                                 //fs.writeFile(pdfRequest.chartPath + chartSetting.output.chartName + '.part0.txt', JSON.stringify(chartObj));
                                 subContext.chartObjArr.push(subContext.chartObj);
 
-                                subContext.filename = chartSetting.output.chartName + '.part1.svg';
+                                subContext.filename = chartSetting.output.chartName + '.part1.png';
                                 subContext.chartObj = {
                                     infile: JSON.stringify(chartSetting.output.volumeChartSetting),
                                     callback: '',
                                     constr: '',
-                                    outfile: subContext.pdfRequest.chartPath + subContext.filename
+                                    outfile: subContext.pdfRequest.chartPath + subContext.filename,
+                                    page: 'STOCK_CHART'
                                 };
                                 subContext.chartObjArr.push(subContext.chartObj);
                             }
@@ -1147,7 +1149,161 @@
                 );
             }
 
-            async.waterfall([getAllChartSettings, setupGetChartDataPoints, getPDFRequestId, setupGetChartImages, setSVGFileStatus],
+            function getAllSavedTableList(input, callback){
+                var subContext = new Object();
+                subContext.pdfRequest = input[0];
+                subContext.errorMessages = input[1];
+
+                if ((subContext.pdfRequest == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [null, subContext.errorMessages]);
+                } else {
+
+                    subContext.service = getServiceDetails('charts');
+                    subContext.methodName = '';
+                    if (!u.isUndefined(subContext.service) && !u.isNull(subContext.service)) {
+                        subContext.methodName = subContext.service.methods.getAllSavedSigDevItems;
+                    }
+
+                    subContext.args = 'project_id=' + context.project_id + '&ssnid=' + context.ssnid;
+                    
+                    subContext.url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName + '?' + subContext.args;
+                    console.log(subContext.methodName + ' API call---->', subContext.url);
+                    client.get(subContext.url,
+                        function (data, response) {
+                            try {
+                                subContext.pdfRequest.savedTable = getSavedTable(data);
+                            } catch (exception) {
+                                subContext.errorMessages.push(exception.message);
+                            }
+                            callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                        }
+                    ).on('error', function (err) {
+                            console.log(err);
+                            subContext.message = 'Error connecting to getAllSavedTableList. url:' + subContext.url;
+                            subContext.errorMessages.push(subContext.message);
+                            callback(null, [null, subContext.errorMessages]);
+                        }
+                    );
+                }
+            }
+
+            function getSavedTable(data) {
+                if(data.items)
+                {
+                    return data.items;
+                }
+
+                return [];
+            }
+
+            function setupTableHtml(input, callback) {
+                var subContext = new Object();
+                subContext.pdfRequest = input[0];
+                subContext.errorMessages = input[1];
+
+                if ((subContext.pdfRequest == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                } else {
+                    subContext.savedTableArr = [];
+                    try {
+                        u.each(subContext.pdfRequest.savedTable,
+                            function (savedTable, index) {
+                                //var fs = require("fs");
+                                subContext.tableStepId = savedTable.info.stepId;
+                                
+                                u.each(savedTable.savedSigDevItemList,
+                                    function (sigDevList, index) {
+                                        u.each(sigDevList,
+                                            function (sigDevItems, index) {
+                                                u.each(sigDevItems,
+                                                    function (sigDevItem, index) {
+                                                        subContext.filename = getTableFilename(subContext.tableStepId, sigDevItem, subContext.pdfRequest.chartSettings) + '.part2.html';            
+
+                                                        subContext.savedTable = {
+                                                            infile: JSON.stringify(sigDevItem),
+                                                            callback: '',
+                                                            constr: '',
+                                                            outfile: subContext.pdfRequest.chartPath + subContext.filename,
+                                                            page: 'STOCK_TABLE'
+                                                        };
+
+                                                        subContext.savedTableArr.push(subContext.savedTable);
+                                                    }
+                                                );
+                                            }
+                                        );
+
+                                    }
+                                );
+                            }
+                        );
+                    } catch (exception) {
+                        subContext.errorMessages.push(exception.message);
+                        subContext.savedTableArr.length = 0;
+                        callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                    }
+
+                    async.map(subContext.savedTableArr, getTableHTML, function (err, results) {
+
+                        u.each(results, function (item) {
+                            if (item) {
+                                subContext.errorMessages.push(item);
+                            }
+                        });
+                        callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                    });
+                }
+            }
+
+            function getTableFilename(stepId, savedTable, chartSettings) {
+                var subContext = new Object();
+
+                subContext.mnemonic = '';
+                subContext.itemId = '';
+                subContext.chartId = '';
+
+                subContext.perStep = u.filter(chartSettings, function(chart){
+                    if(chart.step_id === stepId) {
+                        return chart;
+                    }
+                });
+
+                subContext.perStep = u.sortBy(subContext.perStep, 'chartId');
+
+                if(savedTable && 
+                    savedTable.seqNo && 
+                    subContext.perStep && 
+                    subContext.perStep[savedTable.seqNo]){
+
+                    subContext.mnemonic = subContext.perStep[savedTable.seqNo].mnemonic || '';
+                    subContext.itemId = subContext.perStep[savedTable.seqNo].item_id || '';
+                    subContext.chartId = subContext.perStep[savedTable.seqNo].chart_id || '';
+
+                    return stepId + '.' + subContext.mnemonic + '.' + subContext.itemId + '.' + subContext.chartId;
+                }
+
+                return null;
+            }
+
+            function getTableHTML(tableObj, callback) {
+                var subContext = new Object();
+                subContext.args = {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    data: tableObj
+                };
+
+                client.post(context.service.exportOptions.phatomjsURL, subContext.args, function (data, response) {
+                    console.log("Finished getTableHTML call: " + data);
+                    callback(null, null);
+                }).on('error', function (err) {
+                    console.log(err);
+                    callback(null, 'Error connecting to chart to svg service.' + tableObj);
+                });
+            }
+
+            async.waterfall([getAllChartSettings, setupGetChartDataPoints, getPDFRequestId, getAllSavedTableList, setupGetChartImages, setupTableHtml, setSVGFileStatus],
                 function (err, input) {
 
                     context.result = input[0];
