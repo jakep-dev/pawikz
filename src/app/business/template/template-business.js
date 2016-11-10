@@ -442,9 +442,16 @@
             newScope.iscollapsible = true;
             newScope.tearcontent.push(component.section);
             newScope.isnoneditable = false;
+            newScope.isprocesscomplete = true;
+            newScope.actions = [];
+            newScope.subtype = component.section.subtype;
+            var isLastComponent = false;
+            newScope.itemid = component.section.ItemId;
 
-            comp.html = '<ms-sub-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
-                'isnoneditable="isnoneditable"></ms-sub-component>';
+
+            comp.html = '<div><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
+                'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component> <div style="min-height: 5px"></div> </div>';
             comp.scope = newScope;
 
             return comp;
@@ -462,13 +469,26 @@
 
             _.each(contents, function(content)
             {
-               if(content.id === 'LabelItem')
-               {
-                   component.header = content;
-               }
-                else {
-                   component.section = content;
-               }
+                switch (content.id) {
+
+                    case 'LinkItem':
+                        component.section = content;
+                        components.push(component);
+                        component = {
+                            header: null,
+                            section: null
+                        };
+                        break;
+
+                    case 'LabelItem':
+                        component.header = content;
+                        break;
+
+                    default:
+                        component.section = content;
+                        break;
+                }
+
 
                 if(component.header &&
                     component.section)
@@ -479,6 +499,7 @@
                         section: null
                     };
                 }
+
             });
 
             return components;
@@ -512,6 +533,10 @@
 
                 case 'Proposed':
                     return buildProposedProgram(scope, scope.tearheader, content);
+                    break;
+
+                case 'LinkItem':
+                    return buildLinkItem(scope, content);
                     break;
             }
         }
@@ -985,6 +1010,21 @@
             newScope.tearsheet = content;
             comp.html += '<ms-proposed tearsheet="tearsheet" copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed>';
             comp.scope = newScope;
+
+            return comp;
+        }
+
+        //Build the link item components
+        function buildLinkItem(scope, content)
+        {
+            var comp = {
+                html: '',
+                scope: scope
+            };
+
+            comp.html = '<div layout-padding>';
+            comp.html += '<ms-link value="' + content.Label + '" href="' + content.url + '" gotostep="'+ content.GoBack +'"></ms-link>';
+            comp.html += '</div>';
 
             return comp;
         }

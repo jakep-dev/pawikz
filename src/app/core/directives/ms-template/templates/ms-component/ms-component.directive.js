@@ -165,7 +165,7 @@
             {
                 return function($scope)
                 {
-                    $scope.title = $scope.tearheader.label;
+                    $scope.title = $scope.tearheader.label || $scope.tearheader.Label;
                     $scope.preLabel = $scope.tearheader.prelabel || '';
                     $scope.actions = null;
                     $scope.actions = [];
@@ -214,7 +214,13 @@
                                 {
                                     _.each(subComponents, function(component)
                                     {
-                                       comp = templateBusiness.buildSubComponent($scope, component);
+                                        if(component.section.id === 'LinkItem') {
+                                            comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
+                                        }
+                                        else {
+                                            comp = templateBusiness.buildSubComponent($scope, component);
+                                        }
+
                                         if(comp && comp.html !== '')
                                         {
                                             el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));

@@ -124,42 +124,44 @@
                 isReadyToProcess = false;
             }
 
+            console.log('Sherin- Test');
+
 
             if(isReadyToProcess)
             {
                 component = getComponents(contentComponents, comp);
-            }
-
-            if(component)
-            {
-                _.each(component.sections, function(section)
+                if(component)
                 {
-                    if(section.id)
+                    _.each(component.sections, function(section)
                     {
-                        processedComp.push({
-                            compId: section.id
-                        });
-                    }
-                });
+                        if(section.id)
+                        {
+                            processedComp.push({
+                                compId: section.id
+                            });
+                        }
+                    });
 
-                contents.push(component);
+                    contents.push(component);
+                }
+                else if (comp.id === 'WU_RATIOS_CHART') {
+                    comp.TearSheetItem.id = 'WU_RATIOS_CHART';
+                    comp.TearSheetItem.type = comp.type;
+                    comp.isProcessed = true;
+                    contents.push(comp.TearSheetItem);
+                }
+                else if(comp.TearSheetItem &&
+                    comp.TearSheetItem.id === 'LinkItem')
+                {
+                    comp.isProcessed = true;
+                    contents.push(comp.TearSheetItem);
+                }
+                else if(comp.TearSheetItem &&
+                    comp.TearSheetItem.subtype)
+                {
+                    contents.push(comp.TearSheetItem);
+                }
             }
-            else if (comp.id === 'WU_RATIOS_CHART') {
-                comp.TearSheetItem.id = 'WU_RATIOS_CHART';
-                comp.TearSheetItem.type = comp.type;
-                contents.push(comp.TearSheetItem);
-            }
-            else if(comp.TearSheetItem &&
-                comp.TearSheetItem.id === 'LinkItem')
-            {
-                contents.push(comp.TearSheetItem);
-            }
-            else if(comp.TearSheetItem &&
-                comp.TearSheetItem.subtype)
-            {
-                contents.push(comp.TearSheetItem);
-            }
-
         });
 
         return contents;
@@ -295,11 +297,6 @@
                     sectionItem.length > 0)
                 {
                     sectionItem[0].isProcessed = true;
-                    //component.sections.push(sectionItem[0]);
-                    console.log('Start');
-                    console.log(sectionItem[0]);
-                    console.log('End');
-
                     if(sectionItem[0].TearSheetItem.length)
                     {
                         _.each(sectionItem[0].TearSheetItem, function(sheet)
@@ -379,10 +376,14 @@
                         }
                     });
 
+                    console.log('Start - ');
+                    console.log(sectionId);
+
                     if(sectionItem &&
                         sectionItem.length &&
                         sectionItem.length > 0)
                     {
+                        console.log('Inside sectionitem');
                         //Check for array and compId,
                         var sections = sectionItem[0];
                         if(sections && sections.TearSheetItem &&
@@ -415,7 +416,18 @@
                                 }
                             });
                         }
+                        else {
+                            console.log('Inside No Length');
+                            sectionItem[0].isProcessed = true;
+                            component.sections.push(sectionItem[0]);
+                        }
                     }
+                    else{
+                        console.log('Not Inside sectionitem');
+                        sectionItem.isProcessed = true;
+                    }
+
+                    console.log('End');
                 }
             });
         }

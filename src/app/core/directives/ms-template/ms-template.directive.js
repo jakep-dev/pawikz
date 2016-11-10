@@ -196,15 +196,22 @@
                             var newScope = scope.$new(true);
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
+                            newScope.subtype = null;
                             _.each(renderContent.sections, function (section) {
                                 newScope.isnoneditable = (section.type === 'nonEditableUnmark');
-                                newScope.subtype = section.subtype || renderContent.header.subtype || '';
+
+                                if(!newScope.subtype) {
+                                    newScope.subtype = section.subtype || renderContent.header.subtype || '';
+                                }
 
                                 if (section.TearSheetItem &&
                                     section.TearSheetItem.length) {
                                     newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
                                 }
                                 else if (section.TearSheetItem) {
+                                    if(newScope.subtype === 'SubComponent' && section.subtype) {
+                                        section.TearSheetItem.subtype = section.subtype;
+                                    }
                                     newScope.tearcontent.push(section.TearSheetItem);
                                 }
                                 else if (section.Label) {
