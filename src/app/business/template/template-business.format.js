@@ -185,7 +185,7 @@
     	                formatObj.numericValue = numericValue;
     	                break;
     	            case 'DATE':
-    	                formatted = templateBusiness.formatDate(formatted, 'DD-MMM-YY');
+    	                formatted = templateBusiness.formatDate(formatted, 'MM/DD/YYYY');
     	                break;
     	            default:
     	                break;
