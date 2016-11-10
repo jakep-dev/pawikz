@@ -574,7 +574,7 @@
                                                         var series = this.series.chart.series;
                                                         var xIndex = this.x;
                                                         Highcharts.each(series, function(p, n) {
-                                                            if(scope.$parent.vm.chartId === 'chart-0') { //if(n==0) {
+                                                            if(scope.$parent.vm.chartId === 'chart-0' && n==0) {
                                                                 $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
 
                                                                     if (legCntr == xIndex) {
