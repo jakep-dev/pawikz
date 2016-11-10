@@ -239,8 +239,8 @@
                                         filterState.mainStock = '';
                                         filterState.interval = chartSettings.selectedPeriod;
                                         filterState.chart_date = chartSettings.chart_date;
-                                        filterState.date_start = chartSettings.date_start;
-                                        filterState.date_end = chartSettings.date_end;
+                                        filterState.startDate = templateBusiness.parseDate(chartSettings.date_start, 'YYYY-MM-DD');
+                                        filterState.endDate = templateBusiness.parseDate(chartSettings.date_end, 'YYYY-MM-DD');
                                         filterState.splits = chartSettings.isSplits;
                                         filterState.earnings = chartSettings.isEarnings;
                                         filterState.dividends = chartSettings.isDividents;
@@ -391,8 +391,8 @@
                                             filterState.mainStock = '';
                                             filterState.interval = chartSettings.selectedPeriod;
                                             filterState.chart_date = chartSettings.chart_date;
-                                            filterState.date_start = chartSettings.date_start;
-                                            filterState.date_end = chartSettings.date_end;
+                                            filterState.startDate = templateBusiness.parseDate(chartSettings.date_start, 'YYYY-MM-DD');
+                                            filterState.endDate = templateBusiness.parseDate(chartSettings.date_end, 'YYYY-MM-DD');
                                             filterState.splits = chartSettings.isSplits;
                                             filterState.earnings = chartSettings.isEarnings;
                                             filterState.dividends = chartSettings.isDividents;
@@ -501,8 +501,8 @@
                                                     chart_title: jsChart.title ? jsChart.title : null,
                                                     peers: stockString,
                                                     period: jsChart.interval ? jsChart.interval : null,
-                                                    date_start: jsChart.date_start,
-                                                    date_end: jsChart.date_end,
+                                                    date_start: templateBusiness.formatDate(jsChart.startDate, 'YYYY-MM-DD'),
+                                                    date_end: templateBusiness.formatDate(jsChart.endDate, 'YYYY-MM-DD'),
                                                     dividends: jsChart.dividends ? "Y" : "N",
                                                     earnings: jsChart.earnings ? "Y" : "N",
                                                     splits: jsChart.splits ? "Y" : "N",
