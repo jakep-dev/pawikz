@@ -444,10 +444,9 @@
             newScope.isnoneditable = false;
             newScope.isprocesscomplete = true;
             newScope.actions = [];
-            newScope.subtype = component.section.subtype;
+            newScope.subtype = component.section.subtype || '';
             var isLastComponent = false;
-            newScope.itemid = component.section.ItemId;
-
+            newScope.itemid = component.section.ItemId || component.header.itemid;
 
             comp.html = '<div><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
                 'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +

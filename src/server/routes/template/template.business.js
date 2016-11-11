@@ -124,9 +124,6 @@
                 isReadyToProcess = false;
             }
 
-            console.log('Sherin- Test');
-
-
             if(isReadyToProcess)
             {
                 component = getComponents(contentComponents, comp);
@@ -274,6 +271,7 @@
                 id: tearSheetItem.id,
                 itemid: "SECTION_" + getRandomInt(10, 100000),
                 prelabel: tearSheetItem.PreLabel || '',
+                subtype: tearSheetItem.subtype || '',
                 mnemonicid: null,
                 variation: 'parent-child'
             };
@@ -297,7 +295,13 @@
                     sectionItem.length > 0)
                 {
                     sectionItem[0].isProcessed = true;
-                    if(sectionItem[0].TearSheetItem.length)
+
+                    console.log('sectionId' + sectionId + ' Subtype - ' + sectionItem[0].subtype);
+
+                    if(sectionItem[0].subtype) {
+                        component.sections.push(sectionItem[0]);
+                    }
+                    else if(sectionItem[0].TearSheetItem.length)
                     {
                         _.each(sectionItem[0].TearSheetItem, function(sheet)
                         {
@@ -376,14 +380,10 @@
                         }
                     });
 
-                    console.log('Start - ');
-                    console.log(sectionId);
-
                     if(sectionItem &&
                         sectionItem.length &&
                         sectionItem.length > 0)
                     {
-                        console.log('Inside sectionitem');
                         //Check for array and compId,
                         var sections = sectionItem[0];
                         if(sections && sections.TearSheetItem &&
@@ -417,17 +417,10 @@
                             });
                         }
                         else {
-                            console.log('Inside No Length');
                             sectionItem[0].isProcessed = true;
                             component.sections.push(sectionItem[0]);
                         }
                     }
-                    else{
-                        console.log('Not Inside sectionitem');
-                        sectionItem.isProcessed = true;
-                    }
-
-                    console.log('End');
                 }
             });
         }

@@ -127,9 +127,9 @@
                             {
                                 loadSize = compSize
                             }
-                            bindComponent(scope, el, components, loadSize);
+                            var actualCompCount  = bindComponent(scope, el, components, loadSize);
 
-                            var newLoadedIndex = loadedIndex + loadSize;
+                            var newLoadedIndex = loadedIndex + actualCompCount;
 
                             if(_.size(templateBusiness.components.content) === newLoadedIndex)
                             {
@@ -249,7 +249,6 @@
 
                                 el.find('#template-content').append($compile(html)(newScope));
                             }
-                            currentComponent++;
                         }
                         else {
                             switch (renderContent.id) {
@@ -275,6 +274,8 @@
                                     break;
                             }
                         }
+
+                        currentComponent++;
 
                         if(currentComponent >= totalComponent)
                         {
