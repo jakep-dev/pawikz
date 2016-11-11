@@ -15,7 +15,7 @@
     }
 
     /** @ngInject */
-    function msGenericTableDirective($compile, $filter, templateBusiness, $document)
+    function msGenericTableDirective($compile, $filter, templateBusiness, templateBusinessFormat, $document)
     {
         return {
             restrict: 'E',
@@ -61,7 +61,7 @@
 
                             var tearSheetItem = col.TearSheetItem,
                                 colspan = col.colspan || 0;
-                            html += '<td colspan="'+ colspan +'">';
+                            html += '<td style="padding-left: 3px" colspan="'+ colspan +'">';
 
 
                             if (tearSheetItem &&
@@ -69,7 +69,9 @@
 
                                 switch (tearSheetItem.id) {
                                     case 'LabelItem':
-                                        html += '<ms-label style="font-weight: bold" value="' + tearSheetItem.Label + '"></ms-label>';
+                                        var classValue = 'align-left-for-label';
+                                        classValue = templateBusinessFormat.getAlignmentForLabelItem(tearSheetItem, classValue);
+                                        html += '<ms-label style="font-weight: bold" value="' + tearSheetItem.Label + '" class="'+ classValue +'"></ms-label>';
                                         break;
                                     case 'LinkItemNoWord':
                                         html += '<ms-link value="' + tearSheetItem.Label + '" href="'+ tearSheetItem.url +'"></ms-link>';
@@ -77,6 +79,8 @@
                                     case 'LinkItem':
                                         var value = '';
                                         var link = '';
+                                        var gotoStepValue = '';
+
                                         if(angular.isDefined(tearSheetItem.Label))
                                         {
                                             value = tearSheetItem.Label;
@@ -88,50 +92,44 @@
                                             var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                             link = value;
                                         }
-                                        html += '<ms-link value="'+value+'" href="//'+link+'" isdisabled="false"></ms-link>';
+
+                                        if(tearSheetItem && typeof(tearSheetItem.GoBack) != 'object'){
+                                            if(angular.isDefined(tearSheetItem.GoBack)){
+                                                gotoStepValue = tearSheetItem.GoBack;    
+                                            }
+                                        }
+
+                                        html += '<ms-link value="'+value+'" href="//'+link+'" isdisabled="false" gotostep="'+ gotoStepValue +'"></ms-link>';
                                         break;
                                     case 'GenericTextItem':
-
-
+                                        var classValue;
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
-                                        var prefix = templateBusiness.getMnemonicPrefix(tearSheetItem); 
-										var postfix = templateBusiness.getMnemonicPostfix(tearSheetItem); 
-                                        var precision = templateBusiness.getMnemonicPrecision(tearSheetItem);
-                                        var iskmb = ((tearSheetItem.onBlur && (tearSheetItem.onBlur.indexOf('transformKMB(this)') > -1 )) ||
-                                                    (tearSheetItem.onkeyup && (tearSheetItem.onkeyup.indexOf('transformKMB(this)') > -1 )) ||
-                                                    (tearSheetItem.onChange && (tearSheetItem.onChange.indexOf('transformKMB(this)') > -1 ))) || false;
+                                        //raw value from database
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        var formats = templateBusinessFormat.getFormatObject(tearSheetItem);
 
-
-                                        if(iskmb && value && value.length > 0)
+                                        if (scope.isnoneditable)
                                         {
-                                           value = $filter("currency")(value, '', 0);
-                                        }
-										if(value && value.length > 0)
-										{
-											if(precision)
-											{
-												value = templateBusiness.removeParenthesis(value);
-												value = templateBusiness.numberWithCommas(parseFloat(templateBusiness.removeCommaValue(value)).toFixed(precision));
-												value = templateBusiness.parenthesisForNegative(value);
-											}
-											value = prefix + value + postfix;
-										}
+                                            //default label alignment
+                                            classValue = "align-left-non-editable-table";
+                                            classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(col, classValue);
+                                            value = templateBusinessFormat.formatData(value, formats);
+                                            html += '<ms-label class="'+ classValue +'" classtype="'+ classValue +'" style="font-weight: normal" value="' + value + '"></ms-label>';
+                                        } else {
+                                            //default text box alignment
+                                            classValue = 'align-left';
+                                            value = templateBusinessFormat.removeFixes(value, formats);
+                                            classValue = templateBusinessFormat.getAlignmentForGenericTableItem(col, classValue);
 
-                                        if(scope.isnoneditable)
-                                        {
-                                            html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';
-                                            return;
-                                        }
-
-                                        html += '<ms-text value="'+ value +'" ' +
+                                            html += '<ms-text ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
-                                            'precision="'+ precision +'"  ' +
-                                            'prefix="'+ prefix +'" postfix="' + postfix +'" ' +
                                             'isdisabled="'+ scope.isnoneditable +'" ' +
-                                            'iskmb="' + iskmb + '"></ms-text>';
+                                            'classtype="' + classValue + '" ' +
+                                            'value="' + value + '"' +
+                                            'formats="' + _.escape(angular.toJson(formats)) + '"></ms-text>';
+                                        }
                                         break;
                                     case 'SingleDropDownItem':
                                         var itemId = tearSheetItem.ItemId;
@@ -174,7 +172,7 @@
                                     case 'DateItem':
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
                                         if(scope.isnoneditable)
                                         {
                                             html += '<ms-label style="font-weight: normal" value="' + value + '"></ms-label>';

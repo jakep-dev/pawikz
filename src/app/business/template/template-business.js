@@ -9,13 +9,15 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService, Papa, dialog, store, $window, $sce, $mdToast) {
+    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, 
+                              overviewBusiness, financialChartBusiness, templateService, financialChartService,
+                              Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
+           saveInteractiveFinancialChartMnemonics: [],
            notifications: [],
            autoSavePromise: [],
            isExpandAll: false,
@@ -25,12 +27,14 @@
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
+           saveInteractiveFinancialCharts: saveInteractiveFinancialCharts,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
 		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
 		   getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
+		   getReadyForAutoSaveInteractiveFinancialChart: getReadyForAutoSaveInteractiveFinancialChart,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
            getEvalMnemonicValue: getEvalMnemonicValue,
            getNewItemId: getNewItemId,
@@ -69,7 +73,9 @@
 		   getMnemonicPrefix: getMnemonicPrefix,
 		   getMnemonicPostfix: getMnemonicPostfix,
 		   getMnemonicParameters: getMnemonicParameters,
-           getMnemonicPrecision: getMnemonicPrecision,
+		   getMnemonicPrecision: getMnemonicPrecision,
+		   getMnemonicDataType: getMnemonicDataType,
+		   getMnemonicDataSubtype: getMnemonicDataSubtype,
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
            removeCommaValue: removeCommaValue,
@@ -147,7 +153,6 @@
             {
                 if(response)
                 {
-
                     var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
@@ -302,8 +307,14 @@
                             }
                         });
 
-
-                        if (data && data.errorMessages &&
+                        if (!data) {
+                            if (notification) {
+                                notification.status = 'error';
+                                notification.progress = 100;
+                                notification.disabled = false;
+                            }
+                            toast.simpleToast("Issue with PDF Download. Please try again.");
+                        } else if (data && data.errorMessages &&
                             data.errorMessages.length > 0) {
                             if(notification)
                             {
@@ -431,9 +442,15 @@
             newScope.iscollapsible = true;
             newScope.tearcontent.push(component.section);
             newScope.isnoneditable = false;
+            newScope.isprocesscomplete = true;
+            newScope.actions = [];
+            newScope.subtype = component.section.subtype || '';
+            var isLastComponent = false;
+            newScope.itemid = component.section.ItemId || component.header.itemid;
 
-            comp.html = '<ms-sub-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
-                'isnoneditable="isnoneditable"></ms-sub-component>';
+            comp.html = '<div><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
+                'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component> <div style="min-height: 5px"></div> </div>';
             comp.scope = newScope;
 
             return comp;
@@ -451,13 +468,26 @@
 
             _.each(contents, function(content)
             {
-               if(content.id === 'LabelItem')
-               {
-                   component.header = content;
-               }
-                else {
-                   component.section = content;
-               }
+                switch (content.id) {
+
+                    case 'LinkItem':
+                        component.section = content;
+                        components.push(component);
+                        component = {
+                            header: null,
+                            section: null
+                        };
+                        break;
+
+                    case 'LabelItem':
+                        component.header = content;
+                        break;
+
+                    default:
+                        component.section = content;
+                        break;
+                }
+
 
                 if(component.header &&
                     component.section)
@@ -468,6 +498,7 @@
                         section: null
                     };
                 }
+
             });
 
             return components;
@@ -501,6 +532,10 @@
 
                 case 'Proposed':
                     return buildProposedProgram(scope, scope.tearheader, content);
+                    break;
+
+                case 'LinkItem':
+                    return buildLinkItem(scope, content);
                     break;
             }
         }
@@ -978,6 +1013,21 @@
             return comp;
         }
 
+        //Build the link item components
+        function buildLinkItem(scope, content)
+        {
+            var comp = {
+                html: '',
+                scope: scope
+            };
+
+            comp.html = '<div layout-padding>';
+            comp.html += '<ms-link value="' + content.Label + '" href="' + content.url + '" gotostep="'+ content.GoBack +'"></ms-link>';
+            comp.html += '</div>';
+
+            return comp;
+        }
+
 
         function unParseJsonToCsv(json)
         {
@@ -1019,7 +1069,7 @@
 
         function isKMBValue(inputVal) 
         {
-            var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
+            var regEx = /^\-?[0-9]+\.?[0-9]*[kKmMbB]$/;
             if (regEx.test(inputVal))
             {
                 return true;
@@ -1504,7 +1554,7 @@
 				}
 				else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
 				{				
-					value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+					value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
 				}
 			}
 			
@@ -1534,7 +1584,41 @@
 			
 			return isNumber;
 		}
-		
+
+		function getMnemonicDataType(tearSheet) {
+		    var dataType = null;
+
+		    if (business.mnemonics) {
+		        var mnemonic = _.find(business.mnemonics, function (m) {
+		            if (m.mnemonic === tearSheet.Mnemonic) {
+		                return m;
+		            }
+		        });
+
+		        if (mnemonic) {
+		            return mnemonic.dataType;
+		        }
+		    }
+		    return dataType;
+		}
+
+		function getMnemonicDataSubtype(tearSheet) {
+		    var dataSubtype = null;
+
+		    if (business.mnemonics) {
+		        var mnemonic = _.find(business.mnemonics, function (m) {
+		            if (m.mnemonic === tearSheet.Mnemonic) {
+		                return m;
+		            }
+		        });
+
+		        if (mnemonic) {
+		            return mnemonic.dataSubtype;
+		        }
+		    }
+		    return dataSubtype;
+		}
+
 		//check if subtype is CURRENCY to add prefix (currency symbol)
 		function isCurrencySubtype(mnemonicValue)
 		{
@@ -1775,6 +1859,7 @@
                     save();
 					saveTable();
 					saveHybridTable();
+					saveInteractiveFinancialCharts();
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -1896,5 +1981,47 @@
             $interval.cancel(business.autoSavePromise);
             business.autoSavePromise = [];
         }
+
+        //Get ready for interactive financial chart auto save.
+        function getReadyForAutoSaveInteractiveFinancialChart(companyId, projectId, stepId, mnemonicId, itemId, newChartArr) {
+            var mnemonicItem = _.find(business.saveInteractiveFinancialChartMnemonics, function (currentMnemonic) {
+                if((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId) ) {
+                    return currentMnemonic;
+                }
+            });
+
+            if (angular.isUndefined(mnemonicItem)) {
+                business.saveInteractiveFinancialChartMnemonics.push({
+                    companyId: companyId,
+                    projectId: projectId,
+                    stepId: stepId,
+                    mnemonicId: mnemonicId,
+                    itemId: itemId,
+                    value: newChartArr
+                })
+            }
+            else {
+                mnemonicItem.value = newChartArr;
+            }
+            initiateAutoSave();
+        }
+
+        //Save interactive financial chart details
+        function saveInteractiveFinancialCharts() {
+            if (business.saveInteractiveFinancialChartMnemonics.length > 0) {
+
+                _.each(business.saveInteractiveFinancialChartMnemonics, function (mnemonicItem) {
+                    var input = financialChartBusiness.getSaveChartInputObject(mnemonicItem);
+
+                    financialChartService.saveInteractiveFinancialChart(input)
+                        .then(function (response) {
+                            //TODO: send message to update chart id
+                            toast.simpleToast('Saved successfully');
+                        });
+                });
+                business.saveInteractiveFinancialChartMnemonics = [];
+            }
+        }
+
     }
 })();

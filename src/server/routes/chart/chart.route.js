@@ -1,6 +1,5 @@
 
-(function(chartRoutes)
-{
+(function(chartRoutes) {
     var async = require('async');
     var u = require('underscore');
     var fs = require('fs');
@@ -12,8 +11,7 @@
         return content;
     };
 
-    chartRoutes.init = function (app, config)
-    {
+    chartRoutes.init = function (app, config) {
         var client = config.restcall.client;
         var config = config;
 
@@ -30,127 +28,129 @@
             app.post('/api/saveChartSettings', saveChartSettings),
             app.post('/api/saveChartAllSettings', saveChartAllSettings),
             app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest),
-            app.post('/api/downloadTemplatePDF', downloadTemplatePDF)
+            app.post('/api/downloadTemplatePDF', downloadTemplatePDF),
+            app.post('/api/getSavedChartTable', getSavedChartTable),
+            app.post('/api/getSignificantDevelopmentList', getSignificantDevelopmentList),
+            app.post('/api/getSignificantDevelopmentDetail', getSignificantDevelopmentDetail),
+            app.post('/api/getMascadLargeLosseDetail', getMascadLargeLosseDetail),
+            app.post('/api/getMascadLargeLosseList', getMascadLargeLosseList),
+            app.post('/api/getSigDevSource', getSigDevSource),
+            app.post('/api/saveSigDevItems', saveSigDevItems)
         ]);
 
         function getChartData(req, res, next) {
             var service = getServiceDetails('charts');
-
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getStockData;
             }
 
-            var  tickers= req.body.tickers,
-                period= req.body.period,
-                ssnid= req.body.ssnid,
-                companyId = req.body.companyId,
-                splits= req.body.splits,
-                dividends= req.body.dividends,
-                earnings= req.body.earnings,
-                end_date = req.body.end_date,
-                start_date = req.body.start_date;
+            var tickers = req.body.tickers;
+            var period = req.body.period;
+            var ssnid = req.body.ssnid;
+            var companyId = req.body.companyId;
+            var splits = req.body.splits;
+            var dividends = req.body.dividends;
+            var earnings = req.body.earnings;
+            var end_date = req.body.end_date;
+            var start_date = req.body.start_date;
 
             var getChartDataVar = config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id='+companyId+'&peers='+encodeURIComponent(tickers)
-                + '&period=' +period
-                + '&ssnid=' +ssnid
-                +'&splits='+splits
-                +'&dividends='+dividends
-                +'&earnings='+earnings
-                +'&date_start='+start_date
+                + '?company_id=' + companyId
+                + '&peers=' + encodeURIComponent(tickers)
+                + '&period=' + period
+                + '&ssnid=' + ssnid
+                + '&splits=' + splits
+                + '&dividends=' + dividends
+                + '&earnings=' + earnings
+                + '&date_start=' + start_date
                 + '&date_end=' + end_date;
-            //console.log(getChartDataVar);
 
             client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id='+companyId+'&peers='+encodeURIComponent(tickers)
-                + '&period=' +period
-                + '&ssnid=' +ssnid
-                +'&splits='+splits
-                +'&dividends='+dividends
-                +'&earnings='+earnings
-                +'&date_start='+start_date
-                +'&date_end='+end_date
-                , function (data, response) {
+                    + '?company_id=' + companyId
+                    + '&peers=' + encodeURIComponent(tickers)
+                    + '&period=' + period
+                    + '&ssnid=' + ssnid
+                    + '&splits=' + splits
+                    + '&dividends=' + dividends
+                    + '&earnings=' + earnings
+                    + '&date_start=' + start_date
+                    + '&date_end=' + end_date,
+                function (data, response) {
                     res.send(data);
-                });
+                }
+            );
         }
 
         //this creates new charts or remove not iterated ones
         function saveChartAllSettings(req, res, next) {
             var service = getServiceDetails('charts');
-
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.saveChartSettings;
             }
 
-            var projectId = req.body.project_id,
-                companyId = req.body.company_id,
-                stepId = req.body.step_id,
-                mnemonicId = req.body.mnemonic,
-                itemId = req.body.item_id,
-                ssnid= req.headers['x-session-token'],
-                chartSettings = req.body.chartSettings;
+            var projectId = req.body.project_id;
+            var companyId = req.body.company_id;
+            var stepId = req.body.step_id;
+            var ssnid = req.headers['x-session-token'];
+            var chartSettings = req.body.chartSettings;
+            console.log('***************** ONEAL CHART SETTINGS START ONEAL *****************');
+            console.log(chartSettings);
+            console.log('***************** ONEAL CHART SETTINGS  END  ONEAL *****************');
             //chartsettings should be a array and and defined
             var args = {
                 data: {
                     project_id: parseInt(projectId),
                     company_id: parseInt(companyId),
                     step_id: parseInt(stepId),
-                    mnemonic : mnemonicId,
-                    item_id : itemId,
-                    ssnid:ssnid,
-                    delete_ignored:true,
-                    chartSettings : chartSettings
+                    ssnid: ssnid,
+                    chartSettings: chartSettings
                 },
-                headers: {"Content-Type": "application/json"}
-
+                headers: { "Content-Type": "application/json" }
             };
 
-            var saveChartSettingsAPI = config.restcall.url + '/' + service.name + '/' + methodName,args;
-            client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
-                res.send(data);
-            });
+            var saveChartSettingsAPI = config.restcall.url + '/' + service.name + '/' + methodName, args;
+
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
         //this ceates a single chart
         function saveChartSettings(req, res, next) {
             var service = getServiceDetails('charts');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.saveChartSettings;
             }
 
-            var  tickers= req.body.tickers,
-                period= req.body.period,
-                ssnid= req.headers['x-session-token'],
-                splits= req.body.splits,
-                dividends= req.body.dividends,
-                earnings= req.body.earnings,
-                end_date = req.body.end_date,
-                start_date = req.body.start_date,
-                chart_title = req.body.chartTitle,
-                chart_id = req.body.chart_id;
-
-
+            var tickers = req.body.tickers;
+            var period = req.body.period;
+            var ssnid = req.headers['x-session-token'];
+            var splits = req.body.splits;
+            var dividends = req.body.dividends;
+            var earnings = req.body.earnings;
+            var end_date = req.body.end_date;
+            var start_date = req.body.start_date;
+            var chart_title = req.body.chartTitle;
+            var chart_id = req.body.chart_id;
             var chartSetting = {
                 chart_title: chart_title,
                 peers: tickers,
-                period:period,
-                date_start:start_date,
-                date_end:end_date,
+                period: period,
+                date_start: start_date,
+                date_end: end_date,
                 dividends: dividends,
                 earnings: earnings,
-                splits:splits,
-                chart_id:chart_id
+                splits: splits,
+                chart_id: chart_id
             };
 
-            if(chart_id){
-                chartSetting.chartId  = parseInt(chart_id);
+            if (chart_id) {
+                chartSetting.chartId = parseInt(chart_id);
             }
 
             var args = {
@@ -158,147 +158,140 @@
                     project_id: parseInt(projectId),
                     company_id: parseInt(companyId),
                     step_id: parseInt(stepId),
-                    ssnid:ssnid,
-                    data : [chartSetting],
+                    ssnid: ssnid,
+                    data: [chartSetting],
                     delete_ignored: false
                 },
                 headers: { "Content-Type": "application/json" }
             };
-            client.post(config.restcall.url + '/' + service.name + '/' + methodName,args,  function (data, response) {
-                res.send(data);
-            });
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function(data, response) {
+                    res.send(data);
+                }
+            );
         }
 
         function getTickers(req, res, next) {
             var service = getServiceDetails('templateSearch');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.findTickers;
             }
 
-            var  keyword= req.body.keyword,
-                ssnid= req.headers['x-session-token'];
+            var  keyword = req.body.keyword, ssnid= req.headers['x-session-token'];
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?keyword='+keyword +'&ssnid=' +ssnid, function (data, response) {
-                res.send(data);
-            });
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?keyword=' + keyword + '&ssnid=' + ssnid,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
-        function getIndices (req, res , next ) {
+        function getIndices(req, res, next) {
             var service = getServiceDetails('charts');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getIndices;
             }
 
-            var  ssnid= req.headers['x-session-token'];
+            var ssnid = req.headers['x-session-token'];
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?ssnid=' +ssnid, function (data, response) {
-                res.send(data);
-            });
-
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?ssnid=' + ssnid,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
-        function getCompetitors (req, res , next ) {
+        function getCompetitors(req, res, next) {
             var service = getServiceDetails('templateSearch');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getCompetitors;
             }
 
-            var  ssnid= req.headers['x-session-token'];
+            var  ssnid = req.headers['x-session-token'];
             var companyId = req.body.companyId;
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?company_id=' + companyId + '&ssnid=' +ssnid, function (data, response) {
-                res.send(data);
-            });
-
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?company_id=' + companyId + '&ssnid=' + ssnid,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
         }
 
-        function getSavedChartData  (req, res , next ) {
+        function getSavedChartData(req, res, next) {
             var service = getServiceDetails('charts');
             var methodName = '';
-
             if (!u.isUndefined(service) && !u.isNull(service)) {
                 methodName = service.methods.getSavedChartData;
             }
 
             var ssnid = req.body.ssnid;
-            var  stepId= req.body.step_id;
-            var  projectId= req.body.project_id;
-            var  mnemonic= req.body.mnemonic;
-            var  itemId= req.body.item_id;
+            var stepId = req.body.step_id;
+            var projectId = req.body.project_id;
+            var mnemonic = req.body.mnemonic;
+            var itemId = req.body.item_id;
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName
-                +'?project_id='+projectId+'&step_id='+stepId+ '&mnemonic='+mnemonic+ '&item_id='+ itemId + '&ssnid=' +ssnid,
-                function (data, response)
-                {
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?project_id=' + projectId + '&step_id=' + stepId + '&mnemonic=' + mnemonic + '&item_id=' + itemId + '&ssnid=' + ssnid,
+                function (data, response) {
                     res.status(response.statusCode).send(getChartSettings(data));
-                });
-
+                }
+            );
         }
 
-        function getChartSettings(data){
+        function getChartSettings(data) {
             var result = {
                 newCharts: [],
                 legacyCharts: []
             };
 
-            if(data && data.chartSettings)
-            {
-                u.each(data.chartSettings, function(savedChart)
-                {
-                    if (savedChart.chartType  === 'IMGURL'){
+            if (data && data.chartSettings) {
+                u.each(data.chartSettings, function(savedChart) {
+                    if (savedChart.chartType === 'IMGURL') {
                         result.legacyCharts.push(savedChart);
-                    }
-                    else  if (savedChart.chartType  === 'JSCHART'){
+                    } else if (savedChart.chartType  === 'JSCHART') {
                         var chart = {};
                         chart.chartType = 'JSCHART';
+                        chart.isMainChart = savedChart.isDefault === 'Y';
                         chart.settings = {
-                            mainStock : "",
-                            companyName : savedChart.chart_title,
-                            selectedPeriod : savedChart.period.toUpperCase(),
-                            selectedIndicesList : [],
-                            selectedPeerList : [],
-                            selectedCompetitorsList : [],
-                            searchedStocks : [],
+                            mainStock: "",
+                            mnemonic: savedChart.mnemonic,
+                            item_id: savedChart.item_id,
+                            company_id: savedChart.company_id,
+                            companyName: savedChart.chart_title,
+                            selectedPeriod: savedChart.period.toUpperCase(),
+                            chart_id: savedChart.chart_id,
+                            chart_date: savedChart.chart_date,
+                            date_start: savedChart.date_start,
+                            date_end: savedChart.date_end,
+                            selectedIndicesList: [],
+                            selectedPeerList: [],
+                            selectedCompetitorsList: [],
+                            searchedStocks: [],
                             to: {},
                             from: {},
-                            isSplits : (savedChart.dividends === 'Y')? true : false,
-                            isEarnings : (savedChart.earnings === 'Y')? true : false,
-                            isDividents : (savedChart.splits === 'Y')? true : false,
-                            eventOptionVisibility : false,
-                            dateOptionVisibility : false,
-                            comparisonOptionVisibility : false,
-                            company_id : savedChart.company_id,
-                            chart_id : savedChart.chart_id,
-                            chart_date : savedChart.chart_date,
-                            date_start : savedChart.date_start,
-                            date_end : savedChart.date_end,
-
+                            isSplits: (savedChart.dividends === 'Y') ? true : false,
+                            isEarnings: (savedChart.earnings === 'Y') ? true : false,
+                            isDividents: (savedChart.splits === 'Y') ? true : false,
+                            eventOptionVisibility: false,
+                            dateOptionVisibility: false,
+                            comparisonOptionVisibility: false,
+                            isDefault: savedChart.isDefault
                         };
 
-                        if(savedChart.peers){
+                        if (savedChart.peers) {
                             var peers = savedChart.peers.split(',');
-                            for (var i = 0; i < peers.length;  i++) {
+                            for (var i = 0; i < peers.length; i++) {
                                 var peer = peers[i].trim();
-                                if(peer.charAt(0) === '^') {
+                                if (peer.charAt(0) === '^') {
                                     chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
                                     //chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
-
                                 }
-                                if(peer.charAt(0) === '@') {
+                                if (peer.charAt(0) === '@') {
                                     //chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
                                     chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
-
-                                }
-                                else if(peer.charAt(0)!=='^' && peer.charAt(0)!=='@') {
+                                } else if (peer.charAt(0) !== '^' && peer.charAt(0) !== '@') {
                                     chart.settings.selectedPeerList.push(peer);
                                 }
                             }
@@ -324,7 +317,6 @@
                 });
             }
             return result;
-
         }
 
         function writeFile(fileName,fileData,reqID) {
@@ -1001,22 +993,24 @@
                             function (chartSetting, index) {
                                 //var fs = require("fs");
 
-                                subContext.filename = chartSetting.output.chartName + '.part0.svg';
+                                subContext.filename = chartSetting.output.chartName + '.part0.png';
                                 subContext.chartObj = {
                                     infile: JSON.stringify(chartSetting.output.stockChartSetting),
                                     callback: '',
                                     constr: '',
-                                    outfile: subContext.pdfRequest.chartPath + subContext.filename
+                                    outfile: subContext.pdfRequest.chartPath + subContext.filename,
+                                    page: 'STOCK_CHART'
                                 };
                                 //fs.writeFile(pdfRequest.chartPath + chartSetting.output.chartName + '.part0.txt', JSON.stringify(chartObj));
                                 subContext.chartObjArr.push(subContext.chartObj);
 
-                                subContext.filename = chartSetting.output.chartName + '.part1.svg';
+                                subContext.filename = chartSetting.output.chartName + '.part1.png';
                                 subContext.chartObj = {
                                     infile: JSON.stringify(chartSetting.output.volumeChartSetting),
                                     callback: '',
                                     constr: '',
-                                    outfile: subContext.pdfRequest.chartPath + subContext.filename
+                                    outfile: subContext.pdfRequest.chartPath + subContext.filename,
+                                    page: 'STOCK_CHART'
                                 };
                                 subContext.chartObjArr.push(subContext.chartObj);
                             }
@@ -1155,7 +1149,161 @@
                 );
             }
 
-            async.waterfall([getAllChartSettings, setupGetChartDataPoints, getPDFRequestId, setupGetChartImages, setSVGFileStatus],
+            function getAllSavedTableList(input, callback){
+                var subContext = new Object();
+                subContext.pdfRequest = input[0];
+                subContext.errorMessages = input[1];
+
+                if ((subContext.pdfRequest == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [null, subContext.errorMessages]);
+                } else {
+
+                    subContext.service = getServiceDetails('charts');
+                    subContext.methodName = '';
+                    if (!u.isUndefined(subContext.service) && !u.isNull(subContext.service)) {
+                        subContext.methodName = subContext.service.methods.getAllSavedSigDevItems;
+                    }
+
+                    subContext.args = 'project_id=' + context.project_id + '&ssnid=' + context.ssnid;
+                    
+                    subContext.url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName + '?' + subContext.args;
+                    console.log(subContext.methodName + ' API call---->', subContext.url);
+                    client.get(subContext.url,
+                        function (data, response) {
+                            try {
+                                subContext.pdfRequest.savedTable = getSavedTable(data);
+                            } catch (exception) {
+                                subContext.errorMessages.push(exception.message);
+                            }
+                            callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                        }
+                    ).on('error', function (err) {
+                            console.log(err);
+                            subContext.message = 'Error connecting to getAllSavedTableList. url:' + subContext.url;
+                            subContext.errorMessages.push(subContext.message);
+                            callback(null, [null, subContext.errorMessages]);
+                        }
+                    );
+                }
+            }
+
+            function getSavedTable(data) {
+                if(data.items)
+                {
+                    return data.items;
+                }
+
+                return [];
+            }
+
+            function setupTableHtml(input, callback) {
+                var subContext = new Object();
+                subContext.pdfRequest = input[0];
+                subContext.errorMessages = input[1];
+
+                if ((subContext.pdfRequest == null) || (subContext.errorMessages.length > 0)) {
+                    callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                } else {
+                    subContext.savedTableArr = [];
+                    try {
+                        u.each(subContext.pdfRequest.savedTable,
+                            function (savedTable, index) {
+                                //var fs = require("fs");
+                                subContext.tableStepId = savedTable.info.stepId;
+                                
+                                u.each(savedTable.savedSigDevItemList,
+                                    function (sigDevList, index) {
+                                        u.each(sigDevList,
+                                            function (sigDevItems, index) {
+                                                u.each(sigDevItems,
+                                                    function (sigDevItem, index) {
+                                                        subContext.filename = getTableFilename(subContext.tableStepId, sigDevItem, subContext.pdfRequest.chartSettings) + '.part2.html';            
+
+                                                        subContext.savedTable = {
+                                                            infile: JSON.stringify(sigDevItem),
+                                                            callback: '',
+                                                            constr: '',
+                                                            outfile: subContext.pdfRequest.chartPath + subContext.filename,
+                                                            page: 'STOCK_TABLE'
+                                                        };
+
+                                                        subContext.savedTableArr.push(subContext.savedTable);
+                                                    }
+                                                );
+                                            }
+                                        );
+
+                                    }
+                                );
+                            }
+                        );
+                    } catch (exception) {
+                        subContext.errorMessages.push(exception.message);
+                        subContext.savedTableArr.length = 0;
+                        callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                    }
+
+                    async.map(subContext.savedTableArr, getTableHTML, function (err, results) {
+
+                        u.each(results, function (item) {
+                            if (item) {
+                                subContext.errorMessages.push(item);
+                            }
+                        });
+                        callback(null, [subContext.pdfRequest, subContext.errorMessages]);
+                    });
+                }
+            }
+
+            function getTableFilename(stepId, savedTable, chartSettings) {
+                var subContext = new Object();
+
+                subContext.mnemonic = '';
+                subContext.itemId = '';
+                subContext.chartId = '';
+
+                subContext.perStep = u.filter(chartSettings, function(chart){
+                    if(chart.step_id === stepId) {
+                        return chart;
+                    }
+                });
+
+                subContext.perStep = u.sortBy(subContext.perStep, 'chartId');
+
+                if(savedTable && 
+                    savedTable.seqNo && 
+                    subContext.perStep && 
+                    subContext.perStep[savedTable.seqNo]){
+
+                    subContext.mnemonic = subContext.perStep[savedTable.seqNo].mnemonic || '';
+                    subContext.itemId = subContext.perStep[savedTable.seqNo].item_id || '';
+                    subContext.chartId = subContext.perStep[savedTable.seqNo].chart_id || '';
+
+                    return stepId + '.' + subContext.mnemonic + '.' + subContext.itemId + '.' + subContext.chartId;
+                }
+
+                return null;
+            }
+
+            function getTableHTML(tableObj, callback) {
+                var subContext = new Object();
+                subContext.args = {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    data: tableObj
+                };
+
+                client.post(context.service.exportOptions.phatomjsURL, subContext.args, function (data, response) {
+                    console.log("Finished getTableHTML call: " + data);
+                    callback(null, null);
+                }).on('error', function (err) {
+                    console.log(err);
+                    callback(null, 'Error connecting to chart to svg service.' + tableObj);
+                });
+            }
+
+            async.waterfall([getAllChartSettings, setupGetChartDataPoints, getPDFRequestId, getAllSavedTableList, setupGetChartImages, setupTableHtml, setSVGFileStatus],
                 function (err, input) {
 
                     context.result = input[0];
@@ -1241,6 +1389,193 @@
                     res.end();
                 }
             });
+        }
+        
+        function saveSigDevItems(req, res, next) {
+            var service = getServiceDetails('charts');
+            var methodName = '';
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.saveSigDevItems;
+            }
+
+            var projectId = req.body.project_id;
+            var stepId = req.body.step_id;
+            var mnemonic = req.body.mnemonic;
+            var itemId = req.body.item_id;
+            var token = req.headers['x-session-token'];
+            var items = req.body.items;
+            var args = {
+                data: {
+                    project_id: parseInt(projectId),
+                    step_id: parseInt(stepId),
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    token: token,
+                    items: items
+                },
+                headers: { "Content-Type": "application/json" }
+            };
+
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function (data, response) {
+                    res.send(data);
+                }
+            );
+        }
+
+        function getSavedChartTable(req, res, next) {
+            var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSavedSigDevItems;
+            }
+
+            var args =
+            {
+                parameters: {
+                    project_id: req.body.project_id,
+                    step_id: req.body.step_id,
+                    mnemonic: req.body.mnemonic,
+                    item_id: req.body.item_id,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+        }
+
+        function getSignificantDevelopmentList(req, res, next) {
+            var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSignificantDevelopmentList;
+            }
+
+            var args =
+            {
+                parameters: {
+                    company_id: req.body.companyId,
+                    start_date: req.body.startDate,
+                    end_date: req.body.endDate,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getMascadLargeLosseList(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getMascadLargeLosseList;
+            }
+
+            var args =
+            {
+                parameters: {
+                    company_id: req.body.companyId,
+                    start_date: req.body.startDate,
+                    end_date: req.body.endDate,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getSignificantDevelopmentDetail(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSignificantDevelopmentDetail;
+            }
+
+            var args =
+            {
+                parameters: {
+                    sigdev_id: req.body.sigdevId,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getMascadLargeLosseDetail(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getMascadLargeLosseDetail;
+            }
+
+            var args =
+            {
+                parameters: {
+                    mascad_id: req.body.mascadId,
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+            
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
+        }
+
+        function getSigDevSource(req, res, next) {
+           var service = getServiceDetails('charts');
+
+            var methodName = '';
+
+            if (!u.isUndefined(service) && !u.isNull(service)) {
+                methodName = service.methods.getSigDevSource;
+            }
+
+            var args =
+            {
+                parameters: {
+                    ssnid: req.headers['x-session-token']
+                },
+                headers:{'Content-Type':'application/json'}
+            };
+
+            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+            {
+                res.status(response.statusCode).send(data);
+            });
+
         }
 
         function getServiceDetails(serviceName) {

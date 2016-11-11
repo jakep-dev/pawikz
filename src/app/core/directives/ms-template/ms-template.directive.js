@@ -7,7 +7,8 @@
         .controller('msTemplateController', msTemplateController)
         .directive('msTemplate', msTemplateDirective);
 
-    function msTemplateController($rootScope, $scope, $mdMenu, templateBusiness, commonBusiness, workupBusiness)
+    function msTemplateController($rootScope, $scope, $mdMenu, $window,
+                                  templateBusiness, commonBusiness, workupBusiness)
     {
         var vm = this;
 
@@ -76,7 +77,8 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, templateBusiness, commonBusiness, deviceDetector, clientConfig)
+    function msTemplateDirective($compile, $rootScope, templateBusiness, $mdDialog, dialog,
+                                 commonBusiness, $interval, clientConfig)
     {
         return {
             restrict: 'E',
@@ -99,47 +101,69 @@
 
                 scope.loadMore = function()
                 {
-                    //commonBusiness.emitMsg('step-load-initiated');
 
-                    var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
-                        components = [],
-                        loadSize = clientConfig.appSettings.componentInitialLoad,
-                        compSize = 0;
+                    if(!scope.isLoadMoreDisabled) {
 
-                    components.push.apply(components, templateBusiness.components.content);
-                    components = components.splice(loadedIndex, _.size(components));
 
-                    compSize = _.size(components);
+                        $mdDialog.show(
+                            $mdDialog.alert({
+                                clickOutsideToClose: true,
+                                templateUrl: 'app/core/directives/ms-template/dialog/ms-template.dialog.html'
+                            })
+                        );
 
-                    if(compSize < clientConfig.appSettings.componentInitialLoad)
-                    {
-                        loadSize = compSize
+                       var comPromise = $interval(function(){//using $interval seems to work fine
+                            var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
+                                components = [],
+                                loadSize = clientConfig.appSettings.componentInitialLoad,
+                                compSize = 0;
+
+                            components.push.apply(components, templateBusiness.components.content);
+                            components = components.splice(loadedIndex, _.size(components));
+
+                            compSize = _.size(components);
+
+                            if(compSize < clientConfig.appSettings.componentInitialLoad)
+                            {
+                                loadSize = compSize
+                            }
+                            var actualCompCount  = bindComponent(scope, el, components, loadSize);
+
+                            var newLoadedIndex = loadedIndex + actualCompCount;
+
+                            if(_.size(templateBusiness.components.content) === newLoadedIndex)
+                            {
+                                scope.isLoadMoreDisabled = true;
+                            }
+
+                            el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
+                           $interval.cancel(comPromise);
+                        }.bind(this), 10);
+
+
                     }
-                    bindComponent(scope, el, components, loadSize);
 
-                    var newLoadedIndex = loadedIndex + loadSize;
 
-                    if(_.size(templateBusiness.components.content) === newLoadedIndex)
-                    {
-                        scope.isLoadMoreDisabled = true;
-                    }
-
-                    el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
                 };
 
                 bindHeader(scope);
                 var compCount = clientConfig.appSettings.componentInitialLoad,
-                    compSize = _.size(scope.components.content);
+                    compSize = getNumberOfComp(scope.components.content);
 
-                if(compSize < clientConfig.appSettings.componentInitialLoad)
+                if(compSize < compCount)
                 {
                     compCount = compSize;
                     scope.isLoadMoreDisabled = true;
                 }
-                bindComponent(scope, el, scope.components.content, compCount);
-                el.find('#btnLoadMore').attr('loadedIndex', compCount);
-            }
 
+                var actualCompCount = bindComponent(scope, el, scope.components.content, compCount);
+
+                el.find('#btnLoadMore').attr('loadedIndex', actualCompCount);
+
+                commonBusiness.onMsg('reached-page-bottom', scope, function(){
+                    scope.loadMore();
+                });
+            }
         };
 
         ///Bind header details for the component
@@ -159,7 +183,7 @@
         {
             if(contents) {
                 var totalComponent = componentLoadCount;
-                var currentComponent = 1;
+                var currentComponent = 0;
                 var isSkip = false;
 
                 _.each(contents, function (renderContent) {
@@ -172,16 +196,22 @@
                             var newScope = scope.$new(true);
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
-
+                            newScope.subtype = null;
                             _.each(renderContent.sections, function (section) {
                                 newScope.isnoneditable = (section.type === 'nonEditableUnmark');
-                                newScope.subtype = section.subtype || renderContent.header.subtype || '';
+
+                                if(!newScope.subtype) {
+                                    newScope.subtype = section.subtype || renderContent.header.subtype || '';
+                                }
 
                                 if (section.TearSheetItem &&
                                     section.TearSheetItem.length) {
                                     newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
                                 }
                                 else if (section.TearSheetItem) {
+                                    if(newScope.subtype === 'SubComponent' && section.subtype) {
+                                        section.TearSheetItem.subtype = section.subtype;
+                                    }
                                     newScope.tearcontent.push(section.TearSheetItem);
                                 }
                                 else if (section.Label) {
@@ -191,7 +221,6 @@
                                     newScope.tearcontent.push(section);
                                 }
                             });
-
                             if (newScope.tearcontent) {
                                 newScope.iscollapsible = true;
                                 newScope.isprocesscomplete = true;
@@ -199,7 +228,7 @@
                                 var isChartComp = false;
 
                                 //Check for chart component
-                                angular.forEach(newScope.tearcontent, function (each) {
+                               _.each(newScope.tearcontent, function (each) {
                                     if (each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
                                         isChartComp = true;
                                         return;
@@ -222,31 +251,59 @@
                             }
                         }
                         else {
-
-                            if(currentComponent >= totalComponent)
-                            {
-                                commonBusiness.emitMsg('step-load-completed');
-                            }
-
                             switch (renderContent.id) {
+                                case 'WU_RATIOS_CHART':
+                                    var newScope = scope.$new();
+                                    newScope.iscollapsible = true;
+                                    newScope.isprocesscomplete = true;
+                                    newScope.isnoneditable = (renderContent.type === 'nonEditableUnmark');
+                                    newScope.tearheader = renderContent.row.col[0].TearSheetItem;
+                                    newScope.tearcontent = [];
+                                    newScope.tearcontent.push(renderContent.row.col[1].TearSheetItem);
+                                    var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                                        'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
+                                    el.find('#template-content').append($compile(html)(newScope));
+                                    break;
+                                
                                 case 'LinkItem':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
-                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '"></ms-link>';
+                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="'+ renderContent.GoBack +'"></ms-link>';
                                     html += '</div>';
                                     el.find('#template-content').append($compile(html)(newScope));
                                     break;
                             }
                         }
 
-                        if(currentComponent == totalComponent)
+                        currentComponent++;
+
+                        if(currentComponent >= totalComponent)
                         {
                             isSkip = true;
+                            commonBusiness.emitMsg('step-load-completed');
                         }
                     }
-                    currentComponent++;
                 });
+
+                return currentComponent;
             }
+        }
+
+        function getNumberOfComp(contents)
+        {
+            var totalComp = 0;
+
+            _.each(contents, function(content)
+            {
+                if (content.header &&
+                    content.sections &&
+                    content.sections.length > 0)
+                {
+                    totalComp++;
+                }
+            });
+
+            return totalComp;
         }
     }
 })();

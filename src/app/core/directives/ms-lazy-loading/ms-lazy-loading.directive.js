@@ -7,21 +7,16 @@
         .directive('msLazyLoading', msLazyLoadingDirective);
 
     /** @ngInject */
-    function msLazyLoadingDirective()
+    function msLazyLoadingDirective(commonBusiness, $rootScope)
     {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var visibleHeight = element.height();
-                var threshold = 100;
-
-                element.scroll(function() {
-                    var scrollableHeight = element.prop('scrollHeight');
-                    var hiddenContentHeight = scrollableHeight - visibleHeight;
-
-                    if (hiddenContentHeight - element.scrollTop() <= threshold) {
-                        // Scroll is almost at the bottom. Loading more rows
-                        scope.$apply(attrs.msLazyLoading);
+                var raw = element[0];
+                element.bind('scroll', function () {
+                    if((raw.scrollTop + raw.offsetHeight) + 50 >= raw.scrollHeight) {
+                        console.log('Reached Bottom-');
+                        commonBusiness.emitMsg('reached-page-bottom');
                     }
                 });
             }

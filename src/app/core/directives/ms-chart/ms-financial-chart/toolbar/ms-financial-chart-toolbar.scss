@@ -1,0 +1,105 @@
+#toolbar-date {
+    border: 1px dotted grey;
+    border-radius: 5px;
+    width:60%;
+
+    .period-selected {
+        text-decoration: underline;
+        font-weight: 600;
+    }
+
+    .md-button.md-icon-button {
+        height: 35px;
+        line-height: 21px;
+    }
+}
+
+.comparison-text {
+    padding: 0 0 0 10px;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+md-checkbox {
+    &.comparison {
+        display:inline !important;
+    }
+}
+
+.addButton {
+    position: fixed;
+    bottom: 0px;
+    width: 95%;
+    background: #ffffff;
+    z-index: 1;
+    border-top: 1px solid #EEE;
+}
+
+/*.md-dialog-container {
+    z-index:999 !important;
+}*/
+
+.md-checkbox {
+    margin-left: 5px;
+}
+
+.btncomp {
+    max-width:90%;
+    margin-left:15px !important;
+}
+
+.md-menu-content-height {
+    height: 250px;
+}
+
+.advison-events-menu-content {
+    ._md-container {
+        left: 100px;
+        width:0px;
+    }
+
+    md-switch{
+        margin:5px 0px;
+    }
+
+    md-menu-item{
+        height:auto;
+    }
+}
+
+.advison-comparison-menu-content._md-menu-bar-menu.md-dense {
+    button.md-button{
+        height: 40px;
+    }
+
+    md-menu-item{
+        height:auto;
+    }
+}
+
+.advison-date-range-menu-content._md-menu-bar-menu.md-dense {
+    md-menu-item {
+        height: auto;
+    }
+
+    .md-datepicker-button {
+        display:none;
+    }
+    .md-advisen-theme .md-datepicker-input-container {
+        border:none;
+        display:block;
+        padding: 0px;
+    }
+
+    md-menu-item:last-child  .md-advisen-theme .md-datepicker-input-container {
+        margin-top:15px;
+    }
+}
+
+md-menu-content md-menu-item md-datepicker button.md-datepicker-button {
+    float: left;
+}
+
+md-menu-content md-menu-item md-datepicker .md-datepicker-input-container {
+    margin-top: 10px;
+}

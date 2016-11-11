@@ -11,6 +11,7 @@
     var templateRoute = require('./template/template.route');
     var loggingRoute = require('./logging/logging.route');
     var chartRoute = require('./chart/chart.route');
+    var financialChartRoute = require('./chart/financial-chart.route.js');
     var workupRoute = require('./workup/workup.route');
     var socket = require('./socket/socket');
 
@@ -26,6 +27,7 @@
         loggingRoute.init(app, config);
         workupRoute.init(app, config);
         chartRoute.init(app, config, server);
+        financialChartRoute.init(app, config, server);
     };
 
 })(module.exports);
