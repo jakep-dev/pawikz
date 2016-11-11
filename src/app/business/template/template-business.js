@@ -1657,13 +1657,13 @@
 						prefix = '$';
 						break;
 					case 'JPY':
-						prefix = '&yen;';
+						prefix = '¥';
 						break;
 					case 'EUR':
-						prefix = '&euro;';
+						prefix = '€';
 						break;
 					case 'GBP':
-						prefix = '&pound;';
+						prefix = '£';
 						break;
 					case 'CHF':
 						prefix = 'CHF';
