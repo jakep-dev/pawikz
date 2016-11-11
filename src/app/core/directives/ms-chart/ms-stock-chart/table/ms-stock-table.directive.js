@@ -150,6 +150,7 @@
                             .withOption('autoWidth', true)
                             .withOption('info', true)
                             .withOption('responsive', true)
+                            .withPaginationType('full')
                             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
             var sortedColumn = 0;
@@ -168,6 +169,7 @@
             {
                 $scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(0).notSortable());
                 sortedColumn = sortedColumn + 1;
+                buildRows($scope);
             }
 
             $scope.dtOptions.withOption('sorting', [sortedColumn, 'desc']);
@@ -179,6 +181,14 @@
             html += '</table>';
 
             el.find('#ms-stock-table').append($compile(html)($scope));
+        }
+
+        function buildRows($scope)
+        {
+            angular.forEach($scope.table.rows, function(eachRow)
+            {
+               eachRow.IsChecked = false;
+            });
         }
 
         function defineHeaderLayout($scope)
@@ -280,22 +290,7 @@
 
         function calculateHeaderSelection($scope)
         {
-            $scope.IsAllChecked = false;
-            var unSelected = _.filter($scope.table.rows, function(eachRow)
-            {
-                if(eachRow.IsChecked === false)
-                {
-                    return eachRow;
-                }
-            })
-
-            if(unSelected && unSelected.length > 0)
-            {
-                $scope.IsAllChecked = false;
-            }
-            else {
-                $scope.IsAllChecked = true;
-            }
+            $scope.IsAllChecked = _.every($scope.table.rows, function(row) { return row.IsChecked; });
         }
 
         function headerAllSelection($scope)

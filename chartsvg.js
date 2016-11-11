@@ -496,12 +496,223 @@
             }, args);
 
             console.log('Writing to file: ' + filename);
-            var SVG_DOCTYPE = '<?xml version=\"1.0" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">';
+            /*var SVG_DOCTYPE = '<?xml version=\"1.0" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">';
             // Saving SVG to a file
-            fs.write(filename, SVG_DOCTYPE + svg);
+            fs.write(filename, SVG_DOCTYPE + svg);*/
+            page.render(filename);
 
             // Saving as PDF
             //page.render(filename.replace(/\.svg/, '.pdf'));
+            exit(filename);
+        });
+    }
+
+    function renderTable(params, exitCallback) {
+        var page = require('webpage').create();
+        var jsFiles = config.files.highcharts;
+        var jsFile;
+        var loadSuccess;
+
+        // security measures, for not allowing loading iframes
+        page.navigationLocked = true;
+
+        page.onConsoleMessage = function (msg) {
+            console.log(msg);
+        };
+
+        page.onAlert = function (msg) {
+            console.log(msg);
+        };
+
+        page.onError = function (msg, trace) {
+            var msgStack = ['ERROR: ' + msg];
+
+            if (trace && trace.length) {
+                msgStack.push('TRACE:');
+                trace.forEach(function (t) {
+                    msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
+                });
+            }
+
+            console.error(msgStack.join('\n'));
+
+            if (exitCallback !== null) {
+                exitCallback(msg);
+            }
+        };
+
+        page.onLoadFinished = function () {
+            //console.log('Page Load Complete.');
+        };
+
+        function exit(result) {
+            page.close();
+            exitCallback(result);
+        };
+
+        page.open('about:blank', function () {
+
+            for (jsFile in jsFiles) {
+                if (jsFiles.hasOwnProperty(jsFile)) {
+                    loadSuccess = page.injectJs(jsFiles[jsFile]);
+                    if (!loadSuccess) {
+                        console.log('Failed to load javascript file:' + jsFiles[jsFile]);
+                    }
+                }
+            }
+
+            
+            var filename = params.outfile;
+            var tableInfo = JSON.parse(params.infile);
+            var args = {
+                tableInfo: tableInfo,
+                filename: filename
+            }
+            var stockTable = page.evaluate(function (opt){
+
+                var container;
+                
+                var container = document.createElement('div');
+                container.id = 'container';
+                //container.setAttribute('style', 'font-family: Arial;');
+                document.body.appendChild(container);
+
+                function sigDevHTML(data) {
+
+                    function getSigDevTableHeader() {
+                        var html = '';
+
+                        //html += '<thead style="font-size: 12px !important; font-weight: bold !important;">';
+                        html += '<tr style="font-size: 12px !important; font-weight: bold !important;">';
+                        html += '<td><span>Event</span></td>';
+                        html += '<td><span>Event Summary</span></td>';
+                        html += '</tr>';
+                        //html += '</thead>';
+
+                        return html;
+                    }
+
+                    function getSigDevTableBody() {
+                        var html = '';
+
+                        //html += '<tbody>';
+                        
+                        data.forEach( function (row, index){
+                            html += '<tr ' + ((index % 2 === 0) ? '' : 'class="alternateRow"') + '>'; //use advisen csss
+                            
+                            html += '<td>' + (row.dateAnncd || '') + '</td>';
+                            html += '<td>' + (row.devhHeadline || '') + '</td>';
+                            
+                            html += '</tr>';
+                        });
+                        
+                        //html += '</tbody>';
+
+                        return html;
+                    }
+
+
+                    var sigdevDiv = document.createElement('div');
+                    sigdevDiv.id = 'sigdev_div';
+                    container.appendChild(sigdevDiv);
+
+                    var html = '';
+                    html += '<div style="padding: 10px 0px 5px 0px"><span style="font-weight: bold !important"> Significant Developments </span></div>';
+                    html += '<div>';
+                    html += '<table border="0" cellpadding="5" style="padding: 5px; border-collapse: collapse;width: 100%;text-align: left;font-size: 12px !important;">';
+                    html += getSigDevTableHeader();
+                    html += getSigDevTableBody();
+                    html += '</table>';
+                    html += '</div>';
+
+                    ///$('#sigdev_div').appned(html);
+                    sigdevDiv.innerHTML = html;
+                }
+
+                function mascadHTML(data) {
+
+                    function getMascadTableHeader() {
+                        var html = '';
+
+                        //html += '<thead style="font-weight: bold !important">';
+                        html += '<tr style="font-size: 12px !important; font-weight: bold !important;">';
+                        html += '<td><span>Company</span></td>';
+                        html += '<td><span>Filing/Accident Date</span></td>';
+                        html += '<td><span>Start Date</span></td>';
+                        html += '<td><span>End Date</span></td>';
+                        html += '<td><span>Status</span></td>';
+                        html += '<td><span>Disposition Date</span></td>';
+                        html += '<td><span>Total Amount</span></td>';
+                        html += '<td><span>MASCAd ID</span></td>';
+                        html += '<td><span>Type</span></td>';
+                        html += '</tr>';
+                        //html += '</thead>';
+
+                        return html;
+                    }
+
+                    function getMascadTableBody() {
+                        var html = '';
+
+                        //html += '<tbody>';
+                        
+                        data.forEach( function (row, index){
+                            html += '<tr ' + ((index % 2 === 0) ? '' : 'class="alternateRow"') + '>';  //use advisen csss
+                            
+                            html += '<td>' + (row.companyName || '') + '</td>';
+                            html += '<td>' + (row.dateFiling || '') + '</td>';
+                            html += '<td>' + (row.classPeriodStart || '') + '</td>';
+                            html += '<td>' + (row.classperiodEnd || '') + '</td>';
+                            html += '<td>' + (row.status || '') + '</td>';
+                            html += '<td>' + (row.dispositionDate || '') + '</td>';
+                            html += '<td>' + (row.settlementAmount || '') + '</td>';
+                            html += '<td>' + (row.mascadId || '') + '</td>';
+                            html += '<td>' + (row.caseType || '') + '</td>';
+                            
+                            html += '</tr>';
+
+                        });
+                        //html += '</tbody>';
+
+                        return html;
+                    }
+
+                    var mascadDiv = document.createElement('div');
+                    mascadDiv.id = 'mascad_div';
+                    container.appendChild(mascadDiv);
+
+                    var html = '';
+                    html += '<div style="padding: 10px 0px 5px 0px"><span style="font-weight: bold !important"> Significant Cases </span></div>';
+                    html += '<div>';
+                    html += '<table border="0" cellpadding="5" style="padding: 5px; border-collapse: collapse;width: 100%;text-align: left;font-size: 12px !important;">';
+                    html += getMascadTableHeader();
+                    html += getMascadTableBody();
+                    html += '</table>';
+                    html += '</div>';
+
+                    //$('#mascad_div').appned(html);
+                    mascadDiv.innerHTML = html;
+                }
+
+                if(opt.tableInfo.sigdev && opt.tableInfo.sigdev.length > 0) {
+                    sigDevHTML(opt.tableInfo.sigdev);
+                }
+
+                if(opt.tableInfo.mascad && opt.tableInfo.mascad.length > 0) {
+                    mascadHTML(opt.tableInfo.mascad);
+                }
+
+                return container.innerHTML;
+            }, args);
+
+            if(filename) {
+
+                console.log('Writing to file: ' + filename);
+                //var base64 = page.renderBase64('PNG');
+                fs.write(filename, stockTable);
+                //page.render(filename);
+            }
+
             exit(filename);
         });
     }
@@ -552,11 +763,27 @@
                             response.close();
                         } else {
                             params.url = 'http://' + host + ':' + port;
-                            render(params, function (result) {
-                                response.statusCode = 200;
-                                response.write(result);
-                                response.close();
-                            }, onError);
+                            
+                            switch(params.page) {
+                                case 'STOCK_CHART' :
+                                    
+                                    render(params, function (result) {
+                                        response.statusCode = 200;
+                                        response.write(result);
+                                        response.close();
+                                    }, onError);
+                                    break;
+                                case 'STOCK_TABLE' :
+                                    
+                                    renderTable(params, function (result) {
+                                        response.statusCode = 200;
+                                        response.write(result);
+                                        response.close();
+                                    }, onError);
+                                    break;
+                                default :
+                                    break;
+                            }
                         }
                     } catch (e) {
                         onError('Failed rendering chart', e);

@@ -323,13 +323,16 @@
                                                         var series = this.series.chart.series;
                                                         var xIndex = this.x;
                                                         Highcharts.each(series, function(p, n) {
-                                                            if (scope.$parent.vm.chartId === 'chart-0') { //if(n==0) {
+
+                                                            if(scope.$parent.vm.chartId === 'chart-0' && n==0) {
                                                                 $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
                                                                     if (legCntr == xIndex) {
                                                                         var top = evt.layerY;
                                                                         var left = evt.layerX - 380;
                                                                         var width = 300;
                                                                         var html = ''+
+                                                                        '<div layout="row" layout-align="space-around center"> ' +
+                                                                        '   <div style="color: #ff0000; padding-top: 10px;">{{errorMessage}}</div> ' +                                                                        '</div> ' +
                                                                         '<div layout="row" layout-align="space-around center"> ' +
                                                                         '   <h6><span>Sources</span></h6> ' +
                                                                         '   <md-select ng-model="selectedSources" multiple aria-label="Significant Sources"> ' +
@@ -365,15 +368,25 @@
                                                                                 $scope.rangeOptions = '+/- 1 week, +/- 1 month, +/- 3 months, +/- 6 months, +/- 1 year'.split(', ');
                                                                                 $scope.selectedDate = new Date(v.dataDate);
 
+                                                                                if($scope.selectedSources.length !== 0){
+                                                                                    $scope.errorMessage = '';
+                                                                                }
+
                                                                                 $scope.closeDialog = function () {
                                                                                     $mdDialog.hide();
                                                                                 };
 
                                                                                 $scope.showInfo = function () {
-                                                                                    $scope.$parent.vm.selectedSources = $scope.selectedSources;
-                                                                                    $scope.$parent.vm.selectedRange = $scope.selectedRange;
-                                                                                    $scope.$parent.vm.selectedDate = v.dataDate;
-                                                                                    $mdDialog.hide();
+
+                                                                                    if($scope.selectedSources.length !== 0){
+                                                                                        $scope.$parent.vm.selectedSources = $scope.selectedSources;
+                                                                                        $scope.$parent.vm.selectedRange = $scope.selectedRange;
+                                                                                        $scope.$parent.vm.selectedDate = v.dataDate;
+
+                                                                                        $mdDialog.hide();
+                                                                                    } else {
+                                                                                        $scope.errorMessage = 'Please select source';
+                                                                                    }
                                                                                 };
                                                                             }
                                                                         });
