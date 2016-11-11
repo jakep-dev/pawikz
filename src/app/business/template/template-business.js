@@ -1554,7 +1554,7 @@
 				}
 				else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
 				{				
-					value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+					value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
 				}
 			}
 			
