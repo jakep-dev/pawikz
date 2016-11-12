@@ -6,10 +6,21 @@
   }
 }
 
-#chartTitle
-{
-width: 250px;
+#chartTitleContainer {
+    width:70%;
 }
+
+#chartTitleContainer input {
+    width:100%;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+}
+
+#chartTitleButtonBar {
+    text-align:right;
+    width:30%;
+}
+
 .placeholderClass
 {
 

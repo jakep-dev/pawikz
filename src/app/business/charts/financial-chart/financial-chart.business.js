@@ -44,32 +44,45 @@
         function convertFinancialChartSettings(data) {
             //console.log(data);
             var result = {
-                chartSettings: new Array()
+                chartSettings: new Array(),
+                attachments: new Array()
             };
-            if (data && data.ifChartSettings && data.ifChartSettings.length > 0) {
-                var chartSetting;
-                data.ifChartSettings.forEach(function (chartData) {
-                    chartSetting = new Object();
-                    chartSetting.chartTitle = chartData.chart_title;
-                    chartSetting.compareNames = chartData.compare_name;
-                    chartSetting.shortNames = chartData.short_name;
-                    chartSetting.compareIds = chartData.compare_id;
-                    chartSetting.chartMode = chartData.single_multi;
-                    chartSetting.chartType = chartData.ratioselect;
-                    chartSetting.chartPeriod = chartData.time_period;
-                    if (chartData.is_custom_date === 'false') {
-                        chartSetting.isCustomDate = false;
-                    } else if (chartData.is_custom_date === 'true') {
-                        chartSetting.isCustomDate = true;
-                    } else {
-                        chartSetting.isCustomDate = false;
-                    }
-                    chartSetting.startDate = chartData.startdate;
-                    chartSetting.endDate = chartData.enddate;
-                    chartSetting.chartId = chartData.chartId;
-                    chartSetting.sequence = chartData.sequence;
-                    result.chartSettings.unshift(chartSetting);
-                });
+            if (data) {
+                if (data.ifChartSettings && data.ifChartSettings.length > 0) {
+                    var chartSetting;
+                    data.ifChartSettings.forEach(function (chartData) {
+                        chartSetting = new Object();
+                        chartSetting.chartTitle = chartData.chart_title;
+                        chartSetting.compareNames = chartData.compare_name;
+                        chartSetting.shortNames = chartData.short_name;
+                        chartSetting.compareIds = chartData.compare_id;
+                        chartSetting.chartMode = chartData.single_multi;
+                        chartSetting.chartType = chartData.ratioselect;
+                        chartSetting.chartPeriod = chartData.time_period;
+                        if (chartData.is_custom_date === 'false') {
+                            chartSetting.isCustomDate = false;
+                        } else if (chartData.is_custom_date === 'true') {
+                            chartSetting.isCustomDate = true;
+                        } else {
+                            chartSetting.isCustomDate = false;
+                        }
+                        chartSetting.startDate = chartData.startdate;
+                        chartSetting.endDate = chartData.enddate;
+                        chartSetting.chartId = chartData.chartId;
+                        chartSetting.sequence = chartData.sequence;
+                        result.chartSettings.unshift(chartSetting);
+                    });
+                }
+                if (data.attachments && data.attachments.length > 0) {
+                    var imageChartSetting;
+                    data.attachments.forEach(function (chartData) {
+                        imageChartSetting = new Object();
+                        imageChartSetting.chartTitle = chartData.chartTitle;
+                        imageChartSetting.url = chartData.url;
+                        imageChartSetting.projectImageCode = chartData.projectImageCode;
+                        result.attachments.push(imageChartSetting);
+                    });
+                }
             }
             return result;
         }
@@ -129,9 +142,10 @@
             saveObject.mnemonic = mnemonicItem.mnemonicId;
             saveObject.item_id = mnemonicItem.itemId;
             saveObject.company_id = mnemonicItem.companyId;
+            saveObject.projectImageCode = mnemonicItem.value.projectImageCodes;
             saveObject.ifChartSettings = [];
-            if (mnemonicItem.value && mnemonicItem.value.length > 0) {
-                mnemonicItem.value.forEach(function (item) {
+            if (mnemonicItem.value.newCharts && mnemonicItem.value.newCharts.length > 0) {
+                mnemonicItem.value.newCharts.forEach(function (item) {
                     if (item.filterState.isCustomDate === true) {
                         startDate = item.filterState.startDate;
                         endDate = item.filterState.endDate;

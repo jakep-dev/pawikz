@@ -1,12 +1,12 @@
 <div  class="md-whiteframe-1dp  md-light-blue-A100-bg">
     <div id="ms-chart-placeholder-header" style="height: 40px" layout="row" layout-align="space-between center">
-        <div style="padding-left: 10px">
+        <div id="chartTitleContainer" style="padding-left: 10px;">
             <md-input-container  md-no-float class="md-block md-accent">
                 <input id="chartTitle" placeholder="Chart Title" ng-model="vm.title" ng-disabled="vm.disableTitle"
                        class="font-weight-700 font-size-14" style="position: absolute;  bottom: 0px; padding-bottom: 4px; color: black"/>
             </md-input-container>
         </div>
-        <div>
+        <div id="chartTitleButtonBar">
             <md-button class="md-icon-button" aria-label="save-chart" ng-show="false" ng-click="vm.saveChart()" ng-if="vm.isMainChart">
                 <md-tooltip md-direction="top">
                     Save

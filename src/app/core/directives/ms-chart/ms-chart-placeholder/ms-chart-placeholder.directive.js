@@ -7,7 +7,7 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($rootScope, $scope, dialog, $mdDialog, commonBusiness) {
+    function msChartPlaceHolderController($rootScope, $scope, dialog, $mdDialog, commonBusiness, overviewBusiness) {
         var vm = this;
         var type = $scope.$parent.type;
         vm.title = $scope.chartTitle;
@@ -31,6 +31,19 @@
                 }
             });
         }
+
+        function onTitleUpdate(ratioLabel) {
+            var title;
+            if (overviewBusiness.templateOverview && overviewBusiness.templateOverview.ticker) {
+                title = commonBusiness.companyName + '(' + overviewBusiness.templateOverview.ticker + ')';
+            } else {
+                title = commonBusiness.companyName;
+            }
+            title += ' - ' + ratioLabel;
+            vm.title = title;
+        }
+
+        $scope.onTitleUpdate = onTitleUpdate;
 
         $scope.$watch('vm.title',function(newValue,oldValue) {
             if (oldValue != newValue) {
@@ -229,7 +242,22 @@
 
         ///Remove selected chart.
         function removeChart(id, event) {
-            dialog.confirm('Would you like to delete?', 'Selected Stock chart will be deleted. Please confirm.',event, {
+            var chartTypeLabel;
+            switch ($scope.chart.chartType) {
+                case "JSCHART":
+                    chartTypeLabel = 'Stock chart';
+                    break;
+                case "IMGURL":
+                    chartTypeLabel = 'Legacy chart image';
+                    break;
+                case "IFCHART":
+                    chartTypeLabel = 'Financial chart';
+                    break;
+                default:
+                    chartTypeLabel = 'chart';
+                    break;
+            }
+            dialog.confirm('Would you like to delete?', 'Selected ' + chartTypeLabel + ' will be deleted. Please confirm.', event, {
                 ok: {
                     name: 'yes', callBack: function () {
                         if ($scope.chart) {
@@ -294,7 +322,7 @@
                             break;
 
                         case 'financial':
-                            html = '<ms-financial-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" on-chart-save="onChartSave"></ms-financial-chart>';
+                            html = '<ms-financial-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" on-chart-save="onChartSave" on-title-update="onTitleUpdate"></ms-financial-chart>';
                             break;
 
                         case 'bar':

@@ -1,6 +1,5 @@
 ﻿(function(chartRoutes)
 {
-    var async = require('async');
     var u = require('underscore');
     var fs = require('fs');
 
@@ -92,18 +91,6 @@
             };
 
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
-            console.log('[getFinancialChartData]' + url);
-            console.log('[getFinancialChartData][compart_name]' + args.data.compare_name);
-            console.log('[getFinancialChartData][short_name]' + args.data.short_name);
-            console.log('[getFinancialChartData][compare_id]' + args.data.compare_id);
-            console.log('[getFinancialChartData][company_id]' + args.data.company_id);
-            console.log('[getFinancialChartData][single_multi]' + args.data.single_multi);
-            console.log('[getFinancialChartData][ratioselect]' + args.data.ratioselect);
-            console.log('[getFinancialChartData][time_period]' + args.data.time_period);
-            console.log('[getFinancialChartData][is_custom_date]' + args.data.is_custom_date);
-            console.log('[getFinancialChartData][startdate]' + args.data.startdate);
-            console.log('[getFinancialChartData][enddate]' + args.data.enddate);
-            console.log('[getFinancialChartData][token]' + args.data.token);
             client.post(url, args, function (data, response) {
                 if (data) {
                     if (data.data) {
@@ -134,6 +121,7 @@
                     item_id: req.body.item_id,
                     company_id: req.body.company_id,
                     token: req.headers['x-session-token'],
+                    projectImageCode: req.body.projectImageCode,
                     ifChartSettings: req.body.ifChartSettings
                 },
                 headers: { "Content-Type": "application/json" }
@@ -143,7 +131,6 @@
             console.log(url);
             console.log(args.data);
             client.post(url, args, function (data, response) {
-                console.log(data.chartSettings);
                 res.send(data.chartSettings);
             });
         }

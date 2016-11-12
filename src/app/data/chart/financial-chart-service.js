@@ -9,7 +9,7 @@
         .factory('financialChartService', financialChartService);
 
     /* @ngInject */
-    function financialChartService($http, logger, financialChartBusiness) {
+    function financialChartService($http, logger, commonBusiness, financialChartBusiness) {
         /*
          * Added Variables to implement reset functionality 5/11/2016
          * */
@@ -22,19 +22,20 @@
         var service = {
             financialData: financialData,
             getSavedFinancialChart: getSavedFinancialChart,
-            AddInitalStateData: addInitialStateData,
-            GetInitialStateData: getInitialStateData,
+            setInitialStateData: setInitialStateData,
+            getInitialStateData: getInitialStateData,
             getFinancialChartRatioTypes: getFinancialChartRatioTypes,
             saveInteractiveFinancialChart: saveInteractiveFinancialChart,
-            getFinancialChartPeerAndIndustries: getFinancialChartPeerAndIndustries
+            getFinancialChartPeerAndIndustries: getFinancialChartPeerAndIndustries,
+            getCurrentCompanyId: getCurrentCompanyId
         };
 
-        function addInitialStateData(array) {
-            initalStateData.newFinancialCharts = array.slice();
+        function setInitialStateData(array) {
+            initalStateData.newFinancialCharts = array;
         }
 
         function getInitialStateData() {
-            return initalStateData;
+            return initalStateData.newFinancialCharts;
         }
 
         function getFinancialChartRatioTypes() {
@@ -53,6 +54,10 @@
                     logger.error(JSON.stringify(error));
                 });
             }
+        }
+
+        function getCurrentCompanyId() {
+            return currentCompanyId;
         }
 
         function getFinancialChartPeerAndIndustries(company_id) {
@@ -97,12 +102,16 @@
             });
         }
 
-        function saveInteractiveFinancialChart(input) {
+        function saveInteractiveFinancialChart(mnemonicItem) {
+
+            var input = financialChartBusiness.getSaveChartInputObject(mnemonicItem);
+
             return $http({
                 method: "POST",
                 url: "/api/saveFinancialChartSettings",
                 data: input
             }).then(function (data, status, headers, config) {
+                commonBusiness.emitWithArgument('updateInteractiveFinancialChartIds', data.data);
                 return data.data;
             }).catch(function (error) {
                 logger.error(JSON.stringify(error));
