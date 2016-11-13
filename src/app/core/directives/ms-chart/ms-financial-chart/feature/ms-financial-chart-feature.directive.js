@@ -52,37 +52,45 @@
                             for (context.serCntr = 0; context.serCntr < targetChart.series.length; context.serCntr++) {
                                 context.data = targetChart.series[context.serCntr].data;
                                 context.lastIndex = context.data.length - 1;
-                                context.lastPoint = context.data[context.lastIndex];
-                                context.x = targetChart.chartWidth - targetChart.marginRight + 5;
-                                context.y = context.lastPoint.plotY + targetChart.plotTop - 40;
-                                context.label = undefined;
+                                for (context.i = context.lastIndex; context.i >= 0; context.i--) {
+                                    context.lastPoint = context.data[context.i];
+                                    if (context.lastPoint && context.lastPoint.plotY) {
+                                        break;
+                                    }
+                                }
+                                
+                                if (context.lastPoint && context.lastPoint.plotY) {
+                                    context.x = targetChart.chartWidth - targetChart.marginRight + 5;
+                                    context.y = context.lastPoint.plotY + targetChart.plotTop - 40;
+                                    context.label = undefined;
 
-                                //adding tooltip as side labels with customize tooltip properties.
-                                context.label = targetChart.renderer.label(targetChart.series[context.serCntr].name,
-                                    context.x,
-                                    context.y,
-                                    'callout',
-                                    0,
-                                        context.lastPoint.plotY + targetChart.plotTop
-                                    , null, null, 'tooltip')
-                                    .css({
-                                        color: '#FFFFFF',
-                                        fontSize: '10px',
-                                        width: '75px'
-                                    })
-                                    .attr({
-                                        fill: targetChart.series[context.serCntr].color,
-                                        padding: 8,
-                                        r: 6,
-                                        zIndex: 6
-                                    }).addClass('tooltip')
-                                    .add();
+                                    //adding tooltip as side labels with customize tooltip properties.
+                                    context.label = targetChart.renderer.label(_.unescape(targetChart.series[context.serCntr].name),
+                                        context.x,
+                                        context.y,
+                                        'callout',
+                                        0,
+                                            context.lastPoint.plotY + targetChart.plotTop
+                                        , null, null, 'tooltip')
+                                        .css({
+                                            color: '#FFFFFF',
+                                            fontSize: '10px',
+                                            width: '75px'
+                                        })
+                                        .attr({
+                                            fill: targetChart.series[context.serCntr].color,
+                                            padding: 8,
+                                            r: 6,
+                                            zIndex: 6
+                                        }).addClass('tooltip')
+                                        .add();
 
-                                labelsBoxes.push({
-                                    label: context.label,
-                                    y: context.y,
-                                    height: context.label.getBBox().height
-                                });
+                                    labelsBoxes.push({
+                                        label: context.label,
+                                        y: context.y,
+                                        height: context.label.getBBox().height
+                                    });
+                                }
                             }
 
                             //sort labels by y
@@ -351,6 +359,8 @@
                                             for (var legendNum = 0, len = legend.allItems.length; legendNum < len; legendNum++) {
                                                 (function (legendNum) {
                                                     var item = legend.allItems[legendNum].legendItem;
+
+                                                    //item.attr({ text: _.unescape(item.attr('textStr')) });
                                                     item.on('mouseover', function (evt) {
                                                         var text = $(this)[0].innerHTML;
                                                         if($(this)[0].innerHTML.indexOf(' ') > -1)
@@ -473,9 +483,9 @@
                                                         ratioValue = dateItem[fullName];
                                                         legendItem = legendItems[i].legendItem;
                                                         if (ratioValue) {
-                                                            legendItem.attr({ text: (series.name + ' ' + $filter("number")(ratioValue, 2)) });
+                                                            legendItem.attr({ text: (_.unescape(series.name) + ' ' + $filter("number")(ratioValue, 2)) });
                                                         } else {
-                                                            legendItem.attr({ text: (series.name + ' N/A') });
+                                                            legendItem.attr({ text: (_.unescape(series.name) + ' N/A') });
                                                         }
                                                         i++;
                                                     });
@@ -515,8 +525,9 @@
                                             } else {
                                                 finalName = ratioName;
                                             }
+                                            finalName = _.unescape(finalName);
                                             if (ratioValue) {
-                                                tooltipText += "<br/>" + finalName + ':' + ratioValue;
+                                                tooltipText += "<br/>" + finalName + ':' + $filter("number")(ratioValue, 2);
                                             } else {
                                                 tooltipText += "<br/>" + finalName + ': N/A';
                                             }

@@ -20,13 +20,6 @@
             vm.onChartSave();
         };
 
-/**
-        $scope.$on('filterSateUpdate', function (event) {
-            $scope.$broadcast('resetEvents');
-            loadChartData();
-        });
-*/
-
         function loadChartData() {
             var filterState = vm.filterState;
             vm.fetchChartData(filterState.compareNames, filterState.shortNames, filterState.compareIds, vm.companyId, filterState.chartMode, filterState.chartType, filterState.chartTypeLabel, filterState.chartPeriod, filterState.isCustomDate, filterState.startDate, filterState.endDate);
@@ -144,8 +137,6 @@
             var yAxisLabel = chartTypeLabel;
             financialChartService.financialData(financialChartBusiness.getFinancialDataInputObject(compareNames, shortNames, compareIds, companyId, singleMultiple, ratioSelect, timePeriod, isCustomDate, startDate, endDate))
                 .then(function (data) {
-                    //console.log(data);
-                    //$scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
                     vm.financialDataSet = groupChartData(data);
                     vm.financialDataSet.yaxisTitle = yAxisLabel;
                 }
@@ -153,40 +144,20 @@
         };
 
         loadChartData();
-
-/**
-        vm.onPeerRemove = function (peer) {
-            var targetIndex;
-            var i;
-            var n;
-
-            n = vm.filterState.compareNames.length;
-            for (i = 1; i < n; i++) {
-                if (vm.filterState.compareNames[i] === peer) {
-                    targetIndex = i;
-                    break;
-                }
-            }
-            if (targetIndex) {
-                vm.filterState.compareNames.slice(targetIndex, 1);
-                vm.filterState.compareIds.slice(targetIndex, 1);
-            }
-        };
-*/
     }
 
     /** @ngInject */
     function msFinancialChartDirective() {
         return {
             restrict: 'E',
-            //require: 'msStockChartToolBar',
             scope: {
                 filterState: '=',
                 mnemonicId: '=',
                 itemId: '=',
                 chartId: '=',
                 hideFilters: '=',
-                onChartSave: '='
+                onChartSave: '=',
+                onTitleUpdate: '='
             },
             templateUrl: 'app/core/directives/ms-chart/ms-financial-chart/ms-financial-chart.html',
             controller: 'msFinancialChartController',

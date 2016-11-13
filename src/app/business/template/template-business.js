@@ -10,7 +10,7 @@
 
     /* @ngInject */
     function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, 
-                              overviewBusiness, financialChartBusiness, templateService, financialChartService,
+                              overviewBusiness, templateService, financialChartService,
                               Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
@@ -1983,7 +1983,7 @@
         }
 
         //Get ready for interactive financial chart auto save.
-        function getReadyForAutoSaveInteractiveFinancialChart(companyId, projectId, stepId, mnemonicId, itemId, newChartArr) {
+        function getReadyForAutoSaveInteractiveFinancialChart(companyId, projectId, stepId, mnemonicId, itemId, value) {
             var mnemonicItem = _.find(business.saveInteractiveFinancialChartMnemonics, function (currentMnemonic) {
                 if((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId) ) {
                     return currentMnemonic;
@@ -1997,11 +1997,11 @@
                     stepId: stepId,
                     mnemonicId: mnemonicId,
                     itemId: itemId,
-                    value: newChartArr
+                    value: value
                 })
             }
             else {
-                mnemonicItem.value = newChartArr;
+                mnemonicItem.value = value;
             }
             initiateAutoSave();
         }
@@ -2011,9 +2011,7 @@
             if (business.saveInteractiveFinancialChartMnemonics.length > 0) {
 
                 _.each(business.saveInteractiveFinancialChartMnemonics, function (mnemonicItem) {
-                    var input = financialChartBusiness.getSaveChartInputObject(mnemonicItem);
-
-                    financialChartService.saveInteractiveFinancialChart(input)
+                    financialChartService.saveInteractiveFinancialChart(mnemonicItem)
                         .then(function (response) {
                             //TODO: send message to update chart id
                             toast.simpleToast('Saved successfully');
