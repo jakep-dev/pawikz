@@ -70,7 +70,7 @@
            pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
-		   getMnemonicPrefix: getMnemonicPrefix,
+		   //getMnemonicPrefix: getMnemonicPrefix,
 		   getMnemonicPostfix: getMnemonicPostfix,
 		   getMnemonicParameters: getMnemonicParameters,
 		   getMnemonicPrecision: getMnemonicPrecision,
@@ -1617,62 +1617,6 @@
 		        }
 		    }
 		    return dataSubtype;
-		}
-
-		//check if subtype is CURRENCY to add prefix (currency symbol)
-		function isCurrencySubtype(mnemonicValue)
-		{
-			var isCurrency = false;
-			if(business.mnemonics)
-            {
-
-                var mnemonic = _.find(business.mnemonics, function(m)
-                                {
-                                  if(m.mnemonic === mnemonicValue)
-                                  {
-                                      return m;
-                                  }
-                                });
-
-                if(mnemonic)
-                {
-                    isCurrency = mnemonic.dataSubtype === 'CURRENCY';
-                }
-            }
-			
-			return isCurrency;
-		}
-		
-		//get currency symbol prefix
-		function getMnemonicPrefix(tearSheet)
-		{
-			var prefix = '';
-			
-			if(isCurrencySubtype(tearSheet.Mnemonic) && overviewBusiness.templateOverview && overviewBusiness.templateOverview.defaultCurrency)
-			{
-				var currency = overviewBusiness.templateOverview.defaultCurrency;
-				switch (currency) {
-					case 'USD':					
-					case 'CAD':
-						prefix = '$';
-						break;
-					case 'JPY':
-						prefix = '¥';
-						break;
-					case 'EUR':
-						prefix = '€';
-						break;
-					case 'GBP':
-						prefix = '£';
-						break;
-					case 'CHF':
-						prefix = 'CHF';
-						break;
-					default:
-						prefix = '';
-				}
-			}
-			return prefix;
 		}
 
 		//get decimal places for NUMBER types
