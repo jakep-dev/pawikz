@@ -6,7 +6,7 @@
            .directive('msStockChart', msStockChartDirective);
 
 
-    function msStockChartController($scope,stockService, commonBusiness, templateBusiness, store) {
+    function msStockChartController($scope,stockService, commonBusiness, templateBusinessFormat, store) {
         var vm = this;
         vm.selectedIndex ="";
         vm.searchVal = '';
@@ -74,8 +74,8 @@
             var start_date;
             var end_date;
             if (periodValue === 'CUSTOM') {
-                start_date = templateBusiness.formatDate(vm.filterState.startDate, 'YYYY-MM-DD');
-                end_date = templateBusiness.formatDate(vm.filterState.endDate, 'YYYY-MM-DD');
+                start_date = templateBusinessFormat.formatDate(vm.filterState.startDate, 'YYYY-MM-DD');
+                end_date = templateBusinessFormat.formatDate(vm.filterState.endDate, 'YYYY-MM-DD');
             }
             vm.fetchChartData(stockString, periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, vm.companyId);
         }
