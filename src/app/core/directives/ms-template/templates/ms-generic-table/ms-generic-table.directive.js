@@ -96,11 +96,9 @@
                                             isdisabled: false,
                                             selectedValue: value || selectedValue
                                         };
-
-                                        html += '<td>';
-                                        // html += '<span style="display:none">{{row.' + itemId + '}}</span>'; // for easy sorting & searching
-                                        html += '<ms-generic-select  style="overflow-y:hidden;" value ="'+value+'" row="row" ' +
-                                                'text="'+tearSheetItem.param.content+'" tearsheet="'+ _.escape(angular.toJson(tearsheet))+'" itemid="'+itemid+'" mnemonicid="'+mnemonicId+'" ></ms-generic-select>';
+                                        
+                                        html += '<ms-checkbox  style="overflow-y:hidden;" value ="'+value+'" row="row" ' +
+                                                'text="'+tearSheetItem.param.content+'" tearsheet="'+ _.escape(angular.toJson(tearsheet))+'" itemid="'+itemid+'" mnemonicid="'+mnemonicId+'" ></ms-checkbox>';
                                         break;
                                     case 'LabelItem':
                                         var classValue = 'align-left-for-label';
