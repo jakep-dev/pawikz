@@ -24,9 +24,9 @@
         vm.onChartSave = $scope.onChartSave;
         vm.onChartReset = $scope.onChartReset;
 
-        if(vm.isMainChart) {
+        if (vm.isMainChart) {
             $scope.$on('ticker', function (event, args) {
-                if(vm.title.indexOf(' (' + args.ticker + ')') == -1) {
+                if (($scope.chart.tearsheet.type != 'stock') && (vm.title.indexOf(' (' + args.ticker + ')') == -1)) {
                     vm.title += ' (' + args.ticker + ')';
                 }
             });
