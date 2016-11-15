@@ -218,6 +218,9 @@
                 vm.startDate = d;
                 vm.filterState.startDate = vm.startDate;
                 vm.filterState.endDate = vm.endDate;
+            } else {
+                vm.startDate = vm.filterState.startDate;
+                vm.endDate = vm.filterState.endDate;
             }
         }
 

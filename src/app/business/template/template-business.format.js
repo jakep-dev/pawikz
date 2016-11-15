@@ -24,7 +24,9 @@
             getAlignmentForGenericTableItem : getAlignmentForGenericTableItem,
             getAlignmentForTableLayoutGenericTextItem: getAlignmentForTableLayoutGenericTextItem,
             getAlignmentForTableLayoutR : getAlignmentForTableLayoutR,
-            getAlignmentForTableLayoutNonEditable : getAlignmentForTableLayoutNonEditable
+            getAlignmentForTableLayoutNonEditable : getAlignmentForTableLayoutNonEditable,
+            formatDate: formatDate,
+            parseDate: parseDate
 
         }
     	return business;
@@ -492,6 +494,18 @@
             }
 
             return classVal;
+        }
+        
+        function parseDate(str, format)
+        {
+            var date = moment(str, format, true);
+            return date.isValid() ? date.toDate() : '';
+        }
+        
+        function formatDate(date, format)
+        {
+            var date = moment(date);
+            return date.isValid() ? date.format(format) : '';
         }
 
     }
