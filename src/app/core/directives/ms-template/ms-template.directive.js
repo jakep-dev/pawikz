@@ -73,6 +73,10 @@
 			commonBusiness.isPrintableAll = vm.isPrintableAll;
             $mdMenu.hide();
 		}
+
+        commonBusiness.onMsg('step-load-more', $scope, function() {
+            $scope.loadMore();
+        });
     }
 
     /** @ngInject */
