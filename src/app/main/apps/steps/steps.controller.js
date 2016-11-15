@@ -54,6 +54,7 @@
             $scope.goTop = goTop;
             $scope.previousStep = previousStep;
             $scope.nextStep = nextStep;
+            $scope.loadMore = loadMoreComponents;
             $scope.isPrevDisabled = stepsBusiness.isPreviousStep(stepId, overviewBusiness.templateOverview.steps);
             $scope.isNextDisabled = stepsBusiness.isNextStep(stepId, overviewBusiness.templateOverview.steps);
             commonBusiness.defineBottomSheet('app/main/apps/steps/sheet/steps-sheet.html', $scope, true);
@@ -147,6 +148,11 @@
             {
                 stepsBusiness.getNextStep(stepId, overviewBusiness.templateOverview.steps);
             }
+        }
+
+        function loadMoreComponents()
+        {
+            commonBusiness.emitMsg('step-load-more');
         }
     }
 

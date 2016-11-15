@@ -1,5 +1,5 @@
 <md-bottom-sheet id="steps-sheet" class="md-grid" layout="row" ng-cloak>
-    <md-list flex layout="row" layout-align="center center" md-autofocus>
+    <md-list flex layout="row" layout-align="end center" md-autofocus>
         <md-list-item>
             <md-button class="md-grid-item-content md-accent" style="height: 250px" ng-disabled="isPrevDisabled" ng-click="previousStep()">
                 <md-icon md-font-icon="icon-arrow-left-bold-circle-outline" class="s36"></md-icon>
@@ -26,6 +26,13 @@
                 <md-icon md-font-icon="icon-arrow-right-bold-circle-outline" class="s36"></md-icon>
                 <div class="md-grid-text">Next Step</div>
             </md-button>
+        </md-list-item>
+
+        <md-list-item>
+        <md-button class="md-grid-item-content md-primary md-accent" style="height: 250px" ng-click="loadMore()">
+        <md-icon md-font-icon="icon-reload" class="s26"></md-icon>
+        <div class="md-grid-text">Load More</div>
+        </md-button>
         </md-list-item>
     </md-list>
 </md-bottom-sheet>

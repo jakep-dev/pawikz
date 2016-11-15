@@ -68,6 +68,38 @@
                                 typeof(tearSheetItem.Label) !== 'object') {
 
                                 switch (tearSheetItem.id) {
+                                    case 'GenericSelectItem':
+                                    var itemid = tearSheetItem.ItemId;
+                                        var mnemonicId = tearSheetItem.Mnemonic;
+                                        var value = templateBusiness.getMnemonicValue(itemid, mnemonicId);
+                                        var tearsheet = {};
+                                        var values = [];
+                                        var selectedValue = '';
+
+                                        angular.forEach(tearSheetItem.param, function(each)
+                                        {
+                                            
+                                            if(each.checked === 'yes')
+                                            {
+                                                selectedValue = tearSheetItem.param.content;
+                                            }
+
+                                            values.push({
+                                                value: tearSheetItem.param.content,
+                                                name: tearSheetItem.param.content
+                                            });
+                                        });
+
+                                        tearsheet = {
+                                            label: '',
+                                            values: values,
+                                            isdisabled: false,
+                                            selectedValue: value || selectedValue
+                                        };
+                                        
+                                        html += '<ms-checkbox  style="overflow-y:hidden;" value ="'+value+'" row="row" ' +
+                                                'text="'+tearSheetItem.param.content+'" tearsheet="'+ _.escape(angular.toJson(tearsheet))+'" itemid="'+itemid+'" mnemonicid="'+mnemonicId+'" ></ms-checkbox>';
+                                        break;
                                     case 'LabelItem':
                                         var classValue = 'align-left-for-label';
                                         classValue = templateBusinessFormat.getAlignmentForLabelItem(tearSheetItem, classValue);
