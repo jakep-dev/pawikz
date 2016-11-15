@@ -331,15 +331,16 @@
                                                                         var left = evt.layerX - 380;
                                                                         var width = 300;
                                                                         var html = ''+
-                                                                        '<div layout="row" layout-align="space-around center"> ' +
-                                                                        '   <div style="color: #ff0000; padding-top: 10px;">{{errorMessage}}</div> ' +                                                                        '</div> ' +
-                                                                        '<div layout="row" layout-align="space-around center"> ' +
+                                                                        '<div layout="row" layout-align="space-around center" ng-if="selectedSources.length === 0"> ' +
+                                                                        '   <div style="color: #ff0000; padding-top: 10px;">{{errorMessage}}</div> ' +
+                                                                        '</div> ' +
+                                                                        '<div layout="row" layout-align="space-between center"> ' +
                                                                         '   <h6><span>Sources</span></h6> ' +
                                                                         '   <md-select ng-model="selectedSources" multiple aria-label="Significant Sources"> ' +
                                                                         '       <md-option ng-repeat="source in sourceOptions" ng-value="source">{{source.label}}</md-option> ' +
                                                                         '   </md-select> ' +
                                                                         '</div> ' +
-                                                                        '<div layout="row" layout-align="space-around center"> ' +
+                                                                        '<div layout="row" layout-align="space-between center"> ' +
                                                                         '   <h6><span>Range</span></h6> ' +
                                                                         '   <md-select ng-model="selectedRange" aria-label="Significant Range">' +
                                                                         '       <md-option ng-repeat="range in rangeOptions" value="{{range}}">{{range}}</md-option> ' +
@@ -348,12 +349,12 @@
                                                                         '';
                                                                         $mdDialog.show({
                                                                             scope: scope,
-                                                                            template: '<md-dialog style="background: white; top: ' + top + 'px; left: ' + left + 'px; min-width:' + width + 'px">' + 
-                                                                            '   <md-toolbar style="text-align: center;">' + 
+                                                                            template: '<md-dialog>' + 
+                                                                            '   <md-toolbar style="text-align: center; padding: 0px 10px">' + 
                                                                             '       <h2><span> Get More Information </span>' + 
                                                                             '       <span> {{selectedDate | date:"MM/dd/yyyy"}} </span> </h2>' + 
                                                                             '   </md-toolbar>' + 
-                                                                            '   <md-dialog-content>' + html + '</md-dialog-content>' + 
+                                                                            '   <md-dialog-content style="padding: 0px 15px">' + html + '</md-dialog-content>' + 
                                                                             '   <md-dialog-actions>' +  
                                                                             '       <md-button ng-click="showInfo()" style="text-transform: capitalize; background-color: #1e2129; color: #ffffff;"> Show Information </md-button>' + 
                                                                             '       <md-button ng-click="closeDialog()" style="text-transform: capitalize; background-color: #1e2129; color: #ffffff"> Close </md-button>' + 
@@ -363,14 +364,11 @@
                                                                             animate: 'full-screen-dialog',
                                                                             clickOutsideToClose:true,
                                                                             controller: function DialogController($scope, $mdDialog) {
-                                                                                $scope.selectedSources = $scope.$parent.vm.selectedSources || [scope.sourceOptions[0]];
-                                                                                $scope.selectedRange = $scope.$parent.vm.selectedRange || '+/- 3 months';
+                                                                                $scope.selectedSources = [scope.sourceOptions[0]]; //$scope.$parent.vm.selectedSources || [scope.sourceOptions[0]];
+                                                                                $scope.selectedRange = '+/- 3 months'; //$scope.$parent.vm.selectedRange || '+/- 3 months';
                                                                                 $scope.rangeOptions = '+/- 1 week, +/- 1 month, +/- 3 months, +/- 6 months, +/- 1 year'.split(', ');
                                                                                 $scope.selectedDate = new Date(v.dataDate);
-
-                                                                                if($scope.selectedSources.length !== 0){
-                                                                                    $scope.errorMessage = '';
-                                                                                }
+                                                                                $scope.errorMessage = 'Please select source(s)';
 
                                                                                 $scope.closeDialog = function () {
                                                                                     $mdDialog.hide();
@@ -384,8 +382,6 @@
                                                                                         $scope.$parent.vm.selectedDate = v.dataDate;
 
                                                                                         $mdDialog.hide();
-                                                                                    } else {
-                                                                                        $scope.errorMessage = 'Please select source';
                                                                                     }
                                                                                 };
                                                                             }
