@@ -6,7 +6,7 @@
         .service('templateBusinessFormat', templateBusinessFormat);
 
     /* @ngInject */
-    function templateBusinessFormat(toast, $filter, templateBusiness) {
+    function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness) {
         var business = {
             getFormatObject: getFormatObject,
             removeFixes: removeFixes,
@@ -36,7 +36,7 @@
     	    var value;
     	    formatObject.dataType = templateBusiness.getMnemonicDataType(tearsheet);
     	    formatObject.dataSubtype = templateBusiness.getMnemonicDataSubtype(tearsheet);
-    	    formatObject.prefix = templateBusiness.getMnemonicPrefix(tearsheet);
+    	    formatObject.prefix = getMnemonicPrefix(tearsheet);
     	    formatObject.postfix = templateBusiness.getMnemonicPostfix(tearsheet);
     	    value = templateBusiness.getMnemonicPrecision(tearsheet);
     	    formatObject.precision = Number(value);
@@ -349,13 +349,13 @@
     	                prefix = '$';
     	                break;
     	            case 'JPY':
-    	                prefix = '&yen;';
+    	                prefix = '¥';
     	                break;
     	            case 'EUR':
-    	                prefix = '&euro;';
+    	                prefix = '€';
     	                break;
     	            case 'GBP':
-    	                prefix = '&pound;';
+    	                prefix = '£';
     	                break;
     	            case 'CHF':
     	                prefix = 'CHF';
@@ -366,6 +366,30 @@
     	    }
     	    return prefix;
     	}
+
+        //check if subtype is CURRENCY to add prefix (currency symbol)
+        function isCurrencySubtype(mnemonicValue)
+        {
+            var isCurrency = false;
+            if(templateBusiness.mnemonics)
+            {
+
+                var mnemonic = _.find(templateBusiness.mnemonics, function(m)
+                {
+                  if(m.mnemonic === mnemonicValue)
+                  {
+                      return m;
+                  }
+                });
+
+                if(mnemonic)
+                {
+                    isCurrency = mnemonic.dataSubtype === 'CURRENCY';
+                }
+            }
+            
+            return isCurrency;
+        }
 
 
         //get KMB indicators for NUMBER types
