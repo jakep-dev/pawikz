@@ -4,23 +4,19 @@
 
     angular
         .module('app.core')
-        .controller('MsCheckboxController', MsCheckboxController)
-        .directive('msCheckbox', msCheckboxDirective);
+        .controller('MsGenericSelectController', MsGenericSelectController)
+        .directive('msGenericSelect', msGenericSelectDirective);
 
     /** @ngInject */
-    function MsCheckboxController($scope, templateBusiness)
+    function MsGenericSelectController($scope, templateBusiness)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
         $scope.trueValue = '\'' + $scope.text + '\'';
-        $scope.isSelected = false;
+        $scope.isSelected =false;
 
         $scope.checkChange = function()
         {
             $scope.value = $scope.isSelected;
-
-            if($scope.value === $scope.tearsheet.selectedValue){
-                return $scope.value;
-            }
         };
 
 
@@ -28,10 +24,10 @@
             "tearsheetObj.selectedValue",
             function handleAutoSave(newValue, oldValue) {
                 
-                if($scope.isSelected)
-                {
-                    newValue = $scope.value;
-                }
+                // if($scope.isSelected)
+                // {
+                //      newValue = $scope.isSelected;
+                // }
 
                 if(newValue !== oldValue)
                 {
@@ -45,7 +41,7 @@
     }
 
     /** @ngInject */
-    function msCheckboxDirective()
+    function msGenericSelectDirective()
     {
         return {
             restrict: 'E',
@@ -53,24 +49,17 @@
                 row: '=',
                 isdisabled: '@',
                 text: '@',
+                ischecked: '@',
                 value : '@',
                 itemid : '@',
                 mnemonicid : '@',
                 tearsheet : '@'
             },
-            controller: 'MsCheckboxController',
-            templateUrl: 'app/core/directives/ms-template/templates/ms-checkbox/ms-checkbox.html',
+            controller: 'MsGenericSelectController',
+            templateUrl: 'app/core/directives/ms-template/templates/ms-generic-select/ms-generic-select.html',
             link: function($scope)
             {
                  $scope.tearsheetObj = angular.fromJson(_.unescape($scope.tearsheet));
-
-                 // angular.extend({
-                 //    values : [{
-                 //        id: 0,
-                 //        shortName: 'All'
-                 //    }],
-                 //    isdisabled: false
-                 // }, detail);
             }
         };
     }
