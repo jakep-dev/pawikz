@@ -26,6 +26,7 @@
             GetInitialStateData: getInitialStateData,
             AddManualSaveData: addmanualSaveData,
             GetManualSaveData: getmanualSaveData,    //End of reset functionality options
+            EmptyManualSaveData: emptyManualSaveData,
             DeleteSpecificChart: deleteSpecificChart,
             createTemplatePDFRequest:createTemplatePDFRequest,
             getSavedChartDefer: getSavedChartDefer,
@@ -212,6 +213,10 @@
 
         function getmanualSaveData() {
             return manualSaveData;
+        }
+
+        function emptyManualSaveData() {
+            manualSaveData = {};
         }
 
         function deleteSpecificChart(projectId, stepId, mnemonic, itemId, project_image_code, chartId, ssnId) {
