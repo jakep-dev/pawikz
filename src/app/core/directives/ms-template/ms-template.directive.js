@@ -152,7 +152,7 @@
 
                 bindHeader(scope);
                 var compCount = clientConfig.appSettings.componentInitialLoad,
-                    compSize = getNumberOfComp(scope.components.content);
+                    compSize = _.size(scope.components.content);
 
                 if(compSize < compCount)
                 {
