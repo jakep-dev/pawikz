@@ -92,9 +92,10 @@
                                      * Service call to save initial state - Implementation for reset functionality 5/11/2016
                                      */
                                     var newCharts = data.newCharts;
-                                    if (!stockService.GetInitialStateData().hasOwnProperty("newCharts")) {
-                                        stockService.AddInitalStateData(angular.copy(data.newCharts));
-                                    }
+                                    
+                                    // reset saved data every page load/refresh
+                                    stockService.EmptyManualSaveData(); 
+                                    stockService.AddInitalStateData(angular.copy(data.newCharts));
 
                                     var getTableInfo = function getTableInfo(index) {
 
@@ -217,7 +218,7 @@
 
                                         //Get the particular chart from the array
                                         //scope.jsCharts = [];
-                                        var chart = angular.copy(lastStatedata[(id == 0 ? 0 : id - 1)]);
+                                        var chart = angular.copy(lastStatedata[id]);
                                         var msChartPlaceHolderId = 'chart-'.concat(id);
                                         var chartType = chart.chartType;
                                         var filterState = {};
@@ -633,7 +634,7 @@
                                         saveAllCharts().then(function() {
                                             stockService.getSavedChartData(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, store.get('x-session-token'))
                                             .then(function(data) {
-                                                if(data && data[0])
+                                                if(data && data.newCharts)
                                                 {
                                                     stockService.AddManualSaveData(data.newCharts);
                                                 }
