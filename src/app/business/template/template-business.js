@@ -728,7 +728,7 @@
             var tearSheets = [],
                 content;
 
-            if(tearcontent && tearcontent.length > 0) {
+            if(tearcontent && tearcontent.length === 1) {
                 content = tearcontent[0];
 
                 if (content.TearSheetItem) {
@@ -742,6 +742,9 @@
                 else {
                     tearSheets.push(content);
                 }
+            }
+            else{
+                tearSheets.push.apply(tearSheets, tearcontent);
             }
 
             return tearSheets;
