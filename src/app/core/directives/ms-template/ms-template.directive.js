@@ -210,13 +210,14 @@
 
                                 if (section.TearSheetItem &&
                                     section.TearSheetItem.length) {
-                                    newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
+                                    //newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
+                                    newScope.tearcontent.push(section);
                                 }
                                 else if (section.TearSheetItem) {
                                     if(newScope.subtype === 'SubComponent' && section.subtype) {
                                         section.TearSheetItem.subtype = section.subtype;
                                     }
-                                    newScope.tearcontent.push(section.TearSheetItem);
+                                    newScope.tearcontent.push(section);
                                 }
                                 else if (section.Label) {
                                     newScope.tearcontent.push(section);
