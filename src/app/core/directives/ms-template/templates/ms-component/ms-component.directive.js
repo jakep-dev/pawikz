@@ -136,10 +136,6 @@
         }
 
         buildActions();
-
-        //$scope.$evalAsync( function() {
-        //    alert('component content loaded');
-        //});
     }
 
     /** @ngInject */
@@ -214,8 +210,11 @@
                                 {
                                     _.each(subComponents, function(component)
                                     {
-                                        if(component.section.id === 'LinkItem') {
+                                        if(!component.header) {
                                             comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
+                                            if(comp && comp.html !== '') {
+                                                comp.html += '<div style="height:5px"></div>'
+                                            }
                                         }
                                         else {
                                             comp = templateBusiness.buildSubComponent($scope, component);
@@ -267,8 +266,10 @@
             var comp = {
                 html: '',
                 scope: null
-            };
-            _.each(tearcontent, function(content) {
+            },
+            tearSheets = templateBusiness.getTearSheetItems(tearcontent);
+
+            _.each(tearSheets, function(content) {
                 comp = templateBusiness.buildComponents(scope, content, scope.subtype);
 
                 if(comp && comp.html !== '')

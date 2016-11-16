@@ -87,7 +87,8 @@
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
            initializeMessages: initializeMessages,
-		   isMnemonicNumberType: isMnemonicNumberType
+		   isMnemonicNumberType: isMnemonicNumberType,
+           getTearSheetItems: getTearSheetItems
         };
 
         return business;
@@ -440,8 +441,15 @@
             newScope.tearheader = component.header;
             newScope.tearcontent = [];
             newScope.iscollapsible = true;
-            newScope.tearcontent.push(component.section);
-            newScope.isnoneditable = false;
+
+            if(component.section.length) {
+                newScope.tearcontent.push.apply(newScope.tearcontent, component.section);
+            }
+            else{
+                newScope.tearcontent.push(component.section);
+            }
+
+            newScope.isnoneditable = scope.isnoneditable;
             newScope.isprocesscomplete = true;
             newScope.actions = [];
             newScope.subtype = component.section.subtype || '';
@@ -462,43 +470,45 @@
         {
             var components = [],
                 component = {
-                      header: null,
-                      section: null
-                    };
+                    header: null,
+                    section: null
+                };
 
             _.each(contents, function(content)
             {
-                switch (content.id) {
+                var tearSheet;
+                if(content.TearSheetItem &&
+                   !content.TearSheetItem.length) {
+                    tearSheet = content.TearSheetItem;
+                }
+                else {
+                    tearSheet = content;
+                }
 
-                    case 'LinkItem':
-                        component.section = content;
+                if(tearSheet.id === 'LabelItem') {
+                    component.header = tearSheet;
+                }
+                else {
+                    component.section = tearSheet;
+                    //If the Label Item followed by section pattern is not found.
+                    //Which means that its a stand-alone section.
+                    if(!component.header) {
                         components.push(component);
                         component = {
                             header: null,
                             section: null
                         };
-                        break;
-
-                    case 'LabelItem':
-                        component.header = content;
-                        break;
-
-                    default:
-                        component.section = content;
-                        break;
+                    }
                 }
 
-
                 if(component.header &&
-                    component.section)
-                {
+                    component.section) {
                     components.push(component);
                     component = {
                         header: null,
                         section: null
                     };
                 }
-
             });
 
             return components;
@@ -506,36 +516,43 @@
 
         function buildComponents(scope, content, subtype)
         {
-            var type = subtype || content.id;
+            var tearSheet = content.TearSheetItem || content,
+                type = subtype || tearSheet.id;
 
-            switch(type)
+            switch(type.toLowerCase())
             {
-                case 'LabelItem':
-                    return buildLabel(scope, content);
+                case 'labelitem':
+                    return buildLabel(scope, tearSheet);
                     break;
 
-                case 'GenericTableItem':
-                    return buildGenericTableItem(scope, content);
+                case 'generictableitem':
+                    return buildGenericTableItem(scope, tearSheet);
                     break;
 
-                case 'RTFTextAreaItem':
-                    return buildRichTextArea(scope, content);
+                case 'rtftextareaitem':
+                    return buildRichTextArea(scope, tearSheet);
                     break;
 
-                case 'ScrapedItem':
-                    return buildScrapeItem(scope, content);
+                case 'scrapeditem':
+                    return buildScrapeItem(scope, tearSheet);
                     break;
 
-                case 'Expiring':
-                    return buildExpiringProgram(scope, scope.tearheader, content);
+                case 'expiring':
+                    return buildExpiringProgram(scope, scope.tearheader, tearSheet);
                     break;
 
-                case 'Proposed':
-                    return buildProposedProgram(scope, scope.tearheader, content);
+                case 'proposed':
+                    return buildProposedProgram(scope, scope.tearheader, tearSheet);
                     break;
 
-                case 'LinkItem':
-                    return buildLinkItem(scope, content);
+                case 'linkitem':
+                    return buildLinkItem(scope, tearSheet);
+                    break;
+
+                case 'tablelayout':
+                    scope.tearcontent = [];
+                    scope.tearcontent.push(tearSheet);
+                    return determineTableLayout(scope, tearSheet, tearSheet.subtype);
                     break;
             }
         }
@@ -586,7 +603,7 @@
         }
 
         //Build read-only pivot table layout element
-        function buildReadOnlyPivotTableLayout(scope, itemId, mnemonicId, header, columns)
+        function buildReadOnlyPivotTableLayout(scope, itemId, mnemonicId, header, columns, footer)
         {
             var newScope  = scope.$new(true),
                 comp = {
@@ -599,7 +616,8 @@
 
             newScope.tearsheet = {
                 header: header,
-                columns: columns
+                columns: columns,
+                footer: footer
             };
 
             comp.html = '<ms-tablelayout-r-p itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r-p>';
@@ -681,7 +699,7 @@
                 case 'tablelayout3':
                     //ReadOnly-Pivot Table
                     tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
-                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
                     break;
 
                 case 'tablelayout4':
@@ -704,6 +722,31 @@
             return null;
         }
 
+        //Get TearSheet Items
+        function getTearSheetItems(tearcontent)
+        {
+            var tearSheets = [],
+                content;
+
+            if(tearcontent && tearcontent.length > 0) {
+                content = tearcontent[0];
+
+                if (content.TearSheetItem) {
+                    if (content.TearSheetItem.length) {
+                        tearSheets.push.apply(tearSheets, content.TearSheetItem)
+                    }
+                    else {
+                        tearSheets.push(content.TearSheetItem);
+                    }
+                }
+                else {
+                    tearSheets.push(content);
+                }
+            }
+
+            return tearSheets;
+        }
+
         //Get header and columns for table layout 1
         function getHeaderAndColumnsForTableLayout1(tearcontent)
         {
@@ -712,9 +755,10 @@
                 row: null,
                 itemId: null,
                 mnemonicId: null
-            };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'GenericTableItem')
                 {
@@ -739,9 +783,10 @@
                     row: null,
                     itemId: null,
                     mnemonicId: null
-                };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'GenericTableItem')
                 {
@@ -765,16 +810,31 @@
                 itemId: null,
                 mnemonicId: null,
                 header: null,
-                row: null
-            };
+                row: null,
+                footer: null
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
-                if(content.id === 'TableLayOut')
-                {
-                    tableLayout.itemId = content.ItemId;
-                    tableLayout.mnemonicId = content.Mnemonic;
-                    tableLayout.row = content.TableRowTemplate.row;
+                if(content.id) {
+                    switch (content.id.toLowerCase()) {
+                        case 'tablelayout':
+                            tableLayout.itemId = content.ItemId;
+                            tableLayout.mnemonicId = content.Mnemonic;
+                            if (content.TableRowTemplate.row.length) {
+                                tableLayout.row = content.TableRowTemplate.row;
+                            }
+                            else {
+                                tableLayout.row = [];
+                                tableLayout.row.push(content.TableRowTemplate.row);
+                            }
+                            break;
+
+                        case 'labelitem':
+                            tableLayout.footer = content.Label;
+                            break;
+                    }
                 }
             });
 
@@ -790,9 +850,10 @@
                     row: null,
                     itemId: null,
                     mnemonicId: null
-                };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'TableLayOut')
                 {
@@ -819,9 +880,10 @@
                 row: null,
                 itemId: null,
                 mnemonicId: null
-            };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'TableLayOut')
                 {
@@ -840,9 +902,10 @@
             var tableLayout = {
                 header: null,
                 row: null
-            };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'TableLayOut')
                 {
