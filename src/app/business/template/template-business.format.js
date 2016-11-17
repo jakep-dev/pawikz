@@ -67,7 +67,9 @@
     	    var formatted;
 
     	    formatted = preFormatData(value, formatObj);
-    	    if (formatObj.postProcessingNeeded) {
+    	    if(formatted === formatObj.defaultValue) {
+                formatted = '';
+            } else if (formatObj.postProcessingNeeded) {
     	        formatObj.postProcessingNeeded = undefined;
     	        if (formatObj.isNegative) {
     	            formatted = '-' + formatObj.numericValue.toString();
@@ -205,7 +207,7 @@
     	    var expr = /[0-9]+\.?[0-9]*/;
 
     	    formatted = preFormatData(value, formatObj);
-    	    if (formatObj.postProcessingNeeded) {
+    	    if (formatObj.postProcessingNeeded && formatted !== formatObj.defaultValue) {
     	        formatObj.postProcessingNeeded = undefined;
     	        if (formatObj.isNegative) {
     	            if (formatObj.dataSubtype === 'CURRENCY') {
@@ -419,11 +421,11 @@
 
     	function getMnemonicDefaultValue(tearSheet)
     	{
-    	    if (tearSheet instanceof Object) {
+    	    if (tearSheet instanceof Object && tearSheet.answer) {
+                return tearSheet.answer;
+            } else {
                 return '';
-    	    } else {
-    	        return tearSheet.answer;
-    	    }
+            }
     	}
 
     	function getMnemonicPrecision(tearSheet)
