@@ -234,7 +234,10 @@
 
                                 //Check for chart component
                                _.each(newScope.tearcontent, function (each) {
-                                    if (each.id === 'ScrapedItem' && each.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
+                                   var tearSheet = each.TearSheetItem;
+                                    if (tearSheet &&
+                                        tearSheet.id === 'ScrapedItem' &&
+                                        tearSheet.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
                                         isChartComp = true;
                                         return;
                                     }
