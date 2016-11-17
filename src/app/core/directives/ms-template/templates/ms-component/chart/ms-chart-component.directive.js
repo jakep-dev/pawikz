@@ -67,15 +67,17 @@
             link: function(scope, el, attrs)
             {
                 var html = '';
-                angular.forEach(scope.tearcontent, function(content)
+                _.each(scope.tearcontent, function(content)
                 {
+                    var tearSheet = content.TearSheetItem || content;
+
                     html = '<div>';
-                    switch (content.id)
+                    switch (tearSheet.id)
                     {
                         case "ScrapedItem":
                             var newScope  = scope.$new();
-                            var mnemonicid = content.Mnemonic;
-                            var itemid = content.ItemId;
+                            var mnemonicid = tearSheet.Mnemonic;
+                            var itemid = tearSheet.ItemId;
                             var type;
 
                             if (mnemonicid === 'WU_RATIOS_CHART') {
