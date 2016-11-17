@@ -165,6 +165,16 @@
                             context.currentDiff = 0;
                             context.prevDiff;
 
+                            context.xAxisLabels.sort(function (a, b) {
+                                if (a.textContent < b.textContent) {
+                                    return -1;
+                                } else if (a.textContent > b.textContent) {
+                                    return 1;
+                                } else {
+                                    return 0;
+                                }
+                            });
+
                             for (context.i = 0; context.i < context.n; context.i++) {
                                 //console.log(context.xAxisLabels[context.i].textContent);
                                 context.prevDiff = context.currentDiff;
@@ -178,6 +188,7 @@
                                             {
                                                 index: context.i,
                                                 originalLabel: context.xAxisLabels[context.i].textContent,
+                                                finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
                                                 skipCount: context.skipCount
                                             }
                                         );
@@ -189,6 +200,7 @@
                                                 {
                                                     index: context.i,
                                                     originalLabel: context.xAxisLabels[context.i].textContent,
+                                                    finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
                                                     skipCount: context.skipCount
                                                 }
                                             );
@@ -201,6 +213,7 @@
                                                         {
                                                             index: context.i,
                                                             originalLabel: context.xAxisLabels[context.i].textContent,
+                                                            finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
                                                             skipCount: context.skipCount
                                                         }
                                                     );
@@ -211,6 +224,7 @@
                                                         {
                                                             index: context.i - 1,
                                                             originalLabel: context.xAxisLabels[context.i - 1].textContent,
+                                                            finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
                                                             skipCount: context.skipCount - 1
                                                         }
                                                     );
@@ -222,6 +236,7 @@
                                                     {
                                                         index: context.i - 1,
                                                         originalLabel: context.xAxisLabels[context.i - 1].textContent,
+                                                        finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
                                                         skipCount: context.skipCount - 1
                                                     }
                                                 );
@@ -249,79 +264,129 @@
 
                             //console.log('Found ' + context.blankCount + ' blanks.');
                             if (context.blankCount == 0) {
-                                context.useAutoCorrect = true;
                                 context.labelsChanged = true;
                                 if (context.targetLabels.length > 0) {
                                     //we need to show the first label so we don't count the first label to skip 
                                     context.targetLabels[0].skipCount--;
                                     context.totalSkip--;
-
+                                    //console.log(context.targetLabels);
                                     context.labelCount = context.targetLabels.length;
                                     context.avgSkip_f = context.totalSkip / context.labelCount;
                                     context.avgSkip_low = Math.floor(context.avgSkip_f);
                                     context.finalSkip = (context.n - 1) - context.targetLabels[context.labelCount - 1].index - 1;
+                                    //console.log('labelCount = ' + context.labelCount + ' totalSkip = ' + context.totalSkip + ' avgSkip_f = ' + context.avgSkip_f + ' avgSkip_low = ' + context.avgSkip_low + ' finalSkip = ' + context.finalSkip);
                                     if (context.finalSkip >= 0) {
                                         context.needToBorrow = context.avgSkip_low - context.finalSkip;
+                                        //console.log('needToBorrow = ' + context.needToBorrow);
+                                        context.targetLabels[context.labelCount - 1].index -= context.needToBorrow;
                                         if (context.needToBorrow > 0) {
                                             for (context.i = context.labelCount - 1; context.i >= 0; context.i--) {
-                                                if (context.needToBorrow > 0) {
-                                                    if (context.targetLabels[context.i].skipCount > context.needToBorrow) {
-                                                        context.targetLabels[context.i].index -= context.needToBorrow;
+                                                if (context.targetLabels[context.i].skipCount > context.avgSkip_low) {
+                                                    context.targetLabels[context.i].skipCount = context.avgSkip_low;
+                                                }
+                                                if (context.i - 1 >= 0) {
+                                                    context.newIndex = context.targetLabels[context.i].index - (context.avgSkip_low + 1);
+                                                    if (context.targetLabels[context.i - 1].index > context.newIndex) {
+                                                        context.targetLabels[context.i - 1].index = context.newIndex;
                                                     } else {
-                                                        //limited numbers points on chart detected
-                                                        context.useAutoCorrect = false;
                                                         break;
                                                     }
-                                                    if (context.i - 1 >= 0) {
-                                                        if (context.targetLabels[context.i - 1].skipCount > context.targetLabels[context.i].skipCount) {
-                                                            context.needToBorrow--;
-                                                            context.targetLabels[context.i - 1].index--;
-                                                            context.targetLabels[context.i - 1].skipCount--;
-                                                        }
-                                                    }
-                                                } else {
-                                                    break;
                                                 }
                                             }
                                         }
-                                        //add last label
-                                        context.targetLabels.push(
-                                            {
-                                                index: context.n - 1,
-                                                originalLabel: context.xAxisLabels[context.n - 1].textContent,
-                                                skipCount: context.avgSkip_low
-                                            }
-                                        );
+                                        if (context.targetLabels[context.labelCount - 1].finalLabel === moment(context.xAxisLabels[context.n - 1].textContent, 'YYYY-MM-DD').format(context.labelFormat)) {
+                                            context.targetLabels[context.labelCount - 1].index = context.n - 1;
+                                            context.targetLabels[context.labelCount - 1].skipCount += context.avgSkip_low + 1;
+                                            //console.log('Removed last x-axis label ' + context.targetLabels[context.labelCount - 1].finalLabel);
+                                        } else {
+                                            //add last label
+                                            context.targetLabels.push(
+                                                {
+                                                    index: context.n - 1,
+                                                    originalLabel: context.xAxisLabels[context.n - 1].textContent,
+                                                    finalLabel: moment(context.xAxisLabels[context.n - 1].textContent, 'YYYY-MM-DD').format(context.labelFormat),
+                                                    skipCount: context.avgSkip_low
+                                                }
+                                            );
+                                        }
                                     }
                                     //add first label
                                     context.targetLabels.splice(0, 0,
                                         {
                                             index: 0,
                                             originalLabel: context.xAxisLabels[0].textContent,
+                                            finalLabel: moment(context.xAxisLabels[0].textContent, 'YYYY-MM-DD').format(context.labelFormat),
                                             skipCount: 0
                                         }
                                     );
-
+                                    //console.log(context.targetLabels);
                                     context.j = 0;
                                     context.beforeText;
                                     context.afterText;
                                     context.labelCount = context.targetLabels.length;
+                                    context.totalSkip = 0;
+                                    context.skipCount = 0;
                                     for (context.i = 0; context.i < context.n; context.i++) {
                                         context.beforeText = context.xAxisLabels[context.i].textContent;
                                         if ((context.j < context.labelCount) && (context.i == context.targetLabels[context.j].index)) {
                                             //$(context.xAxisLabels[context.i].firstChild).attr('content', context.xAxisLabels[context.i].firstChild.textContent);
-                                            context.xAxisLabels[context.i].firstChild.textContent = moment(context.targetLabels[context.j].originalLabel, 'YYYY-MM-DD').format(context.labelFormat);
+                                            context.xAxisLabels[context.i].firstChild.textContent = context.targetLabels[context.j].finalLabel;
+                                            context.targetLabels[context.j].skipCount = context.skipCount;
+                                            context.skipCount = 0
                                             context.j++;
                                         } else {
                                             //$(context.xAxisLabels[context.i].firstChild).attr('content', context.xAxisLabels[context.i].firstChild.textContent);
                                             context.xAxisLabels[context.i].firstChild.textContent = '';
+                                            context.totalSkip++;
+                                            context.skipCount++;
                                         }
                                         context.afterText = context.xAxisLabels[context.i].textContent;
                                         //console.log('[' + context.beforeText + ',' + context.afterText + ']');
-                                    };
+                                    }
+                                    context.avgSkip_f = context.totalSkip / (context.labelCount - 1);
+                                    context.avgSkip_low = Math.floor(context.avgSkip_f);
+                                    context.extra = context.totalSkip - (context.avgSkip_low * (context.labelCount - 1));
+                                    context.shortCount = context.labelCount - context.extra - 1;
+                                    //console.log('labelCount = ' + context.labelCount + ' totalSkip = ' + context.totalSkip + ' avgSkip_f = ' + context.avgSkip_f + ' avgSkip_low = ' + context.avgSkip_low + ' extra = ' + context.extra + ' shortCount = ' + context.shortCount);
+                                    if (context.avgSkip_low > 1) {
+                                        for (context.i = 1; context.i <= context.labelCount - 2; context.i++) {
+                                            context.j = context.targetLabels[context.i].index;
+                                            //console.log('i = ' + context.i + ' before index = ' + context.j + ' extra = ' + context.extra + ' shortCount = ' + context.shortCount);
+                                            if (context.targetLabels[context.i - 1].index < context.j) {
+                                                context.xAxisLabels[context.j].firstChild.textContent = '';
+                                            }
+                                            if ((context.i % 2) == 1) {
+                                                if (context.shortCount > 0) {
+                                                    context.skipCount = context.avgSkip_low;
+                                                    context.shortCount--;
+                                                } else {
+                                                    context.skipCount = context.avgSkip_low + 1;
+                                                    context.extra--;
+                                                }
+                                            } else {
+                                                if (context.extra > 0) {
+                                                    context.skipCount = context.avgSkip_low + 1;
+                                                    context.extra--;
+                                                } else {
+                                                    context.skipCount = context.avgSkip_low;
+                                                    context.shortCount--;
+                                                }
+                                            }
+                                            if (context.i == 1) {
+                                                context.j = context.skipCount + 1;
+                                            } else {
+                                                context.j = context.targetLabels[context.i - 1].index + context.skipCount + 1;
+                                            }
+                                            context.targetLabels[context.i].index = context.j;
+                                            //console.log('i = ' + context.i + ' after index = ' + context.j + ' extra = ' + context.extra + ' shortCount = ' + context.shortCount);
+                                            context.xAxisLabels[context.j].firstChild.textContent = context.targetLabels[context.i].finalLabel;
+                                        };
+                                    }
                                 }
                                 //console.log(context.targetLabels);
-
+                                //for (context.i = 0; context.i < context.n; context.i++) {
+                                //    console.log('[' + context.i + '][' + context.xAxisLabels[context.i].textContent + ']');
+                                //}
                             }
                         }
                         //console.log('[setupXAxisLabels]Rewriting xAxisLabels end');

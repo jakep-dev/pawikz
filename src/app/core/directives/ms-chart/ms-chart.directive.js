@@ -655,6 +655,18 @@
                                 return ticker;
                             }
 
+                            function getTitle(ratioLabel) {
+                                var ticker = getDefaultTicker();
+                                var title;
+                                if (ticker != commonBusiness.companyName) {
+                                    title = commonBusiness.companyName + '(' + ticker + ')';
+                                } else {
+                                    title = commonBusiness.companyName;
+                                }
+                                title += ' - ' + ratioLabel;
+                                return title;
+                            }
+
                             function getSavedFinancialChart() {
                                 financialChartService.getSavedFinancialChart(financialChartBusiness.getSavedChartSettingsInputObject(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid))
                                 .then(function (data) {
@@ -687,13 +699,7 @@
 
                                         if (data && data.chartSettings) {
                                             var ticker = getDefaultTicker();
-                                            var title;
-                                            if (ticker != commonBusiness.companyName) {
-                                                title = commonBusiness.companyName + '(' + ticker + ')';
-                                            } else {
-                                                title = commonBusiness.companyName;
-                                            }
-                                            title += ' - ' + financialChartBusiness.defaultRatioLabel;
+                                            var title = getTitle(financialChartBusiness.defaultRatioLabel);
                                             //Default Financial Chart
                                             scope.jsCharts.push({
                                                 tearsheet: {
@@ -780,7 +786,19 @@
 
                                     commonBusiness.onMsg('saveAllChart', scope,
                                         function () {
-                                            financialChartService.setInitialStateData(angular.copy(scope.jsCharts));
+                                            var newList;
+                                            var i;
+                                            var n;
+
+                                            newList = new Array();
+                                            //skip the default chart use the default chart from load time
+                                            var lastStatedata = financialChartService.getInitialStateData();
+                                            newList.push(lastStatedata[0]);
+                                            n = scope.jsCharts.length;
+                                            for (i = 1; i < n; i++) {
+                                                newList.push(angular.copy(scope.jsCharts[i]));
+                                            }
+                                            financialChartService.setInitialStateData(newList);
                                             saveAllCharts();
                                         }
                                     );
@@ -952,7 +970,7 @@
                                         } else {
                                             resetChartFilter(selectedChart.filterState);
                                         }
-                                        selectedChart.title = commonBusiness.companyName;
+                                        selectedChart.title = getTitle(selectedChart.filterState.chartTypeLabel);
                                         //scope.jsCharts[id] = selectedChart;
                                         scope.jsCharts[id] = angular.copy(selectedChart);
                                         if (matchingChart && (id != 0)) {
