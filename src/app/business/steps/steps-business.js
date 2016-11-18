@@ -18,10 +18,41 @@
             getNextStep: getNextStep,
             getPrevStep: getPrevStep,
             isPreviousStep: isPreviousStep,
-            isNextStep: isNextStep
+            isNextStep: isNextStep,
+            goToStep: goToStep
         };
 
         return business;
+
+        //Go back step
+        function goToStep(stepId, steps)
+        {
+            var stepIdInt = parseInt(stepId);
+
+            if(steps)
+            {
+               
+                var goToStepVal = _.find(steps, function(stepsObj){
+
+                    if(stepsObj.stepId === stepIdInt)
+                    {
+                        return stepsObj;
+                    }
+
+                });
+
+                if(goToStepVal)
+                {
+                    var stateConfig = {
+                        projectId: $rootScope.projectId,
+                        stepId: parseInt(goToStepVal.stepId),
+                        stepName: goToStepVal.stepName
+                    };
+
+                    $state.go('app.steps', stateConfig);
+                }
+            }
+        }
 
         //Go to previous step
         function getPrevStep(stepId, steps)

@@ -109,7 +109,7 @@
                 scope: null
             };
             _.each(tearcontent, function(content) {
-                comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+                comp = templateBusiness.buildComponents(scope, content, (scope.subtype || content.subtype));
 
                 if(comp && comp.html !== '')
                 {

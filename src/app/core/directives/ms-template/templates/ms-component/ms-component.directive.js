@@ -136,10 +136,6 @@
         }
 
         buildActions();
-
-        //$scope.$evalAsync( function() {
-        //    alert('component content loaded');
-        //});
     }
 
     /** @ngInject */
@@ -165,7 +161,7 @@
             {
                 return function($scope)
                 {
-                    $scope.title = $scope.tearheader.label;
+                    $scope.title = $scope.tearheader.label || $scope.tearheader.Label;
                     $scope.preLabel = $scope.tearheader.prelabel || '';
                     $scope.actions = null;
                     $scope.actions = [];
@@ -180,7 +176,10 @@
                         {
                             case 'Expiring':
                             case 'Proposed':
-                                _.each($scope.tearcontent, function(content) {
+
+                                var tearSheets = templateBusiness.getTearSheetItems($scope.tearcontent);
+
+                                _.each(tearSheets, function(content) {
                                     comp = templateBusiness.buildComponents($scope, content, content.subtype);
                                     if (comp && comp.html !== '') {
                                         el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
@@ -214,7 +213,16 @@
                                 {
                                     _.each(subComponents, function(component)
                                     {
-                                       comp = templateBusiness.buildSubComponent($scope, component);
+                                        if(!component.header) {
+                                            comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
+                                            if(comp && comp.html !== '') {
+                                                comp.html += '<div style="height:5px"></div>'
+                                            }
+                                        }
+                                        else {
+                                            comp = templateBusiness.buildSubComponent($scope, component);
+                                        }
+
                                         if(comp && comp.html !== '')
                                         {
                                             el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
@@ -261,8 +269,10 @@
             var comp = {
                 html: '',
                 scope: null
-            };
-            _.each(tearcontent, function(content) {
+            },
+            tearSheets = templateBusiness.getTearSheetItems(tearcontent);
+
+            _.each(tearSheets, function(content) {
                 comp = templateBusiness.buildComponents(scope, content, scope.subtype);
 
                 if(comp && comp.html !== '')

@@ -15,7 +15,7 @@
     }
 
     /** @ngInject */
-    function msGenericTableSiDirective($compile, templateBusiness, $document)
+    function msGenericTableSiDirective($compile, templateBusiness, templateBusinessFormat, $document)
     {
         return {
             restrict: 'E',
@@ -86,15 +86,34 @@
                                         break;
                                     case 'GenericTextItem':
                                         newScope = scope.$new();
-
+                                        //default to align-left
+                                        var classValue;
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
-                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId);
+                                        //raw value from database
+                                        var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
+                                        var formats = templateBusinessFormat.getFormatObject(tearSheetItem);
 
-                                        html += '<ms-text value="'+ value +'" ' +
-                                            'itemid="'+ itemId +'" ' +
-                                            'mnemonicid="'+ mnemonicId +'"  ' +
-                                            'isdisabled="false"></ms-text>';
+                                        if (scope.isnoneditable) {
+                                            //default label alignment
+                                            classValue = "align-left-non-editable-table";
+                                            classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(col, classValue);
+                                            value = templateBusinessFormat.formatData(value, formats);
+                                            html += '<ms-label class="' + classValue + '" classtype="' + classValue + '" style="font-weight: normal" value="' + value + '"></ms-label>';
+                                        } else {
+                                            //default text box alignment
+                                            classValue = 'align-left';
+                                            value = templateBusinessFormat.removeFixes(value, formats);
+                                            classValue = templateBusinessFormat.getAlignmentForGenericTableItem(col, classValue);
+
+                                            html += '<ms-text ' +
+                                                'itemid="' + itemId + '" ' +
+                                                'mnemonicid="' + mnemonicId + '"  ' +
+                                                'isdisabled="' + scope.isnoneditable + '" ' +
+                                                'classtype="' + classValue + '" ' +
+                                                'value="' + value + '"' +
+                                                'formats="' + _.escape(angular.toJson(formats)) + '"></ms-text>';
+                                        }
                                         break;
                                     case 'SingleDropDownItem':
                                         var itemId = tearSheetItem.ItemId;

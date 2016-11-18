@@ -1,5 +1,3 @@
-<md-checkbox class="no-margin-padding" ng-repeat="value in detail.values"
-             ng-model="value.isSelected"
-             ng-disabled="value.isDisabled">
-    {{ value.shortName }}
-</md-checkbox>
+<md-checkbox aria-label="checkbox" ng-model="tearsheetObj.selectedValue" 
+		ng-change="checkChange()" ng-true-value="{{trueValue}}"
+		ng-disabled="disabled" value="{{value}}" class="no-padding-margin">{{text}}</md-checkbox>

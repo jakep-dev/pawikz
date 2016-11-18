@@ -9,13 +9,15 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness,
-                              overviewBusiness, templateService, Papa, dialog, store, $window, $sce, $mdToast) {
+    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, 
+                              overviewBusiness, templateService, financialChartService,
+                              Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
+           saveInteractiveFinancialChartMnemonics: [],
            notifications: [],
            autoSavePromise: [],
            isExpandAll: false,
@@ -25,12 +27,14 @@
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
+           saveInteractiveFinancialCharts: saveInteractiveFinancialCharts,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
            getTemplateElement: getTemplateElement,
            getReadyForAutoSave: getReadyForAutoSave,
 		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
 		   getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
+		   getReadyForAutoSaveInteractiveFinancialChart: getReadyForAutoSaveInteractiveFinancialChart,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
            getEvalMnemonicValue: getEvalMnemonicValue,
            getNewItemId: getNewItemId,
@@ -66,10 +70,12 @@
            pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
-		   getMnemonicPrefix: getMnemonicPrefix,
+		   //getMnemonicPrefix: getMnemonicPrefix,
 		   getMnemonicPostfix: getMnemonicPostfix,
 		   getMnemonicParameters: getMnemonicParameters,
-           getMnemonicPrecision: getMnemonicPrecision,
+		   getMnemonicPrecision: getMnemonicPrecision,
+		   getMnemonicDataType: getMnemonicDataType,
+		   getMnemonicDataSubtype: getMnemonicDataSubtype,
 		   formatData: formatData,
 		   removeFormatData: removeFormatData,
            removeCommaValue: removeCommaValue,
@@ -81,7 +87,8 @@
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
            initializeMessages: initializeMessages,
-		   isMnemonicNumberType: isMnemonicNumberType
+		   isMnemonicNumberType: isMnemonicNumberType,
+           getTearSheetItems: getTearSheetItems
         };
 
         return business;
@@ -147,7 +154,6 @@
             {
                 if(response)
                 {
-
                     var notification = _.find(business.notifications, function(not)
                     {
                         if(not.status === 'in-process' &&
@@ -302,8 +308,14 @@
                             }
                         });
 
-
-                        if (data && data.errorMessages &&
+                        if (!data) {
+                            if (notification) {
+                                notification.status = 'error';
+                                notification.progress = 100;
+                                notification.disabled = false;
+                            }
+                            toast.simpleToast("Issue with PDF Download. Please try again.");
+                        } else if (data && data.errorMessages &&
                             data.errorMessages.length > 0) {
                             if(notification)
                             {
@@ -429,11 +441,24 @@
             newScope.tearheader = component.header;
             newScope.tearcontent = [];
             newScope.iscollapsible = true;
-            newScope.tearcontent.push(component.section);
-            newScope.isnoneditable = false;
 
-            comp.html = '<ms-sub-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
-                'isnoneditable="isnoneditable"></ms-sub-component>';
+            if(component.section.length) {
+                newScope.tearcontent.push.apply(newScope.tearcontent, component.section);
+            }
+            else{
+                newScope.tearcontent.push(component.section);
+            }
+
+            newScope.isnoneditable = scope.isnoneditable;
+            newScope.isprocesscomplete = true;
+            newScope.actions = [];
+            newScope.subtype = component.section.subtype || '';
+            var isLastComponent = false;
+            newScope.itemid = component.section.ItemId || component.header.itemid;
+
+            comp.html = '<div><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+                'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
+                'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component> <div style="min-height: 5px"></div> </div>';
             comp.scope = newScope;
 
             return comp;
@@ -445,23 +470,39 @@
         {
             var components = [],
                 component = {
-                      header: null,
-                      section: null
-                    };
+                    header: null,
+                    section: null
+                };
 
             _.each(contents, function(content)
             {
-               if(content.id === 'LabelItem')
-               {
-                   component.header = content;
-               }
+                var tearSheet;
+                if(content.TearSheetItem &&
+                   !content.TearSheetItem.length) {
+                    tearSheet = content.TearSheetItem;
+                }
                 else {
-                   component.section = content;
-               }
+                    tearSheet = content;
+                }
+
+                if(tearSheet.id === 'LabelItem') {
+                    component.header = tearSheet;
+                }
+                else {
+                    component.section = tearSheet;
+                    //If the Label Item followed by section pattern is not found.
+                    //Which means that its a stand-alone section.
+                    if(!component.header) {
+                        components.push(component);
+                        component = {
+                            header: null,
+                            section: null
+                        };
+                    }
+                }
 
                 if(component.header &&
-                    component.section)
-                {
+                    component.section) {
                     components.push(component);
                     component = {
                         header: null,
@@ -475,32 +516,43 @@
 
         function buildComponents(scope, content, subtype)
         {
-            var type = subtype || content.id;
+            var tearSheet = content.TearSheetItem || content,
+                type = subtype || tearSheet.id;
 
-            switch(type)
+            switch(type.toLowerCase())
             {
-                case 'LabelItem':
-                    return buildLabel(scope, content);
+                case 'labelitem':
+                    return buildLabel(scope, tearSheet);
                     break;
 
-                case 'GenericTableItem':
-                    return buildGenericTableItem(scope, content);
+                case 'generictableitem':
+                    return buildGenericTableItem(scope, tearSheet);
                     break;
 
-                case 'RTFTextAreaItem':
-                    return buildRichTextArea(scope, content);
+                case 'rtftextareaitem':
+                    return buildRichTextArea(scope, tearSheet);
                     break;
 
-                case 'ScrapedItem':
-                    return buildScrapeItem(scope, content);
+                case 'scrapeditem':
+                    return buildScrapeItem(scope, tearSheet);
                     break;
 
-                case 'Expiring':
-                    return buildExpiringProgram(scope, scope.tearheader, content);
+                case 'expiring':
+                    return buildExpiringProgram(scope, scope.tearheader, tearSheet);
                     break;
 
-                case 'Proposed':
-                    return buildProposedProgram(scope, scope.tearheader, content);
+                case 'proposed':
+                    return buildProposedProgram(scope, scope.tearheader, tearSheet);
+                    break;
+
+                case 'linkitem':
+                    return buildLinkItem(scope, tearSheet);
+                    break;
+
+                case 'tablelayout':
+                    scope.tearcontent = [];
+                    scope.tearcontent.push(tearSheet);
+                    return determineTableLayout(scope, tearSheet, tearSheet.subtype);
                     break;
             }
         }
@@ -551,7 +603,7 @@
         }
 
         //Build read-only pivot table layout element
-        function buildReadOnlyPivotTableLayout(scope, itemId, mnemonicId, header, columns)
+        function buildReadOnlyPivotTableLayout(scope, itemId, mnemonicId, header, columns, footer)
         {
             var newScope  = scope.$new(true),
                 comp = {
@@ -564,7 +616,8 @@
 
             newScope.tearsheet = {
                 header: header,
-                columns: columns
+                columns: columns,
+                footer: footer
             };
 
             comp.html = '<ms-tablelayout-r-p itemid="'+newScope.itemid+'" mnemonicid="'+newScope.mnemonicid+'" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r-p>';
@@ -646,7 +699,7 @@
                 case 'tablelayout3':
                     //ReadOnly-Pivot Table
                     tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
-                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
                     break;
 
                 case 'tablelayout4':
@@ -669,6 +722,34 @@
             return null;
         }
 
+        //Get TearSheet Items
+        function getTearSheetItems(tearcontent)
+        {
+            var tearSheets = [],
+                content;
+
+            if(tearcontent && tearcontent.length === 1) {
+                content = tearcontent[0];
+
+                if (content.TearSheetItem) {
+                    if (content.TearSheetItem.length) {
+                        tearSheets.push.apply(tearSheets, content.TearSheetItem)
+                    }
+                    else {
+                        tearSheets.push(content.TearSheetItem);
+                    }
+                }
+                else {
+                    tearSheets.push(content);
+                }
+            }
+            else{
+                tearSheets.push.apply(tearSheets, tearcontent);
+            }
+
+            return tearSheets;
+        }
+
         //Get header and columns for table layout 1
         function getHeaderAndColumnsForTableLayout1(tearcontent)
         {
@@ -677,9 +758,10 @@
                 row: null,
                 itemId: null,
                 mnemonicId: null
-            };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'GenericTableItem')
                 {
@@ -704,9 +786,10 @@
                     row: null,
                     itemId: null,
                     mnemonicId: null
-                };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'GenericTableItem')
                 {
@@ -730,16 +813,31 @@
                 itemId: null,
                 mnemonicId: null,
                 header: null,
-                row: null
-            };
+                row: null,
+                footer: null
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
-                if(content.id === 'TableLayOut')
-                {
-                    tableLayout.itemId = content.ItemId;
-                    tableLayout.mnemonicId = content.Mnemonic;
-                    tableLayout.row = content.TableRowTemplate.row;
+                if(content.id) {
+                    switch (content.id.toLowerCase()) {
+                        case 'tablelayout':
+                            tableLayout.itemId = content.ItemId;
+                            tableLayout.mnemonicId = content.Mnemonic;
+                            if (content.TableRowTemplate.row.length) {
+                                tableLayout.row = content.TableRowTemplate.row;
+                            }
+                            else {
+                                tableLayout.row = [];
+                                tableLayout.row.push(content.TableRowTemplate.row);
+                            }
+                            break;
+
+                        case 'labelitem':
+                            tableLayout.footer = content.Label;
+                            break;
+                    }
                 }
             });
 
@@ -755,9 +853,10 @@
                     row: null,
                     itemId: null,
                     mnemonicId: null
-                };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'TableLayOut')
                 {
@@ -784,9 +883,10 @@
                 row: null,
                 itemId: null,
                 mnemonicId: null
-            };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'TableLayOut')
                 {
@@ -805,9 +905,10 @@
             var tableLayout = {
                 header: null,
                 row: null
-            };
+            },
+            tearSheets = getTearSheetItems(tearcontent);
 
-            _.each(tearcontent, function(content)
+            _.each(tearSheets, function(content)
             {
                 if(content.id === 'TableLayOut')
                 {
@@ -978,6 +1079,21 @@
             return comp;
         }
 
+        //Build the link item components
+        function buildLinkItem(scope, content)
+        {
+            var comp = {
+                html: '',
+                scope: scope
+            };
+
+            comp.html = '<div layout-padding>';
+            comp.html += '<ms-link value="' + content.Label + '" href="' + content.url + '" gotostep="'+ content.GoBack +'"></ms-link>';
+            comp.html += '</div>';
+
+            return comp;
+        }
+
 
         function unParseJsonToCsv(json)
         {
@@ -1019,7 +1135,7 @@
 
         function isKMBValue(inputVal) 
         {
-            var regEx = /^[0-9]+\.?[0-9]*[kKmMbB]$/;
+            var regEx = /^\-?[0-9]+\.?[0-9]*[kKmMbB]$/;
             if (regEx.test(inputVal))
             {
                 return true;
@@ -1504,7 +1620,7 @@
 				}
 				else if(valueType && valueType.dataType && valueType.dataType == 'DATE') 
 				{				
-					value = formatDate(parseDate(value, 'MM/DD/YYYY'), 'DD-MMM-YY');
+					value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
 				}
 			}
 			
@@ -1534,61 +1650,39 @@
 			
 			return isNumber;
 		}
-		
-		//check if subtype is CURRENCY to add prefix (currency symbol)
-		function isCurrencySubtype(mnemonicValue)
-		{
-			var isCurrency = false;
-			if(business.mnemonics)
-            {
 
-                var mnemonic = _.find(business.mnemonics, function(m)
-                                {
-                                  if(m.mnemonic === mnemonicValue)
-                                  {
-                                      return m;
-                                  }
-                                });
+		function getMnemonicDataType(tearSheet) {
+		    var dataType = null;
 
-                if(mnemonic)
-                {
-                    isCurrency = mnemonic.dataSubtype === 'CURRENCY';
-                }
-            }
-			
-			return isCurrency;
+		    if (business.mnemonics) {
+		        var mnemonic = _.find(business.mnemonics, function (m) {
+		            if (m.mnemonic === tearSheet.Mnemonic) {
+		                return m;
+		            }
+		        });
+
+		        if (mnemonic) {
+		            return mnemonic.dataType;
+		        }
+		    }
+		    return dataType;
 		}
-		
-		//get currency symbol prefix
-		function getMnemonicPrefix(tearSheet)
-		{
-			var prefix = '';
-			
-			if(isCurrencySubtype(tearSheet.Mnemonic) && overviewBusiness.templateOverview && overviewBusiness.templateOverview.defaultCurrency)
-			{
-				var currency = overviewBusiness.templateOverview.defaultCurrency;
-				switch (currency) {
-					case 'USD':					
-					case 'CAD':
-						prefix = '$';
-						break;
-					case 'JPY':
-						prefix = '&yen;';
-						break;
-					case 'EUR':
-						prefix = '&euro;';
-						break;
-					case 'GBP':
-						prefix = '&pound;';
-						break;
-					case 'CHF':
-						prefix = 'CHF';
-						break;
-					default:
-						prefix = '';
-				}
-			}
-			return prefix;
+
+		function getMnemonicDataSubtype(tearSheet) {
+		    var dataSubtype = null;
+
+		    if (business.mnemonics) {
+		        var mnemonic = _.find(business.mnemonics, function (m) {
+		            if (m.mnemonic === tearSheet.Mnemonic) {
+		                return m;
+		            }
+		        });
+
+		        if (mnemonic) {
+		            return mnemonic.dataSubtype;
+		        }
+		    }
+		    return dataSubtype;
 		}
 
 		//get decimal places for NUMBER types
@@ -1775,6 +1869,7 @@
                     save();
 					saveTable();
 					saveHybridTable();
+					saveInteractiveFinancialCharts();
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -1896,5 +1991,45 @@
             $interval.cancel(business.autoSavePromise);
             business.autoSavePromise = [];
         }
+
+        //Get ready for interactive financial chart auto save.
+        function getReadyForAutoSaveInteractiveFinancialChart(companyId, projectId, stepId, mnemonicId, itemId, value) {
+            var mnemonicItem = _.find(business.saveInteractiveFinancialChartMnemonics, function (currentMnemonic) {
+                if((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId) ) {
+                    return currentMnemonic;
+                }
+            });
+
+            if (angular.isUndefined(mnemonicItem)) {
+                business.saveInteractiveFinancialChartMnemonics.push({
+                    companyId: companyId,
+                    projectId: projectId,
+                    stepId: stepId,
+                    mnemonicId: mnemonicId,
+                    itemId: itemId,
+                    value: value
+                })
+            }
+            else {
+                mnemonicItem.value = value;
+            }
+            initiateAutoSave();
+        }
+
+        //Save interactive financial chart details
+        function saveInteractiveFinancialCharts() {
+            if (business.saveInteractiveFinancialChartMnemonics.length > 0) {
+
+                _.each(business.saveInteractiveFinancialChartMnemonics, function (mnemonicItem) {
+                    financialChartService.saveInteractiveFinancialChart(mnemonicItem)
+                        .then(function (response) {
+                            //TODO: send message to update chart id
+                            toast.simpleToast('Saved successfully');
+                        });
+                });
+                business.saveInteractiveFinancialChartMnemonics = [];
+            }
+        }
+
     }
 })();

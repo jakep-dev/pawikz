@@ -14,6 +14,17 @@
         vm.iscollapsible = $scope.iscollapsible;
         vm.isProcessComplete = $scope.isprocesscomplete;
 
+        function getSectionHeader() {
+            var header = 'Chart';
+            if ($scope.tearheader) {
+                if ($scope.tearheader.Label) {
+                    header = $scope.tearheader.Label;
+                } 
+            }
+            return header;
+        }
+
+        vm.getSectionHeader = getSectionHeader;
 
         $scope.$watch(
             "isprocesscomplete",
@@ -56,23 +67,32 @@
             link: function(scope, el, attrs)
             {
                 var html = '';
-                angular.forEach(scope.tearcontent, function(content)
+                _.each(scope.tearcontent, function(content)
                 {
+                    var tearSheet = content.TearSheetItem || content;
+
                     html = '<div>';
-                    switch (content.id)
+                    switch (tearSheet.id)
                     {
                         case "ScrapedItem":
                             var newScope  = scope.$new();
-                            var mnemonicid = content.Mnemonic;
-                            var itemid = content.ItemId;
+                            var mnemonicid = tearSheet.Mnemonic;
+                            var itemid = tearSheet.ItemId;
+                            var type;
 
+                            if (mnemonicid === 'WU_RATIOS_CHART') {
+                                type = 'Financial';
+                            } else {
+                                type = 'Stock';
+                            }
                             newScope.mnemonicid = mnemonicid;
                             newScope.itemid = itemid;
 
-                            html += '<ms-chart type="Stock" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
+                            html += '<ms-chart type="' + type + '" mnemonicid="'+ mnemonicid +'" itemid="'+ itemid +'"></ms-chart>';
                             el.find('#ms-chart-accordion-content').append($compile(html)(newScope));
                             break;
                     }
+                    html += '</div>';
                 });
             }
         };

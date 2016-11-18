@@ -12,7 +12,8 @@
         return {
             restrict: 'E',
             scope   : {
-                value: '@'
+                value: '@',
+                classtype: '@'
             },
             templateUrl: 'app/core/directives/ms-template/templates/ms-label/ms-label.html'
         };

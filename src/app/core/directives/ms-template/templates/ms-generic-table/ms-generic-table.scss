@@ -8,6 +8,8 @@ $generic-table-input-height: 25px;
 {
   border:1px dotted lightgrey;
   border-radius: 2px;
+  overflow-y: hidden;
+
 
   md-input-container {
       margin:0px 0;

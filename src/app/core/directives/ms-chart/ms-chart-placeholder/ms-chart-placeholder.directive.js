@@ -7,7 +7,7 @@
         .directive('msChartPlaceholder', msChartPlaceholderDirective);
 
     /** @ngInject */
-    function msChartPlaceHolderController($rootScope, $scope, dialog, $mdDialog, commonBusiness) {
+    function msChartPlaceHolderController($rootScope, $scope, dialog, $mdDialog, commonBusiness, overviewBusiness) {
         var vm = this;
         var type = $scope.$parent.type;
         vm.title = $scope.chartTitle;
@@ -24,27 +24,45 @@
         vm.onChartSave = $scope.onChartSave;
         vm.onChartReset = $scope.onChartReset;
 
-        if(vm.isMainChart) {
+        if (vm.isMainChart) {
             $scope.$on('ticker', function (event, args) {
-                if(vm.title.indexOf(' (' + args.ticker + ')') == -1) {
+                if (($scope.chart.tearsheet.type != 'stock') && (vm.title.indexOf(' (' + args.ticker + ')') == -1)) {
                     vm.title += ' (' + args.ticker + ')';
                 }
             });
         }
-        $scope.$watch('vm.title',function(newValue,oldValue){
-        if(oldValue!=newValue){
-            if($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title)
-			{			
-				$scope.chart.filterState.title = vm.title;
-			} 
-			else if ($scope.chart && $scope.chart.title) 
-			{
-				$scope.chart.title = vm.title;
-			}
-            if(!vm.isMainChart){
-                commonBusiness.emitMsg('autosave');
+
+        function onTitleUpdate(ratioLabel) {
+            var title;
+            if (overviewBusiness.templateOverview && overviewBusiness.templateOverview.ticker) {
+                title = commonBusiness.companyName + '(' + overviewBusiness.templateOverview.ticker + ')';
+            } else {
+                title = commonBusiness.companyName;
             }
+            title += ' - ' + ratioLabel;
+            vm.title = title;
         }
+
+        $scope.onTitleUpdate = onTitleUpdate;
+
+        $scope.$watch('vm.title',function(newValue,oldValue) {
+            if (oldValue != newValue) {
+                if (($scope.chart.chartType === "JSCHART") || ($scope.chart.chartType === "IMGURL")) {
+                    if ($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title) {
+                        $scope.chart.filterState.title = vm.title;
+                    }
+                    else if ($scope.chart && $scope.chart.title) {
+                        $scope.chart.title = vm.title;
+                    }
+                    if (!vm.isMainChart) {
+                        commonBusiness.emitMsg('autosave');
+                    }
+                } else if ($scope.chart.chartType === "IFCHART") {
+                    $scope.chart.title = vm.title;
+                    $scope.chart.filterState.chartTitle = vm.title;
+                    saveChart();
+                }
+            }
         });
 
 		if( $scope.chart && $scope.chart.filterState && $scope.chart.filterState.chart_id )
@@ -82,11 +100,11 @@
                 $scope.chartMoved(direction, $scope.index);
             //}
         };
+
         //save chart function
         function saveChart() {
             vm.onChartSave();
         }
-
 
         //Maximize the chart
         function maximizeChart() {
@@ -105,6 +123,12 @@
 
                 case 'image':
                     html = '<ms-image-chart url="' + $scope.chart.tearsheet.url + '"></ms-image-chart>';
+                    break;
+
+                case 'financial':
+                    html = '<ms-financial-chart chart-id="id" item-id="chart.tearsheet.itemId" ' +
+                            'mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" ' +
+                            'hide-filters="hideFilters"></ms-financial-chart>';
                     break;
 
                 case 'bar':
@@ -133,6 +157,31 @@
 
         };
 
+        function getSelectedRows() {
+            var tableInfo = [];
+            angular.forEach($scope.chart.tableInfo, function(table)
+            {
+                var selected = _.filter(table.rows, function(eachRow)
+                {
+                    if(eachRow.IsChecked === true)
+                    {
+                        return eachRow;
+                    }
+                });
+
+                if(selected.length > 0)
+                {
+                    tableInfo.push({
+                        isDefaultChart : false,
+                        source: table.source,
+                        rows: angular.copy(selected)
+                    });
+                }
+            });
+
+            return tableInfo;
+        }
+
         //Add new chart.
         function addChart() {
             var self = this;
@@ -151,6 +200,7 @@
                                 itemId: $scope.chart.tearsheet.itemId
                             },
                             filterState: angular.copy($scope.chart.filterState),
+                            tableInfo: getSelectedRows(),
                             msChartPlaceHolderId: msChartPlaceHolderId,
                             title: $scope.chartTitle
                         }
@@ -165,6 +215,23 @@
                         });
 
                     break;
+
+                case 'financial':
+                    if (chartIndex < 5) { //limit the chart count
+                        var ele = $('#ms-chart-container');
+                        var chartToBeAdded = angular.copy($scope.chart);
+                        $scope.addNewChart(chartToBeAdded, $scope.index);
+                    } else {
+                        dialog.alert('Error', "Maximum 5 charts could be added!", null, {
+                            ok: {
+                                name: 'ok', callBack: function () {
+                                    console.warn('excess chart tried to be added');
+                                }
+                            }
+                        });
+                    }
+                    break;
+
                 default:
                     break;
             }
@@ -175,7 +242,22 @@
 
         ///Remove selected chart.
         function removeChart(id, event) {
-            dialog.confirm('Would you like to delete?', 'Selected Stock chart will be deleted. Please confirm.',event, {
+            var chartTypeLabel;
+            switch ($scope.chart.chartType) {
+                case "JSCHART":
+                    chartTypeLabel = 'Stock chart';
+                    break;
+                case "IMGURL":
+                    chartTypeLabel = 'Legacy chart image';
+                    break;
+                case "IFCHART":
+                    chartTypeLabel = 'Financial chart';
+                    break;
+                default:
+                    chartTypeLabel = 'chart';
+                    break;
+            }
+            dialog.confirm('Would you like to delete?', 'Selected ' + chartTypeLabel + ' will be deleted. Please confirm.', event, {
                 ok: {
                     name: 'yes', callBack: function () {
                         if ($scope.chart) {
@@ -231,12 +313,16 @@
                     var html = '';
                     switch (scope.chart.tearsheet.type) {
                         case 'stock':
-                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState"></ms-stock-chart>';
+                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" table-info="chart.tableInfo"></ms-stock-chart>';
                             break;
 
                         case 'image':
 							vm.disableTitle = true;
                             html = '<ms-image-chart url="' + scope.chart.tearsheet.url + '"></ms-image-chart>';
+                            break;
+
+                        case 'financial':
+                            html = '<ms-financial-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" on-chart-save="onChartSave" on-title-update="onTitleUpdate"></ms-financial-chart>';
                             break;
 
                         case 'bar':

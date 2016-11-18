@@ -35,9 +35,12 @@ md-checkbox{
   z-index: 1;
   border-top: 1px solid #EEE;
 }
-.md-dialog-container{
+/*.md-dialog-container{
   z-index:999 !important;
 }
+.md-select-menu-container{
+  z-index:1000 !important;
+}*/
 
 .md-checkbox{
   margin-left: 5px;
@@ -50,10 +53,6 @@ md-checkbox{
 }
 .md-menu-content-height{
   height: 250px;
-}
-.md-virtual-repeat-container.md-autocomplete-suggestions-container{
-  left:738px !important;
-  margin-top:-100px;
 }
 
 .advison-events-menu-content {

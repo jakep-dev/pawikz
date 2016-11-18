@@ -1,15 +1,12 @@
-(function ()
-{
+(function () {
     'use strict';
 
-    angular
-        .module('app.core')
-        .controller('msStockChartController', msStockChartController)
-        .directive('msStockChart', msStockChartDirective);
+    angular.module('app.core')
+           .controller('msStockChartController', msStockChartController)
+           .directive('msStockChart', msStockChartDirective);
 
 
-    function msStockChartController($scope,stockService, commonBusiness, store)
-    {
+    function msStockChartController($scope,stockService, commonBusiness, templateBusinessFormat, store) {
         var vm = this;
         vm.selectedIndex ="";
         vm.searchVal = '';
@@ -17,13 +14,24 @@
         vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
 
-        vm.onFilterStateUpdate = function (){
+        //for stock table variables
+        vm.selectedSources = null;
+        vm.selectedRange = null;
+        vm.selectedDate = null;
+
+        vm.onFilterStateUpdate = function() {
             loadChartData();
         };
 
-        $scope.$on('filterSateUpdate',function(event) {
+        $scope.$on('filterSateUpdate', function(event) {
             $scope.$broadcast('resetEvents');
             loadChartData();
+        });
+
+        $scope.$watch('vm.selectedSources + vm.selectedRange + vm.selectedDate', function (newValue, oldValue) {
+            if(newValue !== oldValue){
+               vm.tableInfo = defineTableInfo();
+            }
         });
 
         function loadChartData() {
@@ -36,47 +44,46 @@
             var selectedIndicesList =  vm.filterState.selectedIndices;
             var selectedCompetitors = vm.filterState.selectedCompetitors;
             var stockString = '';
+
             if (mainStock)  {
                 stockString = mainStock + ',';
             }
 
-            if(selectedPeerList != null) {
-                selectedPeerList.forEach(function (stock) {
-                    stockString = stockString + stock + ',';
-                });
-            }
-            if(selectedCompetitors != null) {
-                selectedCompetitors.forEach(function (stock) {
+            if (selectedPeerList != null) {
+                selectedPeerList.forEach(function(stock) {
                     stockString = stockString + stock + ',';
                 });
             }
 
-            if(selectedIndicesList != null) {
-                selectedIndicesList.forEach(function (indics) {
+            if (selectedCompetitors != null) {
+                selectedCompetitors.forEach(function(stock) {
+                    stockString = stockString + stock + ',';
+                });
+            }
+
+            if (selectedIndicesList != null) {
+                selectedIndicesList.forEach(function(indics) {
                     stockString = stockString + '^' + indics + ',';
                 });
             }
 
-
-            if(stockString !=='') {
+            if (stockString !== '') {
                 stockString = stockString.slice(0, -1);
             }
-            var start_date, end_date;
-            var from = vm.filterState.startDate;
-            var to = vm.filterState.endDate;
-            if (periodValue ==='CUSTOM') {
-                start_date = from.getFullYear() + '-' + (from.getMonth()+1) + '-' + from.getDate();
-                end_date = to.getFullYear() + '-' + (to.getMonth()+1) + '-' + to.getDate();
+
+            var start_date;
+            var end_date;
+            if (periodValue === 'CUSTOM') {
+                start_date = templateBusinessFormat.formatDate(vm.filterState.startDate, 'YYYY-MM-DD');
+                end_date = templateBusinessFormat.formatDate(vm.filterState.endDate, 'YYYY-MM-DD');
             }
-            vm.fetchChartData(stockString,periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, vm.companyId);
+            vm.fetchChartData(stockString, periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, vm.companyId);
         }
 
         function convServiceResptoChartFormat(data) {
             var results = data;
-            if (results && results.stockChartPrimaryData)
-            {
+            if (results && results.stockChartPrimaryData) {
                 var outArr = [];
-
                 var xdataArr = [];
                 var datasetArr = [];
                 var firstDatasetArr = [];
@@ -87,32 +94,31 @@
                 var secondchartSerArr = [];
                 var primarTickerName = '';
                 var firstChartTitle = 'Price';
-                if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0)
-                    primarTickerName = results.stockChartPrimaryData[0].ticker;
                 var peerData = null;
                 var lengthDiff = false;
 
+                if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0) {
+                    primarTickerName = results.stockChartPrimaryData[0].ticker;
+                }
+
                 if (results.stockChartPeerData && results.stockChartPeerData.length) {
                     peerData = results.stockChartPeerData;
-                   if (results.stockChartPeerData.length > 0) {
+                    if (results.stockChartPeerData.length > 0) {
                         lengthDiff = true;
                     }
                 }
 
-                if(peerData)
-                {
-                    firstChartTitle='Percent Change';
+                if (peerData) {
+                    firstChartTitle = 'Percent Change';
                 }
 
                 for (var i = 0; i < results.stockChartPrimaryData.length; i++) {
-
                     var stock = results.stockChartPrimaryData[i];
                     var applyDividend = false;
                     var applyEarning = false;
                     var applySplit = false;
-                    //if(i%90 == 0)
-                    xdataArr[xdataArr.length] = stock.dataDate.substring(0, 10);
 
+                    xdataArr[xdataArr.length] = stock.dataDate.substring(0, 10);
                     firstDatasetArr[firstDatasetArr.length] = parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose);
                     secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
 
@@ -143,6 +149,7 @@
                             }
                         }
                     }
+
                     if (applyDividend) {
                         seriesByTickers[stock.ticker].push({
                             'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
@@ -151,8 +158,7 @@
                                 'symbol': 'url(../assets/icons/images/Stock_Dividend.jpg)'
                             }
                         });
-                    }
-                    else if (applyEarning) {
+                    } else if (applyEarning) {
                         seriesByTickers[stock.ticker].push({
                             'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
                             'marker': {
@@ -160,8 +166,7 @@
                                 'symbol': 'url(../assets/icons/images/Stock_Earnings.jpg)'
                             }
                         });
-                    }
-                    else if (applySplit) {
+                    } else if (applySplit) {
                         seriesByTickers[stock.ticker].push({
                             'y': parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose),
                             'marker': {
@@ -169,8 +174,7 @@
                                 'symbol': 'url(../assets/icons/images/Stock_Split.jpg)'
                             }
                         });
-                    }
-                    else {
+                    } else {
                         seriesByTickers[stock.ticker].push(parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose));
                     }
 
@@ -181,14 +185,11 @@
                 }
 
                 if (peerData) {
-
                     for (var i = 0; i < results.stockChartPeerData.length; i++) {
-
                         var stock = results.stockChartPeerData[i];
                         if (stock.ticker !== primarTickerName) {
                             xdataArr[xdataArr.length] = stock.dataDate;
                             firstDatasetArr[firstDatasetArr.length] = parseFloat(stock.percentChange);
-                            // secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
 
                             if (!seriesByTickers[stock.ticker]) {
                                 seriesByTickers[stock.ticker] = [];
@@ -203,19 +204,19 @@
                     }
                 }
 
-
-                // var stockName = results.stockChartPeerData[0].ticker;
                 var seriesSet = [];
                 var dataSet = [];
                 for (var key in seriesByTickers) {
                     if (seriesByTickers.hasOwnProperty(key)) {
                         seriesSet.push({
                             data: seriesByTickers[key],
+                            connectNulls: true,
                             name: key
                         });
                         dataSet.push(data);
                     }
                 }
+
                 var volumeSet = [];
                 for (var key in seriesByVolumes) {
                     if (seriesByVolumes.hasOwnProperty(key)) {
@@ -238,17 +239,20 @@
                     "showxaxisLabel": false,
                     "showtooltip": true,
                     "spacingTop": 30,
-                    "xAxis":{
-                        labels:{
+                    "xAxis": {
+                        labels: {
                             step:3
                         }
                     }
                 };
-                secondchartSerArr[secondchartSerArr.length] = {"data": secondDatasetArr
-                    //,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
-                    //,"pointStart": Date(xdataArr[0])
-                    //,"pointInterval": 24 * 3600 * 1000
+
+                secondchartSerArr[secondchartSerArr.length] = {
+                    "data": secondDatasetArr
+                    // ,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
+                    // ,"pointStart": Date(xdataArr[0])
+                    // ,"pointInterval": 24 * 3600 * 1000
                 };
+
                 datasetArr[datasetArr.length] = {
                     "name": "",
                     "yaxisTitle": "Volume (Millions)",
@@ -271,81 +275,189 @@
                 return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
             }
         }
-        vm.fetchChartData = function (stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
+
+        vm.fetchChartData = function(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
             stockService
-                .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId,  store.inMemoryCache['user-info'].token)
-                .then(function(data) {
-                    //@todo call logic for remove legend item on empty series data
-                    $scope.$emit('ticker', {'ticker': data.stockChartPrimaryData[0].ticker});
-                    vm.stockDataSet=convServiceResptoChartFormat(data);
-                    if(data.stockChartPeerData && data.stockChartPeerData.length){
-                        vm.selectedStockCount = data.stockChartPeerData.length/data.stockChartPrimaryData.length;
-                    }
-                });
+            .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, store.inMemoryCache['user-info'].token)
+            .then(function(data) {
+                //@todo call logic for remove legend item on empty series data
+                $scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
+                vm.stockDataSet = convServiceResptoChartFormat(data);
+                if (data.stockChartPeerData && data.stockChartPeerData.length) {
+                    vm.selectedStockCount = data.stockChartPeerData.length / data.stockChartPrimaryData.length;
+                }
+            });
         };
 
-    loadChartData();
+        loadChartData();   
 
-
-
-        vm.onPeerRemove = function (peer) {
+        vm.onPeerRemove = function(peer) {
             var index;
-            vm.filterState.selectedIndices.some(function(ind, i){
-                if(ind.indexOf(peer) === 0){
+            vm.filterState.selectedIndices.some(function(ind, i) {
+                if (ind.indexOf(peer) === 0) {
                     index = i;
                     return true;
                 }
             });
-            if (index >=0 ) {
+
+            if (index >= 0) {
                 var selectedIndices = vm.filterState.selectedIndices;
-                selectedIndices.splice(index,1);
+                selectedIndices.splice(index, 1);
                 vm.filterState.selectedIndices = selectedIndices;
             }
+
             var indexCom;
-            vm.filterState.selectedCompetitors.some(function(competitor, i){
-                if(competitor.indexOf(peer) === 0){
+            vm.filterState.selectedCompetitors.some(function(competitor, i) {
+                if (competitor.indexOf(peer) === 0) {
                     indexCom = i;
                     return true;
                 }
             });
-            if (indexCom >=0 ) {
+            if (indexCom >= 0) {
                 var selected = vm.filterState.selectedCompetitors;
-                selected.splice(indexCom,1);
+                selected.splice(indexCom, 1);
                 vm.filterState.selectedCompetitors = selected;
             }
+
             var peerIndex;
-            vm.filterState.selectedPeers.some(function(eachpeer, i){
-                if(eachpeer.indexOf(peer) === 0){
+            vm.filterState.selectedPeers.some(function(eachpeer, i) {
+                if (eachpeer.indexOf(peer) === 0) {
                     peerIndex = i;
                     return true;
                 }
             });
-            if (peerIndex >=0 ) {
-                vm.filterState.selectedPeers.splice(peerIndex,1);
+
+            if (peerIndex >= 0) {
+                vm.filterState.selectedPeers.splice(peerIndex, 1);
             }
 
             loadChartData();
         };
+
+        function defineTableInfo()
+        {
+            var table = [];
+            angular.forEach(vm.selectedSources, function(source)
+            {
+                var info = {};
+                info.source = source;
+                info.range = vm.selectedRange;
+                info.date = vm.selectedDate;
+                info.isDefaultChart = true;
+                getTableInfo(info);
+
+                table.push(info);
+            });
+
+            return table;
+        }
+
+        function getTableInfo(info)
+        {
+            switch (info.source.value)
+            {
+                case 'SIGDEV' :
+                    getSigDevAllList(info);
+                    break;
+                case 'MASCAD' :
+                    getMSCAdLossesAllList(info);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function getSigDevAllList(info)
+        {
+            info.isLoading = true;
+            var dateRange = getDateRange(vm.selectedDate, vm.selectedRange);
+            stockService.getSignificantDevelopmentList(commonBusiness.companyId, dateRange.startDate, dateRange.endDate)
+                .then(function(response) {
+                    if(response && response.sigdevList)
+                    {
+                        info.rows = response.sigdevList;
+                        info.isLoading = false;
+                    }
+
+                }
+            );
+        }
+
+        function getMSCAdLossesAllList(info)
+        {
+            info.isLoading = true;
+            var dateRange = getDateRange(vm.selectedDate, vm.selectedRange);
+            stockService.getMascadLargeLosseList(commonBusiness.companyId, dateRange.startDate, dateRange.endDate)
+                .then(function(response) {
+                    if(response && response.mscad)
+                    {
+                        info.rows = response.mscad;
+                        info.isLoading = false;
+                    }
+
+                }
+            );
+        }
+
+        function getDateRange(selectedDate, selectedRange)
+        {
+            var num = 3;
+            var range = 'months';
+
+            switch(selectedRange)
+            {
+                case '+/- 1 week' :
+                    num = 1;
+                    range = 'weeks';
+                    break;
+                case '+/- 1 month' :
+                    num = 1;
+                    range = 'months';
+                    break;
+                case '+/- 3 months' :
+                    num = 3;
+                    range = 'months';
+                    break;
+                case '+/- 6 months' : 
+                    num = 6;
+                    range = 'months';
+                    break;
+                case '+/- 1 year' :
+                    num = 1;
+                    range = 'years';
+                    break;
+                default:
+                    break;
+            }
+
+            var date = moment(selectedDate);
+            if(date.isValid())
+            {
+                return {
+                    startDate : date.add(num * -1, range).format('MM/DD/YYYY'),
+                    endDate: date.add(num * 2, range).format('MM/DD/YYYY')
+                };
+            }
+        }
     }
 
     /** @ngInject */
-    function msStockChartDirective()
-    {
+    function msStockChartDirective() {
         return {
             restrict: 'E',
             require: 'msStockChartToolBar',
-            scope   : {
+            scope: {
                 filterState: '=',
                 mnemonicId: '=',
                 itemId: '=',
                 chartId: '=',
-                hideFilters : '='
+                hideFilters : '=',
+                tableInfo: '='  
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',
-            controller : 'msStockChartController',
-            controllerAs : 'vm',
-            bindToController :true
+            controller: 'msStockChartController',
+            controllerAs: 'vm',
+            bindToController: true
         };
     }
-
 })();

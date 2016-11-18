@@ -46,14 +46,17 @@
       };
         _.each(components, function(component)
         {
+            //console.log('Component ID:' + component.id);
            var tearSheetItem = component.TearSheetItem;
            if(tearSheetItem && tearSheetItem.subtype &&
                (tearSheetItem.subtype === 'Header1' ||
                 tearSheetItem.subtype === 'Header2'))
            {
+               //console.log('Pushing Header Component ID:' + component.id);
                comp.headers.push(component);
            }
-            else {
+           else {
+               //console.log('Pushing Content Component ID:' + component.id);
                comp.contents.push(component);
            }
         });
@@ -124,33 +127,38 @@
             if(isReadyToProcess)
             {
                 component = getComponents(contentComponents, comp);
-            }
-
-            if(component)
-            {
-                _.each(component.sections, function(section)
+                if(component)
                 {
-                    if(section.id)
+                    _.each(component.sections, function(section)
                     {
-                        processedComp.push({
-                            compId: section.id
-                        });
-                    }
-                });
+                        if(section.id)
+                        {
+                            processedComp.push({
+                                compId: section.id
+                            });
+                        }
+                    });
 
-                contents.push(component);
+                    contents.push(component);
+                }
+                else if (comp.id === 'WU_RATIOS_CHART') {
+                    comp.TearSheetItem.id = 'WU_RATIOS_CHART';
+                    comp.TearSheetItem.type = comp.type;
+                    comp.isProcessed = true;
+                    contents.push(comp.TearSheetItem);
+                }
+                else if(comp.TearSheetItem &&
+                    comp.TearSheetItem.id === 'LinkItem')
+                {
+                    comp.isProcessed = true;
+                    contents.push(comp.TearSheetItem);
+                }
+                else if(comp.TearSheetItem &&
+                    comp.TearSheetItem.subtype)
+                {
+                    contents.push(comp.TearSheetItem);
+                }
             }
-            else if(comp.TearSheetItem &&
-                comp.TearSheetItem.id === 'LinkItem')
-            {
-                contents.push(comp.TearSheetItem);
-            }
-            else if(comp.TearSheetItem &&
-                comp.TearSheetItem.subtype)
-            {
-                contents.push(comp.TearSheetItem);
-            }
-
         });
 
         return contents;
@@ -263,6 +271,7 @@
                 id: tearSheetItem.id,
                 itemid: "SECTION_" + getRandomInt(10, 100000),
                 prelabel: tearSheetItem.PreLabel || '',
+                subtype: tearSheetItem.subtype || '',
                 mnemonicid: null,
                 variation: 'parent-child'
             };
@@ -286,12 +295,13 @@
                     sectionItem.length > 0)
                 {
                     sectionItem[0].isProcessed = true;
-                    //component.sections.push(sectionItem[0]);
-                    console.log('Start');
-                    console.log(sectionItem[0]);
-                    console.log('End');
 
-                    if(sectionItem[0].TearSheetItem.length)
+                    console.log('sectionId' + sectionId + ' Subtype - ' + sectionItem[0].subtype);
+
+                    if(sectionItem[0].subtype) {
+                        component.sections.push(sectionItem[0]);
+                    }
+                    else if(sectionItem[0].TearSheetItem.length)
                     {
                         _.each(sectionItem[0].TearSheetItem, function(sheet)
                         {
@@ -405,6 +415,10 @@
                                     component.sections.push(sec);
                                 }
                             });
+                        }
+                        else {
+                            sectionItem[0].isProcessed = true;
+                            component.sections.push(sectionItem[0]);
                         }
                     }
                 }

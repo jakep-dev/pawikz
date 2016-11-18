@@ -2,8 +2,10 @@
     <div id="ms-chart-accordion" style="height: 50px" class="md-amber-A200-bg"
          layout="row" layout-align="space-between center">
         <div style="padding-left: 10px; font-size: 18px">
-            Chart
-            <i class="icon-lock s12" ng-if="vm.isNonEditable"></i>
+            {{vm.getSectionHeader()}}
+            <i class="icon-lock s12" ng-if="vm.isNonEditable">
+                <md-tooltip md-direction="right">Locked</md-tooltip>
+            </i>
         </div>
         <div>
             <div layout="row" layout-align="end center">

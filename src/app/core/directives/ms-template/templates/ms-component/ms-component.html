@@ -5,7 +5,9 @@
             {{ preLabel }}
             <span ng-if="preLabel !== ''">-</span>
             {{ title }}
-            <i class="icon-lock s12" ng-if="vm.isNonEditable"></i>
+            <i class="icon-lock s12" ng-if="vm.isNonEditable">
+                <md-tooltip md-direction="right">Locked</md-tooltip>
+            </i>
         </div>
         <div>
             <div layout="row" layout-align="end center">
