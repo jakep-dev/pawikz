@@ -182,20 +182,22 @@
                     if (data.tickerResp) {
                         vm.peers = [];
                         angular.forEach(data.tickerResp, function (ticker) {
-                            var tickerParts = ticker.ticker;
-                            var tickerArr;
-                            var shortName = ticker.companyName;
-                            if (tickerParts) {
-                                tickerArr = tickerParts.split('#');
-                                if (tickerArr && Array.isArray(tickerArr) && (tickerArr.length > 0)) {
-                                    shortName = tickerArr[0];
+                            if (ticker.companyId && (ticker.companyId != commonBusiness.companyId)) {
+                                var tickerParts = ticker.ticker;
+                                var tickerArr;
+                                var shortName = ticker.companyName;
+                                if (tickerParts) {
+                                    tickerArr = tickerParts.split('#');
+                                    if (tickerArr && Array.isArray(tickerArr) && (tickerArr.length > 0)) {
+                                        shortName = tickerArr[0];
+                                    }
                                 }
+                                vm.peers.push({
+                                    value: ticker.companyId,
+                                    display: ticker.companyName,
+                                    shortName: shortName
+                                });
                             }
-                            vm.peers.push({
-                                value: ticker.companyId,
-                                display: ticker.companyName,
-                                shortName: shortName
-                            });
                         });
                         return vm.peers;
                     }
