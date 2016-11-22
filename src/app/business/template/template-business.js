@@ -325,11 +325,11 @@
                             }
                             toast.simpleToast("Issue with PDF Download. Please try again.");
                         } else {
-                            listenToPdfDownload(data.request_id);
+                            listenToPdfDownload(data.requestId);
 
                             if(notification)
                             {
-                                notification.requestId = data.request_id;
+                                notification.requestId = data.requestId;
                             }
 
                             toast.simpleToast('PDF download has been initiated.  Go to notification center for updates.');

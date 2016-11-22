@@ -27,7 +27,7 @@
             app.post('/api/getSavedChartData', getSavedChartData),
             app.post('/api/saveChartSettings', saveChartSettings),
             app.post('/api/saveChartAllSettings', saveChartAllSettings),
-            app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest),
+//            app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest),
             app.post('/api/downloadTemplatePDF', downloadTemplatePDF),
             app.post('/api/getSavedChartTable', getSavedChartTable),
             app.post('/api/getSignificantDevelopmentList', getSignificantDevelopmentList),

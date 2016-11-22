@@ -11,18 +11,18 @@
             highcharts: {
                 JQUERY: 'bower_components/jquery/dist/jquery.min.js',
                 MOMENT: 'node_modules/moment/moment.js',
-                HIGHCHARTS: 'node_modules/highcharts/highcharts.js',
-                EXPORTING: 'node_modules/highcharts/modules/exporting.js',
-                HIGHCHARTS_MORE: 'node_modules/highcharts/highcharts-more.js',
-                HIGHCHARTS_DATA: 'node_modules/highcharts/modules/data.js',
-                HIGHCHARTS_DRILLDOWN: 'node_modules/highcharts/modules/drilldown.js',
-                HIGHCHARTS_FUNNEL: 'node_modules/highcharts/modules/funnel.js',
-                HIGHCHARTS_HEATMAP: 'node_modules/highcharts/modules/heatmap.js',
-                HIGHCHARTS_TREEMAP: 'node_modules/highcharts/modules/treemap.js',
-                HIGHCHARTS_3D: 'node_modules/highcharts/highcharts-3d.js',
-                HIGHCHARTS_NODATA: 'node_modules/highcharts/modules/no-data-to-display.js',
-                HIGHCHARTS_SOLID_GAUGE: 'node_modules/highcharts/modules/solid-gauge.js',
-                BROKEN_AXIS: 'node_modules/highcharts/modules/broken-axis.js'
+                HIGHCHARTS: 'node_modules/highcharts/highcharts.js'
+//                EXPORTING: 'node_modules/highcharts/modules/exporting.js',
+//                HIGHCHARTS_MORE: 'node_modules/highcharts/highcharts-more.js',
+//                HIGHCHARTS_DATA: 'node_modules/highcharts/modules/data.js',
+//                HIGHCHARTS_DRILLDOWN: 'node_modules/highcharts/modules/drilldown.js',
+//                HIGHCHARTS_FUNNEL: 'node_modules/highcharts/modules/funnel.js',
+//                HIGHCHARTS_HEATMAP: 'node_modules/highcharts/modules/heatmap.js',
+//                HIGHCHARTS_TREEMAP: 'node_modules/highcharts/modules/treemap.js',
+//                HIGHCHARTS_3D: 'node_modules/highcharts/highcharts-3d.js',
+//                HIGHCHARTS_NODATA: 'node_modules/highcharts/modules/no-data-to-display.js',
+//                HIGHCHARTS_SOLID_GAUGE: 'node_modules/highcharts/modules/solid-gauge.js',
+//                BROKEN_AXIS: 'node_modules/highcharts/modules/broken-axis.js'
             }
         },
         TIMEOUT: 5000 /* 5 seconds timout for loading images */
@@ -144,42 +144,53 @@
                 function addLabelBoxes(chart) {
 
                     if (chart.series) {
-                        var labelsBoxes = [],
-                            tickerLabelTop;
-                        for (var serCntr = 0; serCntr < chart.series.length; serCntr++) {
-                            var data = chart.series[serCntr].data,
-                                lastIndex = data.length - 1,
-                                lastPoint = data[lastIndex],
-                                x = chart.chartWidth - chart.marginRight + 5,
-                                y = lastPoint.plotY + chart.plotTop - 40,
-                                label;
+                        var labelsBoxes = [];
+                        var tickerLabelTop;
+                        var serCntr;
+                        for (serCntr = 0; serCntr < chart.series.length; serCntr++) {
+                            var data = chart.series[serCntr].data;
+                            var lastIndex = data.length - 1;
+                            var i;
+                            var lastPoint;
+                            
+                            for (i = lastIndex; i >= 0; i--) {
+                                lastPoint = data[i];
+                                if (lastPoint && lastPoint.plotY) {
+                                    break;
+                                }
+                            }
+                            if (lastPoint && lastPoint.plotY) {
+                                var x = chart.chartWidth - chart.marginRight + 5;
+                                var y = lastPoint.plotY + chart.plotTop - 40;
+                                var label = undefined;
 
-                            //adding tooltip as side labels with customize tooltip properties.
-                            label = chart.renderer.label(chart.series[serCntr].name,
-                                x,
-                                y,
-                                'callout',
-                                0,
-                                    lastPoint.plotY + chart.plotTop
-                                , null, null, 'tooltip')
-                                .css({
-                                    color: '#FFFFFF',
-                                    fontSize: '10px',
-                                    width: '75px'
-                                })
-                                .attr({
-                                    fill: chart.series[serCntr].color,
-                                    padding: 8,
-                                    r: 6,
-                                    zIndex: 6
-                                }).addClass('tooltip')
-                                .add();
+                                //adding tooltip as side labels with customize tooltip properties.
+                                label = chart.renderer.label(chart.series[serCntr].name,
+                                    x,
+                                    y,
+                                    'callout',
+                                    0,
+                                        lastPoint.plotY + chart.plotTop
+                                    , null, null, 'tooltip')
+                                    .css({
+                                        color: '#FFFFFF',
+                                        fontSize: '10px',
+                                        width: '75px'
+                                    })
+                                    .attr({
+                                        fill: chart.series[serCntr].color,
+                                        padding: 8,
+                                        r: 6,
+                                        zIndex: 6
+                                    }).addClass('tooltip')
+                                    .add();
 
-                            labelsBoxes.push({
-                                label: label,
-                                y: y,
-                                height: label.getBBox().height
-                            });
+                                labelsBoxes.push({
+                                    label: label,
+                                    y: y,
+                                    height: label.getBBox().height
+                                });
+                            }
                         }
 
                         //sort labels by y
@@ -205,112 +216,276 @@
                 function adjustXAxisLabels(chart) {
 
                     var xAxisLabels = $('#container').find('.highcharts-xaxis-labels').find("text");
-                    if (xAxisLabels) {
+                    if (xAxisLabels && (xAxisLabels.length > 0)) {
 
                         //console.log('Found xAxisLabes count:' + xAxisLabels.length);
 
                         //Display xAxis Labels conditionally based on selected period - START
-                        var objLastLbl = xAxisLabels;
-                        var lastValue = objLastLbl.length - 1;
-                        var startDate = moment(objLastLbl[0].textContent, 'YYYY-MM-DD');
-                        var endDate = moment(objLastLbl[lastValue].textContent, 'YYYY-MM-DD');
+                        var blankCount = 0;
+                        var labelsChanged = false;
+                        var i = 0;
+                        var n = xAxisLabels.length;
+                        var totalSkip = 0;
+                        var targetLabels = [];
+                        var startDate = moment(xAxisLabels[0].textContent, 'YYYY-MM-DD');
+                        var endDate = moment(xAxisLabels[n - 1].textContent, 'YYYY-MM-DD');
                         var duration = moment.duration(moment(endDate).diff(moment(startDate)));
                         var diffDays = duration.asDays();
                         var diffMonths = Math.floor(duration.asMonths());
-                        var nextDispDate = startDate;
+                        var labelFormat;
 
-                        //console.log("lastValue: " + lastValue + ", startDate: " + startDate + ", endDate: " + endDate + ", duration: " + duration + ", diffDays: " + diffDays + ", diffMonths: " + diffMonths + ", nextDispDate: " + nextDispDate);
-                        objLastLbl.each(function (txtCntr, element) {
-                            var currentPeriod = element.textContent;
-                            //console.log("**************");
-                            //console.log("[1] Current Period:" + currentPeriod + ", nextDispDate:" + nextDispDate);
-                            //console.log("Starting x-axis label:" + element.firstChild.textContent);
-                            if (diffMonths <= 1 && diffDays > 7) {
-                                if (currentPeriod && nextDispDate) {
-                                    //console.log("[1,7]");
-                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-                                    if (nextDispDate - currentPeriod === 0) {
-                                        nextDispDate = moment(nextDispDate).add(7, 'days');
-                                    } else {
-                                        //console.log("clearing x-axis label");
-                                        element.firstChild.textContent = '';
-                                    }
-                                    if (txtCntr == lastValue) {
-                                        //console.log("setting x-axis label");
-                                        element.firstChild.textContent = moment(currentPeriod).format('YYYY-MM-DD');
+                        if (diffMonths <= 1 && diffDays > 7) {
+                            duration = moment.duration(7, 'days');
+                            labelFormat = 'YYYY-MM-DD';
+                        } else if (diffMonths <= 3 && diffMonths > 1) {
+                            duration = moment.duration(14, 'days');
+                            labelFormat = 'YYYY-MM-DD';
+                        } else if (diffMonths <= 12 && diffMonths > 3) {
+                            duration = moment.duration(2, 'months');
+                            labelFormat = 'MMM-YYYY';
+                        } else if (diffMonths <= 24 && diffMonths > 12) {
+                            duration = moment.duration(3, 'months');
+                            labelFormat = 'MMM-YYYY';
+                        } else if (diffMonths <= 36 && diffMonths > 24) {
+                            duration = moment.duration(3, 'months');
+                            labelFormat = 'MMM-YYYY';
+                        } else if (diffMonths <= 60 && diffMonths > 36) {
+                            duration = moment.duration(1, 'years');
+                            labelFormat = 'MMM-YYYY';
+                        } else if (diffMonths <= 120 && diffMonths > 60) {
+                            duration = moment.duration(1, 'years');
+                            labelFormat = 'YYYY';
+                        }
+                        var nextDispDate = startDate.add(duration);
+
+                        var skipCount = 0;
+                        var currentDate = null;
+                        var currentDiff = 0;
+                        var prevDiff;
+
+                        xAxisLabels.sort(function (a, b) {
+                            if (a.textContent < b.textContent) {
+                                return -1;
+                            } else if (a.textContent > b.textContent) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+
+                        for (i = 0; i < n; i++) {
+                            //console.log(xAxisLabels[i].textContent);
+                            prevDiff = currentDiff;
+                            currentDate = moment(xAxisLabels[i].textContent, 'YYYY-MM-DD');
+                            currentDiff = currentDate.diff(nextDispDate, 'days');
+                            if (currentDiff < 0) {
+                                skipCount++;
+                            } else {
+                                if (currentDiff == 0) {
+                                    targetLabels.push(
+                                        {
+                                            index: i,
+                                            originalLabel: xAxisLabels[i].textContent,
+                                            finalLabel: moment(xAxisLabels[i].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                            skipCount: skipCount
+                                        }
+                                    );
+                                    totalSkip += skipCount;
+                                    skipCount = 0;
+                                } else {
+                                    if (Math.abs(prevDiff) > currentDiff) {
+                                        targetLabels.push(
+                                            {
+                                                index: i,
+                                                originalLabel: xAxisLabels[i].textContent,
+                                                finalLabel: moment(xAxisLabels[i].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                                skipCount: skipCount
+                                            }
+                                        );
+                                        totalSkip += skipCount;
+                                        skipCount = 0;
+                                    } else if (Math.abs(prevDiff) <= currentDiff) {
+                                        if (targetLabels.length > 0) {
+                                            if (targetLabels[targetLabels.length - 1].originalLabel === xAxisLabels[i - 1].textContent) {
+                                                targetLabels.push(
+                                                    {
+                                                        index: i,
+                                                        originalLabel: xAxisLabels[i].textContent,
+                                                        finalLabel: moment(xAxisLabels[i].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                                        skipCount: skipCount
+                                                    }
+                                                );
+                                                totalSkip += skipCount;
+                                                skipCount = 0;
+                                            } else {
+                                                targetLabels.push(
+                                                    {
+                                                        index: i - 1,
+                                                        originalLabel: xAxisLabels[i - 1].textContent,
+                                                        finalLabel: moment(xAxisLabels[i].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                                        skipCount: skipCount - 1
+                                                    }
+                                                );
+                                                totalSkip += skipCount - 1;
+                                                skipCount = 1;
+                                            }
+                                        } else {
+                                            targetLabels.push(
+                                                {
+                                                    index: i - 1,
+                                                    originalLabel: xAxisLabels[i - 1].textContent,
+                                                    finalLabel: moment(xAxisLabels[i].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                                    skipCount: skipCount - 1
+                                                }
+                                            );
+                                            totalSkip += skipCount - 1;
+                                            skipCount = 1;
+                                        }
                                     }
                                 }
-                            } else if (diffMonths <= 3 && diffMonths > 1) {
-                                if (currentPeriod && nextDispDate) {
-                                    //console.log("[3,1]");
-                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-
-                                    if (nextDispDate <= currentPeriod) {
-                                        element.firstChild.textContent = moment(nextDispDate).format('YYYY-MM-DD');
-                                        nextDispDate = moment(nextDispDate).add(14, 'days');
-                                    } else {
-                                        element.firstChild.textContent = '';
-                                    }
-                                }
-                            } else if (diffMonths <= 18 && diffMonths > 3) {
-                                if (currentPeriod && nextDispDate) {
-                                    //console.log("[18,3]");
-                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-
-                                    if (nextDispDate <= currentPeriod) {
-                                        element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                        nextDispDate = moment(nextDispDate).add(2, 'months');
-                                    } else {
-                                        element.firstChild.textContent = '';
-                                    }
-                                }
-                            } else if (diffMonths <= 24 && diffMonths > 18) {
-                                if (currentPeriod && nextDispDate) {
-                                    //console.log("[24,18]");
-                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-
-                                    if (nextDispDate <= currentPeriod) {
-                                        element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                        nextDispDate = moment(nextDispDate).add(3, 'months');
-                                    } else {
-                                        element.firstChild.textContent = '';
-                                    }
-                                    if (txtCntr == lastValue)
-                                        element.firstChild.textContent = moment(currentPeriod).format('MMM-YYYY');
-                                }
-                            } else if (diffMonths <= 36 && diffMonths > 24) {
-                                if (currentPeriod && nextDispDate) {
-                                    //console.log("[36,24]");
-                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-
-                                    if (nextDispDate <= currentPeriod) {
-                                        element.firstChild.textContent = moment(nextDispDate).format('MMM-YYYY');
-                                        nextDispDate = moment(nextDispDate).add(4, 'months');
-                                    } else {
-                                        element.firstChild.textContent = '';
-                                    }
-                                    if (txtCntr == lastValue)
-                                        element.firstChild.textContent = moment(currentPeriod).format('MMM-YYYY');
-                                }
-                            } else if (diffMonths <= 120 && diffMonths > 36) {
-                                if (currentPeriod && nextDispDate) {
-                                    //console.log("[120,36]");
-                                    currentPeriod = moment(currentPeriod, 'YYYY-MM-DD');
-
-                                    if (nextDispDate <= currentPeriod) {
-                                        element.firstChild.textContent = moment(nextDispDate).format('YYYY');
-                                        nextDispDate = moment(nextDispDate).add(1, 'years');
-                                    } else {
-                                        element.firstChild.textContent = '';
-                                    }
-                                    if (txtCntr == lastValue)
-                                        element.firstChild.textContent = '<tspan>' + moment(currentPeriod).format('YYYY') + '</tspan>';
+                                nextDispDate = nextDispDate.add(duration);
+                            }
+                            if (!xAxisLabels[i].textContent) {
+                                blankCount++;
+                                break;
+                            } else {
+                                var txt = xAxisLabels[i].textContent;
+                                var index = txt.search(/[A-Za-z]+\-[0-9]+/);
+                                //console.log('Label = ' + txt + ' position:' + index);
+                                if (index >= 0) {
+                                    blankCount++;
+                                    //console.log('Pre-existing Dates found.');
+                                    break;
                                 }
                             }
-                            //console.log("[2]" + currentPeriod + "," + nextDispDate);
-                            //console.log("Final x-axis label:" + element.firstChild.textContent);
-                            //console.log("**************");
-                        });
+                        }
+
+                        //console.log('Found ' + blankCount + ' blanks.');
+                        if (blankCount == 0) {
+                            labelsChanged = true;
+                            if (targetLabels.length > 0) {
+                                //we need to show the first label so we don't count the first label to skip 
+                                targetLabels[0].skipCount--;
+                                totalSkip--;
+                                //console.log(targetLabels);
+                                var labelCount = targetLabels.length;
+                                var avgSkip_f = totalSkip / labelCount;
+                                var avgSkip_low = Math.floor(avgSkip_f);
+                                finalSkip = (n - 1) - targetLabels[labelCount - 1].index - 1;
+                                //console.log('labelCount = ' + labelCount + ' totalSkip = ' + totalSkip + ' avgSkip_f = ' + avgSkip_f + ' avgSkip_low = ' + avgSkip_low + ' finalSkip = ' + finalSkip);
+                                if (finalSkip >= 0) {
+                                    needToBorrow = avgSkip_low - finalSkip;
+                                    //console.log('needToBorrow = ' + needToBorrow);
+                                    targetLabels[labelCount - 1].index -= needToBorrow;
+                                    if (needToBorrow > 0) {
+                                        for (i = labelCount - 1; i >= 0; i--) {
+                                            if (targetLabels[i].skipCount > avgSkip_low) {
+                                                targetLabels[i].skipCount = avgSkip_low;
+                                            }
+                                            if (i - 1 >= 0) {
+                                                newIndex = targetLabels[i].index - (avgSkip_low + 1);
+                                                if (targetLabels[i - 1].index > newIndex) {
+                                                    targetLabels[i - 1].index = newIndex;
+                                                } else {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (targetLabels[labelCount - 1].finalLabel === moment(xAxisLabels[n - 1].textContent, 'YYYY-MM-DD').format(labelFormat)) {
+                                        targetLabels[labelCount - 1].index = n - 1;
+                                        targetLabels[labelCount - 1].skipCount += avgSkip_low + 1;
+                                        //console.log('Removed last x-axis label ' + targetLabels[labelCount - 1].finalLabel);
+                                    } else {
+                                        //add last label
+                                        targetLabels.push(
+                                            {
+                                                index: n - 1,
+                                                originalLabel: xAxisLabels[n - 1].textContent,
+                                                finalLabel: moment(xAxisLabels[n - 1].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                                skipCount: avgSkip_low
+                                            }
+                                        );
+                                    }
+                                }
+                                //add first label
+                                targetLabels.splice(0, 0,
+                                    {
+                                        index: 0,
+                                        originalLabel: xAxisLabels[0].textContent,
+                                        finalLabel: moment(xAxisLabels[0].textContent, 'YYYY-MM-DD').format(labelFormat),
+                                        skipCount: 0
+                                    }
+                                );
+                                //console.log(targetLabels);
+                                var j = 0;
+                                var beforeText;
+                                var afterText;
+                                labelCount = targetLabels.length;
+                                totalSkip = 0;
+                                skipCount = 0;
+                                for (i = 0; i < n; i++) {
+                                    beforeText = xAxisLabels[i].textContent;
+                                    if ((j < labelCount) && (i == targetLabels[j].index)) {
+                                        //$(xAxisLabels[i].firstChild).attr('content', xAxisLabels[i].firstChild.textContent);
+                                        xAxisLabels[i].firstChild.textContent = targetLabels[j].finalLabel;
+                                        targetLabels[j].skipCount = skipCount;
+                                        skipCount = 0
+                                        j++;
+                                    } else {
+                                        //$(xAxisLabels[i].firstChild).attr('content', xAxisLabels[i].firstChild.textContent);
+                                        xAxisLabels[i].firstChild.textContent = '';
+                                        totalSkip++;
+                                        skipCount++;
+                                    }
+                                    afterText = xAxisLabels[i].textContent;
+                                    //console.log('[' + beforeText + ',' + afterText + ']');
+                                }
+                                avgSkip_f = totalSkip / (labelCount - 1);
+                                avgSkip_low = Math.floor(avgSkip_f);
+                                var extra = totalSkip - (avgSkip_low * (labelCount - 1));
+                                var shortCount = labelCount - extra - 1;
+                                //console.log('labelCount = ' + labelCount + ' totalSkip = ' + totalSkip + ' avgSkip_f = ' + avgSkip_f + ' avgSkip_low = ' + avgSkip_low + ' extra = ' + extra + ' shortCount = ' + shortCount);
+                                if (avgSkip_low > 1) {
+                                    for (i = 1; i <= labelCount - 2; i++) {
+                                        j = targetLabels[i].index;
+                                        //console.log('i = ' + i + ' before index = ' + j + ' extra = ' + extra + ' shortCount = ' + shortCount);
+                                        if (targetLabels[i - 1].index < j) {
+                                            xAxisLabels[j].firstChild.textContent = '';
+                                        }
+                                        if ((i % 2) == 1) {
+                                            if (shortCount > 0) {
+                                                skipCount = avgSkip_low;
+                                                shortCount--;
+                                            } else {
+                                                skipCount = avgSkip_low + 1;
+                                                extra--;
+                                            }
+                                        } else {
+                                            if (extra > 0) {
+                                                skipCount = avgSkip_low + 1;
+                                                extra--;
+                                            } else {
+                                                skipCount = avgSkip_low;
+                                                shortCount--;
+                                            }
+                                        }
+                                        if (i == 1) {
+                                            j = skipCount + 1;
+                                        } else {
+                                            j = targetLabels[i - 1].index + skipCount + 1;
+                                        }
+                                        targetLabels[i].index = j;
+                                        //console.log('i = ' + i + ' after index = ' + j + ' extra = ' + extra + ' shortCount = ' + shortCount);
+                                        xAxisLabels[j].firstChild.textContent = targetLabels[i].finalLabel;
+                                    };
+                                }
+                            }
+                            //console.log(targetLabels);
+                            //for (i = 0; i < n; i++) {
+                            //    console.log('[' + i + '][' + xAxisLabels[i].textContent + ']');
+                            //}
+                        }
 
                         if (chart.xAxis != null && chart.xAxis.length > 0) {
                             chart.xAxis[0].labelRotation = 0;
@@ -470,6 +645,9 @@
                     addLabelBoxes(chart);
                 }
                 else if (chart.options.chart.type == 'column') {
+                    adjustXAxisLabels(chart);
+                } else if (chart.options.chart.type == 'line') {
+                    addLabelBoxes(chart);
                     adjustXAxisLabels(chart);
                 }
 
@@ -806,7 +984,7 @@
                     response.close();
                 }
 
-                console.log(request.url);
+                //console.log(request.url);
                 if (request.method == 'GET') {
                     //var cleanedUrl = request.url;
                     //var pagePath = fs.workingDirectory + cleanedUrl;

@@ -74,6 +74,7 @@ exports.restcall = {
                 getSavedFinancialChartData: 'getSavedIFChartSettings',
                 getFinancialChartRatioTypes: 'getRatiosType',
                 saveFinancialChartSettings: 'saveIFChartSettings',
+                getAllSavedIFChartSettings: 'getAllSavedIFChartSettings',
                 getFinancialChartPeerAndIndustries: 'getPeerAndIndustries',
                 getSignificantDevelopmentList: 'getSignificantDevelopmentList',
                 getSignificantDevelopmentDetail: 'getSignificantDevelopmentDetail',

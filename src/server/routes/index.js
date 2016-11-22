@@ -12,6 +12,7 @@
     var loggingRoute = require('./logging/logging.route');
     var chartRoute = require('./chart/chart.route');
     var financialChartRoute = require('./chart/financial-chart.route.js');
+    var pdfRoute = require('./chart/pdf.route.js');
     var workupRoute = require('./workup/workup.route');
     var socket = require('./socket/socket');
 
@@ -26,8 +27,9 @@
         templateRoute.init(app, config);
         loggingRoute.init(app, config);
         workupRoute.init(app, config);
-        chartRoute.init(app, config, server);
-        financialChartRoute.init(app, config, server);
+        chartRoute.init(app, config);
+        financialChartRoute.init(app, config);
+        pdfRoute.init(app, config);
     };
 
 })(module.exports);
