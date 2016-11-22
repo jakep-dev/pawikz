@@ -21,7 +21,6 @@
                         }
                     });
 
-                    var hoveredChart = '';
                     scope.sourceOptions = stockChartBusiness.sigDevSources;
                     var resizeSensor;
                     var labelsBoxes = [];
@@ -181,7 +180,6 @@
                                                 $(".highcharts-legend-item path").attr({'stroke-width': 20});
                                                 var chart = this;
                                                 var legend = chart.legend;
-
                                                 if (legend && legend.allItems) {
                                                     for (var legendNum = 0, len = legend.allItems.length; legendNum < len; legendNum++) {
                                                         (function (legendNum) {
@@ -261,7 +259,10 @@
                                         labels: {
                                             align: 'center',
                                             enabled: dataset.showxaxisLabel,
-                                            autoRotationLimit: 90
+                                            autoRotationLimit: 90,
+                                            formatter: function () {
+                                                return Highcharts.dateFormat('%m-%d-%Y', this.value);
+                                            }
                                         },
                                         tickInterval: parseInt(activity.xData.length / 10),
                                         tickLength: 5
@@ -277,7 +278,6 @@
                                             point: {
                                                 events: {
                                                     mouseOver: function(e) {
-                                                        hoveredChart = this;
                                                         var legend = this.series.chart.legend;
                                                         var series = this.series.chart.series;
                                                         var legendItems = legend.allItems;
@@ -396,12 +396,12 @@
                                         }
                                     },
                                     tooltip: {
-                                        formatter: function(){
+                                        formatter: function() {
                                             var tooltipText = '';
                                             var xPoint = this.x;
                                             $.each(primarystockresp.stockChartPrimaryData, function(i, v) {
-                                                if (v.dataDate.substring(0, 10) == xPoint) {
-                                                    tooltipText = xPoint + "<br/>" + "Open: " + v.priceOpen + "<br/>" + "Close: " + v.priceClose + "<br/>" + "High: " + v.priceHigh + "<br/>" + "Low: " + v.priceLow + "<br/>" + "Vol: " + v.volume;
+                                                if (Date.parse(v.dataDate.substring(0, 10)) == xPoint) {
+                                                    tooltipText = Highcharts.dateFormat('%m-%d-%Y',  new Date(xPoint)) + "<br/>" + "Open: " + v.priceOpen + "<br/>" + "Close: " + v.priceClose + "<br/>" + "High: " + v.priceHigh + "<br/>" + "Low: " + v.priceLow + "<br/>" + "Vol: " + v.volume;
                                                 }
                                             });
                                             return tooltipText;
@@ -411,6 +411,16 @@
                                             return {x: 70, y: 0}
                                         },
                                         enabled: dataset.showtooltip
+                                    },
+                                    lang: {
+                                        noData: "No Data Available"
+                                    },
+                                    noData: {
+                                        style: {
+                                            fontWeight: 'bold',
+                                            fontSize: '15px',
+                                            color: '#FF0000'
+                                        }
                                     },
                                     series: dataset.series
                                 });

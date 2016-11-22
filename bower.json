@@ -1,72 +1,80 @@
 {
-  "name": "advisen",
-  "version": "1.1.0",
-  "dependencies": {
-    "angular": "1.5.5",
-    "angular-animate": "1.5.5",
-    "angular-aria": "1.5.5",
-    "angular-cookies": "1.5.5",
-    "angular-messages": "1.5.5",
-    "angular-resource": "1.5.5",
-    "angular-sanitize": "1.5.5",
-    "angular-translate": "2.11.0",
-    "angular-translate-loader-partial": "2.11.0",
-    "angular-ui-router": "0.3.0",
-    "jquery": "2.2.4",
-    "mobile-detect": "1.3.2",
-    "moment": "2.13.0",
-    "perfect-scrollbar": "0.6.11",
-    "angular-timer": "~1.3.3",
-    "angular-touch": "~1.4.0",
-    "angular-ui-calendar": "~1.0.0",
-    "datatables-responsive": "~1.0.7",
-    "textAngular": "~1.5.0",
-    "toastr": "~2.1.1",
-    "angular-loading-bar": "~0.8.0",
-    "angular-datatables": "~0.5.1",
-    "angular-disable-all": "~0.0.1",
-    "a0-angular-storage": "~0.0.13",
-    "angular-froala": "^2.1.0",
-    "highcharts-ng": "^0.0.11",
-    "highcharts": "~4.2.3",
-    "angular-papaparse": "^1.0.0",
-    "socket.io": "^1.4.6",
-    "ng-idle": "^1.2.2",
-    "angular-notification-icons": "~0.4.3",
-    "angular-svg-round-progressbar": "^0.4.6",
-    "ngActivityIndicator": "^0.1.10",
-    "ng-device-detector": "^3.0.1",
-    "ng-lodash": "^0.5.0",
-    "resize-sensor": "~0.0.5",
-    "angular-material": "1.1.0-rc.5"
-  },
-  "devDependencies": {
-    "angular-mocks": "1.5.5"
-  },
-  "resolutions": {
-    "angular": "1.5.5",
-    "moment": "2.13.0"
-  },
-  "overrides": {
-    "angular-material": {
-      "main": [
-        "angular-material.js"
-      ]
+    "name": "advisen",
+    "version": "1.1.0",
+    "dependencies": {
+        "angular": "1.5.5",
+        "angular-animate": "1.5.5",
+        "angular-aria": "1.5.5",
+        "angular-cookies": "1.5.5",
+        "angular-messages": "1.5.5",
+        "angular-resource": "1.5.5",
+        "angular-sanitize": "1.5.5",
+        "angular-translate": "2.11.0",
+        "angular-translate-loader-partial": "2.11.0",
+        "angular-ui-router": "0.3.0",
+        "jquery": "2.2.4",
+        "mobile-detect": "1.3.2",
+        "moment": "2.13.0",
+        "perfect-scrollbar": "0.6.11",
+        "angular-timer": "~1.3.3",
+        "angular-touch": "~1.4.0",
+        "angular-ui-calendar": "~1.0.0",
+        "datatables-responsive": "~1.0.7",
+        "textAngular": "~1.5.0",
+        "toastr": "~2.1.1",
+        "angular-loading-bar": "~0.8.0",
+        "angular-datatables": "~0.5.1",
+        "angular-disable-all": "~0.0.1",
+        "a0-angular-storage": "~0.0.13",
+        "angular-froala": "^2.1.0",
+        "highcharts-ng": "^0.0.11",
+        "highcharts": "~4.2.3",
+        "angular-papaparse": "^1.0.0",
+        "socket.io": "^1.4.6",
+        "ng-idle": "^1.2.2",
+        "angular-notification-icons": "~0.4.3",
+        "angular-svg-round-progressbar": "^0.4.6",
+        "ngActivityIndicator": "^0.1.10",
+        "ng-device-detector": "^3.0.1",
+        "ng-lodash": "^0.5.0",
+        "resize-sensor": "~0.0.5",
+        "angular-material": "1.1.0-rc.5"
     },
-    "perfect-scrollbar": {
-      "main": [
-        "css/perfect-scrollbar.css",
-        "js/perfect-scrollbar.js"
-      ]
+    "devDependencies": {
+        "angular-mocks": "1.5.5"
     },
-    "Sortable": {
-      "main": [
-        "Sortable.js",
-        "ng-sortable.js"
-      ]
+    "resolutions": {
+        "angular": "1.5.5",
+        "moment": "2.13.0"
     },
-    "font-awesome": {
-      "main": []
+    "overrides": {
+        "angular-material": {
+            "main": [
+                "angular-material.js"
+            ]
+        },
+        "perfect-scrollbar": {
+            "main": [
+                "css/perfect-scrollbar.css",
+                "js/perfect-scrollbar.js"
+            ]
+        },
+        "Sortable": {
+            "main": [
+                "Sortable.js",
+                "ng-sortable.js"
+            ]
+        },
+        "font-awesome": {
+            "main": []
+        },
+        "highcharts": {
+            "main": [
+                "highcharts.js",
+                "highcharts-more.js",
+                "modules/no-data-to-display.src.js",
+                "modules/exporting.js"
+            ]
+        }
     }
-  }
 }

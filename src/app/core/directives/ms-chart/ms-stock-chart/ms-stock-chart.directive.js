@@ -81,27 +81,24 @@
         }
 
         function convServiceResptoChartFormat(data) {
+            var xdataArr = [];
+            var datasetArr = [];
+            var outArr = [];
+
             var results = data;
-            if (results && results.stockChartPrimaryData) {
-                var outArr = [];
-                var xdataArr = [];
-                var datasetArr = [];
+            if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0) {
                 var firstDatasetArr = [];
                 var secondDatasetArr = [];
-                var firstchartSerArr = [];
                 var seriesByVolumes = {};
                 var seriesByTickers = {};
                 var secondchartSerArr = [];
-                var primarTickerName = '';
                 var firstChartTitle = 'Price';
                 var peerData = null;
                 var lengthDiff = false;
 
-                if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0) {
-                    primarTickerName = results.stockChartPrimaryData[0].ticker;
-                }
+                var primarTickerName = results.stockChartPrimaryData[0].ticker;
 
-                if (results.stockChartPeerData && results.stockChartPeerData.length) {
+                if (results.stockChartPeerData && results.stockChartPeerData.length > 0) {
                     peerData = results.stockChartPeerData;
                     if (results.stockChartPeerData.length > 0) {
                         lengthDiff = true;
@@ -118,7 +115,7 @@
                     var applyEarning = false;
                     var applySplit = false;
 
-                    xdataArr[xdataArr.length] = stock.dataDate.substring(0, 10);
+                    xdataArr[xdataArr.length] = Date.parse(stock.dataDate.substring(0, 10));
                     firstDatasetArr[firstDatasetArr.length] = parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose);
                     secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
 
@@ -229,12 +226,11 @@
 
                 datasetArr[datasetArr.length] = {
                     "name": "",
-                    "yaxisTitle": firstChartTitle,
-                    "xaxisTitle": "",
+                    "type": "spline",
                     "series": seriesSet,
                     "data": dataSet,
-                    "type": "spline",
-                    "valueDecimals": 1,
+                    "xaxisTitle": "",
+                    "yaxisTitle": firstChartTitle,
                     "showlegend": true,
                     "showxaxisLabel": false,
                     "showtooltip": true,
@@ -243,7 +239,8 @@
                         labels: {
                             step:3
                         }
-                    }
+                    },
+                    "valueDecimals": 1
                 };
 
                 secondchartSerArr[secondchartSerArr.length] = {
@@ -255,33 +252,53 @@
 
                 datasetArr[datasetArr.length] = {
                     "name": "",
-                    "yaxisTitle": "Volume (Millions)",
-                    "xaxisTitle": "",
+                    "type": "column",
                     "series": secondchartSerArr,
                     "data": secondDatasetArr,
-                    "type": "column",
-                    "valueDecimals": 0,
+                    "xaxisTitle": "",
+                    "yaxisTitle": "Volume (Millions)",
                     "showlegend": false,
                     "showxaxisLabel": true,
                     "showtooltip": false,
-                    "spacingTop": 7
+                    "spacingTop": 7,
+                    "valueDecimals": 0
                 };
-
-                outArr[outArr.length] = {
-                    "xData": xdataArr,
-                    "datasets": datasetArr
+            } else {
+                datasetArr[datasetArr.length] = {
+                    "name": "",
+                    "type": "spline",
+                    "series": [],
+                    "data": [],
+                    "xaxisTitle": "",
+                    "yaxisTitle": "",
+                    "showlegend": false,
+                    "showxaxisLabel": false,
+                    "showtooltip": false,
+                    "spacingTop": 30,
+                    "xAxis": {
+                        labels: {
+                            step:3
+                        }
+                    },
+                    "valueDecimals": 1
                 };
-
-                return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
             }
+
+            outArr[outArr.length] = {
+                "xData": xdataArr,
+                "datasets": datasetArr
+            };
+
+            return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
         }
 
         vm.fetchChartData = function(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
-            stockService
-            .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, store.inMemoryCache['user-info'].token)
+            stockService.stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, store.inMemoryCache['user-info'].token)
             .then(function(data) {
-                //@todo call logic for remove legend item on empty series data
-                $scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
+                if (data && data.stockChartPrimaryData && data.stockChartPrimaryData.length > 0) {
+                    //@todo call logic for remove legend item on empty series data
+                    $scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
+                }
                 vm.stockDataSet = convServiceResptoChartFormat(data);
                 if (data.stockChartPeerData && data.stockChartPeerData.length) {
                     vm.selectedStockCount = data.stockChartPeerData.length / data.stockChartPrimaryData.length;
