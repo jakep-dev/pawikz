@@ -492,18 +492,90 @@
                 //    console.log('SVG element not found');
                 //}
 
-                return svgElement;
+                var imgs = document.getElementsByTagName('image');
+                var imgUrls = [];
+                for (imgIndex = 0; imgIndex < imgs.length; imgIndex = imgIndex + 1) {
+                    //console.log('>>>>>> ' + imgIndex);
+                    imgUrls.push(imgs[imgIndex].href.baseVal);
+                }
+
+                return {
+                    svg : svgElement,
+                    imgUrls: imgUrls
+                };
+
             }, args);
+
+            var counter, imagesLoaded = false;
+
+            function decrementImgCounter() {
+                counter -= 1;
+                if (counter < 1) {
+                    imagesLoaded = true;
+                }
+            }
+
+            function loadImages(imgUrls) {
+                var i, img;
+                counter = imgUrls.length;
+                for (i = 0; i < imgUrls.length; i += 1) {
+                    img = new Image();
+                    /* onload decrements the counter, also when error (perhaps 404), don't wait for this image to be loaded */
+                    img.onload = img.onerror = decrementImgCounter;
+                    /* force loading of images by setting the src attr.*/
+                    img.src = imgUrls[i];
+                }
+            }
+
+            function renderImage(svg) {
+
+                var interval, timer;
+                
+                if (svg.imgUrls.length > 0) {
+                    loadImages(svg.imgUrls);
+                } else {
+                    // no images present, no loading, no waiting
+                    imagesLoaded = true;
+                }
+
+                if (!imagesLoaded) {
+                    // render with interval, waiting for all images loaded
+                    interval = window.setInterval(function () {
+                        if (imagesLoaded) {
+                            clearTimeout(timer);
+                            clearInterval(interval);
+                            //convert(svg);
+                            console.log('Writing to file: ' + filename);
+                            page.render(filename);
+                            exit(filename);
+                        }
+                        console.log('waiting for imagesLoaded ' + imagesLoaded);
+                    }, 50);
+
+                    // we have a 5 second timeframe..
+                    timer = window.setTimeout(function () {
+                        clearInterval(interval);
+                        exit('While rendering, there\'s is a timeout reached');
+                    }, config.TIMEOUT);
+                } else {
+                    console.log('images are loaded, render rightaway');
+                    //convert(svg);
+                    console.log('Writing to file: ' + filename);
+                    page.render(filename);
+                    exit(filename);
+                }
+            }
 
             console.log('Writing to file: ' + filename);
             /*var SVG_DOCTYPE = '<?xml version=\"1.0" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">';
             // Saving SVG to a file
             fs.write(filename, SVG_DOCTYPE + svg);*/
-            page.render(filename);
+            //page.render(filename);
 
             // Saving as PDF
             //page.render(filename.replace(/\.svg/, '.pdf'));
-            exit(filename);
+            //exit(filename);
+            renderImage(svg);
         });
     }
 
