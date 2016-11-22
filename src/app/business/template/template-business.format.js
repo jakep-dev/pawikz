@@ -187,7 +187,22 @@
     	                formatObj.numericValue = numericValue;
     	                break;
     	            case 'DATE':
-    	                formatted = templateBusiness.formatDate(formatted, 'MM/DD/YYYY');
+    	                var dateObject = null;
+
+                        //parsed date & check if valid date for DD-MMM-YY format
+                        dateObject = parseDate(formatted, 'DD-MMM-YY');
+                        if(angular.isDate(dateObject)) {
+                            formatted = formatDate(dateObject, 'MM/DD/YYYY');
+                            break;
+                        }
+
+                        //parsed date & check if valid date for MM/DD/YYYY format
+                        dateObject = parseDate(formatted, 'MM/DD/YYYY');
+                        if(angular.isDate(dateObject)) {
+                            formatted = formatDate(dateObject, 'MM/DD/YYYY');
+                            break;
+                        }
+                        
     	                break;
     	            default:
     	                break;
