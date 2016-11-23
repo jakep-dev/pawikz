@@ -1879,19 +1879,22 @@
         function save()
         {
 			if(business.saveMnemonics.length > 0){
+			
+				var saveMnemoncis = business.saveMnemonics.splice(0, business.saveMnemonics.length);
 				var input = {
 					projectId: commonBusiness.projectId,
 					stepId: commonBusiness.stepId,
 					userId: commonBusiness.userId,
-					mnemonics: business.saveMnemonics
+					mnemonics: saveMnemoncis
 				};
 
 				templateService.save(input).then(function(response)
 				{
 					toast.simpleToast('Saved successfully');
+				}, function(err) {
+					business.saveMnemonics.push.apply(business.saveMnemonics, saveMnemonics);
+					toast.simpleToast('Save Failed');
 				});
-        
-				business.saveMnemonics = [];
 			}
         }
 		
@@ -1899,16 +1902,18 @@
         function saveTable()
         {
             if(business.saveTableMnemonics.length > 0) {
-                _.each(business.saveTableMnemonics, function(tableMnemonic){
-
+                _.each(business.saveTableMnemonics, function(tableMnemonic, index){
+					
+					var saveTableMnemonics = business.saveTableMnemonics.splice(index, 1);
                     templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
-                        tableMnemonic.mnemonic, tableMnemonic.itemId, tableMnemonic.table).then(function(response)
+                        saveTableMnemonics.mnemonic, saveTableMnemonics.itemId, saveTableMnemonics.table).then(function(response)
                     {
                         toast.simpleToast('Saved successfully');
+					}, function(err) {
+						business.saveTableMnemonics.push.apply(business.saveTableMnemonics, saveTableMnemonics);
+						toast.simpleToast('Save Failed');
                     });
                 });
-                
-                business.saveTableMnemonics = [];
             }
         }
 		
