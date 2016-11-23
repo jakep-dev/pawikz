@@ -115,7 +115,7 @@
                                 if (!subContext.yAxisLabel) {
                                     subContext.yAxisLabel = chartSetting.context.defaultRatioLabel;
                                 }
-                                subContext.ifcChartSetting = getIFCChartObject(data.data, chartSetting.context.service.exportOptions.stockChartWidth, chartSetting.context.service.exportOptions.stockChartHeight, subContext.yAxisLabel);
+                                subContext.ifcChartSetting = getIFCChartObject(data.data, chartSetting.context.service.exportOptions.financialChartWidth, chartSetting.context.service.exportOptions.financialChartHeight, subContext.yAxisLabel);
                                 subContext.chartName = chartSetting.context.ifcChartSettings[chartSetting.index].stepId + '.WU_RATIOS_CHART.WU_RATIOS_CHART.' + chartSetting.context.ifcChartSettings[chartSetting.index].chartId + '.part1.png';
                                 //console.log(subContext.ifcChartSetting);
                                 //<step_id>.WU_RATIOS_CHART.WU_RATIOS_CHART.<chart_id>.part1.png 

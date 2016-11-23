@@ -88,9 +88,11 @@ exports.restcall = {
             exportOptions: {
                 phatomjsURL: 'http://localhost:8888',
                 pdfRequestDir: '/data/tmp/htmlRequest/',
-                stockChartWidth: 800,
+                financialChartWidth: 1100,
+                financialChartHeight: 600,
+                stockChartWidth: 1100,
                 stockChartHeight: 375,
-                volumeChartWidth:  800,
+                volumeChartWidth: 1100,
                 volumeChartHeight: 225
             }
         }
