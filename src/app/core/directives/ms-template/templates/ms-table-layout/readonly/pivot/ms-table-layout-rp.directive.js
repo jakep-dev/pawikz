@@ -8,7 +8,7 @@
 
 
     /** @ngInject */
-    function msTablelayoutRPDirective($compile, templateService, commonBusiness, templateBusiness, DTOptionsBuilder)
+    function msTablelayoutRPDirective($compile, templateService, commonBusiness, templateBusiness, templateBusinessFormat, DTOptionsBuilder)
     {
         return {
             restrict: 'E',
@@ -68,6 +68,7 @@
 
         function getBodyDetails(rows, data, scope) {
             var html = '';
+            var columnWidth = '';
             html += '<table class="tb-v2-layout" width="100%" cellpadding="4" cellspacing="0">';
             html += '<tbody>';
             _.each(rows, function (eachRow) {
@@ -78,11 +79,13 @@
                     }
 
                     if (col.TearSheetItem.Label) {
-                        html += '<td>';
+                        columnWidth = templateBusinessFormat.getAlignmentWidthColumForTableLayout(col, columnWidth);
+                        html += '<td width='+columnWidth+'>';
                         html += '<span>' + col.TearSheetItem.Label + '</span>';
                         html += '</td>';
                     } else if (col.TearSheetItem.Mnemonic) {
-                        html += '<td>';
+                        columnWidth = templateBusinessFormat.getAlignmentWidthColumForTableLayout(col, columnWidth);
+                        html += '<td width='+columnWidth+'>';
                         var mnemonic = col.TearSheetItem.Mnemonic;
                         var exp = "data." + mnemonic;
                         var value = eval(exp);
