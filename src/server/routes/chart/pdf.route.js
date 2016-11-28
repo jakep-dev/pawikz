@@ -19,9 +19,8 @@
         var splitImageData = getImageBase64Data('src/assets/icons/images/Stock_Split.jpg');
 
         config.parallel([
-            app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest)
-            //,
-            //app.post('/api/downloadTemplatePDF', downloadTemplatePDF)
+            app.post('/api/createTemplatePDFRequest', createTemplatePDFRequest),
+            app.post('/api/downloadTemplatePDF', downloadTemplatePDF)
         ]);
 
         function getServiceDetails(serviceName) {
@@ -1369,14 +1368,13 @@
                             context.PDFStatusCode = data.request.status
                             context.PDFHTTPResponseCode = data.responseInfo.code;
                             context.PDFPercentComplete = data.request.percentComplete;
-                            console.log('[' + context.requestId + "]Code: " + context.PDFStatusCode + " At " + data.request.percentComplete + "%");
                             if (data.request.status === "C") {
-                                console.log('[' + context.requestId + "]PDF generation complete.");
+                                console.log('[' + context.requestId + '][' + context.progressCount + '][Code:' + context.PDFStatusCode + ']PDF generation complete.');
                                 subContext.statusResponse.context = context;
                                 console.log('[finished]getTemplatePDFStatus url:' + subContext.url);
                                 next(subContext.statusResponse);
                             } else {
-                                console.log('[' + context.requestId + "]PDF generation " + context.PDFPercentComplete + "% complete.");
+                                console.log('[' + context.requestId + '][' + context.progressCount + '][Code:' + context.PDFStatusCode + ']PDF generation ' + context.PDFPercentComplete + '% complete.');
                                 subContext.room = 'pdf_' + context.requestId;
                                 subContext.data = {
                                     requestId: context.requestId,
@@ -1398,7 +1396,9 @@
                         next(subContext.statusResponse);
                     }
                 }
-            ).on('error', function (err) {
+            ).on('error',
+                function (err)
+                {
                     console.log(err);
                     console.log('[on error]Error connecting to getTemplatePDFStatus. url:' + subContext.url);
                     subContext.statusResponse.error = true;
@@ -1486,8 +1486,15 @@
                     } else {
                         console.log('setSVGFileStatus returned status: ' + context.responseCode);
                         if (context.responseCode == 200) {
+                            context.room = 'pdf_' + context.requestId;
+                            context.progressCount = 0;
+                            context.data = {
+                                requestId: context.requestId,
+                                progress: 0
+                            };
                             async.forever(
                                 function (next) {
+                                    context.progressCount++;
                                     getTemplatePDFStatus(context, next);
                                 },
                                 function (asyncResult) {
@@ -1498,11 +1505,7 @@
                                     } else {
                                         console.log('---->Request ' + context.requestId + ' is complete.');
                                     }
-                                    context.room = 'pdf_' + context.requestId;
-                                    context.data = {
-                                        requestId: context.requestId,
-                                        progress: context.PDFPercentComplete
-                                    };
+                                    context.data.progress = context.PDFPercentComplete;
                                     console.log('Sending socket message for request:' + context.data.requestId);
                                     config.socketIO.socket.emit('[' + context.room + ']pdf-download-status', context.data);
                                 }
@@ -1518,6 +1521,36 @@
                     }
                 }
             );
+        }
+
+        function downloadTemplatePDF(req, res, next) {
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
+            context.ssnid = req.headers['x-session-token'];
+            context.request_id = req.body.request_id;
+            context.file_name = encodeURIComponent((req.body.file_name).trim());
+
+            if (!u.isUndefined(context.service) && !u.isNull(context.service)) {
+                context.methodName = context.service.methods.downloadTemplatePDF;
+            }
+
+            context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName + '?request_id=' + context.request_id + '&fileName=' + context.file_name + '&ssnid=' + context.ssnid;
+            console.log(context.url);
+            client.get(context.url, { responseType: 'arraybuffer' }, function (data, response) {
+                if (data) {
+                    res.writeHead(200,
+                        {
+                            'Content-Type': 'application/pdf',
+                            'Content-Disposition': 'attachment; filename=' + context.file_name,
+                            'Content-Transfer-Encoding': 'BINARY',
+                            'Content-Length': data.length
+                        }
+                    );
+                    res.write(data);
+                    res.end();
+                }
+            });
         }
 
     }

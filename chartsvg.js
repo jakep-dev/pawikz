@@ -136,7 +136,7 @@
                 chartConfig: chartConfig,
                 filename: filename
             };
-
+            //console.log('Starting to generate file: ' + filename);
             var svg = page.evaluate(function (opt) {
 
                 var container;
@@ -490,6 +490,7 @@
                         if (chart.xAxis != null && chart.xAxis.length > 0) {
                             chart.xAxis[0].labelRotation = 0;
                             chart.isDirty = true;
+                            //console.log("Calling chart redraw.");
                             chart.redraw();
                         }
                     }
@@ -513,97 +514,6 @@
                     }
                 });
 
-                /*
-                 var chart = new Highcharts.Chart({
-                 chart: {
-                 renderTo: container.id,
-                 width: opt.width,
-                 height: opt.height
-                 },
-                 exporting: {
-                 enabled: false
-                 },
-                 title: {
-                 text: 'Combination chart'
-                 },
-                 xAxis: {
-                 categories: ['Apples', 'Oranges', 'Pears', 'Bananas', 'Plums']
-                 },
-                 yAxis: {
-                 title: {
-                 text: 'Y-values'
-                 }
-                 },
-                 labels: {
-                 items: [{
-                 html: 'Total fruit consumption',
-                 style: {
-                 left: '40px',
-                 top: '8px',
-                 color: 'black'
-                 }
-                 }]
-                 },
-                 plotOptions: {
-                 line: {
-                 dataLabels: {
-                 enabled: true
-                 },
-                 enableMouseTracking: false
-                 },
-                 series: {
-                 enableMouseTracking: false,
-                 shadow: false,
-                 animation: false
-                 }
-                 },
-                 series: [{
-                 type: 'column',
-                 name: 'Andrii',
-                 data: [3, 2, 1, 3, 4]
-                 }, {
-                 type: 'column',
-                 name: 'Fabian',
-                 data: [2, 3, 5, 7, 6]
-                 }, {
-                 type: 'column',
-                 name: 'Joan',
-                 data: [4, 3, 3, 9, 0]
-                 }, {
-                 type: 'spline',
-                 name: 'Average',
-                 data: [3, 2.67, 3, 6.33, 3.33],
-                 marker: {
-                 lineWidth: 2,
-                 lineColor: 'white'
-                 }
-                 }, {
-                 type: 'pie',
-                 name: 'Total consumption',
-                 data: [{
-                 name: 'Andrii',
-                 y: 13,
-                 color: '#4572A7'
-                 }, {
-                 name: 'Fabian',
-                 y: 23,
-                 color: '#AA4643'
-                 }, {
-                 name: 'Joan',
-                 y: 19,
-                 color: '#89A54E'
-                 }],
-                 center: [100, 80],
-                 size: 100,
-                 showInLegend: false,
-                 dataLabels: {
-                 enabled: false
-                 }
-                 }]
-                 }
-                 );
-                 */
-
                 opt.chartConfig.chart.renderTo = container.id;
                 if (!opt.chartConfig.chart.width) {
                     console.log("No chart width specified, setting it to " + opt.width);
@@ -614,18 +524,17 @@
                     opt.chartConfig.chart.height = opt.height;
                 }
 
-                if (opt.chartConfig.chart.type == 'column') {
+                if ((opt.chartConfig.chart.type == 'column') || (opt.chartConfig.chart.type == 'line')) {
                     opt.chartConfig.chart.events = {
                         load: function () {
-                            //console.log("Chart Loaded");
+                            //console.log("Chart Loaded - Calling adjustXAxisLabels");
                             adjustXAxisLabels(this);
-                        }
-                        //, redraw: function () {
-                        //console.log("Chart Redrawned");
+                        },
+                        //redraw: function () {
+                        //    console.log("Chart redrawn.");
                         //}
                     };
                 }
-
 
                 var chart = new Highcharts.Chart(opt.chartConfig);
 
@@ -641,12 +550,14 @@
                     elem.setAttribute('opacity', opacity);
                 }
 
+                //Top part of stock chart
                 if (chart.options.chart.type == 'spline') {
                     addLabelBoxes(chart);
-                }
-                else if (chart.options.chart.type == 'column') {
+                } else if (chart.options.chart.type == 'column') {
+                //Bottom part of stock chart
                     adjustXAxisLabels(chart);
                 } else if (chart.options.chart.type == 'line') {
+                //Interactive financial chart
                     addLabelBoxes(chart);
                     adjustXAxisLabels(chart);
                 }
@@ -676,7 +587,7 @@
                     //console.log('>>>>>> ' + imgIndex);
                     imgUrls.push(imgs[imgIndex].href.baseVal);
                 }
-
+                //console.log('Render finished.');
                 return {
                     svg : svgElement,
                     imgUrls: imgUrls
