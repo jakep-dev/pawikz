@@ -25,6 +25,7 @@
             getAlignmentForTableLayoutGenericTextItem: getAlignmentForTableLayoutGenericTextItem,
             getAlignmentForTableLayoutR : getAlignmentForTableLayoutR,
             getAlignmentForTableLayoutNonEditable : getAlignmentForTableLayoutNonEditable,
+            getAlignmentWidthColumForTableLayout : getAlignmentWidthColumForTableLayout,
             formatDate: formatDate,
             parseDate: parseDate
 
@@ -533,6 +534,25 @@
             }
 
             return classVal;
+        }
+
+        function getAlignmentWidthColumForTableLayout(col, colWidth){ // use
+            
+            var columnWidth = colWidth;
+
+            if(!angular.isUndefined(col) && typeof(col.css) != 'object'){
+                if((col.css && col.css.indexOf('tableWidth40') > -1)){
+                    columnWidth = '20%';
+                }else if((col.css && col.css.indexOf('tableWidth30') > -1)){
+                    columnWidth = '15%';
+                }else if((col.css && col.css.indexOf('tableWidth') > -1)){
+                    columnWidth = '10%';
+                }else{
+                    columnWidth = '2%';
+                }
+            }
+
+            return columnWidth;
         }
         
         function parseDate(str, format)

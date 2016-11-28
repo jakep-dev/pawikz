@@ -61,7 +61,11 @@
 
                             var tearSheetItem = col.TearSheetItem,
                                 colspan = col.colspan || 0;
-                            html += '<td style="padding-left: 3px" colspan="'+ colspan +'">';
+                            var columnWidth = '';
+
+                            columnWidth = templateBusinessFormat.getAlignmentWidthColumForTableLayout(col, columnWidth);
+
+                            html += '<td style="padding-left: 3px" width="'+columnWidth+'" colspan="'+ colspan +'">';
 
 
                             if (tearSheetItem &&
