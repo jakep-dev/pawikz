@@ -29,7 +29,7 @@
                     function initializeChart (elem) {
                         // Get the data. The contents of the data file can be viewed at
                         var activity = JSON.parse(scope.config.split('|')[0]);
-                        var primarystockresp = JSON.parse(scope.config.split('|')[1]);
+                        var stockDataResp = JSON.parse(scope.config.split('|')[1]);
 
                         scope.enableLabelRewrite = true;
 
@@ -51,32 +51,48 @@
                         }, 500);
 
                         $timeout(function() {
-                            Highcharts.each(Highcharts.charts, function(p, i) {
-                                $(p.renderTo).bind('mousemove touchmove touchstart', function(e) {
-                                    var point;
-                                    var ind = i % 2 ? i - 1 : (i + 1 < Highcharts.charts.length ? i + 1 : i);
-                                    Array(i, ind).forEach(function(index) {
-                                        e = Highcharts.charts[index].pointer.normalize(e.originalEvent);
-                                        point = Highcharts.charts[index].series[0].searchPoint(e, true);
+                            Highcharts.each(Highcharts.charts, function(chart, chartNdx) {
+                                $(chart.renderTo).bind('mousemove touchmove touchstart', function(e) {
+                                    var ind = chartNdx % 2 ? chartNdx - 1 : (chartNdx + 1 < Highcharts.charts.length ? chartNdx + 1 : chartNdx);
+                                    Array(chartNdx, ind).forEach(function(index) {
+                                        var event = Highcharts.charts[index].pointer.normalize(e.originalEvent);
+                                        var point;
+                                        if (Highcharts.charts[index].series.length > 0) {
+                                            point = Highcharts.charts[index].series[0].searchPoint(event, true);
+                                        }
                                         if (point) {
                                             point.onMouseOver(); // Show the hover marker
-                                            if (!(index % 2)) {
-                                                Highcharts.charts[index].xAxis[0].drawCrosshair(e, point); // Show the crosshair
-                                            } else {
-                                                Highcharts.charts[index].xAxis[0].hideCrosshair();
-                                            }
+                                            Highcharts.charts[index].xAxis[0].drawCrosshair(e, point); // Show the crosshair
                                         }
                                     })
                                 });
                             })
                         }, 500);
 
-                        /**
-                         * Override the reset function, we don't need to hide the tooltips and crosshairs.
-                         */
-                        // Highcharts.Pointer.prototype.reset = function () {
-                        //     return true;
-                        // };
+                        $timeout(function() {
+                            Highcharts.each(Highcharts.charts, function(chart, chartNdx) {
+                                $(chart.renderTo).bind('mouseleave', function(e) {
+                                    var ind = chartNdx % 2 ? chartNdx - 1 : (chartNdx + 1 < Highcharts.charts.length ? chartNdx + 1 : chartNdx);
+                                    if (chartNdx > ind) {
+                                        var tempInd = ind;
+                                        ind = chartNdx;
+                                        chartNdx = tempInd;
+                                    }
+                                    Array(chartNdx, ind).forEach(function(index) {
+                                        var event = Highcharts.charts[index].pointer.normalize(e.originalEvent);
+                                        var point;
+                                        if (Highcharts.charts[index].series.length > 0) {
+                                            point = Highcharts.charts[index].series[0].searchPoint(event, true);
+                                        }
+                                        if (point) {
+                                            point.onMouseOut();
+                                            Highcharts.charts[index].xAxis[0].hideCrosshair(); 
+                                            Highcharts.charts[index].tooltip.hide(point);
+                                        }
+                                    })
+                                });
+                            })
+                        }, 500);
 
                         /**
                          * Synchronize zooming through the setExtremes event handler.
@@ -259,13 +275,25 @@
                                         labels: {
                                             align: 'center',
                                             enabled: dataset.showxaxisLabel,
-                                            autoRotationLimit: 90,
+                                            autoRotationLimit: 0,
                                             formatter: function () {
                                                 return Highcharts.dateFormat('%m-%d-%Y', this.value);
                                             }
                                         },
-                                        tickInterval: parseInt(activity.xData.length / 10),
-                                        tickLength: 5
+                                        tickPositioner: function() {
+                                            var tickPositions = [];
+                                            var primaryDataLength = stockDataResp.stockChartPrimaryData.length;
+                                            var increment = parseInt(primaryDataLength / 4);
+                                            var remainder = primaryDataLength - (increment * 4);
+                                            increment += parseInt(remainder / 4);
+                                            for (var tickNdx = 0; tickNdx <= primaryDataLength; tickNdx += increment) {
+                                                tickNdx = tickNdx == primaryDataLength ? tickNdx - 1 : tickNdx;
+                                                tickPositions.push(tickNdx);
+                                            }
+                                            return tickPositions;
+                                        },
+                                        tickLength: (i == 0 ?  0 : 5),
+                                        tickmarkPlacement: 'on'
                                     },
                                     yAxis: {
                                         title: {
@@ -281,27 +309,21 @@
                                                         var legend = this.series.chart.legend;
                                                         var series = this.series.chart.series;
                                                         var legendItems = legend.allItems;
-                                                        var legendItem;
-                                                        var tspan;
-                                                        var pointIndex = this.index;
-                                                        var yValue;
-                                                        var value;
                                                         var xIndex = this.x;
-                                                        Highcharts.each(series, function(p, n) {
-                                                            yValue = p.data[pointIndex] ? p.data[pointIndex].y : ''
-                                                            if (legendItems && legendItems[n]) {
-                                                                legendItem = legendItems[n].legendItem;
-                                                                if (n == 0) {
-                                                                    $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
-                                                                        if (legCntr == xIndex) {
-                                                                            v.priceClose = v.priceClose ? v.priceClose : 0;
-                                                                            legendItem.attr({ text: (p.name + ' ' + ($filter('currency')(v.priceClose, '', 2))) });
+                                                        Highcharts.each(series, function(p, seriesNdx) {
+                                                            if (legendItems && legendItems[seriesNdx]) {
+                                                                if (seriesNdx == 0) {
+                                                                    $.each(stockDataResp.stockChartPrimaryData, function (stockNdx, primaryStock) {
+                                                                        if (stockNdx == xIndex) {
+                                                                            primaryStock.priceClose = primaryStock.priceClose ? primaryStock.priceClose : 0;
+                                                                            legendItems[seriesNdx].legendItem.attr({ text: (p.name + ' ' + ($filter('currency')(primaryStock.priceClose, '', 2))) });
                                                                         }
                                                                     });
                                                                 } else {
-                                                                    var peerLegendValue = primarystockresp.stockChartPeerData[primarystockresp.stockChartPrimaryData.length * (n - 1) + xIndex].priceClose;
+                                                                    var peerNdx = stockDataResp.stockChartPrimaryData.length * (seriesNdx - 1) + xIndex;
+                                                                    var peerLegendValue = stockDataResp.stockChartPeerData[peerNdx].priceClose;
                                                                     peerLegendValue = peerLegendValue ? peerLegendValue : 0;
-                                                                    legendItem.attr({ text: (p.name + ' ' + ($filter('currency')(peerLegendValue, '', 2))) });
+                                                                    legendItems[seriesNdx].legendItem.attr({ text: (p.name + ' ' + ($filter('currency')(peerLegendValue, '', 2))) });
                                                                 }
                                                             }
                                                         });
@@ -310,12 +332,10 @@
                                                         var legend = this.series.chart.legend;
                                                         var series = this.series.chart.series;
                                                         var legendItems = legend.allItems;
-                                                        var legendItem;
                                                         var xIndex = this.x;
-                                                        Highcharts.each(series, function(p, n) {
-                                                            if (legendItems && legendItems[n]) {
-                                                                legendItem = legendItems[n].legendItem;
-                                                                legendItem.attr({ text: (p.name + '') });
+                                                        Highcharts.each(series, function(p, seriesNdx) {
+                                                            if (legendItems && legendItems[seriesNdx]) {
+                                                                legendItems[seriesNdx].legendItem.attr({ text: (p.name + '') });
                                                             }
                                                         });
                                                     },
@@ -399,7 +419,7 @@
                                         formatter: function() {
                                             var tooltipText = '';
                                             var xPoint = this.x;
-                                            $.each(primarystockresp.stockChartPrimaryData, function(i, v) {
+                                            $.each(stockDataResp.stockChartPrimaryData, function(i, v) {
                                                 if (Date.parse(v.dataDate.substring(0, 10)) == xPoint) {
                                                     tooltipText = Highcharts.dateFormat('%m-%d-%Y',  new Date(xPoint)) + "<br/>" + "Open: " + v.priceOpen + "<br/>" + "Close: " + v.priceClose + "<br/>" + "High: " + v.priceHigh + "<br/>" + "Low: " + v.priceLow + "<br/>" + "Vol: " + v.volume;
                                                 }
