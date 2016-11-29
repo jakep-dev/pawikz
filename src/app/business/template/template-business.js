@@ -171,6 +171,11 @@
                         {
                             notification.status = 'complete';
                             notification.disabled = false;
+                        } else if (response.progress === -1) {
+                            notification.status = 'error';
+                            notification.progress = 100;
+                            notification.disabled = false;
+                            toast.simpleToast("Issue with PDF Download. Please try again.");
                         }
                         commonBusiness.emitMsg('update-notification-binding');
                     }

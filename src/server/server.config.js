@@ -93,7 +93,8 @@ exports.restcall = {
                 stockChartWidth: 1100,
                 stockChartHeight: 375,
                 volumeChartWidth: 1100,
-                volumeChartHeight: 225
+                volumeChartHeight: 225,
+                pdfRequestTimeout: 70
             }
         }
     ]

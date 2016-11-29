@@ -1368,13 +1368,19 @@
                             context.PDFStatusCode = data.request.status
                             context.PDFHTTPResponseCode = data.responseInfo.code;
                             context.PDFPercentComplete = data.request.percentComplete;
+                            context.elapsedTime = ((new Date()).getTime() - context.startTime) / 1000;
+                            console.log(context.elapsedTime);
                             if (data.request.status === "C") {
-                                console.log('[' + context.requestId + '][' + context.progressCount + '][Code:' + context.PDFStatusCode + ']PDF generation complete.');
+                                console.log('[' + context.requestId + '][' + context.elapsedTime + '][Code:' + context.PDFStatusCode + ']PDF generation complete.');
                                 subContext.statusResponse.context = context;
                                 console.log('[finished]getTemplatePDFStatus url:' + subContext.url);
                                 next(subContext.statusResponse);
+                            } else if (context.elapsedTime >= context.service.exportOptions.pdfRequestTimeout) {
+                                subContext.statusResponse.error = true;
+                                console.log('[else]getTemplatePDFStatus timeout. url:' + subContext.url);
+                                next(subContext.statusResponse);
                             } else {
-                                console.log('[' + context.requestId + '][' + context.progressCount + '][Code:' + context.PDFStatusCode + ']PDF generation ' + context.PDFPercentComplete + '% complete.');
+                                console.log('[' + context.requestId + '][' + context.elapsedTime + '][Code:' + context.PDFStatusCode + ']PDF generation ' + context.PDFPercentComplete + '% complete.');
                                 subContext.room = 'pdf_' + context.requestId;
                                 subContext.data = {
                                     requestId: context.requestId,
@@ -1487,14 +1493,13 @@
                         console.log('setSVGFileStatus returned status: ' + context.responseCode);
                         if (context.responseCode == 200) {
                             context.room = 'pdf_' + context.requestId;
-                            context.progressCount = 0;
+                            context.startTime = (new Date()).getTime();
                             context.data = {
                                 requestId: context.requestId,
                                 progress: 0
                             };
                             async.forever(
                                 function (next) {
-                                    context.progressCount++;
                                     getTemplatePDFStatus(context, next);
                                 },
                                 function (asyncResult) {
