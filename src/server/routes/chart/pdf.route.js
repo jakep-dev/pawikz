@@ -1369,7 +1369,6 @@
                             context.PDFHTTPResponseCode = data.responseInfo.code;
                             context.PDFPercentComplete = data.request.percentComplete;
                             context.elapsedTime = ((new Date()).getTime() - context.startTime) / 1000;
-                            console.log(context.elapsedTime);
                             if (data.request.status === "C") {
                                 console.log('[' + context.requestId + '][' + context.elapsedTime + '][Code:' + context.PDFStatusCode + ']PDF generation complete.');
                                 subContext.statusResponse.context = context;

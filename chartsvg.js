@@ -634,28 +634,28 @@
                             clearTimeout(timer);
                             clearInterval(interval);
                             //convert(svg);
-                            console.log('Writing to file: ' + filename);
                             page.render(filename);
+                            console.log('All dependencies loaded, finished writing to file: ' + filename);
                             exit(filename);
                         }
-                        console.log('waiting for imagesLoaded ' + imagesLoaded);
+                        console.log('[renderImage]Waiting for [' + filename + '] dependencies to be loaded, imagesLoaded  = ' + imagesLoaded);
                     }, 50);
 
                     // we have a 5 second timeframe..
                     timer = window.setTimeout(function () {
                         clearInterval(interval);
-                        exit('While rendering, there\'s is a timeout reached');
+                        exit('While rendering[' + filename + '], there\'s is a timeout reached');
                     }, config.TIMEOUT);
                 } else {
-                    console.log('images are loaded, render rightaway');
+                    //console.log('images are loaded, render rightaway');
                     //convert(svg);
-                    console.log('Writing to file: ' + filename);
                     page.render(filename);
+                    console.log('Finished writing to file: ' + filename);
                     exit(filename);
                 }
             }
 
-            console.log('Writing to file: ' + filename);
+            console.log('Start of writing to file: ' + filename);
             /*var SVG_DOCTYPE = '<?xml version=\"1.0" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">';
             // Saving SVG to a file
             fs.write(filename, SVG_DOCTYPE + svg);*/
