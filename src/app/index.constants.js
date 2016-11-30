@@ -61,7 +61,7 @@
             {
                 autoSaveTimeOut: 10000,
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
-                componentInitialLoad:  4
+                componentInitialLoad:  2
             },
             socketInfo: {
                 socket: undefined

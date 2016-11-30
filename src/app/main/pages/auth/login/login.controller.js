@@ -14,9 +14,6 @@
     function LoginController($window, $scope, $location, $rootScope, clientConfig, authService, authBusiness, toast, store, Idle, commonBusiness)
     {
         var vm = this;
-
-        commonBusiness.emitMsg('step-load-completed');
-
         $rootScope.isOperation = false;
         vm.LogIn = LogIn;
         vm.goUrl = goUrl;

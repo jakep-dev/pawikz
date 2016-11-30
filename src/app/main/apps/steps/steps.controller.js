@@ -33,6 +33,7 @@
         stepsBusiness.stepId = stepId;
         commonBusiness.stepId = stepId;
         commonBusiness.projectId = projectId;
+        commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
         vm.TearSheetStep = null;
@@ -81,7 +82,7 @@
         //Get Schema
         function getSchemaAndData()
         {
-            templateBusiness.showTemplateProgress();
+            //templateBusiness.showTemplateProgress();
             stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
             {
                 toast.simpleToast('AutoSave Enabled');
@@ -123,13 +124,13 @@
         {
             getSchemaAndData();
 
-            commonBusiness.onMsg('step-load-completed', $scope, function() {
-                templateBusiness.hideTemplateProgress();
-            });
-
-            commonBusiness.onMsg('step-load-initiated', $scope, function() {
-                templateBusiness.showTemplateProgress();
-            });
+            //commonBusiness.onMsg('step-load-completed', $scope, function() {
+            //    templateBusiness.hideTemplateProgress();
+            //});
+            //
+            //commonBusiness.onMsg('step-load-initiated', $scope, function() {
+            //    templateBusiness.showTemplateProgress();
+            //});
         }
 
         //Move to the previous step

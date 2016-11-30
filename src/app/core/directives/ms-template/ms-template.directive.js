@@ -51,12 +51,6 @@
                 templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal',
                     parseInt(data.projectId), data.project_name);
             });
-
-            //commonBusiness.onMsg('reload-steps', $scope, function()
-            //{
-            //    //$scope.refreshstep();
-            //
-            //});
         }
 
 
@@ -81,8 +75,9 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, $rootScope, templateBusiness, $mdDialog, dialog,
-                                 commonBusiness, $interval, clientConfig)
+    function msTemplateDirective($compile, $templateRequest, $templateCache,
+                                 $interval, templateBusiness,
+                                 commonBusiness, clientConfig)
     {
         return {
             restrict: 'E',
@@ -97,7 +92,7 @@
             {
                 //Storing the components for future load.
                 templateBusiness.components = scope.components;
-
+                scope.showLoadingBar = true;
                 scope.isLoadMoreDisabled = false;
 
                 console.log('Template component creation initiated - ');
@@ -107,15 +102,6 @@
                 {
 
                     if(!scope.isLoadMoreDisabled) {
-
-
-                        $mdDialog.show(
-                            $mdDialog.alert({
-                                clickOutsideToClose: true,
-                                templateUrl: 'app/core/directives/ms-template/dialog/ms-template.dialog.html'
-                            })
-                        );
-
                        var comPromise = $interval(function(){//using $interval seems to work fine
                             var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
                                 components = [],
@@ -124,44 +110,27 @@
 
                             components.push.apply(components, templateBusiness.components.content);
                             components = components.splice(loadedIndex, _.size(components));
+                            compSize = getNumberOfComp(components);
 
-                            compSize = _.size(components);
-
-                            if(compSize < clientConfig.appSettings.componentInitialLoad)
-                            {
+                            if(compSize < clientConfig.appSettings.componentInitialLoad) {
                                 loadSize = compSize
                             }
-                            var actualCompCount  = bindComponent(scope, el, components, loadSize);
 
+                            var actualCompCount  = bindComponent(scope, el, components, loadSize);
                             var newLoadedIndex = loadedIndex + actualCompCount;
 
-                            if(_.size(templateBusiness.components.content) === newLoadedIndex)
-                            {
+                            if(_.size(templateBusiness.components.content) === newLoadedIndex) {
                                 scope.isLoadMoreDisabled = true;
                             }
 
                             el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
                            $interval.cancel(comPromise);
                         }.bind(this), 10);
-
-
                     }
-
-
                 };
 
                 bindHeader(scope);
-                var compCount = clientConfig.appSettings.componentInitialLoad,
-                    compSize = _.size(scope.components.content);
-
-                if(compSize < compCount)
-                {
-                    compCount = compSize;
-                    scope.isLoadMoreDisabled = true;
-                }
-
-                var actualCompCount = bindComponent(scope, el, scope.components.content, compCount);
-
+                var actualCompCount = bindComponent(scope, el, scope.components.content, actualCount(scope));
                 el.find('#btnLoadMore').attr('loadedIndex', actualCompCount);
 
                 commonBusiness.onMsg('reached-page-bottom', scope, function(){
@@ -169,6 +138,19 @@
                 });
             }
         };
+
+        //Get the actual count details
+        function actualCount(scope)
+        {
+            var compCount = clientConfig.appSettings.componentInitialLoad,
+                compSize = getNumberOfComp(scope.components.content);
+
+            if(compSize < compCount) {
+                compCount = compSize;
+                scope.isLoadMoreDisabled = true;
+            }
+            return compCount;
+        }
 
         ///Bind header details for the component
         ///Header & Sub-Header
@@ -186,14 +168,14 @@
         function bindComponent(scope, el, contents, componentLoadCount)
         {
             if(contents) {
-                var totalComponent = componentLoadCount;
-                var currentComponent = 0;
-                var isSkip = false;
+                var totalComponent = componentLoadCount,
+                    currentComponent = 0,
+                    isSkip = false,
+                    count = 0;
 
                 _.each(contents, function (renderContent) {
-
-                    if(!isSkip)
-                    {
+                    if(!isSkip) {
+                        count++;
                         if (renderContent.header &&
                             renderContent.sections &&
                             renderContent.sections.length > 0) {
@@ -204,7 +186,7 @@
                             _.each(renderContent.sections, function (section) {
                                 newScope.isnoneditable = (section.type === 'nonEditableUnmark');
 
-                                if(!newScope.subtype) {
+                                if (!newScope.subtype) {
                                     newScope.subtype = section.subtype || renderContent.header.subtype || '';
                                 }
 
@@ -214,7 +196,7 @@
                                     newScope.tearcontent.push(section);
                                 }
                                 else if (section.TearSheetItem) {
-                                    if(newScope.subtype === 'SubComponent' && section.subtype) {
+                                    if (newScope.subtype === 'SubComponent' && section.subtype) {
                                         section.TearSheetItem.subtype = section.subtype;
                                     }
                                     newScope.tearcontent.push(section);
@@ -233,8 +215,8 @@
                                 var isChartComp = false;
 
                                 //Check for chart component
-                               _.each(newScope.tearcontent, function (each) {
-                                   var tearSheet = each.TearSheetItem;
+                                _.each(newScope.tearcontent, function (each) {
+                                    var tearSheet = each.TearSheetItem;
                                     if (tearSheet &&
                                         tearSheet.id === 'ScrapedItem' &&
                                         tearSheet.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
@@ -253,9 +235,8 @@
                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
                                         'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component>';
                                 }
-
-
                                 el.find('#template-content').append($compile(html)(newScope));
+                                currentComponent++;
                             }
                         }
                         else {
@@ -272,28 +253,23 @@
                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
                                     el.find('#template-content').append($compile(html)(newScope));
                                     break;
-                                
+
                                 case 'LinkItem':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
-                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="'+ renderContent.GoBack +'"></ms-link>';
+                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="' + renderContent.GoBack + '"></ms-link>';
                                     html += '</div>';
                                     el.find('#template-content').append($compile(html)(newScope));
                                     break;
                             }
                         }
-
-                        currentComponent++;
-
-                        if(currentComponent >= totalComponent)
-                        {
+                        if (currentComponent >= totalComponent) {
                             isSkip = true;
-                            commonBusiness.emitMsg('step-load-completed');
                         }
                     }
                 });
 
-                return currentComponent;
+                return count;
             }
         }
 

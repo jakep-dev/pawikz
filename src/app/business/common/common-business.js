@@ -13,6 +13,7 @@
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
+        this.stepName = null;
         this.companyId = null;
         this.prevcompanyId = null;
         this.projectName = null;
@@ -25,6 +26,8 @@
             emitMsg: emitMsg,
             onMsg: onMsg,
             emitWithArgument: emitWithArgument,
+            broadCastMsg: broadCastMsg,
+            broadCastWithArgument: broadCastWithArgument,
             defineBottomSheet: defineBottomSheet,
             goTop: goTop,
             resetBottomSheet: resetBottomSheet,
@@ -100,6 +103,14 @@
         function onMsg(msg, scope, func) {
             var unbind = $rootScope.$on(msg, func);
             scope.$on('$destroy', unbind);
+        }
+
+        function broadCastMsg(msg) {
+            $rootScope.$broadcast(msg);
+        }
+
+        function broadCastWithArgument(msg, arg) {
+            $rootScope.$broadcast(msg, arg);
         }
 
         function emitMsg (msg) {
