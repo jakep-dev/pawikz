@@ -171,7 +171,8 @@
                 var totalComponent = componentLoadCount,
                     currentComponent = 0,
                     isSkip = false,
-                    count = 0;
+                    count = 0,
+                    bindHtml = [];
 
                 _.each(contents, function (renderContent) {
                     if(!isSkip) {
@@ -235,7 +236,12 @@
                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
                                         'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component>';
                                 }
-                                el.find('#template-content').append($compile(html)(newScope));
+
+                                bindHtml.push({
+                                    content: $compile(html)(newScope)
+                                });
+
+                               // el.find('#template-content').append($compile(html)(newScope));
                                 currentComponent++;
                             }
                         }
@@ -251,7 +257,10 @@
                                     newScope.tearcontent.push(renderContent.row.col[1].TearSheetItem);
                                     var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
-                                    el.find('#template-content').append($compile(html)(newScope));
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
+                                    //el.find('#template-content').append($compile(html)(newScope));
                                     break;
 
                                 case 'LinkItem':
@@ -259,7 +268,10 @@
                                     var html = '<div layout-padding>';
                                     html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="' + renderContent.GoBack + '"></ms-link>';
                                     html += '</div>';
-                                    el.find('#template-content').append($compile(html)(newScope));
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
+                                    //el.find('#template-content').append($compile(html)(newScope));
                                     break;
                             }
                         }
@@ -268,6 +280,16 @@
                         }
                     }
                 });
+
+                console.log(bindHtml);
+
+                if(bindHtml && bindHtml.length > 0) {
+                    var element = el.find('#template-content');
+                    _.each(bindHtml, function(html)
+                    {
+                        element.append(html.content);
+                    });
+                }
 
                 return count;
             }
