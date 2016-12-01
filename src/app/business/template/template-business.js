@@ -10,7 +10,7 @@
 
     /* @ngInject */
     function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, 
-                              overviewBusiness, templateService, financialChartService,
+                              overviewBusiness, templateService, financialChartService, deviceDetector,
                               Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
            mnemonics: null,
@@ -88,10 +88,22 @@
            getComponentHeader: getComponentHeader,
            initializeMessages: initializeMessages,
 		   isMnemonicNumberType: isMnemonicNumberType,
-           getTearSheetItems: getTearSheetItems
+           getTearSheetItems: getTearSheetItems,
+           getCompInitialLoadCount: getCompInitialLoadCount
         };
 
         return business;
+
+        function getCompInitialLoadCount() {
+            var compCount = clientConfig.appSettings.compInitialLoadForDesktop;
+            if (deviceDetector.isMobile()) {
+                compCount = clientConfig.appSettings.compInitialLoadForMobile;
+            }
+            else if (deviceDetector.isTablet()) {
+                compCount = clientConfig.appSettings.compInitialLoadForTablet;
+            }
+            return compCount;
+        }
 
         function initializeMessages(scope)
         {

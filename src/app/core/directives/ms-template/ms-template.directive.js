@@ -105,14 +105,14 @@
                        var comPromise = $interval(function(){//using $interval seems to work fine
                             var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
                                 components = [],
-                                loadSize = clientConfig.appSettings.componentInitialLoad,
+                                loadSize = templateBusiness.getCompInitialLoadCount(),
                                 compSize = 0;
 
                             components.push.apply(components, templateBusiness.components.content);
                             components = components.splice(loadedIndex, _.size(components));
                             compSize = getNumberOfComp(components);
 
-                            if(compSize < clientConfig.appSettings.componentInitialLoad) {
+                            if(compSize < templateBusiness.getCompInitialLoadCount()) {
                                 loadSize = compSize
                             }
 
@@ -142,7 +142,7 @@
         //Get the actual count details
         function actualCount(scope)
         {
-            var compCount = clientConfig.appSettings.componentInitialLoad,
+            var compCount = templateBusiness.getCompInitialLoadCount(),
                 compSize = getNumberOfComp(scope.components.content);
 
             if(compSize < compCount) {
@@ -193,7 +193,6 @@
 
                                 if (section.TearSheetItem &&
                                     section.TearSheetItem.length) {
-                                    //newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
                                     newScope.tearcontent.push(section);
                                 }
                                 else if (section.TearSheetItem) {
@@ -240,8 +239,6 @@
                                 bindHtml.push({
                                     content: $compile(html)(newScope)
                                 });
-
-                               // el.find('#template-content').append($compile(html)(newScope));
                                 currentComponent++;
                             }
                         }
@@ -260,7 +257,6 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
-                                    //el.find('#template-content').append($compile(html)(newScope));
                                     break;
 
                                 case 'LinkItem':
@@ -271,7 +267,6 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
-                                    //el.find('#template-content').append($compile(html)(newScope));
                                     break;
                             }
                         }
