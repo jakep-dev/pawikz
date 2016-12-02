@@ -550,157 +550,185 @@
                         try {
                             chartSetting.context.chartSettings[chartSetting.index].output.activity = convServiceResptoChartFormat(data);
                             subContext.activity = chartSetting.context.chartSettings[chartSetting.index].output.activity;
-                            subContext.dataset = subContext.activity.datasets[0];
-                            subContext.stockChartSetting = {
-                                chart: {
-                                    marginRight: 80,
-                                    spacingTop: subContext.dataset.spacingTop,
-                                    spacingBottom: 4,
-                                    zoomType: 'x',
-                                    type: subContext.dataset.type,
-                                    width: chartSetting.context.service.exportOptions.stockChartWidth,
-                                    height: chartSetting.context.service.exportOptions.stockChartHeight
-                                },
-                                exporting: {
-                                    enabled: false
-                                },
-                                title: {
-                                    text: subContext.dataset.name,
-                                    align: 'left',
-                                    margin: 0,
-                                    x: 30
-                                },
-                                credits: {
-                                    enabled: false
-                                },
-                                legend: {
-                                    enabled: subContext.dataset.showlegend,
-                                    align: 'top',
-                                    verticalAlign: 'top',
-                                    x: 220,
-                                    y: -25,
-                                    itemDistance: 85,
-                                    symbolHeight: 20,
-                                    symbolWidth: 6,
-                                    symbolRadius: 4
-
-                                },
-                                xAxis: {
-                                    type: 'datetime',
-                                    categories: subContext.activity.xData,
-                                    crosshair: {
-                                        width: 1,
-                                        color: 'gray',
-                                        dashStyle: 'shortdot'
+                            if (subContext.activity.datasets.length > 0) {
+                                subContext.dataset = subContext.activity.datasets[0];
+                                subContext.stockChartSetting = {
+                                    chart: {
+                                        marginRight: 80,
+                                        spacingTop: subContext.dataset.spacingTop,
+                                        spacingBottom: 4,
+                                        zoomType: 'x',
+                                        type: subContext.dataset.type,
+                                        width: chartSetting.context.service.exportOptions.stockChartWidth,
+                                        height: chartSetting.context.service.exportOptions.stockChartHeight
                                     },
-                                    labels: {
-                                        //rotation: 0,
-                                        //distance: 10,
-                                        align: 'center',
-                                        enabled: subContext.dataset.showxaxisLabel
-                                    }
-                                },
-                                plotOptions: {
-                                    series: {
-                                        marker: { enabled: false }
-                                    }
-                                },
-                                yAxis: {
+                                    exporting: {
+                                        enabled: false
+                                    },
                                     title: {
-                                        text: subContext.dataset.yaxisTitle
+                                        text: subContext.dataset.name,
+                                        align: 'left',
+                                        margin: 0,
+                                        x: 30
                                     },
-                                    crosshair: {
-                                        width: 1,
-                                        color: 'gray',
-                                        dashStyle: 'shortdot'
-                                    }
-                                },
-                                tooltip: {
-                                    valueDecimals: subContext.dataset.valueDecimals,
-                                    positioner: function () {
-                                        return { x: 70, y: 0 }
+                                    credits: {
+                                        enabled: false
                                     },
-                                    enabled: subContext.dataset.showtooltip
-                                },
-                                series: subContext.dataset.series
-                            };
-                            chartSetting.context.chartSettings[chartSetting.index].output.stockChartSetting = subContext.stockChartSetting;
+                                    legend: {
+                                        enabled: subContext.dataset.showlegend,
+                                        align: 'top',
+                                        verticalAlign: 'top',
+                                        x: 220,
+                                        y: -25,
+                                        itemDistance: 85,
+                                        symbolHeight: 20,
+                                        symbolWidth: 6,
+                                        symbolRadius: 4
+                                    },
+                                    xAxis: {
+                                        type: 'datetime',
+                                        categories: subContext.activity.xData,
+                                        crosshair: {
+                                            width: 1,
+                                            color: 'gray',
+                                            dashStyle: 'shortdot'
+                                        },
+                                        labels: {
+                                            //rotation: 0,
+                                            //distance: 10,
+                                            align: 'center',
+                                            enabled: subContext.dataset.showxaxisLabel
+                                        }
+                                    },
+                                    plotOptions: {
+                                        series: {
+                                            marker: { enabled: false }
+                                        }
+                                    },
+                                    yAxis: {
+                                        title: {
+                                            text: subContext.dataset.yaxisTitle
+                                        },
+                                        crosshair: {
+                                            width: 1,
+                                            color: 'gray',
+                                            dashStyle: 'shortdot'
+                                        }
+                                    },
+                                    tooltip: {
+                                        valueDecimals: subContext.dataset.valueDecimals,
+                                        positioner: function () {
+                                            return { x: 70, y: 0 }
+                                        },
+                                        enabled: subContext.dataset.showtooltip
+                                    },
+                                    lang: {
+                                        noData: "No Data Available"
+                                    },
+                                    noData: {
+                                        style: {
+                                            fontWeight: 'bold',
+                                            fontSize: '15px',
+                                            color: '#FF0000'
+                                        }
+                                    },
+                                    series: subContext.dataset.series
+                                };
+                                chartSetting.context.chartSettings[chartSetting.index].output.stockChartSetting = subContext.stockChartSetting;
+                            } else {
+                                subContext.stockChartSetting = null;
+                            }
 
-                            subContext.dataset = subContext.activity.datasets[1];
-                            subContext.volumeChartSetting = {
-                                chart: {
-                                    marginRight: 80,
-                                    spacingTop: subContext.dataset.spacingTop,
-                                    spacingBottom: 4,
-                                    zoomType: 'x',
-                                    type: subContext.dataset.type,
-                                    width: chartSetting.context.service.exportOptions.volumeChartWidth,
-                                    height: chartSetting.context.service.exportOptions.volumeChartHeight
-                                },
-                                exporting: {
-                                    enabled: false
-                                },
-                                title: {
-                                    text: subContext.dataset.name,
-                                    align: 'left',
-                                    margin: 0,
-                                    x: 30
-                                },
-                                credits: {
-                                    enabled: false
-                                },
-                                legend: {
-                                    enabled: subContext.dataset.showlegend,
-                                    align: 'top',
-                                    verticalAlign: 'top',
-                                    x: 220,
-                                    y: -25,
-                                    itemDistance: 85,
-                                    symbolHeight: 20,
-                                    symbolWidth: 6,
-                                    symbolRadius: 4
-
-                                },
-                                xAxis: {
-                                    type: 'datetime',
-                                    categories: subContext.activity.xData,
-                                    crosshair: {
-                                        width: 1,
-                                        color: 'gray',
-                                        dashStyle: 'shortdot'
+                            if (subContext.activity.datasets.length > 1) {
+                                subContext.dataset = subContext.activity.datasets[1];
+                                subContext.volumeChartSetting = {
+                                    chart: {
+                                        marginRight: 80,
+                                        spacingTop: subContext.dataset.spacingTop,
+                                        spacingBottom: 4,
+                                        zoomType: 'x',
+                                        type: subContext.dataset.type,
+                                        width: chartSetting.context.service.exportOptions.volumeChartWidth,
+                                        height: chartSetting.context.service.exportOptions.volumeChartHeight
                                     },
-                                    labels: {
-                                        //rotation: 0,
-                                        //distance: 10,
-                                        align: 'center',
-                                        enabled: subContext.dataset.showxaxisLabel
-                                    }
-                                },
-                                plotOptions: {
-                                    series: {
-                                        marker: { enabled: false }
-                                    }
-                                },
-                                yAxis: {
+                                    exporting: {
+                                        enabled: false
+                                    },
                                     title: {
-                                        text: subContext.dataset.yaxisTitle
+                                        text: subContext.dataset.name,
+                                        align: 'left',
+                                        margin: 0,
+                                        x: 30
                                     },
-                                    crosshair: {
-                                        width: 1,
-                                        color: 'gray',
-                                        dashStyle: 'shortdot'
-                                    }
-                                },
-                                tooltip: {
-                                    valueDecimals: subContext.dataset.valueDecimals,
-                                    positioner: function () {
-                                        return { x: 70, y: 0 }
+                                    credits: {
+                                        enabled: false
                                     },
-                                    enabled: subContext.dataset.showtooltip
-                                },
-                                series: subContext.dataset.series
-                            };
-                            chartSetting.context.chartSettings[chartSetting.index].output.volumeChartSetting = subContext.volumeChartSetting;
+                                    legend: {
+                                        enabled: subContext.dataset.showlegend,
+                                        align: 'top',
+                                        verticalAlign: 'top',
+                                        x: 220,
+                                        y: -25,
+                                        itemDistance: 85,
+                                        symbolHeight: 20,
+                                        symbolWidth: 6,
+                                        symbolRadius: 4
+
+                                    },
+                                    xAxis: {
+                                        type: 'datetime',
+                                        categories: subContext.activity.xData,
+                                        crosshair: {
+                                            width: 1,
+                                            color: 'gray',
+                                            dashStyle: 'shortdot'
+                                        },
+                                        labels: {
+                                            //rotation: 0,
+                                            //distance: 10,
+                                            align: 'center',
+                                            enabled: subContext.dataset.showxaxisLabel
+                                        }
+                                    },
+                                    plotOptions: {
+                                        series: {
+                                            marker: { enabled: false }
+                                        }
+                                    },
+                                    yAxis: {
+                                        title: {
+                                            text: subContext.dataset.yaxisTitle
+                                        },
+                                        crosshair: {
+                                            width: 1,
+                                            color: 'gray',
+                                            dashStyle: 'shortdot'
+                                        }
+                                    },
+                                    tooltip: {
+                                        valueDecimals: subContext.dataset.valueDecimals,
+                                        positioner: function () {
+                                            return { x: 70, y: 0 }
+                                        },
+                                        enabled: subContext.dataset.showtooltip
+                                    },
+                                    lang: {
+                                        noData: "No Data Available"
+                                    },
+                                    noData: {
+                                        style: {
+                                            fontWeight: 'bold',
+                                            fontSize: '15px',
+                                            color: '#FF0000'
+                                        }
+                                    },
+                                    series: subContext.dataset.series
+                                };
+                                chartSetting.context.chartSettings[chartSetting.index].output.volumeChartSetting = subContext.volumeChartSetting;
+                            } else {
+                                subContext.volumeChartSetting = null;
+                            }
+
 
                             subContext.chartName = (chartSetting.context.chartSettings[chartSetting.index].step_id) +
                                 "." + (chartSetting.context.chartSettings[chartSetting.index].mnemonic) +
@@ -709,20 +737,24 @@
                             chartSetting.context.chartSettings[chartSetting.index].output.chartName = subContext.chartName;
                             delete chartSetting.context.chartSettings[chartSetting.index].output.activity;
                             //console.log(chartSetting.context.chartSettings[chartSetting.index].output);
-                            chartSetting.context.chartObjectArr.push({
-                                infile: JSON.stringify(subContext.stockChartSetting),
-                                callback: '',
-                                constr: '',
-                                outfile: subContext.chartName + '.part0.png',
-                                page: 'STOCK_CHART'
-                            });
-                            chartSetting.context.chartObjectArr.push({
-                                infile: JSON.stringify(subContext.volumeChartSetting),
-                                callback: '',
-                                constr: '',
-                                outfile: subContext.chartName + '.part1.png',
-                                page: 'STOCK_CHART'
-                            });
+                            if (subContext.stockChartSetting) {
+                                chartSetting.context.chartObjectArr.push({
+                                    infile: JSON.stringify(subContext.stockChartSetting),
+                                    callback: '',
+                                    constr: '',
+                                    outfile: subContext.chartName + '.part0.png',
+                                    page: 'STOCK_CHART'
+                                });
+                            }
+                            if (subContext.volumeChartSetting) {
+                                chartSetting.context.chartObjectArr.push({
+                                    infile: JSON.stringify(subContext.volumeChartSetting),
+                                    callback: '',
+                                    constr: '',
+                                    outfile: subContext.chartName + '.part1.png',
+                                    page: 'STOCK_CHART'
+                                });
+                            }
 
                         } catch (exception) {
                             console.log('[getChartDataPoints]Error\n' + exception);
@@ -748,10 +780,10 @@
 
         function convServiceResptoChartFormat(data) {
             var subContext = new Object();
+            subContext.xdataArr = [];
+            subContext.datasetArr = [];
             subContext.results = data;
-            if (subContext.results && subContext.results.stockChartPrimaryData) {
-                subContext.xdataArr = [];
-                subContext.datasetArr = [];
+            if (subContext.results && subContext.results.stockChartPrimaryData && subContext.results.stockChartPrimaryData.length > 0) {
                 subContext.firstDatasetArr = [];
                 subContext.secondDatasetArr = [];
                 subContext.firstchartSerArr = [];
@@ -937,14 +969,36 @@
                     "showtooltip": false,
                     "spacingTop": 7
                 };
-
-                subContext.ouput = {
-                    "xData": subContext.xdataArr,
-                    "datasets": subContext.datasetArr
+            } else {
+                subContext.datasetArr[subContext.datasetArr.length] = {
+                    "name": "",
+                    "yaxisTitle": "",
+                    "xaxisTitle": "",
+                    "series": [{
+                        "data": [],
+                        "name": " "
+                    }],
+                    "data": [],
+                    "type": "spline",
+                    "showlegend": false,
+                    "showxaxisLabel": false,
+                    "showtooltip": false,
+                    "spacingTop": 30,
+                    "xAxis": {
+                        labels: {
+                            step: 3
+                        }
+                    },
+                    "valueDecimals": 1
                 };
-                //console.log(subContext.ouput);
-                return subContext.ouput;
             }
+            subContext.ouput = {
+                "xData": subContext.xdataArr,
+                "datasets": subContext.datasetArr
+            };
+            //console.log(subContext.ouput);
+            return subContext.ouput;
+
         }
 
         //context.chartSettings[i].output.url
