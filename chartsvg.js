@@ -11,7 +11,7 @@
             highcharts: {
                 JQUERY: 'bower_components/jquery/dist/jquery.min.js',
                 MOMENT: 'node_modules/moment/moment.js',
-                HIGHCHARTS: 'node_modules/highcharts/highcharts.js'
+                HIGHCHARTS: 'node_modules/highcharts/highcharts.js',
 //                EXPORTING: 'node_modules/highcharts/modules/exporting.js',
 //                HIGHCHARTS_MORE: 'node_modules/highcharts/highcharts-more.js',
 //                HIGHCHARTS_DATA: 'node_modules/highcharts/modules/data.js',
@@ -20,7 +20,7 @@
 //                HIGHCHARTS_HEATMAP: 'node_modules/highcharts/modules/heatmap.js',
 //                HIGHCHARTS_TREEMAP: 'node_modules/highcharts/modules/treemap.js',
 //                HIGHCHARTS_3D: 'node_modules/highcharts/highcharts-3d.js',
-//                HIGHCHARTS_NODATA: 'node_modules/highcharts/modules/no-data-to-display.js',
+                HIGHCHARTS_NODATA: 'node_modules/highcharts/modules/no-data-to-display.js'
 //                HIGHCHARTS_SOLID_GAUGE: 'node_modules/highcharts/modules/solid-gauge.js',
 //                BROKEN_AXIS: 'node_modules/highcharts/modules/broken-axis.js'
             }

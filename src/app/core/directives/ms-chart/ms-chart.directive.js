@@ -964,13 +964,15 @@
                                                 selectedChart.filterState.startDate = matchingChart.filterState.startDate;
                                                 selectedChart.filterState.endDate = matchingChart.filterState.endDate;
                                                 selectedChart.filterState.chartTypeLabel = matchingChart.filterState.chartTypeLabel;
+                                                selectedChart.title = matchingChart.title;
                                             } else {
                                                 resetChartFilter(selectedChart.filterState);
+                                                selectedChart.title = getTitle(selectedChart.filterState.chartTypeLabel);
                                             }
                                         } else {
                                             resetChartFilter(selectedChart.filterState);
+                                            selectedChart.title = getTitle(selectedChart.filterState.chartTypeLabel);
                                         }
-                                        selectedChart.title = getTitle(selectedChart.filterState.chartTypeLabel);
                                         //scope.jsCharts[id] = selectedChart;
                                         scope.jsCharts[id] = angular.copy(selectedChart);
                                         if (matchingChart && (id != 0)) {
