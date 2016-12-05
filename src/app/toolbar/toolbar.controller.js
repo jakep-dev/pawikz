@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function ToolbarController($rootScope, $scope, $mdSidenav, msNavFoldService, $location,
-                               $translate, store, authService, commonBusiness, authBusiness, toast, Idle)
+                               $translate, store, authService, commonBusiness, authBusiness, templateBusiness, workupBusiness, toast, Idle)
     {
         var vm = this;
         vm.userName = '';
@@ -18,6 +18,9 @@
         if(userDetails)
         {
             vm.userName = userDetails.fullName;
+            templateBusiness.backgroundPdfStatusListener(userDetails.userId);
+            templateBusiness.backgroudWorkUpStatusListener(userDetails.userId);
+            workupBusiness.backgroudRenewStatusListener(userDetails.userId);
         }
 
         commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {

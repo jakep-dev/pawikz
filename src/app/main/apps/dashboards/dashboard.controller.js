@@ -298,11 +298,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         ];
     }
 
-    clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
-    {
+    function dashboardRenewalUpdate(data) {
         $rootScope.toastTitle = 'WorkUp Renewal Completed!';
         $rootScope.toastProjectId = data.projectId;
-        var obj = $('.renewStyle[projectId="'+ data.projectId +'"]');
+        var obj = $('.renewStyle[projectId="' + data.projectId + '"]');
         var row = obj.closest('tr');
         row.removeClass('not-active');
         $mdToast.show({
@@ -314,8 +313,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
         console.log('Renewal WorkUp');
         console.log(data);
-        templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
-    });
+        //templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
+    }
+    workupBusiness.setDashboardCallback(dashboardRenewalUpdate);
+    //clientConfig.socketInfo.socket.on('notify-renew-workup-status', dashboardRenewalUpdate);
 
     ///Work-Up Status
     function workUpStatus(data)
@@ -366,4 +367,5 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             }
         }
     });
+
 }

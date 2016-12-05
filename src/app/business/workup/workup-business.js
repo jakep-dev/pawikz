@@ -9,13 +9,15 @@
         .factory('workupBusiness', workupBusiness);
 
     /* @ngInject */
-    function workupBusiness(workupService, authService, toast,  store, dialog, clientConfig, commonBusiness) {
+    function workupBusiness(workupService, authService, toast, store, dialog, clientConfig, commonBusiness, templateBusiness) {
 
         var business = {
                 initialize: initialize,
                 renew: renew,
                 createWorkUp: createWorkUp,
-                renewFromDashboard: renewFromDashboard
+                renewFromDashboard: renewFromDashboard,
+                setDashboardCallback: setDashboardCallback,
+                backgroudRenewStatusListener: backgroudRenewStatusListener
         };
 
         return business;
@@ -36,9 +38,15 @@
             commonBusiness.emitWithArgument(message, notification);
         }
 
+        var dashboardCallback = undefined;
+        function setDashboardCallback(obj) {
+            dashboardCallback = obj;
+        }
+
         function renewFromDashboard(userId, projectId, projectName)
         {
-            workupService.renew(userId, projectId);
+            //renewComplete(null);
+            workupService.renew(userId, projectId, 'fromDashboard');
             toast.simpleToast(projectName + ' getting ready for renewal');
             NotifyNotificationCenter({
                 id: projectId,
@@ -81,7 +89,7 @@
 
         function renew(userId, projectId, projectName, reloadEvent)
         {
-            renewComplete(reloadEvent);
+            //renewComplete(reloadEvent);
             NotifyNotificationCenter({
                 id: projectId,
                 title: projectName,
@@ -95,20 +103,65 @@
                 istrackable: false,
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
-            workupService.renew(userId, projectId);
+            workupService.renew(userId, projectId, reloadEvent);
             dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
         }
 
-        function renewComplete(reloadEvent)
-        {
-            clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
-            {
-                dialog.close();
-                if(reloadEvent !== '')
-                {
-                    commonBusiness.emitWithArgument(reloadEvent, data);
+        //function renewComplete(reloadEvent)
+        //{
+        //    if (dashboardCallback) {
+        //        clientConfig.socketInfo.socket.on('notify-renew-workup-status', dashboardCallback);
+        //    } else {
+        //        clientConfig.socketInfo.socket.on('notify-renew-workup-status', function (data) {
+        //            dialog.close();
+        //            if (reloadEvent !== '') {
+        //                commonBusiness.emitWithArgument(reloadEvent, data);
+        //            }
+        //        });
+        //    }
+        //}
+
+        function backgroudRenewStatusListener(userId) {
+            clientConfig.socketInfo.socket.on('notify-renew-workup-status', function (response) {
+                if (response) {
+                    var notification = _.find(templateBusiness.notifications, function (not) {
+                        if (not.type === 'Renewal' &&
+                            not.id === parseInt(response.old_project_id)) {
+                            return not;
+                        }
+                    });
+                    if (notification) {
+                        notification.status = 'complete';
+                        notification.progress = 100;
+                        notification.disabled = false;
+                        notification.url = parseInt(response.projectId);
+                        if (response.project_name && response.project_name != '') {
+                            notification.title = response.project_name;
+                        }
+                    } else {
+                        templateBusiness.pushNotification({
+                            id: parseInt(response.old_project_id),
+                            title: decodeURIComponent(response.project_name),
+                            type: 'Renewal',
+                            icon: 'icon-rotate-3d',
+                            progress: 100,
+                            disabled: false,
+                            tooltip: 'Renewal work-up still in-progress',
+                            status: 'complete',
+                            userId: userId,
+                            istrackable: false,
+                            url: parseInt(response.projectId)
+                        });
+                    }
+                    if (response.source && response.source === 'fromDashboard' && dashboardCallback) {
+                        dashboardCallback(response);
+                    } else if (response.source && ((response.source === 'reload-overview') || (response.source === 'reload-steps'))) {
+                        dialog.close();
+                    }
+                    commonBusiness.emitMsg('update-notification-binding');
                 }
             });
         }
+
     }
 })();

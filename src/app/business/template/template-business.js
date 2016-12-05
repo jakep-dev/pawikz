@@ -64,8 +64,10 @@
            hideTemplateProgress: hideTemplateProgress,
            requestPdfDownload: requestPdfDownload,
            updateNotification: updateNotification,
-           listenToPdfDownload: listenToPdfDownload,
-           listenToWorkUpStatus: listenToWorkUpStatus,
+           //listenToPdfDownload: listenToPdfDownload,
+           backgroundPdfStatusListener: backgroundPdfStatusListener,
+           //listenToWorkUpStatus: listenToWorkUpStatus,
+           backgroudWorkUpStatusListener: backgroudWorkUpStatusListener,
            downloadTemplatePdf:downloadTemplatePdf,
            pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
@@ -159,80 +161,162 @@
             }
         }
 
-        function listenToPdfDownload(request_id)
-        {
-            var room = 'pdf_' + request_id;
-            clientConfig.socketInfo.socket.on('[' + room + ']pdf-download-status', function (response)
-            {
-                if(response)
-                {
-                    var notification = _.find(business.notifications, function(not)
-                    {
-                        if(not.status === 'in-process' &&
-                            not.type === 'PDF-Download')
-                        {
+        //function listenToPdfDownload(request_id)
+        //{
+        //    var room = 'pdf_' + request_id;
+        //    clientConfig.socketInfo.socket.on('[' + room + ']pdf-download-status', function (response)
+        //    {
+        //        if(response)
+        //        {
+        //            var notification = _.find(business.notifications, function(not)
+        //            {
+        //                if(not.status === 'in-process' &&
+        //                    not.type === 'PDF-Download')
+        //                {
+        //                    return not;
+        //                }
+        //            });
+        //
+        //            if(notification)
+        //            {
+        //                notification.requestId = response.requestId;
+        //                notification.progress = response.progress;
+        //                if(notification.progress === 100)
+        //                {
+        //                    notification.status = 'complete';
+        //                    notification.disabled = false;
+        //                } else if (response.progress === -1) {
+        //                    notification.status = 'error';
+        //                    notification.progress = 100;
+        //                    notification.disabled = false;
+        //                    toast.simpleToast("Issue with PDF Download. Please try again.");
+        //                }
+        //                commonBusiness.emitMsg('update-notification-binding');
+        //            }
+        //
+        //        }
+        //    });
+        //}
+
+        function backgroundPdfStatusListener(userId) {
+
+            clientConfig.socketInfo.socket.on('pdf-download-status', function (response) {
+                if (response) {
+
+                    var notification = _.find(business.notifications, function (not) {
+                        if (not.status === 'in-process' &&
+                            not.type === 'PDF-Download' &&
+                            not.requestId === response.requestId) {
                             return not;
                         }
                     });
 
-                    if(notification)
-                    {
+                    if (notification) {
                         notification.requestId = response.requestId;
                         notification.progress = response.progress;
-                        if(notification.progress === 100)
-                        {
-                            notification.status = 'complete';
-                            notification.disabled = false;
-                        } else if (response.progress === -1) {
-                            notification.status = 'error';
-                            notification.progress = 100;
-                            notification.disabled = false;
-                            toast.simpleToast("Issue with PDF Download. Please try again.");
-                        }
-                        commonBusiness.emitMsg('update-notification-binding');
+                    } else {
+                        notification = addNotification(response.projectId, decodeURIComponent(response.projectName), 'PDF-Download', 'icon-file-pdf-box', response.progress, true, '', 'in-process', userId, true, 0);
+                        notification.requestId = response.requestId;
+                        business.notifications.push(notification);
                     }
-
+                    if (notification.progress === 100) {
+                        notification.status = 'complete';
+                        notification.disabled = false;
+                    } else if (response.progress === -1) {
+                        notification.status = 'error';
+                        notification.progress = 100;
+                        notification.disabled = false;
+                        toast.simpleToast("Issue with PDF Download. Please try again.");
+                    }
+                    commonBusiness.emitMsg('update-notification-binding');
                 }
             });
         }
 
         ///Listen to workup creation status and update accordingly
-        function listenToWorkUpStatus()
-        {
-            clientConfig.socketInfo.socket.on('create-workup-status', function(response)
-            {
-                if(response)
-                {
+        //function listenToWorkUpStatus()
+        //{
+        //    clientConfig.socketInfo.socket.on('create-workup-status', function(response)
+        //    {
+        //        if(response)
+        //        {
+        //
+        //            var notification = _.find(business.notifications, function(not)
+        //            {
+        //                if(not.status === 'in-process' &&
+        //                    not.type === 'Create-WorkUp' &&
+        //                    not.id === response.projectId)
+        //                {
+        //                    return not;
+        //                }
+        //            });
+        //
+        //            if(notification)
+        //            {
+        //                notification.progress = response.progress;
+        //                if(notification.progress === 100)
+        //                {
+        //                    notification.status = 'complete';
+        //                    notification.disabled = false;
+        //                    notification.url = response.projectId;
+        //                    $rootScope.toastTitle = 'WorkUp Creation Completed!';
+        //                    $rootScope.toastProjectId = response.projectId;
+        //                    $mdToast.show({
+        //                        hideDelay: 8000,
+        //                        position: 'bottom right',
+        //                        controller: 'WorkUpToastController',
+        //                        templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+        //                    });
+        //                }
+        //                commonBusiness.emitMsg('update-notification-binding');
+        //            }
+        //        }
+        //    });
+        //}
 
-                    var notification = _.find(business.notifications, function(not)
-                    {
-                        if(not.status === 'in-process' &&
+        function backgroudWorkUpStatusListener(userId) {
+            clientConfig.socketInfo.socket.on('create-workup-status', function (response) {
+                if (response) {
+
+                    var notification = _.find(business.notifications, function (not) {
+                        if (not.status === 'in-process' &&
                             not.type === 'Create-WorkUp' &&
-                            not.id === response.projectId)
-                        {
+                            not.id === response.projectId) {
                             return not;
                         }
                     });
 
-                    if(notification)
-                    {
+                    if (notification) {
                         notification.progress = response.progress;
-                        if(notification.progress === 100)
-                        {
-                            notification.status = 'complete';
-                            notification.disabled = false;
-                            notification.url = response.projectId;
-                            $rootScope.toastTitle = 'WorkUp Creation Completed!';
-                            $rootScope.toastProjectId = response.projectId;
-                            $mdToast.show({
-                                hideDelay: 8000,
-                                position: 'bottom right',
-                                controller: 'WorkUpToastController',
-                                templateUrl: 'app/main/components/workup/toast/workup.toast.html'
-                            });
-                        }
-                        commonBusiness.emitMsg('update-notification-binding');
+                    } else {
+                        notification = business.pushNotification({
+                            id: response.projectId,
+                            title: decodeURIComponent(response.project_name) || ('Project - ' + response.projectId),
+                            type: 'Create-WorkUp',
+                            icon: 'icon-library-plus',
+                            progress: response.progress,
+                            disabled: true,
+                            tooltip: 'Create work-up still in-progress',
+                            status: 'in-process',
+                            userId: userId,
+                            istrackable: true,
+                            url: ''
+                        });
                     }
+                    if (notification.progress === 100) {
+                        notification.status = 'complete';
+                        notification.disabled = false;
+                        notification.url = response.projectId;
+                        $rootScope.toastTitle = 'WorkUp Creation Completed!';
+                        $rootScope.toastProjectId = response.projectId;
+                        $mdToast.show({
+                            hideDelay: 8000,
+                            position: 'bottom right',
+                            controller: 'WorkUpToastController',
+                            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+                        });
+                    }
+                    commonBusiness.emitMsg('update-notification-binding');
                 }
             });
         }
@@ -342,7 +426,7 @@
                             }
                             toast.simpleToast("Issue with PDF Download. Please try again.");
                         } else {
-                            listenToPdfDownload(data.requestId);
+                            //listenToPdfDownload(data.requestId);
 
                             if(notification)
                             {
@@ -390,7 +474,7 @@
         {
             console.log('Push Notification-');
             console.log(data);
-
+            var returnObj = data;
             if(data)
             {
                 var notification = _.find(business.notifications, function(not)
@@ -408,11 +492,13 @@
                     notification.progress = data.progress;
                     notification.disabled = data.disabled;
                     notification.istrackable = data.istrackable;
+                    returnObj = notification;
                 }
                 else {
                     business.notifications.push(data);
                 }
             }
+            return returnObj;
         }
 
         ///Id - Needs to be unique.
