@@ -27,7 +27,6 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
         userId: $stateParams.userId
     }, function(data)
     {
-        //templateBusiness.listenToWorkUpStatus();
         workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
     });
 

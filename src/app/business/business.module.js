@@ -10,6 +10,7 @@
                 'app.overview.business',
                 'app.template.business',
                 'app.template.business.format',
+                'app.template.business.notification',
                 'app.steps.business',
                 'app.menu.business',
                 'app.dashboard.business',

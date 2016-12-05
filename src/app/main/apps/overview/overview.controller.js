@@ -14,7 +14,7 @@
     /** @ngInject */
     function OverviewController($rootScope, $stateParams, $scope,
                                 $mdMenu, overviewService, workupService,
-                                navConfig, breadcrumbBusiness, workupBusiness, commonBusiness,
+                                navConfig, breadcrumbBusiness, workupBusiness, commonBusiness, notificationBusiness,
                                 overviewBusiness, templateBusiness, store, toast)
     {
         commonBusiness.projectId = $stateParams.projectId;
@@ -83,13 +83,8 @@
         //Renew workup
         function renew(projectId)
         {
-            templateBusiness.initializeMessages($scope);
+            notificationBusiness.initializeMessages($scope);
             workupBusiness.renew(commonBusiness.userId, parseInt(projectId), commonBusiness.projectName, 'reload-overview');
-            //commonBusiness.onMsg('reload-overview', $scope, function(ev, data)
-            //{
-            //   templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal',
-            //       parseInt(data.projectId), data.project_name);
-            //});
         }
 
         //Go to top
