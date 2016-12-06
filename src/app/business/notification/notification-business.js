@@ -17,7 +17,7 @@
             listenToWorkUpStatus: listenToWorkUpStatus,
             pushNotification: pushNotification,
             setDashboardCallback: setDashboardCallback,
-            NotifyNotificationCenter: NotifyNotificationCenter,
+            notifyNotificationCenter: notifyNotificationCenter,
             listenToRenewStatus: listenToRenewStatus
         };
 
@@ -28,7 +28,7 @@
             dashboardCallback = obj;
         }
 
-        function NotifyNotificationCenter(notification, message) {
+        function notifyNotificationCenter(notification, message) {
             commonBusiness.emitWithArgument(message, notification);
         }
 

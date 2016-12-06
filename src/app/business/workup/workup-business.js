@@ -35,7 +35,7 @@
         {
             workupService.renew(userId, projectId, 'fromDashboard');
             toast.simpleToast(projectName + ' getting ready for renewal');
-            notificationBusiness.NotifyNotificationCenter({
+            notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
                 type: 'Renewal',
@@ -57,7 +57,7 @@
                 console.log('CreateWorkUp-');
                 console.log(response);
                 if(response) {
-                    notificationBusiness.NotifyNotificationCenter({
+                    notificationBusiness.notifyNotificationCenter({
                         id: response.projectId,
                         title: response.project_name || ('Project - ' + response.projectId),
                         type: 'Create-WorkUp',
@@ -76,7 +76,7 @@
 
         function renew(userId, projectId, projectName, reloadEvent)
         {
-            notificationBusiness.NotifyNotificationCenter({
+            notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
                 type: 'Renewal',
