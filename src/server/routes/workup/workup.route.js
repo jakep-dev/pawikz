@@ -48,24 +48,27 @@
             client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
                 console.log('Response - StatusCode');
                 console.log(data);
-                status(data.projectId, context.token, next);
+                status(data.projectId, data.project_name, context.token, next);
                 res.status(response.statusCode).send(data);
             });
+
+
         }
 
         //Renew existing workup
         function renew(req, res, next)
         {
-            var service = getServiceDetails('templateManager');
-            var methodName = '';
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
 
-            if(!_.isUndefined(service) &&
-                !_.isNull(service))
+            if (!_.isUndefined(context.service) &&
+                !_.isNull(context.service))
             {
-                methodName = service.methods.renewWorkUp;
+                context.methodName = context.service.methods.renewWorkUp;
             }
 
-            var args =
+            context.args =
             {
                 parameters: {
                     project_id: req.body.projectId,
@@ -73,16 +76,17 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
+            context.source = req.body.source;
 
             //Notify all users about the renewal process going on.
             broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'renewal');
 
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
+            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
 
                // data.projectId = req.body.projectId;
 
                 //Notify Renewal Status to the user initiated the request.
-                notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status');
+                notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status', context.source);
 
                 //Notify Renewal Status to all users. So that they can use the template.
                 broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'complete');
@@ -144,7 +148,7 @@
         }
 
         //Get the create workup status
-        function status(projectId, token, next)
+        function status(projectId, project_name, token, next)
         {
             var context = new Object();
             context.service = getServiceDetails('templateManager');
@@ -172,17 +176,19 @@
 
                     context.compData = {
                         projectId: projectId,
+                        project_name: project_name,
                         progress: parseInt(data.templateStatus.percentage)
                     };
 
                     if(token in config.userSocketInfo)
                     {
+                        //console.log('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
                         config.userSocketInfo[token].emit('create-workup-status', context.compData);
                     }
 
                     if(parseInt(data.templateStatus.percentage) !== 100) {
                        context.timeout = setTimeout(function () {
-                            status(projectId, token, next);
+                           status(projectId, project_name, token, next);
                         }, 5000);
                     }
                     else {
@@ -195,15 +201,16 @@
             });
         }
 
-        function notifyStatus(token, data, key)
+        function notifyStatus(token, data, key, source)
         {
-            console.log('Renewal done - ');
+            console.log('Renewal done - key = ' + key + ' source = ' + source);
             console.log(data);
 
             clearInterval(interval);
             if(token in config.userSocketInfo)
             {
                 console.log('Emit');
+                data.source = source;
                 config.userSocketInfo[token].emit(key, data);
             }
         }

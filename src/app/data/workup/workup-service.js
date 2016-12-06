@@ -83,11 +83,12 @@
         }
 
         ///Renew the workup
-        function renew(userId, projectId)
+        function renew(userId, projectId, source)
         {
             var input = {
                 userId: userId,
-                projectId: projectId
+                projectId: projectId,
+                source: source
             };
 
             return $http({

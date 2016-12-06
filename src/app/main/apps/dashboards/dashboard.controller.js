@@ -12,7 +12,7 @@
 function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
                              DTColumnDefBuilder, DTColumnBuilder,
                              DTOptionsBuilder, dashboardService,
-                             authService, authBusiness, commonBusiness,
+                             authService, authBusiness, commonBusiness, notificationBusiness,
                              breadcrumbBusiness, dashboardBusiness, workupBusiness, store, toast,
                              $mdToast, clientConfig, templateBusiness, $location, $interval)
 {
@@ -51,7 +51,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     });
 
     commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
-        templateBusiness.pushNotification(data);
+        notificationBusiness.pushNotification(data);
     });
 
     function renewTemplate()
@@ -241,7 +241,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     // Initialize
     function initialize(isNav, token)
     {
-        templateBusiness.initializeMessages($scope);
+        notificationBusiness.initializeMessages($scope);
         if(isNav)
         {
             store.set('x-session-token', token);
@@ -298,11 +298,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         ];
     }
 
-    clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
-    {
+    function dashboardRenewalUpdate(data) {
         $rootScope.toastTitle = 'WorkUp Renewal Completed!';
         $rootScope.toastProjectId = data.projectId;
-        var obj = $('.renewStyle[projectId="'+ data.projectId +'"]');
+        var obj = $('.renewStyle[projectId="' + data.projectId + '"]');
         var row = obj.closest('tr');
         row.removeClass('not-active');
         $mdToast.show({
@@ -314,8 +313,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
         console.log('Renewal WorkUp');
         console.log(data);
-        templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
-    });
+    }
+    notificationBusiness.setDashboardCallback(dashboardRenewalUpdate);
 
     ///Work-Up Status
     function workUpStatus(data)
@@ -366,4 +365,5 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             }
         }
     });
+
 }

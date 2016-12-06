@@ -9,7 +9,7 @@
         .factory('workupBusiness', workupBusiness);
 
     /* @ngInject */
-    function workupBusiness(workupService, authService, toast,  store, dialog, clientConfig, commonBusiness) {
+    function workupBusiness(workupService, authService, toast, store, dialog, clientConfig, commonBusiness, notificationBusiness) {
 
         var business = {
                 initialize: initialize,
@@ -31,16 +31,11 @@
             });
         }
 
-        function NotifyNotificationCenter(notification, message)
-        {
-            commonBusiness.emitWithArgument(message, notification);
-        }
-
         function renewFromDashboard(userId, projectId, projectName)
         {
-            workupService.renew(userId, projectId);
+            workupService.renew(userId, projectId, 'fromDashboard');
             toast.simpleToast(projectName + ' getting ready for renewal');
-            NotifyNotificationCenter({
+            notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
                 type: 'Renewal',
@@ -62,7 +57,7 @@
                 console.log('CreateWorkUp-');
                 console.log(response);
                 if(response) {
-                    NotifyNotificationCenter({
+                    notificationBusiness.notifyNotificationCenter({
                         id: response.projectId,
                         title: response.project_name || ('Project - ' + response.projectId),
                         type: 'Create-WorkUp',
@@ -81,8 +76,7 @@
 
         function renew(userId, projectId, projectName, reloadEvent)
         {
-            renewComplete(reloadEvent);
-            NotifyNotificationCenter({
+            notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
                 type: 'Renewal',
@@ -95,20 +89,9 @@
                 istrackable: false,
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
-            workupService.renew(userId, projectId);
+            workupService.renew(userId, projectId, reloadEvent);
             dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
         }
 
-        function renewComplete(reloadEvent)
-        {
-            clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
-            {
-                dialog.close();
-                if(reloadEvent !== '')
-                {
-                    commonBusiness.emitWithArgument(reloadEvent, data);
-                }
-            });
-        }
     }
 })();

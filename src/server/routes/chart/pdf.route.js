@@ -1401,7 +1401,6 @@
             }
         }
 
-
         function getTemplatePDFStatus(context, next) {
             var subContext = new Object();
             subContext.service = getServiceDetails('templateManager');
@@ -1434,12 +1433,10 @@
                                 next(subContext.statusResponse);
                             } else {
                                 console.log('[' + context.requestId + '][' + context.elapsedTime + '][Code:' + context.PDFStatusCode + ']PDF generation ' + context.PDFPercentComplete + '% complete.');
-                                subContext.room = 'pdf_' + context.requestId;
-                                subContext.data = {
-                                    requestId: context.requestId,
-                                    progress: context.PDFPercentComplete
-                                };
-                                config.socketIO.socket.emit('[' + subContext.room + ']pdf-download-status', subContext.data);
+                                //subContext.room = 'pdf_' + context.requestId;
+                                context.data.progress = context.PDFPercentComplete;
+                                sendStatus(context.ssnid, context.data);
+                                //config.socketIO.socket.emit('[' + subContext.room + ']pdf-download-status', subContext.data);
                                 setTimeout(function () {
                                     next();
                                 }, 1000);
@@ -1465,7 +1462,6 @@
                 }
             );
         }
-
 
         function genericParallelSequence(context, callback) {
             if ((context.errorMessages.length > 0) || !context.sequences || !Array.isArray(context.sequences) || (context.sequences.length < 1)) {
@@ -1510,6 +1506,13 @@
             );
         }
 
+        function sendStatus(token, data) {
+            if (token in config.userSocketInfo) {
+                //console.log(data);
+                config.userSocketInfo[token].emit('pdf-download-status', data);
+            }
+        }
+
         function createTemplatePDFRequest(req, res, next) {
 
             var context = new Object();
@@ -1548,6 +1551,8 @@
                             context.room = 'pdf_' + context.requestId;
                             context.startTime = (new Date()).getTime();
                             context.data = {
+                                projectId: context.project_id,
+                                projectName: context.file_name,
                                 requestId: context.requestId,
                                 progress: 0
                             };
@@ -1565,7 +1570,8 @@
                                     }
                                     context.data.progress = context.PDFPercentComplete;
                                     console.log('Sending socket message for request:' + context.data.requestId);
-                                    config.socketIO.socket.emit('[' + context.room + ']pdf-download-status', context.data);
+                                    sendStatus(context.ssnid, context.data);
+                                    //config.socketIO.socket.emit('[' + context.room + ']pdf-download-status', context.data);
                                 }
                             );
 

@@ -9,7 +9,7 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, 
+    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, notificationBusiness,
                               overviewBusiness, templateService, financialChartService, deviceDetector,
                               Papa, dialog, store, $window, $sce, $mdToast) {
         var business = {
@@ -18,7 +18,6 @@
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
            saveInteractiveFinancialChartMnemonics: [],
-           notifications: [],
            autoSavePromise: [],
            isExpandAll: false,
            componentStatus: [],
@@ -63,14 +62,9 @@
            showTemplateProgress: showTemplateProgress,
            hideTemplateProgress: hideTemplateProgress,
            requestPdfDownload: requestPdfDownload,
-           updateNotification: updateNotification,
-           listenToPdfDownload: listenToPdfDownload,
-           listenToWorkUpStatus: listenToWorkUpStatus,
            downloadTemplatePdf:downloadTemplatePdf,
-           pushNotification: pushNotification,
            pushComponentStatus: pushComponentStatus,
 		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
-		   //getMnemonicPrefix: getMnemonicPrefix,
 		   getMnemonicPostfix: getMnemonicPostfix,
 		   getMnemonicParameters: getMnemonicParameters,
 		   getMnemonicPrecision: getMnemonicPrecision,
@@ -86,7 +80,6 @@
 		   parseDate: parseDate,
            loadComponents: loadComponents,
            getComponentHeader: getComponentHeader,
-           initializeMessages: initializeMessages,
 		   isMnemonicNumberType: isMnemonicNumberType,
            getTearSheetItems: getTearSheetItems,
            getCompInitialLoadCount: getCompInitialLoadCount
@@ -103,13 +96,6 @@
                 compCount = clientConfig.appSettings.compInitialLoadForTablet;
             }
             return compCount;
-        }
-
-        function initializeMessages(scope)
-        {
-            commonBusiness.onMsg('notify-renewal-workup-notification-center', scope, function(ev, data) {
-                business.pushNotification(data);
-            });
         }
 
         ///Get the component header details
@@ -159,84 +145,6 @@
             }
         }
 
-        function listenToPdfDownload(request_id)
-        {
-            var room = 'pdf_' + request_id;
-            clientConfig.socketInfo.socket.on('[' + room + ']pdf-download-status', function (response)
-            {
-                if(response)
-                {
-                    var notification = _.find(business.notifications, function(not)
-                    {
-                        if(not.status === 'in-process' &&
-                            not.type === 'PDF-Download')
-                        {
-                            return not;
-                        }
-                    });
-
-                    if(notification)
-                    {
-                        notification.requestId = response.requestId;
-                        notification.progress = response.progress;
-                        if(notification.progress === 100)
-                        {
-                            notification.status = 'complete';
-                            notification.disabled = false;
-                        } else if (response.progress === -1) {
-                            notification.status = 'error';
-                            notification.progress = 100;
-                            notification.disabled = false;
-                            toast.simpleToast("Issue with PDF Download. Please try again.");
-                        }
-                        commonBusiness.emitMsg('update-notification-binding');
-                    }
-
-                }
-            });
-        }
-
-        ///Listen to workup creation status and update accordingly
-        function listenToWorkUpStatus()
-        {
-            clientConfig.socketInfo.socket.on('create-workup-status', function(response)
-            {
-                if(response)
-                {
-
-                    var notification = _.find(business.notifications, function(not)
-                    {
-                        if(not.status === 'in-process' &&
-                            not.type === 'Create-WorkUp' &&
-                            not.id === response.projectId)
-                        {
-                            return not;
-                        }
-                    });
-
-                    if(notification)
-                    {
-                        notification.progress = response.progress;
-                        if(notification.progress === 100)
-                        {
-                            notification.status = 'complete';
-                            notification.disabled = false;
-                            notification.url = response.projectId;
-                            $rootScope.toastTitle = 'WorkUp Creation Completed!';
-                            $rootScope.toastProjectId = response.projectId;
-                            $mdToast.show({
-                                hideDelay: 8000,
-                                position: 'bottom right',
-                                controller: 'WorkUpToastController',
-                                templateUrl: 'app/main/components/workup/toast/workup.toast.html'
-                            });
-                        }
-                        commonBusiness.emitMsg('update-notification-binding');
-                    }
-                }
-            });
-        }
-
         //Download template pdf
         function downloadTemplatePdf(requestId, workupName)
         {
@@ -268,7 +176,7 @@
 
         function requestPdfDownload()
         {
-            var inProgressNotification = _.find(business.notifications, function (notification) {
+            var inProgressNotification = _.find(notificationBusiness.notifications, function (notification) {
                 if(notification.type === 'PDF-Download' &&
                     notification.status === 'in-process')
                 {
@@ -290,7 +198,7 @@
                 userId = userDetails.userId;
 
 
-                var notification = _.find(business.notifications, function(not)
+                var notification = _.find(notificationBusiness.notifications, function (not)
                 {
                     if(not.id === commonBusiness.projectId &&
                         not.type === 'PDF-Download')
@@ -307,7 +215,7 @@
                     notification.requestId = 0;
                 }
                 else {
-                    business.notifications.push(addNotification(commonBusiness.projectId, commonBusiness.projectName, 'PDF-Download',
+                    notificationBusiness.notifications.push(notificationBusiness.addNotification(commonBusiness.projectId, commonBusiness.projectName, 'PDF-Download',
                         'icon-file-pdf-box', 0, true, '', 'in-process', userId.toString(), true, 0));
                 }
 
@@ -316,7 +224,7 @@
                                                          commonBusiness.companyName, userName)
                     .then(function (data) {
 
-                        var notification = _.find(business.notifications, function(not)
+                        var notification = _.find(notificationBusiness.notifications, function (not)
                         {
                             if(not.id === commonBusiness.projectId &&
                                 not.type === 'PDF-Download')
@@ -342,100 +250,16 @@
                             }
                             toast.simpleToast("Issue with PDF Download. Please try again.");
                         } else {
-                            listenToPdfDownload(data.requestId);
-
                             if(notification)
                             {
                                 notification.requestId = data.requestId;
                             }
-
                             toast.simpleToast('PDF download has been initiated.  Go to notification center for updates.');
                         }
                     });
             }
         }
 
-        //Update the notification details
-        function updateNotification(id, status, type, url, title)
-        {
-            var notification = _.find(business.notifications, function(not)
-                                    {
-                                       if(parseInt(not.id) === parseInt(id) &&
-                                           not.type === type)
-                                       {
-                                           return not;
-                                       }
-                                    });
-
-            console.log('Update Notification - ');
-            console.log(notification);
-            console.log(business.notifications);
-
-            if(notification)
-            {
-                notification.status = status;
-                notification.progress = 100;
-                notification.disabled = false;
-                notification.url = url;
-
-                if(title && title != '')
-                {
-                    notification.title = title;
-                }
-            }
-        }
-
-        //Push the notification details
-        function pushNotification(data)
-        {
-            console.log('Push Notification-');
-            console.log(data);
-
-            if(data)
-            {
-                var notification = _.find(business.notifications, function(not)
-                {
-                    if(not.id === data.id &&
-                       not.type === data.type)
-                    {
-                        return not;
-                    }
-                });
-
-                if(notification)
-                {
-                    notification.status = data.status;
-                    notification.progress = data.progress;
-                    notification.disabled = data.disabled;
-                    notification.istrackable = data.istrackable;
-                }
-                else {
-                    business.notifications.push(data);
-                }
-            }
-        }
-
-        ///Id - Needs to be unique.
-        ///title - Which displays on the notification center
-        ///type - PDF-Download, Renew, CreateWorkUp - will expand in future
-        ///icon - To display for actions icon-file-pdf-box (PDF Download), icon-rotate-3d (Renew)
-        ///progress - To show the progress of actions initiated
-        function addNotification(id, title, type, icon, progress, disabled, tooltip, status, userId, istrackable, requestId)
-        {
-            return {
-                id: id,
-                title: title,
-                type: type,
-                icon: icon,
-                progress: progress,
-                disabled: disabled,
-                tooltip: tooltip,
-                status: status,
-                userId: userId,
-                istrackable: istrackable,
-                requestId: requestId
-            };
-        }
 
         function showTemplateProgress()
         {

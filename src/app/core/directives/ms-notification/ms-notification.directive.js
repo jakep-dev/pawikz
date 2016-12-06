@@ -8,12 +8,15 @@
         .directive('msNotification', msNotificationDirective);
 
     /** @ngInject */
-    function msNotificationController(templateBusiness, $location, $interval, $scope, toast, commonBusiness)
+    function msNotificationController(toast,
+                                      $location, $interval, $scope, 
+                                      commonBusiness, templateBusiness, notificationBusiness
+                                     )
     {
         var vm = this;
 
         //Variables.
-        vm.notifications = templateBusiness.notifications;
+        vm.notifications = notificationBusiness.notifications;
 
         //Functions
         vm.processNotification = processNotification;
@@ -26,7 +29,7 @@
 
         function close(notification)
         {
-           var not = _.findIndex(templateBusiness.notifications, function(notify)
+            var not = _.findIndex(notificationBusiness.notifications, function (notify)
            {
                console.log(parseInt(notify.id));
                console.log(parseInt(notification.id));
@@ -38,17 +41,17 @@
 
             if(not > 0)
             {
-                templateBusiness.notifications.splice(not, not);
+                notificationBusiness.notifications.splice(not, not);
             }
             else if(not == 0)
             {
-                templateBusiness.notifications.splice(not, 1);
+                notificationBusiness.notifications.splice(not, 1);
             }
+
         }
 
         function processNotification(notification)
         {
-
             switch (notification.type)
             {
                 case 'Renewal':
