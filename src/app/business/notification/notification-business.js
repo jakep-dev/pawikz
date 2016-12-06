@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app.template.business.notification', [])
+        .module('app.template.notification.business', [])
         .service('notificationBusiness', notificationBusiness);
 
     /* @ngInject */
