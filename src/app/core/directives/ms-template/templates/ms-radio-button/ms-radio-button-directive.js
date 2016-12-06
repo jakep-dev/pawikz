@@ -8,14 +8,13 @@
         .directive('msRadioButton', msRadioButtonDirective);
 
     /** @ngInject */
-    function MsRadioButtonController($scope, templateBusiness)
+    function MsRadioButtonController($scope, templateBusinessSave, clientConfig)
     {
         $scope.$watch(
             "tearsheetobj.value",
             function handleAutoSave(newValue, oldValue) {
-                if(newValue !== oldValue)
-                {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                if(newValue !== oldValue) {
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );

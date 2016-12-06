@@ -11,8 +11,8 @@ exports.webservice = {
 
 exports.client = {
     protocol: 'http',
-    domain: '192.168.1.216',
-    port: '4000',
+    domain: 'localhost',
+    port: '3000',
     loglevel: 1,
     transports: ['polling']
 };

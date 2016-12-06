@@ -18,8 +18,24 @@
             app.post('/api/saveDynamicTable', saveDynamicTable ),
             app.post('/api/addDynamicTable', addDynamicTable ),
             app.post('/api/deleteDynamicTable', deleteDynamicTable ),
-            app.post('/api/getScrapedHTML', getScrapedHTML )
+            app.post('/api/getScrapedHTML', getScrapedHTML ),
+            app.post('/api/saveAll', saveAll )
         ]);
+
+        //Save all changes related to template.
+        function saveAll(req, res, next) {
+            //Based on the type.
+            //general
+            //table-layout
+            //hybrid-layout
+            //chart
+
+            //call in a loop and in a async fashion.
+            //Call to the web-service should be parallel
+            //General, Hybrid and Interactive Chart.
+            //We put a wait on the call to get the web-service sync.
+
+        }
 
         //Schema for the templates
         function schema(req, res, next)

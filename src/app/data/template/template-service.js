@@ -19,6 +19,7 @@
             getSchemaDefer: getSchemaDefer,
             getDataDefer: getDataDefer,
             save: save,
+            saveAll: saveAll,
 			getScrapedHTML: getScrapedHTML,
             createTemplatePdfRequest: createTemplatePdfRequest,
             downloadTemplatePdf: downloadTemplatePdf
@@ -80,6 +81,23 @@
             })
                 .then(function(data, status, headers, config) {
                     return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function saveAll(data)
+        {
+            return $http({
+                url : clientConfig.endpoints.templateEndPoint.saveAll,
+                method : "POST",
+                data : data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            })
+                .then(function(data, status, headers, config) {
+                    return data;
                 })
                 .catch(function(error) {
                     logger.error(JSON.stringify(error));

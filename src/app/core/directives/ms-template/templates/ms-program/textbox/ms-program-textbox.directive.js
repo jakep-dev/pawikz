@@ -8,7 +8,7 @@
         .directive('msProgramText', msProgramTextDirective);
 
     /** @ngInject */
-    function MsProgramTextController($scope, $filter, templateBusiness)
+    function MsProgramTextController($scope, $filter, templateBusiness, templateBusinessSave, clientConfig)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
 
@@ -58,8 +58,7 @@
                     element.val($scope.value);
                 }
             }
-            else {  }
-        }
+        };
 
         $scope.$watch(
             "value",
@@ -75,7 +74,7 @@
                 oldValue = removeCommaValue(oldValue);
                 if (newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }

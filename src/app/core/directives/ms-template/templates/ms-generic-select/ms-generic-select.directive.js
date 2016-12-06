@@ -8,7 +8,7 @@
         .directive('msGenericSelect', msGenericSelectDirective);
 
     /** @ngInject */
-    function MsGenericSelectController($scope, templateBusiness)
+    function MsGenericSelectController($scope, templateBusiness, templateBusinessSave, clientConfig)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
         $scope.trueValue = '\'' + $scope.text + '\'';
@@ -23,15 +23,9 @@
         $scope.$watch(
             "tearsheetObj.selectedValue",
             function handleAutoSave(newValue, oldValue) {
-                
-                // if($scope.isSelected)
-                // {
-                //      newValue = $scope.isSelected;
-                // }
-
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }

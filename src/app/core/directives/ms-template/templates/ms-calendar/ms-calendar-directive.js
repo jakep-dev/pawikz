@@ -8,7 +8,7 @@
         .directive('msCalendar', msCalendarDirective);
 
     /** @ngInject */
-    function MsCalendarController($scope, templateBusiness)
+    function MsCalendarController($scope, clientConfig, templateBusiness, templateBusinessSave)
     {
 		$scope.dateValue = templateBusiness.parseDate($scope.value, 'MM/DD/YYYY');
 		
@@ -19,7 +19,7 @@
 				oldValue = templateBusiness.formatDate(oldValue, 'DD-MMM-YY');
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );
