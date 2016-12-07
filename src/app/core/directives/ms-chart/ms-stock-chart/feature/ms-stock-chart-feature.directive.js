@@ -345,7 +345,7 @@
                                                         Highcharts.each(series, function(p, n) {
 
                                                             if(scope.$parent.vm.chartId === 'chart-0' && n==0) {
-                                                                $.each(primarystockresp.stockChartPrimaryData, function (legCntr, v) {
+                                                                $.each(stockDataResp.stockChartPrimaryData, function (legCntr, v) {
                                                                     if (legCntr == xIndex) {
                                                                         var top = evt.layerY;
                                                                         var left = evt.layerX - 380;
