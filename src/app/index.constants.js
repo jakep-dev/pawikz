@@ -70,7 +70,7 @@
             },
             activity:{
                 //In Seconds
-                idle: 600,
+                idle: 3600,
                 timeout: 120,
                 interval: 1200,
                 dialogtimeout: 60
