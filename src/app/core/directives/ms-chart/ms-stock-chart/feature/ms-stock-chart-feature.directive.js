@@ -287,8 +287,8 @@
                                             var remainder = primaryDataLength - (increment * 4);
                                             increment += parseInt(remainder / 4);
                                             for (var tickNdx = 0; tickNdx <= primaryDataLength; tickNdx += increment) {
-                                                tickNdx = tickNdx == primaryDataLength ? tickNdx - 1 : tickNdx;
-                                                tickPositions.push(tickNdx);
+                                                var tickPositionNdx = tickNdx == primaryDataLength ? tickNdx - 1 : tickNdx;
+                                                tickPositions.push(tickPositionNdx);
                                             }
                                             return tickPositions;
                                         },
