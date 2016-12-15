@@ -17,7 +17,8 @@
             app.post('/api/workup/renew', renew),
             app.post('/api/workup/lock', lock),
             app.post('/api/workup/status', status),
-            app.post('/api/workup/unlock', unlock)
+            app.post('/api/workup/unlock', unlock),
+            app.post('/api/workup/delete', deleteWorkup)
         ]);
 
 
@@ -281,6 +282,36 @@
                     data: config.socketData.workup
                 });
             }
+        }
+
+        //delete delete workup
+        function deleteWorkup(req, res, next) {
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
+
+            if(!_.isUndefined(context.service) &&
+               !_.isNull(context.service))
+            {
+                context.methodName = context.service.methods.deleteWorkup;
+            }
+
+            context.args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            context.token = req.headers['x-session-token'];
+
+            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
+                //console.log('Response - StatusCode');
+                //console.log(data);
+                //status(data.projectId, context.token, next);
+                res.status(response.statusCode).send(data);
+            });
         }
 
         //Get the service details

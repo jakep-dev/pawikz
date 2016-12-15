@@ -11,10 +11,10 @@
 /** @ngInject */
 function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
                              DTColumnDefBuilder, DTColumnBuilder,
-                             DTOptionsBuilder, dashboardService,
+                             DTOptionsBuilder, dashboardService, workupService,
                              authService, authBusiness, commonBusiness, notificationBusiness,
                              breadcrumbBusiness, dashboardBusiness, workupBusiness, store, toast,
-                             $mdToast, clientConfig, templateBusiness, $location, $interval)
+                             $mdToast, clientConfig, templateBusiness, $location, $interval, dialog)
 {
     var vm = this;
     vm.companyId = 0;
@@ -54,6 +54,27 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         notificationBusiness.pushNotification(data);
     });
 
+    function deleteWorkup(projectId, projectName)
+    {
+        dialog.confirm('Would you like to delete?', projectName + ' will be deleted. Please confirm.', null, {
+            ok: {
+                name: 'yes',
+                callBack: function () {
+                    console.log('deleting ' + projectId);
+                    workupService.delete(projectId).then(function(data) {
+                        commonBusiness.emitMsg('FilterDashboard');    
+                    });
+                }
+            },
+            cancel:{
+                name:'no',
+                callBack:function(){
+                    return false;
+                }
+            }
+        });
+    }
+
     function renewTemplate()
     {
         $('.renewStyle').click(function()
@@ -83,6 +104,19 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 $location.url('/overview/' + projectId);
             }
         });
+
+        $('.deleteWorkupStyle').unbind('click');
+        $('.deleteWorkupStyle').click(function(event)
+        {
+            var obj = $(this);
+            var row = obj.closest('tr');
+
+            if(!row.hasClass('not-active') && obj) {
+                var projectId = obj[0].attributes['projectId'].value;
+                var projectName = obj[0].attributes['projectName'].value;
+                deleteWorkup(projectId, projectName);
+            }
+        }); 
 
 
         if($('#dashBoardDetails tbody tr:first td').length > 0) {
@@ -132,6 +166,26 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                     }
                 }, 100);
 
+                var deletePromise = $interval(function()
+               {
+                   if($('.deleteWorkupStyle').length > 0)
+                   {
+                       $('.deleteWorkupStyle').unbind('click');
+                       $('.deleteWorkupStyle').click(function()
+                       {
+                           var obj = $(this);
+                           var row = obj.closest('tr');
+
+                           if(!row.hasClass('not-active') && obj) {
+                                var projectId = obj[0].attributes['projectId'].value;
+                                var projectName = obj[0].attributes['projectName'].value;
+                                deleteWorkup(projectId, projectName);
+                           }
+                       });
+                       $interval.cancel(deletePromise);
+                   }
+               }, 100);
+
             });
         }
 
@@ -165,6 +219,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function renewHtml(data, type, full, meta)
     {
         return '<a href="#" class="renewStyle" renew="true" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Renew</a>';
+    }
+
+    function deleteHtml(data, type, full, meta)
+    {
+        return '<a href="#" class="deleteWorkupStyle" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Delete</a>';
     }
 
     // Clear search
@@ -267,7 +326,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         //Defining column definitions
         vm.dtColumnDefs = [
             DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
-            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml)
+            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml),
+            DTColumnDefBuilder.newColumnDef(6).renderWith(deleteHtml)
         ];
 
         //Dashboard DataTable Configuration
@@ -294,7 +354,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnBuilder.newColumn('status', 'Status'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
-            DTColumnBuilder.newColumn('renew', 'Renew')
+            DTColumnBuilder.newColumn('renew', 'Renew'),
+            DTColumnBuilder.newColumn('delete', 'Delete')
         ];
     }
 
