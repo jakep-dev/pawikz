@@ -268,7 +268,7 @@
                                         }
 
                                         html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
-                                            'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
+                                            'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + value + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
 
                                         break;
                                     case 'GenericTableItem':
