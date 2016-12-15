@@ -10,7 +10,8 @@
     function msTablelayoutHDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder, DTColumnDefBuilder, 
-									 toast, deviceDetector)
+									 toast, deviceDetector, 
+									 clientConfig, templateBusinessSave)
     {
         return {
             restrict: 'E',
@@ -502,6 +503,8 @@
 				if(row.IsChecked)
 				{
 					var deleteRow = {
+						action: 'deleted',
+                		sequence: row.SEQUENCE,
 						condition: []
 					};
 					
@@ -512,7 +515,7 @@
 					
 					$scope.rows.splice(index, 1);
 					$scope.data.splice(getRowIndexBySequence($scope.data, row.SEQUENCE), 1);
-					autoSave($scope, deleteRow, 'deleted', row.SEQUENCE);
+					autoSave($scope, deleteRow);
 					
 					calculateHeaderSelection($scope);
 				}
@@ -541,6 +544,8 @@
 		function insertRow($scope, row, sequence)
 		{
 			var insert = {
+				action: 'added',
+                sequence: sequence,
 				row : []
 			};
 			
@@ -566,6 +571,8 @@
 		function saveRow($scope, row)
 		{
 			var save = {
+				action: 'updated',
+                sequence: parseInt(row.SEQUENCE),
 				row: [],
 				condition: []
 			};
@@ -586,16 +593,17 @@
 				value: $scope.itemid
 			});
 			
-			autoSave($scope, save, 'updated', parseInt(row.SEQUENCE));
+			autoSave($scope, save);
 		}
 
-		function autoSave($scope, rowObject, action, sequence)
+		function autoSave($scope, rowObject)
 		{
 			angular.forEach($scope.footerMnemonics, function(mnemonic)
 			{
 				computeTotal($scope, mnemonic.summation, mnemonic.itemId);
 			});
-			templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
+			//templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
+			templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, rowObject, clientConfig.uiType.tableLayout);
 		}
 		
 		function computeTotal($scope, summation, total)
@@ -612,7 +620,7 @@
 			var footerIndex = _.findIndex($scope.footerMnemonics, {itemId : total});
 			
 			$scope.footerMnemonics[footerIndex].value = totalValue;
-			templateBusiness.getReadyForAutoSave($scope.footerMnemonics[footerIndex].itemId, $scope.footerMnemonics[footerIndex].mnemonic, totalValue);
+			templateBusinessSave.getReadyForAutoSave($scope.footerMnemonics[footerIndex].itemId, $scope.footerMnemonics[footerIndex].mnemonic, totalValue, clientConfig.uiType.general);
 			
 		}
 		

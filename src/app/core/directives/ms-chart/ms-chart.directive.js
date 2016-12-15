@@ -11,7 +11,7 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, templateBusinessFormat, overviewBusiness, stockChartBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store) {
+    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, templateBusinessFormat, templateBusinessSave, overviewBusiness, stockChartBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store) {
         return {
             restrict: 'E',
             scope : {
@@ -779,7 +779,8 @@
                                             newCharts: arr,
                                             projectImageCodes: projectImageCodes
                                         };
-                                        templateBusiness.getReadyForAutoSaveInteractiveFinancialChart(commonBusiness.companyId, commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, saveObject);
+                                        //templateBusiness.getReadyForAutoSaveInteractiveFinancialChart(commonBusiness.companyId, commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid, saveObject);
+                                        templateBusinessSave.getReadyForAutoSave(scope.itemid, scope.mnemonicid, saveObject, clientConfig.uiType.interactiveChart);
                                     };
 
                                     scope.saveAllCharts = saveAllCharts;
