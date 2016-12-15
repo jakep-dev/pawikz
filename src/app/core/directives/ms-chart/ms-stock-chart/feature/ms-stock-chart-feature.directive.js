@@ -283,9 +283,12 @@
                                         tickPositioner: function() {
                                             var tickPositions = [];
                                             var primaryDataLength = stockDataResp.stockChartPrimaryData.length;
-                                            var increment = parseInt(primaryDataLength / 4);
-                                            var remainder = primaryDataLength - (increment * 4);
-                                            increment += parseInt(remainder / 4);
+                                            var increment = 1;
+                                            if (primaryDataLength > 3) {
+                                                increment = parseInt(primaryDataLength / 4);
+                                                var remainder = primaryDataLength - (increment * 4);
+                                                increment += parseInt(remainder / 4);
+                                            }
                                             for (var tickNdx = 0; tickNdx <= primaryDataLength; tickNdx += increment) {
                                                 var tickPositionNdx = tickNdx == primaryDataLength ? tickNdx - 1 : tickNdx;
                                                 tickPositions.push(tickPositionNdx);
