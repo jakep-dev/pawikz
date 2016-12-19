@@ -43,7 +43,8 @@ exports.restcall = {
                 createTemplatePDFRequest: 'createTemplatePDFRequest',
                 setSVGFileStatus: 'setSVGFileStatus',
                 getTemplatePDFStatus: 'getTemplatePDFStatus',
-                downloadTemplatePDF: 'downloadTemplatePDF'
+                downloadTemplatePDF: 'downloadTemplatePDF',
+                deleteWorkup: 'deleteWorkup'
             }
         },
         {
