@@ -8,14 +8,14 @@
         .directive('msDropdown', msDropDownDirective);
 
     /** @ngInject */
-    function MsDropdownController($scope, templateBusiness)
+    function MsDropdownController($scope, templateBusinessSave, clientConfig)
     {
         $scope.$watch(
             "tearsheetobj.selectedValue",
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );

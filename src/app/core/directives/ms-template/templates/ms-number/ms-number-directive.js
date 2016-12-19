@@ -8,7 +8,7 @@
         .directive('msNumber', msNumberDirective);
 
     /** @ngInject */
-    function MsNumberController($scope, templateBusiness)
+    function MsNumberController($scope, templateBusiness, templateBusinessSave, clientConfig)
     {
         $scope.actualValue = parseInt($scope.value);
 
@@ -17,7 +17,7 @@
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }

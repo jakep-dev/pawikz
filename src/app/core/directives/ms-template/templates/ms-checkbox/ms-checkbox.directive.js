@@ -8,7 +8,7 @@
         .directive('msCheckbox', msCheckboxDirective);
 
     /** @ngInject */
-    function MsCheckboxController($scope, templateBusiness)
+    function MsCheckboxController($scope, templateBusiness, templateBusinessSave, clientConfig)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
         $scope.trueValue = '\'' + $scope.text + '\'';
@@ -35,7 +35,7 @@
 
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }

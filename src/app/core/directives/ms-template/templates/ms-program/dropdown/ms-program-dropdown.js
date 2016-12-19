@@ -8,7 +8,7 @@
         .directive('msProgramDropdown', msProgramDropdownDirective);
 
     /** @ngInject */
-    function MsProgramDropdownController($scope, templateBusiness)
+    function MsProgramDropdownController($scope, templateBusiness, templateBusinessSave, clientConfig)
     {
         $scope.$watch(
             "tearsheetobj.selectedValue",
@@ -19,7 +19,7 @@
                         value: newValue,
                         rowId: $scope.rowid
                     });
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }

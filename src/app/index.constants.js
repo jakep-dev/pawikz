@@ -37,6 +37,7 @@
                     schema: '/api/schema',
                     mnemonics: '/api/mnemonics',
                     save: '/api/saveTemplate',
+                    saveAll: '/api/saveAll',
                     dynamic: '/api/dynamicTable',
                     saveDynamic: '/api/saveDynamicTable',
                     addDynamic: '/api/addDynamicTable',
@@ -75,6 +76,12 @@
                 timeout: 120,
                 interval: 1200,
                 dialogtimeout: 60
+            },
+            uiType:{
+                general: 'general',
+                tableLayout: 'table-layout',
+                hybridLayout: 'hybrid-layout',
+                interactiveChart: 'interactive-chart'
             }
         });
 })();
