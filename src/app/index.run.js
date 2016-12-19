@@ -65,7 +65,7 @@
                 }
 
                 var type = commonBusiness.socketType(toState);
-                $document[0].title = 'Advisen Template';
+                $document[0].title = 'insite20twenty';
                 Idle.watch();
                 clientConfig.socketInfo.socket.emit('init-socket',{
                     token: token,
