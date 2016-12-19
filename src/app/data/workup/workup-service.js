@@ -14,7 +14,8 @@
             renew: renew,
             getStatus: getStatus,
             lock: lock,
-            unlock: unlock
+            unlock: unlock,
+            delete: deleteWorkup
         };
 
         return service;
@@ -124,6 +125,26 @@
                 .catch(function(error) {
 
                 });
+        }
+
+        function deleteWorkup(projectId)
+        {
+            var input = {
+                projectId: projectId
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.delete,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
+                return data;
+            })
+            .catch(function(error) {
+
+            });
         }
     }
 })();

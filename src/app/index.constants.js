@@ -54,7 +54,8 @@
                     renew: '/api/workup/renew',
                     status: '/api/workup/status',
                     lock: '/api/workup/lock',
-                    unlock: '/api/workup/unlock'
+                    unlock: '/api/workup/unlock',
+                    delete: '/api/workup/delete'
                 }
             },
             appSettings:
