@@ -706,7 +706,7 @@
 
         function downloadToCSV($scope)
         {
-            var linkElement = $('#link-proposed-download');
+            var linkElement = $('#link-proposed-hybrid-download');
             var dataInfo = [];
             var data = null;
 

@@ -708,7 +708,7 @@
 
         function downloadToCSV($scope)
         {
-            var linkElement = $('#link-expiring-download');
+            var linkElement = $('#link-expiring-hybrid-download');
             var dataInfo = [];
             var data = null;
 
