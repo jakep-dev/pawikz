@@ -1,0 +1,1052 @@
+(function ()
+{
+    'use strict';
+
+    angular
+        .module('app.core')
+        .directive('msProposedH', msProposedDirectiveH);
+
+    /** @ngInject */
+    function msProposedDirectiveH($compile, $filter, $window, 
+                                    commonBusiness, templateBusiness, 
+                                    templateBusinessFormat, templateBusinessSave,
+                                    toast, deviceDetector, clientConfig,
+                                    DTOptionsBuilder, DTColumnDefBuilder,
+                                    templateService)
+    {
+        return {
+            restrict: 'E',
+            scope   : {
+                mnemonic: '@',
+                itemId: '@',
+                tearsheet: '=',
+                copyexpiring: '@',
+                isnoneditable: '=?'
+            },
+            templateUrl: 'app/core/directives/ms-template/templates/ms-program/hybrid/proposed/ms-proposed-h.html',
+            link: defineProposedLink
+        };
+
+        function defineProposedLink($scope, el, attrs)
+        {
+            defineAction($scope);
+            initializeMsg($scope);
+
+            $scope.$parent.$parent.isprocesscomplete = false;
+			$scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics($scope.itemId, $scope.mnemonic);
+
+            var columns = '';
+            if($scope.tearsheet.header && $scope.tearsheet.header.length > 0){
+                columns = _.map($scope.tearsheet.header, function(mnemonic){
+                    return mnemonic.HMnemonic;
+                }).join(',');
+
+                columns += ',TL_STATUS,SEQUENCE';
+            }
+
+            templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+                    $scope.mnemonic, $scope.itemId, columns).then(function(response) {
+                        $scope.$parent.$parent.isprocesscomplete = true;
+
+                        $scope.rows = [];
+                        angular.forEach(response.dynamicTableDataResp, function(row, index){
+                            $scope.rows.push(buildRow($scope, row, index == 0));
+                        });
+
+                        if($scope.rows.length < 6) {
+                            addRow($scope, 5 - $scope.rows.length);
+                            //create empty rows total of 5
+                        }
+
+                        defineLayout($scope, el);
+                    }
+            );
+            
+            $scope.updateDropdown = function(value, column, rowId)
+            {
+                var rowNumber = parseInt(rowId);
+
+                if($scope.rows[rowNumber]) {
+                    
+                    value = (value === '') ? value = '' : value; 
+                    $scope.rows[rowNumber][column].tearsheet.selectedValue = value;
+                    $scope.rows[rowNumber][column].value = value;
+                    
+                    saveRow($scope, $scope.rows[rowNumber]);
+                }
+            };
+
+            $scope.calculate = function(currentRow, value, rowId, columnName)
+            {
+                if(columnName.indexOf('LIMIT') > -1 ||
+                   columnName.indexOf('PREMIUM') > -1 ||
+                   columnName.indexOf('RETAIN') > -1)
+                {
+                    var rowNumber = parseInt(rowId);
+
+                    if($scope.rows[rowNumber])
+                    {
+                        value = (value === '') ? value = '' : value;
+                        
+                        $scope.rows[rowNumber][columnName].value = value;
+                        saveRow($scope, $scope.rows[rowNumber]);
+
+                        if(rowNumber === 0) {
+                           
+                            //Calculate Rate and Role
+                            computeRate($scope.rows[rowNumber], rowNumber + 1);
+                            saveRow($scope, $scope.rows[rowNumber]);
+                        
+                        } else {
+                            
+                            var prevRowNum = rowNumber - 1;
+
+                            if($scope.rows[prevRowNum]) {
+                                computeAtt($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
+                                computeRate($scope.rows[rowNumber], rowNumber + 1);
+                                computeRol($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
+                                saveRow($scope, $scope.rows[rowNumber]);
+                            }
+                        }
+
+                        computeOthers($scope, $scope.rows, rowId);
+                    }
+                } else {
+                    var rowNumber = parseInt(rowId);
+
+                    if($scope.rows[rowNumber])
+                    {
+                        value = (value === '') ? value = '' : value;
+
+                        $scope.rows[rowNumber][columnName].value = value;
+                        saveRow($scope, $scope.rows[rowNumber]);
+                    }
+                }
+            };
+
+            $scope.upload = function()
+            {
+               //Get the element and files.
+               var element = el.find('#proposed-upload');
+                if(element && element.length > 0)
+                {
+                    var files = element[0].files;
+
+                    if(files && files.length > 0)
+                    {
+                        var data = [];
+                       templateBusiness.parseCsvToJson(files[0], updateRows, $scope);
+                    }
+                }
+            };
+
+            $scope.makeSelections = function(currentScope)
+            {
+                makeSelections(currentScope);
+            };
+
+            $scope.rowMakeSelection = function()
+            {
+                calculateHeaderSelection($scope);
+            };
+        }
+
+        function defineAction($scope)
+        {
+            if($scope.copyexpiring)
+            {
+                $scope.$parent.$parent.actions.push({
+                    id: 5,
+                    callback: null,
+                    icon: 'icon-plus',
+                    isclicked: null,
+                    tooltip: 'Add Rows',
+                    type: 'menu',
+                    scope: $scope,
+                    menus:[{
+                            type: 'input', 
+                            isNumeric: true, 
+                            model: $scope.rowNumber,
+                            min: 1,
+                            max: 50,
+                            setValue : function (number) {
+                                $scope.rowNumber = number;
+                            }
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: 'Add',
+                            callback: 'PP-Add'
+                        }],
+                });
+                
+                $scope.$parent.$parent.actions.push({
+                    id: 6,
+                    callback: "PP-Delete",
+                    icon: 'icon-delete',
+                    isclicked: null,
+                    tooltip: 'Delete Row(s)',
+                    type: 'button'
+                });
+                
+                $scope.$parent.$parent.actions.push({
+                    id: 1,
+                    callback: "ProposedProgram",
+                    icon: 'icon-content-copy',
+                    isclicked: null,
+                    tooltip: 'Copy from Proposed',
+                    type: 'button'
+                });
+
+                $scope.$parent.$parent.actions.push({
+                    id: 2,
+                    callback: "PP-Upload",
+                    icon: 'icon-upload',
+                    isclicked: null,
+                    tooltip: 'Upload From Spreadsheet',
+                    type: 'button'
+                });
+
+                $scope.$parent.$parent.actions.push({
+                    id: 3,
+                    callback: "PP-Download",
+                    icon: 'icon-download',
+                    isclicked: null,
+                    tooltip: 'Download to Spreadsheet',
+                    type: 'button'
+                });
+
+                $scope.$parent.$parent.actions.push({
+                    id: 4,
+                    callback: "PP-Eraser",
+                    icon: 'icon-eraser',
+                    isclicked: null,
+                    tooltip: 'Clear data',
+                    type: 'button'
+                });
+            }
+        }
+
+        function defineLayout($scope, el)
+        {
+            var html = '<table id="proposed" width="100%" dt-options="dtOptions" dt-column-defs="dtColumnDefs" class="row-border hover highlight cell-border" datatable="ng" cellpadding="1" cellspacing="0">';
+
+            $scope.dtOptions = DTOptionsBuilder
+                .newOptions()
+                .withOption('processing', false)
+                .withOption('paging', true)
+                .withOption('filter', false)
+                .withOption('autoWidth', true)
+                .withOption('info', true)
+                .withOption('ordering', false)
+                .withOption('responsive', false)
+                .withPaginationType('full')
+                .withDOM('<"top bottom topTableLayout"<"left"<"length"l>>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+
+            $scope.dtColumnDefs = [
+                DTColumnDefBuilder.newColumnDef(0).notSortable()
+            ];
+
+            $scope.uploadFileName = '';
+            //$scope.rows = $scope.initialRows;
+            //$scope.headerItems = [];
+
+            html += defineHeaderLayout($scope);
+            html += defineBodyLayout($scope);
+            html += '</table>';
+
+            el.find('#proposed-layout').append($compile(html)($scope));
+        }
+
+        function defineHeaderLayout($scope)
+        {
+            var html = '';
+            html += '<thead>';
+            html += '<tr class="row">';
+            html += '<th><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" class="no-padding-margin"></md-checkbox></th>';
+            if($scope.tearsheet.header && $scope.tearsheet.header.length > 0) 
+            {
+                angular.forEach($scope.tearsheet.header, function(header)
+                {
+                    html += '<th>';
+                    html += header.HLabel;
+                    html += '</th>';
+                });
+            }
+            html += '</tr>';
+            html += '</thead>';
+
+            return html;
+        }
+
+        function defineBodyLayout($scope)
+        {
+            var html = '';
+            var columnWidth = '';
+
+            html += '<tbody>';
+            html += '<tr ng-repeat="row in rows">';
+            html += '<td><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();"></md-checkbox></td>';
+            
+            angular.forEach($scope.tearsheet.rows.col, function(eachCol)
+            {
+                var tearSheetItem = eachCol.TearSheetItem;
+                var itemId = tearSheetItem.ItemId;
+                var mnemonicId = tearSheetItem.Mnemonic;
+                
+                if(mnemonicId && mnemonicId === 'ACTION'){
+				    return;
+                }
+
+                columnWidth = templateBusinessFormat.getAlignmentWidthColumForTableLayout(eachCol, columnWidth);
+                html += '<td width='+columnWidth+'>';
+                itemId += '';
+
+                switch(tearSheetItem.id)
+                {
+                    case 'GenericTextItem':
+                        html += '<ms-program-text columnname="'+ itemId +'" rowid="{{$index}}" ' +
+                            'row="row.'+ itemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
+                            'itemid="{{row.'+ itemId +'.itemid}}" ' +
+                            'mnemonicid="{{row.'+ itemId +'.mnemonicid}}" ' +
+                            'value="{{row.'+ itemId +'.value}}" isdisabled="{{row.'+ itemId +'.isdisabled}}"></ms-program-text>';
+                        //html += '<span></span>'
+                        break;
+
+                    case 'SingleDropDownItem':
+                        //html += '<span>{{row}}</span>';
+                        html += '<ms-program-dropdown tearsheet="{{row.'+ itemId +'.tearsheet}}" ' +
+                            'mnemonicid="{{row.' + itemId + '.mnemonicid}}" ' +
+                            'rowid="{{$index}}" ' +
+                            'compute="updateDropdown(value, \'' + itemId + '\', rowId)" ' +
+                            'itemid="{{row.' + itemId + '.itemid}}"></ms-program-dropdown>';
+                        break;
+
+                    default:break;
+                }
+
+                html += '</td>';
+            });
+
+            html += '</tr>';
+            html += '</tbody>';
+
+            return html;
+        }
+
+        function buildRow($scope, row, isFirst)
+        {
+            //$scope.initialRows = $scope.rows;
+            //var rowCount = 0;
+            var makeColDef = '';
+            var colCount = 1;
+            var totalCount = $scope.tearsheet.rows.col.length;
+            var isRowComputed = false;
+            makeColDef = '{'
+            angular.forEach($scope.tearsheet.rows.col, function(eachCol)
+            {
+                var tearSheetItem = eachCol.TearSheetItem;
+                var itemId = tearSheetItem.ItemId;
+                var mnemonicId = tearSheetItem.Mnemonic;
+                //var isRowComputed = true;
+
+                if(mnemonicId && mnemonicId === 'ACTION'){
+                    return;
+                }
+                
+                var value = row[itemId];
+                var isDisabled = (itemId.indexOf('RATE') !== -1) ||
+                                    (itemId.indexOf('ROL') !== -1) ||
+                                    (itemId.indexOf('RETAIN') !== -1 && !(isFirst));
+
+                if(!isRowComputed)
+                {
+                    isRowComputed = (value !== 'undefined' && value !== '');
+                }
+
+                makeColDef +=  '"' + itemId + '":';
+
+                makeColDef += '{ "value":';
+                if ((itemId.indexOf('LIMIT') !== -1) ||
+                    (itemId.indexOf('PREMIUM') !== -1) ||
+                    (itemId.indexOf('RETAIN') > -1))
+                {
+                    if (value)
+                    {
+                        makeColDef += '"' + $filter("currency")(value, '', 0) + '",';
+                    }
+                    else
+                    {
+                        makeColDef += '"",';
+                    }
+                }
+                else if (itemId.indexOf('RATE') !== -1)
+                {
+                    if (value)
+                    {
+                        makeColDef += '"' + $filter("currency")(value, '', 2) + '",';
+                    }
+                    else
+                    {
+                        makeColDef += '"",';
+                    }
+                }
+                else if (itemId.indexOf('ROL') !== -1)
+                {
+                    if (value)
+                    {
+                        makeColDef += '"' + removeCommaValue($filter("number")(value, 2)) + '",';
+                    }
+                    else
+                    {
+                        makeColDef += '"",';
+                    }
+                }
+                else if (itemId.indexOf('CARRIER') > -1 || 
+                            itemId.indexOf('COVERAGE') > -1)
+                {
+                    makeColDef += '"' + value.trim() + '",';
+                }
+                else
+                {
+                    makeColDef += '"' + value + '",';
+                }
+                
+                makeColDef += '"itemid":';
+                makeColDef += '"' + itemId + '",';
+                makeColDef += '"mnemonicid":';
+                makeColDef += '"' + mnemonicId + '",';
+                makeColDef += '"id":';
+                makeColDef += '"' + tearSheetItem.id + '",';
+                makeColDef += '"isdisabled":';
+                makeColDef += '"' + isDisabled + '"';
+
+
+                if(tearSheetItem.id === 'SingleDropDownItem')
+                {
+                    var values = [];
+                    var selectedValue = '';
+                    angular.forEach(tearSheetItem.param, function(each)
+                    {
+                        if(each.checked === 'yes')
+                        {
+                            selectedValue = each.content;
+                        }
+
+                        values.push({
+                            value: each.content || ' ',
+                            name: each.content || ' '
+                        });
+                    });
+
+                    var tearsheet = {
+                        label: '',
+                        values: values,
+                        isdisabled: false,
+                        selectedValue: value || selectedValue
+                    };
+
+                    makeColDef += ',"tearsheet":';
+                    makeColDef += '' + angular.toJson(tearsheet) + '';
+                }
+
+                if(colCount === totalCount) {
+                    makeColDef += '}'
+                }else {
+                    makeColDef += '},'
+                }
+                colCount++;
+            });
+            makeColDef += '"iscompute":';
+            makeColDef += ''+ isRowComputed +'';
+            makeColDef += ',"isChecked":';
+            makeColDef += 'false';
+            makeColDef += ',"SEQUENCE":';
+            makeColDef += row.SEQUENCE;
+            makeColDef += ',"TL_STATUS":';
+            makeColDef += '"' + row.TL_STATUS + '"';
+            makeColDef += '}';
+
+            return angular.fromJson(makeColDef);
+        }
+
+        function makeSelections($scope)
+        {
+			angular.forEach($scope.rows, function(eachRow)
+            {
+				if(eachRow.IsChecked !== $scope.IsAllChecked)
+				{
+					eachRow.IsChecked = $scope.IsAllChecked;
+				}
+            });
+        }
+
+        function removeCommaValue(inputValue) {
+            var outputValue;
+
+            if (inputValue) {
+                outputValue = String(inputValue).replace(/\,/g, '');
+                return outputValue;
+            }
+            else {
+                return inputValue;
+            }
+        }
+
+        /*
+        * Compute all rows after middle row changes
+        * And other rows are filled.
+        * */
+        function computeOthers($scope, rows, rowNum)
+        {
+            for(var count = (rowNum); count < rows.length; count++)
+            {
+                /*console.log('computing others');
+                console.log(rows[count]);*/
+                if(rows[count].iscompute)
+                {
+                    
+                    computeAtt(rows[count], rows[count - 1], count + 1);
+                    computeRate(rows[count], count + 1);
+                    computeRol(rows[count], rows[count - 1], count + 1);
+                    saveRow($scope, rows[count]);
+                    //console.log('computed');
+                }
+            }
+        }
+
+        function computeAtt(currentRow, previousRow, rowNumber)
+        {
+            if(previousRow &&
+               currentRow)
+            {
+                var limit;
+                var att;
+
+                if ((rowNumber == 1) && (previousRow.LIMIT.value === '')) {
+                    limit = "0";
+                }
+                else {
+                    limit = removeCommaValue(previousRow.LIMIT.value);
+                }
+
+                if ((rowNumber == 1) && (previousRow.RETAIN.value === '')) {
+                    att = "0";
+                }
+                else {
+                    att = removeCommaValue(previousRow.RETAIN.value);
+                }
+
+                var computedAtt = templateBusiness.calculateProgramAtt(limit, att);
+
+                if ((currentRow.LIMIT.value != '') && (currentRow.PREMIUM.value != '') && !isNaN(computedAtt) && isFinite(computedAtt))
+                {
+                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 0);
+                }
+                else
+                {
+                    currentRow.RETAIN.value = '';
+                }
+                currentRow.iscompute = true;
+            }
+        }
+
+        function computeRate(currentRow, rowNUmber)
+        {
+            if(currentRow)
+            {
+                var premium = removeCommaValue(currentRow.PREMIUM.value);
+                var limit;
+                
+                if ((rowNUmber == 1) && (currentRow.LIMIT.value === ''))
+                {
+                    limit = "0";
+                }
+                else
+                {
+                    limit = removeCommaValue(currentRow.LIMIT.value);
+                }
+
+                var rate = templateBusiness.calculateProgramRate(premium, limit);
+
+                if (isNaN(rate) || !isFinite(rate)) 
+                {
+                    rate = '';
+                }
+                else
+                {
+                    rate = $filter("currency")(rate, '', 2);
+                }
+
+                currentRow.RATEMM.value = rate || '';
+                currentRow.iscompute = true;
+            }
+        }
+
+        function computeRol(currentRow, previousRow, rowNumber)
+        {
+            if (rowNumber == 1)
+            {
+                currentRow.ROL.value = 'N/A';
+                currentRow.iscompute = true;
+            }
+            else if(previousRow && currentRow)
+            {
+                var currentRate = removeCommaValue(currentRow.RATEMM.value);
+                var previousRate = removeCommaValue(previousRow.RATEMM.value);
+
+                var rol = templateBusiness.calculateProgramRol(currentRate, previousRate);
+
+                if (isNaN(rol) || !isFinite(rol)) 
+                {
+                    rol = '';
+                }
+
+                currentRow.ROL.value = rol || '';
+                currentRow.iscompute = true;
+            }
+        }
+
+        function initializeMsg($scope)
+        {
+            commonBusiness.onMsg('ProposedProgram', $scope, function() {
+
+               copyProgram($scope);
+            });
+
+            commonBusiness.onMsg('PP-Upload', $scope, function() {
+                uploadExcel();
+            });
+
+            commonBusiness.onMsg('PP-Download', $scope, function() {
+                downloadToCSV($scope);
+            });
+
+            commonBusiness.onMsg('PP-Eraser', $scope, function() {
+                clearProgram($scope, 'Proposed program cleared!');
+            });
+
+            commonBusiness.onMsg('PP-Add', $scope, function() {
+                addRow($scope, $scope.rowNumber);
+            });
+
+            commonBusiness.onMsg('PP-Delete', $scope, function() {
+                deleteRows($scope);
+            });
+        }
+
+        function addRow($scope, rowNumber)
+        {
+            var maxSequence = getMaxSequence($scope);
+
+			if(!angular.isUndefined(rowNumber))
+			{
+                if(rowNumber + $scope.rows.length > 50) {
+                    rowNumber = 50 - $scope.rows.length;
+                    console.log('Reach max row to add, only allowed to add ' + rowNumber + ' row(s).');
+                    toast.simpleToast('Reach max row to add, only allowed to add ' + rowNumber + ' row(s).');
+                } else {
+                    for( var i = 0; i < rowNumber; i ++){
+                        
+                        var sequence = (maxSequence + i + 1);
+                        //console.log('adding sequence : ' + sequence);
+                        
+                        var makeColDef = '{';
+                        angular.forEach($scope.tearsheet.header, function(header)
+                        {
+                            makeColDef += '"'+header.HMnemonic + '":"",';
+                        });
+                        
+                        makeColDef += '"SEQUENCE":';
+                        makeColDef += sequence;
+                        makeColDef += ',"TL_STATUS":';
+                        makeColDef += '"N"';
+                        makeColDef += '}';
+                        
+                        var row = buildRow($scope, angular.fromJson(makeColDef), sequence === 0);
+                        insertRow($scope, row, sequence);
+                        
+                        $scope.rows.push(row);
+                    }
+                }
+			}
+			else
+			{
+				toast.simpleToast("Invalid input");
+			}
+        }        
+		
+		function deleteRows($scope)
+		{
+			for(var index = $scope.rows.length - 1; index >= 0; index--)
+			{
+				var row = $scope.rows[index];
+				if(row.IsChecked)
+				{
+					var deleteRow = {
+                        action: 'deleted', 
+                        sequence: row.SEQUENCE,
+						condition: []
+					};
+					
+					deleteRow.condition.push({
+						columnName: 'SEQUENCE',
+						value: row.SEQUENCE
+					});
+					
+					$scope.rows.splice(index, 1);
+					//$scope.data.splice(getRowIndexBySequence($scope.data, row.SEQUENCE), 1);
+					autoSave($scope, deleteRow);
+					
+					calculateHeaderSelection($scope);
+				}
+			}
+		}
+
+        function downloadToCSV($scope)
+        {
+            var linkElement = $('#link-proposed-download');
+            var dataInfo = [];
+            var data = null;
+
+            angular.forEach($scope.rows, function(row)
+            {
+                var data = '';
+                data += '{';
+                var colCount = 1;
+               angular.forEach($scope.tearsheet.header, function(header)
+               {
+                   var value = row[header.HMnemonic].value;
+                   var headerName = header.HLabel;
+
+                   data +=  '"'+ headerName +'":';
+
+
+                   if(colCount === $scope.tearsheet.header.length)
+                   {
+                       data +=  '"'+ value +'"';
+                   }
+                   else {
+                       data +=  '"'+ value +'",';
+                   }
+
+                   colCount++;
+               });
+                data += '}';
+
+                dataInfo.push(angular.fromJson(data));
+            });
+
+            data = templateBusiness.unParseJsonToCsv(dataInfo);
+
+            // IE 10+ 
+            if (deviceDetector.browser === 'ie')
+            { 
+                console.log('IE 10 +'); 
+                var fileName = 'ProposedProgram_' + commonBusiness.projectName.trim() + '.csv';
+                window.navigator.msSaveOrOpenBlob(new Blob([data], {type:  "text/plain;charset=utf-8;"}), fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+            }else if(data && linkElement && linkElement.length > 0)
+            {
+                var fileName = 'ProposedProgram_' + commonBusiness.projectName.trim() + '.csv';
+                linkElement[0].download = fileName;
+                linkElement[0].href = 'data:application/csv,' + escape(data);
+                linkElement[0].click();
+                toast.simpleToast('Finished downloading - ' + fileName);
+            }
+        }
+
+        function clearProgram($scope, message)
+        {
+            angular.forEach($scope.rows, function(row){
+                angular.forEach($scope.tearsheet.header, function(header){
+                    if(row[header.HMnemonic].id === 'SingleDropDownItem'){
+                        row[header.HMnemonic].tearsheet.selectedValue = '';
+                    }
+                    row[header.HMnemonic].value = '';
+                });
+            });
+
+            if(message)
+            {
+                toast.simpleToast(message);
+            }
+
+        }
+
+        //Set values from proposed program table
+        //call webservice to ensure get the data whether the copied program table in separate step or not
+        function copyProgram($scope){
+
+            var maxSequence = getMaxSequence($scope);
+            removeAllRows($scope);
+
+            $scope.$parent.$parent.isprocesscomplete = false;
+            var columns = '';
+            if($scope.tearsheet.header && $scope.tearsheet.header.length > 0){
+                columns = _.map($scope.tearsheet.header, function(mnemonic){
+                    return mnemonic.HMnemonic;
+                }).join(',');
+
+                columns += ',TL_STATUS,SEQUENCE';
+            }
+
+            templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
+                    $scope.mnemonic, $scope.copyexpiring, columns).then(function(response) {
+                        $scope.$parent.$parent.isprocesscomplete = true;
+
+                        angular.forEach(response.dynamicTableDataResp, function(row, index){
+                            
+                            //sets sequence to its previous max sequence so that no conflict on delete condition  
+                            row.SEQUENCE = maxSequence + index + 1;
+                            
+                            var copyRow = buildRow($scope, row, index == 0);
+                            insertRow($scope, copyRow, row.SEQUENCE);
+                        
+                            $scope.rows.push(copyRow);
+                        });
+                        toast.simpleToast('Proposed program copied!');
+                    }
+            );
+            
+        }
+
+        function uploadExcel()
+        {
+            toast.simpleToast("Please choose file!");
+
+            var uploadElement = $('#proposed-upload');
+
+            if(uploadElement && uploadElement.length > 0)
+            {
+                    setTimeout(function () {
+                        uploadElement.change(function(e)
+                        {
+                            setTimeout(function () {
+                                $(this).off('change');
+                                angular.element('#btn-proposed-upload').trigger('click');
+                                // $('#btn-expiring-upload').click();
+                            }, 500);
+                        });
+
+                        uploadElement.click();
+                    }, 500);
+            }
+        }
+
+        function updateRows(data, $scope)
+        {
+            if(data.data && data.data.length > 0)
+            {
+                //Header Rows
+                var csvHeaders = data.data[0];
+                var headerStatus = [];
+                var rowIndex = 0;
+
+                angular.forEach($scope.tearsheet.header, function(eachHeader)
+                {
+                    var headerName = eachHeader.HLabel;
+                    var headerMnemonic = eachHeader.HMnemonic;
+
+                    var findHeader = _.find(csvHeaders, function(header)
+                    {
+                        if(headerName.toUpperCase() === header.toUpperCase())
+                        {
+                            return header;
+                        }
+                    });
+
+                    headerStatus.push({
+                        name: headerName,
+                        mnemonic: headerMnemonic,
+                        iscsv: !findHeader ? false : true,
+                        index: rowIndex
+                    });
+
+                    rowIndex++;
+                });
+
+                var isAllHeaderAvailable = false;
+
+                isAllHeaderAvailable = _.every(headerStatus, {iscsv: true});
+
+                if(!isAllHeaderAvailable)
+                {
+                    toast.simpleToast('Program headers does not match. Please download csv or correct headers!');
+                }
+                else {
+                    var message = null;
+                    var maxSequence = getMaxSequence($scope);
+
+                    removeAllRows($scope);
+
+                    angular.forEach(data.data, function(content, rowCount)
+                    {
+                        if(rowCount === 50)
+                        {
+                            message = "Only " + $scope.rows.length + ' rows are allowed. Uploaded successfully!';
+                            return;
+                        }
+
+                        if(rowCount !== 0)
+                        {
+                            var makeColDef = '{';
+                            angular.forEach($scope.tearsheet.header, function(header)
+                            {
+                                var findHeader = _.find(headerStatus, function(head)
+                                {
+                                    if(head.name === header.HLabel)
+                                    {
+                                        return head;
+                                    }
+                                });
+
+                                if(findHeader)
+                                {
+                                    var value = (_.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic}).dataType === 'NUMBER') ? removeCommaValue(content[findHeader.index]): content[findHeader.index]; //;
+                                    makeColDef += '"'+header.HMnemonic + '":"' + value + '",';
+                                }
+                            });
+                            
+                            makeColDef += '"SEQUENCE":';
+                            makeColDef += maxSequence + rowCount;
+                            makeColDef += ',"TL_STATUS":';
+                            makeColDef += '"N"';
+                            makeColDef += '}';
+
+                            var row = buildRow($scope, angular.fromJson(makeColDef), rowCount === 1);
+                            insertRow($scope, row, maxSequence + rowCount);
+                            $scope.rows.push(row);
+                        }
+                        
+                        rowCount++;
+                    });
+
+                    computeRate($scope.rows[0], 0);
+                    computeOthers($scope, $scope.rows, 1);
+                    if(message == null)
+                    {
+                        message = 'Uploaded successfully!';
+                    }
+
+                    toast.simpleToast(message);
+                }
+            }
+
+            resetUploadElement();
+        }
+
+		function removeAllRows($scope){
+			
+			//clearFilter($scope);
+			angular.forEach($scope.rows, function(row){
+				row.IsChecked = true;
+			});
+			
+			deleteRows($scope);
+		}
+
+        function resetUploadElement()
+        {
+            var element = $('#proposed-upload');
+            if(element && element.length > 0)
+            {
+                element[0].value = '';
+            }
+        }
+
+        function getMaxSequence($scope)
+		{
+			var maxObj =_.max(_.map($scope.rows, function(row){ return parseInt(row.SEQUENCE); }));
+			return (_.isUndefined(maxObj))? -1 : maxObj;
+		}
+
+        function insertRow($scope, row, sequence)
+		{
+			var insert = {
+                action: 'added', 
+                sequence: sequence,
+				row : []
+			};
+			
+			setTLStatus(row);
+			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key)
+			{
+                if(angular.isObject(value)) {
+                    if(value.value && value.itemid){
+                        insert.row.push({
+                            columnName: value.itemid,
+                            value: (_.find($scope.subMnemonics, {mnemonic: key}).dataType === 'NUMBER') ? removeCommaValue(value.value): value.value
+                        });
+                    }
+                }else {
+                    insert.row.push({
+                        columnName: key,
+                        value: value
+                    });
+                }
+			});
+			
+			if(insert.row.length > 0)
+			{
+				autoSave($scope, insert);
+
+				calculateHeaderSelection($scope);
+			}
+		}        
+		
+		function saveRow($scope, row)
+		{
+			var save = {
+                action: 'updated', 
+                sequence: parseInt(row.SEQUENCE),
+				row: [],
+				condition: []
+			};
+			
+			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key){
+                if(angular.isObject(value)) {
+                    if(value.value && value.itemid){
+                        save.row.push({
+                            columnName: value.itemid,
+                            value: (_.find($scope.subMnemonics, {mnemonic: key}).dataType === 'NUMBER') ? removeCommaValue(value.value): value.value
+                        });
+                    }
+                }else {
+                    save.row.push({
+                        columnName: key,
+                        value: value
+                    });
+                }
+			});
+			
+			save.condition.push({
+				columnName: 'SEQUENCE',
+				value: row.SEQUENCE
+			});
+			save.condition.push({
+				columnName: 'ITEM_ID',
+				value: $scope.itemId
+			});
+			
+			autoSave($scope, save);
+		}
+
+        function setTLStatus(row)
+		{
+			row.TL_STATUS = (row.IsChecked && row.IsChecked === true)? 'Y' : 'N';
+		}
+
+        function calculateHeaderSelection($scope)
+        {
+			$scope.IsAllChecked = _.every($scope.rows, function(row) { return row.IsChecked; });
+        }
+
+		function autoSave($scope, rowObject)
+		{
+			templateBusinessSave.getReadyForAutoSave($scope.itemId, $scope.mnemonic, rowObject, clientConfig.uiType.tableLayout);
+		}
+    }
+
+})();

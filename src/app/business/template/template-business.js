@@ -51,6 +51,8 @@
            buildComponents: buildComponents,
            buildExpiringProgram: buildExpiringProgram,
            buildProposedProgram: buildProposedProgram,
+           buildExpiringProgramHybrid: buildExpiringProgramHybrid,
+           buildProposedProgramHybrid: buildProposedProgramHybrid,
            buildLabel: buildLabel,
            buildGenericTableItem: buildGenericTableItem,
            buildRichTextArea: buildRichTextArea,
@@ -384,6 +386,14 @@
 
                 case 'proposed':
                     return buildProposedProgram(scope, scope.tearheader, tearSheet);
+                    break;
+
+                case 'expiringhybrid':
+                    return buildExpiringProgramHybrid(scope, scope.tearheader, tearSheet);
+                    break;
+
+                case 'proposedhybrid':
+                    return buildProposedProgramHybrid(scope, scope.tearheader, tearSheet);
                     break;
 
                 case 'linkitem':
@@ -918,6 +928,73 @@
 
             newScope.tearsheet = content;
             comp.html += '<ms-proposed tearsheet="tearsheet" copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+        
+        function buildExpiringProgramHybrid(scope, tearheader, content)
+        {
+            var comp = {
+              html: '',
+              scope: null
+            };
+            var newScope  = scope.$new(true);
+            newScope.isnoneditable = scope.isnoneditable;
+            newScope.copyproposed = null;
+            newScope.tearsheet = {
+                header: null,
+                rows: null
+            }
+
+            if(tearheader)
+            {
+                newScope.copyproposed =  content.copyProposedTable || null;
+            }
+
+            if(content && content.HeaderRowTemplate && content.HeaderRowTemplate.Headers) {
+                newScope.tearsheet.header = content.HeaderRowTemplate.Headers;
+            }
+
+            if(content && content.TableRowTemplate && content.TableRowTemplate.row) {
+                newScope.tearsheet.rows = content.TableRowTemplate.row;
+            }
+            
+            comp.html += '<ms-expiring-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'" copyproposed="'+ newScope.copyproposed +'" isnoneditable="isnoneditable"></ms-expiring-h>';
+            comp.scope = newScope;
+
+            return comp;
+        }
+
+        function buildProposedProgramHybrid(scope, tearheader, content)
+        {
+            var comp = {
+                html: '',
+                scope: null
+            };
+            var newScope  = scope.$new(true);
+            newScope.tearsheet = null;
+            newScope.isnoneditable = scope.isnoneditable;
+            newScope.copyexpiring = null;
+            newScope.tearsheet = {
+                header: null,
+                rows: null
+            }
+
+            if(tearheader)
+            {
+                newScope.copyexpiring =  content.copyExpiringTable || null;
+            }
+
+            if(content && content.HeaderRowTemplate && content.HeaderRowTemplate.Headers) {
+                newScope.tearsheet.header = content.HeaderRowTemplate.Headers;
+            }
+
+            if(content && content.TableRowTemplate && content.TableRowTemplate.row) {
+                newScope.tearsheet.rows = content.TableRowTemplate.row;
+            }
+
+            comp.html += '<ms-proposed-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'"  copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed-h>';
             comp.scope = newScope;
 
             return comp;

@@ -19,8 +19,8 @@
                         value: newValue,
                         rowId: $scope.rowid
                     });
-                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
-                    templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
+                    /*templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
+                    templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);*/
                 }
             }
         );
