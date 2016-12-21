@@ -61,7 +61,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 name: 'yes',
                 callBack: function () {
                     console.log('deleting ' + projectId);
-                    workupService.delete(projectId).then(function(data) {
+                    workupService.delete(projectId, commonBusiness.userId).then(function(data) {
                         commonBusiness.emitMsg('FilterDashboard');    
                     });
                 }
@@ -326,8 +326,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         //Defining column definitions
         vm.dtColumnDefs = [
             DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
-            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml),
-            DTColumnDefBuilder.newColumnDef(6).renderWith(deleteHtml)
+            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml).notSortable(),
+            DTColumnDefBuilder.newColumnDef(6).renderWith(deleteHtml).notSortable()
         ];
 
         //Dashboard DataTable Configuration
@@ -401,6 +401,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 switch (workUp.status)
                 {
                     case 'in-process':
+                    case 'delete':
                     case 'renewal':
                         row.removeClass('not-active');
                         row.addClass('not-active');
