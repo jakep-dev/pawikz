@@ -127,10 +127,11 @@
                 });
         }
 
-        function deleteWorkup(projectId)
+        function deleteWorkup(projectId, userId)
         {
             var input = {
-                projectId: projectId
+                projectId: projectId,
+                userId: userId
             };
 
             return $http({

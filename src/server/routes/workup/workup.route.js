@@ -306,6 +306,8 @@
 
             context.token = req.headers['x-session-token'];
 
+            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'delete');
+
             client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
                 //console.log('Response - StatusCode');
                 //console.log(data);
