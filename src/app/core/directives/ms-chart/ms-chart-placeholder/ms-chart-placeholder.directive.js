@@ -55,7 +55,7 @@
                         $scope.chart.title = vm.title;
                     }
                     if (!vm.isMainChart) {
-                        commonBusiness.emitMsg('autosave');
+                        saveChart();
                     }
                 } else if ($scope.chart.chartType === "IFCHART") {
                     $scope.chart.title = vm.title;
@@ -190,8 +190,6 @@
                 case 'stock':
                     if (chartIndex < 5) { //limit the chart count
                         var ele = $('#ms-chart-container');
-
-                        var msChartPlaceHolderId = '1';
                         var chartToBeAdded = {
                             tearsheet: {
                                 type: 'stock',
@@ -199,9 +197,9 @@
                                 mnemonicId: $scope.chart.tearsheet.mnemonicId,
                                 itemId: $scope.chart.tearsheet.itemId
                             },
+                            chartType: 'JSCHART',
                             filterState: angular.copy($scope.chart.filterState),
                             tableInfo: getSelectedRows(),
-                            msChartPlaceHolderId: msChartPlaceHolderId,
                             title: $scope.chartTitle
                         }
                         $scope.addNewChart(chartToBeAdded, $scope.index);
@@ -313,7 +311,7 @@
                     var html = '';
                     switch (scope.chart.tearsheet.type) {
                         case 'stock':
-                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" table-info="chart.tableInfo"></ms-stock-chart>';
+                            html = '<ms-stock-chart chart-id="vm.id" item-id="chart.tearsheet.itemId" mnemonic-id="chart.tearsheet.mnemonicId" filter-state="chart.filterState" on-chart-save="onChartSave" table-info="chart.tableInfo"></ms-stock-chart>';
                             break;
 
                         case 'image':

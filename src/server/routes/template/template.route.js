@@ -50,7 +50,9 @@
                     async.parallel( {
                             general: saveGeneral,
                             tableLayout: buildSaveTableLayout,
-                            interactiveChart: buildSaveInteractiveChart
+                            interactiveStockChart: buildSaveInteractiveStockChart,
+                            significantDevelopmentItems: buildSaveSignificantDevelopmentItem,
+                            interactiveFinancialChart: buildSaveInteractiveFinancialChart
                         }, 
                         function(err, results){
                             callback(null, results);
@@ -305,12 +307,12 @@
                 }
             }
 
-            function buildSaveInteractiveChart(callback){
-                var mnemonics = _.filter(stepMnemonics.mnemonic, { type: 'interactive-chart' } );
+            function buildSaveInteractiveStockChart(callback){
+                var mnemonics = _.filter(stepMnemonics.mnemonic, { type: 'interactive-stock-chart' } );
                 
                 if(mnemonics && mnemonics.length > 0) {
                     
-                    async.map(mnemonics, saveInteractivteChart, function(err, results){
+                    async.map(mnemonics, saveInteractiveStockChart, function(err, results){
                         callback(null, results);
                     });
                 } else {
@@ -318,7 +320,7 @@
                 }
             }
 
-            function saveInteractivteChart(mnemonic, callback) {
+            function saveInteractiveStockChart(mnemonic, callback) {
                 
                 var service = getServiceDetails('charts');
                 var methodName = '';
@@ -327,6 +329,104 @@
                     error: null
                 };
                 
+                if (!_.isUndefined(service) && !_.isNull(service)) {
+                    methodName = service.methods.saveChartSettings;
+                }
+
+                var args = {
+                    data: {
+                        project_id: stepMnemonics.projectId,
+                        company_id: stepMnemonics.companyId,
+                        step_id: stepMnemonics.stepId,
+                        ssnid: req.headers['x-session-token'],
+                        chartSettings: mnemonic.data.chartSettings
+                    },
+                    headers: { "Content-Type": "application/json" }
+                };
+
+                client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
+                {
+                    results.data = data;
+                    callback(null, results);
+                }).on('error',
+                    function (err) {
+                        results.error = 'Error saving interactive stock chart';
+                        callback(null, results);
+                    }
+                );
+            }
+
+            function buildSaveSignificantDevelopmentItem(callback) {
+                var mnemonics = _.filter(stepMnemonics.mnemonic, { type: 'significant-development-items' });
+
+                if (mnemonics && mnemonics.length > 0) {
+
+                    async.map(mnemonics, saveSigDevItems, function (err, results) {
+                        callback(null, results);
+                    });
+                } else {
+                    callback(null, null);
+                }
+            }
+
+            function saveSigDevItems(mnemonic, callback) {
+
+                var service = getServiceDetails('charts');
+                var methodName = '';
+                var results = {
+                    data: null,
+                    error: null
+                };
+
+                if (!_.isUndefined(service) && !_.isNull(service)) {
+                    methodName = service.methods.saveSigDevItems;
+                }
+
+                var args = {
+                    data: {
+                        project_id: stepMnemonics.projectId,
+                        step_id: stepMnemonics.stepId,
+                        mnemonic: mnemonic.mnemonic,
+                        item_id: mnemonic.itemId,
+                        token: req.headers['x-session-token'],
+                        items: mnemonic.data.items
+                    },
+                    headers: { "Content-Type": "application/json" }
+                };
+
+                client.post(config.restcall.url + '/' + service.name + '/' + methodName, args, function (data, response) {
+                    results.data = data;
+                    callback(null, results);
+                }).on('error',
+                    function (err) {
+                        results.error = 'Error saving interactive stock chart';
+                        callback(null, results);
+                    }
+                );
+            }
+
+            function buildSaveInteractiveFinancialChart(callback) {
+                var mnemonics = _.filter(stepMnemonics.mnemonic, { type: 'interactive-financial-chart' });
+
+                if (mnemonics && mnemonics.length > 0) {
+
+                    async.map(mnemonics, saveInteractiveFinancialChart, function (err, results) {
+                        callback(null, results);
+                    });
+                } else {
+                    callback(null, null);
+                }
+            }
+
+            function saveInteractiveFinancialChart(mnemonic, callback) {
+
+                var service = getServiceDetails('charts');
+                var methodName = '';
+                var results = {
+                    data: null,
+                    error: null
+                };
+
                 if (!_.isUndefined(service) && !_.isNull(service)) {
                     methodName = service.methods.saveFinancialChartSettings;
                 }
@@ -345,16 +445,17 @@
                     headers: { "Content-Type": "application/json" }
                 };
 
-                client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-                {
+                client.post(config.restcall.url + '/' + service.name + '/' + methodName, args, function (data, response) {
                     results.data = data.chartSettings;
                     callback(null, results);
-                }).on('error', function (err) {
-                        results.error = 'Error saving interactive chart';
+                }).on('error',
+                    function (err) {
+                        results.error = 'Error saving interactive financial chart';
                         callback(null, results);
                     }
                 );
             }
+
         }
 
         //Schema for the templates

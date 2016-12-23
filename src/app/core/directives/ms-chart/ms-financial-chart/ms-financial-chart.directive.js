@@ -12,7 +12,6 @@
         vm.selectedIndex = "";
         vm.searchVal = '';
         vm.searchedStocks = [];
-        vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
 
         vm.onFilterStateUpdate = function () {

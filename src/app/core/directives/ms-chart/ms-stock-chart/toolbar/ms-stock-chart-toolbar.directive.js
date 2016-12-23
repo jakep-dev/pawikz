@@ -9,9 +9,9 @@
     function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu,
                                            dialog, toast, commonBusiness, $mdSelect, $timeout) {
         var vm = this;
-        vm.splits = false;
-        vm.earnings = false;
-        vm.dividends = false;
+        vm.splits = vm.filterState.splits;
+        vm.earnings = vm.filterState.earnings;
+        vm.dividends = vm.filterState.dividends;
         vm.selectedPeriod = vm.filterState.interval;
         vm.customDateChange = customDateChange;
         /* Indices Logic Start */

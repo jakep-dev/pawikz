@@ -9,15 +9,19 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, toast, clientConfig, commonBusiness, stepsBusiness, notificationBusiness,
-                              overviewBusiness, templateService, financialChartService, deviceDetector,
-                              Papa, dialog, store, $window, $sce, $mdToast) {
+    function templateBusiness($rootScope, $interval, $filter, $window, $sce, $mdToast,
+                              Papa, dialog, store, deviceDetector, toast, 
+                              clientConfig, commonBusiness, stepsBusiness, notificationBusiness, overviewBusiness,
+                              templateService, stockService, financialChartService
+                             ) {
         var business = {
            mnemonics: null,
            saveMnemonics: [],
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
-           saveInteractiveFinancialChartMnemonics: [],
+		   saveInteractiveStockChartMnemonics: [],
+		   saveSignificantDevelopmentMnemonics: [],
+		   saveInteractiveFinancialChartMnemonics: [],
            autoSavePromise: [],
            isExpandAll: false,
            componentStatus: [],
@@ -26,6 +30,8 @@
            save: save,
            saveTable: saveTable,
            saveHybridTable: saveHybridTable,
+           saveInteractiveStockCharts: saveInteractiveStockCharts,
+           saveSignificantDevelopmentItems: saveSignificantDevelopmentItems,
            saveInteractiveFinancialCharts: saveInteractiveFinancialCharts,
            cancelPromise: cancelPromise,
            getMnemonicValue: getMnemonicValue,
@@ -33,6 +39,8 @@
            getReadyForAutoSave: getReadyForAutoSave,
 		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
 		   getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
+		   getReadyForAutoSaveInteractiveStockChart: getReadyForAutoSaveInteractiveStockChart,
+		   getReadyForAutoSaveSignificantDevelopmentItem: getReadyForAutoSaveSignificantDevelopmentItem,
 		   getReadyForAutoSaveInteractiveFinancialChart: getReadyForAutoSaveInteractiveFinancialChart,
            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
            getEvalMnemonicValue: getEvalMnemonicValue,
@@ -1713,6 +1721,8 @@
                     save();
 					saveTable();
 					saveHybridTable();
+					saveInteractiveStockCharts();
+					saveSignificantDevelopmentItems();
 					saveInteractiveFinancialCharts();
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
@@ -1841,6 +1851,84 @@
         {
             $interval.cancel(business.autoSavePromise);
             business.autoSavePromise = [];
+        }
+
+        //Get ready for interactive stock chart auto save.
+        function getReadyForAutoSaveInteractiveStockChart(companyId, projectId, stepId, mnemonicId, itemId, value) {
+            var mnemonicItem = _.find(business.saveInteractiveStockChartMnemonics, function (currentMnemonic) {
+                if ((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId)) {
+                    return currentMnemonic;
+                }
+            });
+
+            if (angular.isUndefined(mnemonicItem)) {
+                business.saveInteractiveStockChartMnemonics.push({
+                    companyId: companyId,
+                    projectId: projectId,
+                    stepId: stepId,
+                    mnemonicId: mnemonicId,
+                    itemId: itemId,
+                    value: value
+                })
+            }
+            else {
+                mnemonicItem.value = value;
+            }
+            initiateAutoSave();
+        }
+
+        //Save interactive stock chart details
+        function saveInteractiveStockCharts() {
+            if (business.saveInteractiveStockChartMnemonics.length > 0) {
+
+                _.each(business.saveInteractiveStockChartMnemonics, function (mnemonicItem) {
+                    stockService.saveChartAllSettings(mnemonicItem)
+                        .then(function (response) {
+                            //TODO: send message to update chart id
+                            toast.simpleToast('Saved successfully');
+                        });
+                });
+                business.saveInteractiveStockChartMnemonics = [];
+            }
+        }
+
+        //Get ready for significant development item auto save.
+        function getReadyForAutoSaveSignificantDevelopmentItem(companyId, projectId, stepId, mnemonicId, itemId, value) {
+            var mnemonicItem = _.find(business.saveSignificantDevelopmentMnemonics, function (currentMnemonic) {
+                if ((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId)) {
+                    return currentMnemonic;
+                }
+            });
+
+            if (angular.isUndefined(mnemonicItem)) {
+                business.saveSignificantDevelopmentMnemonics.push({
+                    companyId: companyId,
+                    projectId: projectId,
+                    stepId: stepId,
+                    mnemonicId: mnemonicId,
+                    itemId: itemId,
+                    value: value
+                })
+            }
+            else {
+                mnemonicItem.value = value;
+            }
+            initiateAutoSave();
+        }
+
+        //Save significant development item details
+        function saveSignificantDevelopmentItems() {
+            if (business.saveSignificantDevelopmentMnemonics.length > 0) {
+
+                _.each(business.saveSignificantDevelopmentMnemonics, function (mnemonicItem) {
+                    stockService.saveSigDevItems(mnemonicItem)
+                        .then(function (response) {
+                            //TODO: send message to update chart id
+                            toast.simpleToast('Saved successfully');
+                        });
+                });
+                business.saveSignificantDevelopmentMnemonics =[];
+            }
         }
 
         //Get ready for interactive financial chart auto save.

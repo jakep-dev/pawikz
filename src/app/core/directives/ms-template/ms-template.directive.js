@@ -37,11 +37,6 @@
             templateBusiness.requestPdfDownload();
         }
 
-        function exportCharts1()
-        {
-            $rootScope.$broadcast('exportAllCharts');
-        }
-
         function renew()
         {
             notificationBusiness.initializeMessages($scope);

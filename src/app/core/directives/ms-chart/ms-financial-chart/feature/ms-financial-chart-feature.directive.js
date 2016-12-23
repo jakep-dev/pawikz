@@ -180,6 +180,7 @@
                                 context.prevDiff = context.currentDiff;
                                 context.currentDate = moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD');
                                 context.currentDiff = context.currentDate.diff(context.nextDispDate, 'days');
+                                //console.log('i = ' + context.i + ' skipcount = ' + context.skipCount + ' totalSkip = ' + context.totalSkip + ' prevDiff = ' + context.prevDiff + ' currentDate = ' + context.currentDate.format("YYYY-MM-DD") + ' currentDiff = ' + context.currentDiff + '  nextDispDate = ' + context.nextDispDate.format("YYYY-MM-DD"));
                                 if (context.currentDiff < 0) {
                                     context.skipCount++;
                                 } else {
@@ -224,7 +225,7 @@
                                                         {
                                                             index: context.i - 1,
                                                             originalLabel: context.xAxisLabels[context.i - 1].textContent,
-                                                            finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
+                                                            finalLabel: context.nextDispDate.format(context.labelFormat),
                                                             skipCount: context.skipCount - 1
                                                         }
                                                     );
@@ -236,7 +237,7 @@
                                                     {
                                                         index: context.i - 1,
                                                         originalLabel: context.xAxisLabels[context.i - 1].textContent,
-                                                        finalLabel: moment(context.xAxisLabels[context.i].textContent, 'YYYY-MM-DD').format(context.labelFormat),
+                                                        finalLabel: context.nextDispDate.format(context.labelFormat),
                                                         skipCount: context.skipCount - 1
                                                     }
                                                 );
@@ -245,7 +246,12 @@
                                             }
                                         }
                                     }
-                                    context.nextDispDate = context.nextDispDate.add(context.duration);
+                                    if (context.currentDiff > context.duration.asDays()) {
+                                        context.nextDispDate = context.currentDate;
+                                    } else {
+                                        context.nextDispDate = context.nextDispDate.add(context.duration);
+                                    }
+                                    
                                 }
                                 if (!context.xAxisLabels[context.i].textContent) {
                                     context.blankCount++;
@@ -269,7 +275,7 @@
                                     //we need to show the first label so we don't count the first label to skip 
                                     context.targetLabels[0].skipCount--;
                                     context.totalSkip--;
-                                    //console.log(context.targetLabels);
+                                    //console.log(JSON.stringify(context.targetLabels));
                                     context.labelCount = context.targetLabels.length;
                                     context.avgSkip_f = context.totalSkip / context.labelCount;
                                     context.avgSkip_low = Math.floor(context.avgSkip_f);
@@ -319,7 +325,7 @@
                                             skipCount: 0
                                         }
                                     );
-                                    //console.log(context.targetLabels);
+                                    //console.log(JSON.stringify(context.targetLabels));
                                     context.j = 0;
                                     context.beforeText;
                                     context.afterText;
@@ -383,7 +389,7 @@
                                         };
                                     }
                                 }
-                                //console.log(context.targetLabels);
+                                //console.log(JSON.stringify(context.targetLabels));
                                 //for (context.i = 0; context.i < context.n; context.i++) {
                                 //    console.log('[' + context.i + '][' + context.xAxisLabels[context.i].textContent + ']');
                                 //}
@@ -400,8 +406,7 @@
                             chart: {
                                 events: {
                                     redraw: function () {
-                                        console.log('Inside redraw ' + activity.name);
-
+                                        //console.log('Inside redraw ' + activity.name);
                                         var currentChart = this;
                                         if (labelsBoxes.length > 0) {
                                             labelsBoxes.forEach(function (item) {
@@ -411,7 +416,6 @@
                                         }
                                         addSeriesLabels(currentChart);
                                         //setupXAxisLabels();
-
                                     }, 
 
                                     // side labels tooltip and legends to show the stock & peer name ticker in sorted order with custom dates
@@ -610,14 +614,13 @@
                         });
 
                     activity.chartElement = elem.find('#container');
-                    activity.previousSize = 0;
 
                     resizeSensor = new ResizeSensor(elem.find('#container')[0], function () {
 
                             var context = new Object();
                             context.chart = activity.chartElement.highcharts();
                             activity.currentSize = context.chart.chartWidth;
-                            console.log('[1]Chart ' + activity.name + ':' + activity.previousSize + ':' + activity.currentSize);
+                            //console.log('[1]Chart ' + activity.name + ':' + activity.currentSize);
 
                             if (context.chart.xAxis != null && context.chart.xAxis.length > 0) {
                                 context.chart.xAxis[0].setCategories(activity.xData);
@@ -625,14 +628,14 @@
                             $timeout(function (params) {
                                 params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
 
-                                console.log('[3]Chart ' + params.name + ':Labels Changed:' + params.labelsChanged + ':width:' + params.chart.chartWidth);
+                                //console.log('[3]Chart ' + params.name + ':Labels Changed:' + params.labelsChanged + ':width:' + params.chart.chartWidth);
                                 if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
                                     params.chart.xAxis[0].labelRotation = 0;
                                     params.chart.isDirty = true;
                                     params.chart.redraw();
                                 }
                             }, 500, false, { chart: context.chart, name: activity.name });
-                            console.log('[2]Calling reflow for ' + activity.name);
+                            //console.log('[2]Calling reflow for ' + activity.name);
                             context.chart.reflow();
 
                     });

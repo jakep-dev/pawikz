@@ -81,7 +81,9 @@
                 general: 'general',
                 tableLayout: 'table-layout',
                 hybridLayout: 'hybrid-layout',
-                interactiveChart: 'interactive-chart'
+                interactiveStockChart: 'interactive-stock-chart',
+                significantDevelopmentItems: 'significant-development-items',
+                interactiveFinancialChart: 'interactive-financial-chart'
             }
         });
 })();

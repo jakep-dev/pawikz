@@ -14,7 +14,6 @@
          * Added Variables to implement reset functionality 5/11/2016
          * */
         var initalStateData = {};
-        var manualSaveData = {};
         var ratioTypes = null;
         var currentCompanyId = null;
         var peerIndustries = null;
