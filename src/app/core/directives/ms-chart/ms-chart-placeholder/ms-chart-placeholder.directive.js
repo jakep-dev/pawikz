@@ -200,7 +200,7 @@
                             chartType: 'JSCHART',
                             filterState: angular.copy($scope.chart.filterState),
                             tableInfo: getSelectedRows(),
-                            title: $scope.chartTitle
+                            title: vm.title
                         }
                         $scope.addNewChart(chartToBeAdded, $scope.index);
                     } else
