@@ -204,7 +204,11 @@
                                                 tableInfo: getTableInfo(i)
                                             });
                                         }
-                                        console.log(scope.jsCharts);
+                                        //console.log(scope.jsCharts);
+                                        //reset default chart coming in from web service
+                                        resetChartFilter(scope.jsCharts[0].filterState);
+                                        scope.jsCharts[0].filterState.title = scope.jsCharts[0].title = getStockChartTitle();
+                                        //console.log(scope.jsCharts);
                                         stockService.setInitialStateData(angular.copy(scope.jsCharts));
                                         $rootScope.savedChartData = scope.jsCharts;
                                     }
@@ -501,7 +505,7 @@
                                     );
 
                                     commonBusiness.onMsg('updateInteractiveStockChartIds', scope, function (ev, data) {
-                                        console.log('Save Postprocessing here.');
+                                        //console.log('Save Postprocessing here.');
                                     });
 
                                 });

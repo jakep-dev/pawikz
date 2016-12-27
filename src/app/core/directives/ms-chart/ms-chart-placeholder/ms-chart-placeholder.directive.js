@@ -48,12 +48,8 @@
         $scope.$watch('vm.title',function(newValue,oldValue) {
             if (oldValue != newValue) {
                 if (($scope.chart.chartType === "JSCHART") || ($scope.chart.chartType === "IMGURL")) {
-                    if ($scope.chart && $scope.chart.filterState && $scope.chart.filterState.title) {
-                        $scope.chart.filterState.title = vm.title;
-                    }
-                    else if ($scope.chart && $scope.chart.title) {
-                        $scope.chart.title = vm.title;
-                    }
+                    $scope.chart.title = vm.title;
+                    $scope.chart.filterState.title = vm.title;
                     if (!vm.isMainChart) {
                         saveChart();
                     }
@@ -200,7 +196,7 @@
                             chartType: 'JSCHART',
                             filterState: angular.copy($scope.chart.filterState),
                             tableInfo: getSelectedRows(),
-                            title: vm.title
+                            title: angular.copy(vm.title)
                         }
                         $scope.addNewChart(chartToBeAdded, $scope.index);
                     } else
