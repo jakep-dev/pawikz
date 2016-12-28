@@ -2,17 +2,62 @@
 {
     var u = require('underscore');
     var fs = require('fs');
+    var config;
+    var client;
 
-    chartRoutes.init = function (app, config)
+    function getServiceDetails(serviceName) {
+        return u.find(config.restcall.service, { name: serviceName });
+    }
+
+    function saveInteractiveFinancialChart(mnemonic, callback) {
+        var context = new Object();
+        context.service = getServiceDetails('charts');
+        context.methodName = '';
+        context.results = {
+            data: null,
+            error: null
+        };
+
+        if (!u.isUndefined(context.service) && !u.isNull(context.service)) {
+            context.methodName = context.service.methods.saveFinancialChartSettings;
+        }
+        context.args = {
+            data: {
+                project_id: mnemonic.data.project_id,
+                step_id: mnemonic.data.step_id,
+                company_id: mnemonic.data.company_id,
+                mnemonic: mnemonic.data.mnemonic,
+                item_id: mnemonic.data.item_id,
+                token: mnemonic.token,
+                projectImageCode: mnemonic.data.projectImageCode,
+                ifChartSettings: mnemonic.data.ifChartSettings
+            },
+            headers: { "Content-Type": "application/json" }
+        };
+
+        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
+            context.results.data = data.chartSettings;
+            callback(null, context.results);
+        }).on('error',
+            function (err) {
+                context.results.error = 'Error saving interactive financial chart';
+                callback(null, context.results);
+            }
+        );
+    }
+
+    chartRoutes.saveInteractiveFinancialChart = saveInteractiveFinancialChart;
+
+    chartRoutes.init = function (app, c)
     {
-        var client = config.restcall.client;
-        var config = config;
+        config = c;
+        client = config.restcall.client;
 
         config.parallel([
             app.post('/api/getFinancialChartRatioTypes', getFinancialChartRatioTypes),
             app.post('/api/getSavedFinancialChartData', getSavedFinancialChartData),
             app.post('/api/getFinancialChartData', getFinancialChartData),
-            app.post('/api/saveFinancialChartSettings', saveFinancialChartSettings),
+            //app.post('/api/saveFinancialChartSettings', saveFinancialChartSettings),
             app.post('/api/getFinancialChartPeerAndIndustries', getFinancialChartPeerAndIndustries)
         ]);
 
@@ -105,39 +150,36 @@
             });
         }
 
-        function saveFinancialChartSettings(req, res, next) {
-            var service = getServiceDetails('charts');
-            var methodName = '';
+        //function saveFinancialChartSettings(req, res, next) {
+        //    var service = getServiceDetails('charts');
+        //    var methodName = '';
 
-            if (!u.isUndefined(service) && !u.isNull(service)) {
-                methodName = service.methods.saveFinancialChartSettings;
-            }
+        //    if (!u.isUndefined(service) && !u.isNull(service)) {
+        //        methodName = service.methods.saveFinancialChartSettings;
+        //    }
 
-            var args = {
-                data: {
-                    project_id: req.body.project_id,
-                    step_id: req.body.step_id,
-                    mnemonic: req.body.mnemonic,
-                    item_id: req.body.item_id,
-                    company_id: req.body.company_id,
-                    token: req.headers['x-session-token'],
-                    projectImageCode: req.body.projectImageCode,
-                    ifChartSettings: req.body.ifChartSettings
-                },
-                headers: { "Content-Type": "application/json" }
-            };
+        //    var args = {
+        //        data: {
+        //            project_id: req.body.project_id,
+        //            step_id: req.body.step_id,
+        //            mnemonic: req.body.mnemonic,
+        //            item_id: req.body.item_id,
+        //            company_id: req.body.company_id,
+        //            token: req.headers['x-session-token'],
+        //            projectImageCode: req.body.projectImageCode,
+        //            ifChartSettings: req.body.ifChartSettings
+        //        },
+        //        headers: { "Content-Type": "application/json" }
+        //    };
 
-            var url = config.restcall.url + '/' + service.name + '/' + methodName;
-            console.log(url);
-            console.log(args.data);
-            client.post(url, args, function (data, response) {
-                res.send(data.chartSettings);
-            });
-        }
+        //    var url = config.restcall.url + '/' + service.name + '/' + methodName;
+        //    console.log(url);
+        //    console.log(args.data);
+        //    client.post(url, args, function (data, response) {
+        //        res.send(data.chartSettings);
+        //    });
+        //}
 
-        function getServiceDetails(serviceName) {
-            return u.find(config.restcall.service, { name: serviceName });
-        }
     };
 
 })(module.exports);

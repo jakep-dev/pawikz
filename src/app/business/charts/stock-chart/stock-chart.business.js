@@ -34,7 +34,9 @@
             sigDevSources: [],
             getSignificantDevelopmentSourceLabel: getSignificantDevelopmentSourceLabel,
             getSaveChartInputObject: getSaveChartInputObject,
-            getSaveSigDevInputObject: getSaveSigDevInputObject
+            getSaveStockChartInputObject: getSaveStockChartInputObject,
+            getSaveSigDevInputObject: getSaveSigDevInputObject,
+            getSaveStockSigDevInputObject: getSaveStockSigDevInputObject
         }
 
         Object.defineProperty(business, 'significantDevelopmentSources', {
@@ -62,6 +64,102 @@
             } else {
                 return null;
             }
+        }
+
+        function getSaveStockChartInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
+            /** INPUT
+            {
+                projectId: projectId,
+                stepId: stepId,
+                companyId: companyId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: { 
+                    newCharts: jsCharts,
+                    oldCharts: oldCharts
+                }
+            }
+            */
+            /** OUTPUT
+                data: {
+                    //Changing keynames as per jake plaras email on 26/5/2016
+                    company_id: companyId,
+                    step_id: stepId,
+                    project_id: projectId,
+                    //ssnid: ssnid,
+                    chartSettings: chartSettings
+                }
+            */
+            var saveObject = new Object;
+            //Changing keynames as per jake plaras email on 26/5/2016
+            saveObject.company_id = companyId;
+            saveObject.step_id = stepId;
+            saveObject.project_id = projectId;
+            saveObject.chartSettings = new Array();
+
+            if (value.newCharts != null) {
+                value.newCharts.forEach(function (chart) {
+                    var stockString = '';
+                    var jsChart = chart.filterState;
+                    var tearsheet = chart.tearsheet;
+                    // if (!tearsheet.isMainChart) {
+                    if (jsChart.selectedPeers) {
+                        jsChart.selectedPeers.forEach(function (stock) {
+                            stockString = stockString + stock + ',';
+                        });
+                    }
+                    if (jsChart.selectedIndices) {
+                        jsChart.selectedIndices.forEach(function (indics) {
+                            stockString = stockString + '^' + indics + ',';
+                        });
+                    }
+                    if (jsChart.selectedCompetitors) {
+                        jsChart.selectedCompetitors.forEach(function (competitors) {
+                            stockString = stockString + '@' + competitors + ',';
+                        });
+                    }
+                    if (stockString && stockString !== '') {
+                        stockString = stockString.slice(0, -1);
+                    }
+
+                    jsChart.chartType = chart.chartType;
+                    var obj = {
+                        chart_title: jsChart.title ? jsChart.title : null,
+                        peers: stockString,
+                        period: jsChart.interval ? jsChart.interval : null,
+                        date_start: toDateString(jsChart.startDate, 'YYYY-MM-DD'),
+                        date_end: toDateString(jsChart.endDate, 'YYYY-MM-DD'),
+                        dividends: jsChart.dividends ? "Y" : "N",
+                        earnings: jsChart.earnings ? "Y" : "N",
+                        splits: jsChart.splits ? "Y" : "N",
+                        chartType: jsChart.chartType ? jsChart.chartType : 'JSCHART',
+                        mnemonic: jsChart.mnemonic,
+                        item_id: jsChart.item_id,
+                        isDefault: jsChart.isDefault
+                    };
+                    saveObject.chartSettings.push(obj);
+                });
+            }
+
+            if (value.oldCharts != null) {
+                value.oldCharts.forEach(function (chart) {
+                    var obj = {
+                        chart_title: chart.title ? chart.title : null,
+                        peers: chart.stockString ? chart.stockString : null,
+                        period: chart.interval ? chart.interval : null,
+                        date_start: chart.date_start ? chart.date_start : "",
+                        date_end: chart.date_end ? chart.date_end : "",
+                        chartType: chart.chartType,
+                        dividends: chart.dividends ? "Y" : "N",
+                        earnings: chart.earnings ? "Y" : "N",
+                        splits: chart.splits ? "Y" : "N",
+                        project_image_code: chart.tearsheet.project_image_code,
+                        url: chart.tearsheet.url
+                    };
+                    saveObject.chartSettings.push(obj);
+                });
+            }
+            return saveObject;
         }
 
         function getSaveChartInputObject(mnemonicItem) {
@@ -155,6 +253,77 @@
                         url: chart.tearsheet.url
                     };
                     saveObject.chartSettings.push(obj);
+                });
+            }
+            return saveObject;
+        }
+
+        function getSaveStockSigDevInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
+            /** INPUT
+            {
+                companyId: companyId,
+                projectId: projectId,
+                stepId: stepId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: jsCharts
+            }
+            */
+            /** OUTPUT
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    items: sigDevItems
+                }
+            */
+            var saveObject = new Object;
+            saveObject.project_id = projectId;
+            saveObject.step_id = stepId;
+            saveObject.mnemonic = mnemonicId;
+            saveObject.item_id = itemId;
+            saveObject.items = new Array();
+
+            if (value != null) {
+                value.forEach(function (chart) {
+                    var jsChart = chart.filterState;
+                    if (jsChart.isDefault === 'N') {
+                        var perChart = {
+                            sigdevId: [],
+                            mascadId: [],
+                        };
+                        angular.forEach(chart.tableInfo, function (table) {
+
+                            switch (table.source.value) {
+                                case 'SIGDEV':
+                                    if (table.rows && table.rows.length > 0) {
+                                        perChart.sigdevId = _.map(table.rows, function (row) {
+                                            return row.sigDevId;
+                                        });
+                                    }
+                                    break;
+                                case 'MASCAD':
+                                    if (table.rows && table.rows.length > 0) {
+                                        perChart.mascadId = _.map(table.rows, function (row) {
+                                            return row.mascadId;
+                                        });
+                                    }
+                                    break;
+                            }
+
+                        });
+
+                        //As per WS team, add null if empty
+                        if (perChart.sigdevId.length === 0) {
+                            perChart.sigdevId.push(null);
+                        }
+                        if (perChart.mascadId.length === 0) {
+                            perChart.mascadId.push(null);
+                        }
+
+                        saveObject.items.push(perChart);
+                    }
                 });
             }
             return saveObject;
