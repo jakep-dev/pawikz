@@ -15,7 +15,7 @@
 
     /** @ngInject */
     function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector,
-                                     templateBusiness, DTOptionsBuilder, toast)
+                                     templateBusiness, templateBusinessFormat, DTOptionsBuilder, toast)
     {
         return {
             restrict: 'E',
@@ -37,7 +37,7 @@
         {
             if($scope.copyproposed)
             {
-                $scope.$parent.$parent.actions.push({
+                /*$scope.$parent.$parent.actions.push({
                     id: 1,
                     callback: "ExpiringProgram",
                     icon: 'icon-content-copy',
@@ -53,7 +53,7 @@
                     isclicked: null,
                     tooltip: 'Upload From Spreadsheet',
                     type: 'button'
-                });
+                });*/
 
                 $scope.$parent.$parent.actions.push({
                     id: 3,
@@ -64,14 +64,14 @@
                     type: 'button'
                 });
 
-                $scope.$parent.$parent.actions.push({
+                /*$scope.$parent.$parent.actions.push({
                     id: 4,
                     callback: "EP-Eraser",
                     icon: 'icon-eraser',
                     isclicked: null,
                     tooltip: 'Clear data',
                     type: 'button'
-                });
+                });*/
 
 
             }
@@ -266,19 +266,25 @@
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
-                        html += '<ms-program-text columnname="'+ newItemId +'" rowid="{{row.rowid}}" ' +
+                        /*html += '<ms-program-text columnname="'+ newItemId +'" rowid="{{row.rowid}}" ' +
                             'row="row.'+ newItemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
                             'itemid="{{row.'+ newItemId +'.itemid}}" ' +
                             'mnemonicid="{{row.'+ newItemId +'.mnemonicid}}" ' +
-                            'value="{{row.'+ newItemId +'.value}}" isdisabled="{{row.'+ newItemId +'.isdisabled}}"></ms-program-text>';
+                            'value="{{row.'+ newItemId +'.value}}" isdisabled="{{row.'+ newItemId +'.isdisabled}}"></ms-program-text>';*/
+                        var classValue = "align-left-non-editable-table";
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(eachCol, classValue);
+                        html += '<ms-label class="'+ classValue +'" classtype="'+ classValue +'" style="font-weight: normal" value="{{row.'+ newItemId +'.value}}"></ms-label>';
                         break;
 
                     case 'SingleDropDownItem':
-                        html += '<ms-program-dropdown tearsheet="{{row.'+ newItemId +'.tearsheet}}" ' +
+                        /*html += '<ms-program-dropdown tearsheet="{{row.'+ newItemId +'.tearsheet}}" ' +
                             'mnemonicid="{{row.' + newItemId + '.mnemonicid}}" ' +
                             'rowid="{{row.rowid}}" ' +
                             'compute="updateDropdown(value, \'' + newItemId + '\', rowId)" ' +
-                            'itemid="{{row.' + newItemId + '.itemid}}"></ms-program-dropdown>';
+                            'itemid="{{row.' + newItemId + '.itemid}}"></ms-program-dropdown>';*/
+                        var classValue = "align-left-non-editable-table";
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(eachCol, classValue);
+                        html += '<ms-label class="'+ classValue +'" classtype="'+ classValue +'" style="font-weight: normal" value="{{row.'+ newItemId +'.value}}"></ms-label>';
                         break;
 
                     default:break;

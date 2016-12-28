@@ -18,9 +18,8 @@
                                md-menu-origin
                                ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)"
                                aria-label="filter actions">
-                        <md-icon md-menu-align-target  md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''">
-                            <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
-                        </md-icon>
+                        <md-icon md-menu-align-target  md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
+                        <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
                     </md-button>
 
                     <md-menu-content  width="3" class="md-background-bg">

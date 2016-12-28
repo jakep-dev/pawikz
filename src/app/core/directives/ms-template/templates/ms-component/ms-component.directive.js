@@ -176,6 +176,8 @@
                         {
                             case 'Expiring':
                             case 'Proposed':
+                            case 'ExpiringHybrid':
+                            case 'ProposedHybrid':
 
                                 var tearSheets = templateBusiness.getTearSheetItems($scope.tearcontent);
 

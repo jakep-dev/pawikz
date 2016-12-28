@@ -8,7 +8,7 @@
         .directive('msProgramText', msProgramTextDirective);
 
     /** @ngInject */
-    function MsProgramTextController($scope, $filter, templateBusiness, templateBusinessSave, clientConfig)
+    function MsProgramTextController($scope, $filter, templateBusiness, templateBusinessFormat, templateBusinessSave, clientConfig)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
 
@@ -35,6 +35,9 @@
             //ms-numeric-shortcut directive will call textchange and trigger the $scope.$watch
             if (!templateBusiness.isKMBValue(inputVal))
             {
+
+                templateBusinessFormat.removeNonNumericCharacters(inputVal);
+
                 inputVal = removeCommaValue(inputVal);
                 if (inputVal) {
                     $scope.value = $filter("currency")(inputVal, '', 0);
@@ -60,7 +63,7 @@
             }
         };
 
-        $scope.$watch(
+        /*$scope.$watch(
             "value",
             function handleAutoSave(newValue, oldValue) {
                 //In the scenario if the visible text field has value of ###[KMB]
@@ -78,7 +81,7 @@
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }
-        );
+        );*/
     }
 
     /** @ngInject */
