@@ -132,6 +132,68 @@
             return inputObject;
         }
 
+        function getSaveFinancialChartInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
+            /** INPUT
+            {
+                projectId: projectId,
+                stepId: stepId,
+                companyId: companyId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: {
+                    projectImageCodes
+                    newCharts
+                }
+            }
+            */
+            /** OUTPUT
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    company_id: companyId,
+                    projectImageCodes: projectImageCodes,
+                    ifChartSettings: newCharts
+                }
+            */
+            var saveObject = new Object;
+            var startDate;
+            var endDate;
+
+            saveObject.project_id = projectId;
+            saveObject.step_id = stepId;
+            saveObject.mnemonic = mnemonicId;
+            saveObject.item_id = itemId;
+            saveObject.company_id = companyId;
+            saveObject.projectImageCode = value.projectImageCodes;
+            saveObject.ifChartSettings = [];
+            if (value.newCharts && value.newCharts.length > 0) {
+                value.newCharts.forEach(function (item) {
+                    if (item.filterState.isCustomDate === true) {
+                        startDate = item.filterState.startDate;
+                        endDate = item.filterState.endDate;
+                    } else {
+                        startDate = '';
+                        endDate = '';
+                    }
+                    saveObject.ifChartSettings.push({
+                        chart_title: item.filterState.chartTitle,
+                        compare_name: item.filterState.compareNames,
+                        short_name: item.filterState.shortNames,
+                        compare_id: item.filterState.compareIds,
+                        single_multi: item.filterState.chartMode,
+                        ratioselect: item.filterState.chartType,
+                        time_period: item.filterState.chartPeriod,
+                        is_custom_date: item.filterState.isCustomDate,
+                        startdate: startDate,
+                        enddate: endDate
+                    });
+                });
+            }
+            return saveObject;
+        }
+
         function getSaveChartInputObject(mnemonicItem) {
             var saveObject = new Object;
             var startDate;
@@ -177,6 +239,7 @@
             getSaveChartInputObject: getSaveChartInputObject,
             getFinancialDataInputObject: getFinancialDataInputObject,
             getSavedChartSettingsInputObject: getSavedChartSettingsInputObject,
+            getSaveFinancialChartInputObject: getSaveFinancialChartInputObject,
 
             convertFinancialChartSettings: convertFinancialChartSettings,
             toDateString: toDateString

@@ -6,7 +6,10 @@
         .service('templateBusinessSave', templateBusinessSave);
 
     /* @ngInject */
-    function templateBusinessSave(commonBusiness, clientConfig, templateService, toast, $interval) {
+    function templateBusinessSave($interval,
+                                   toast,
+                                   clientConfig, commonBusiness, templateBusinessFormat, stockChartBusiness, financialChartBusiness, templateService
+                                 ) {
         var business = {
             saveMnemonics: [],
             autoSavePromise: [],
@@ -33,10 +36,18 @@
                 {
                     if(response && response.data) {
                         angular.forEach( response.data, function(stepResponse){
-                            if(stepResponse.interactiveChart) {
-                                angular.forEach(stepResponse.interactiveChart, function(chartPerStep){
+                            if (stepResponse.interactiveStockChart) {
+                                angular.forEach(stepResponse.interactiveStockChart, function (chartPerStep) {
+                                    if (chartPerStep.data) {
+                                        //console.log('call emit');
+                                        commonBusiness.emitWithArgument('updateInteractiveStockChartIds', chartPerStep.data);
+                                    }
+                                });
+                            }
+                            if (stepResponse.interactiveFinancialChart) {
+                                angular.forEach(stepResponse.interactiveFinancialChart, function (chartPerStep) {
                                     if(chartPerStep.data) {
-                                        console.log('call emit');
+                                        //console.log('call emit');
                                         commonBusiness.emitWithArgument('updateInteractiveFinancialChartIds', chartPerStep.data);
                                     }
                                 });
@@ -69,8 +80,16 @@
                     buildTableLayoutAutoSave(itemId, mnemonic, type, stepMnemonic, data);
                     break;
 
-                case clientConfig.uiType.interactiveChart:
-                    buildInteractiveChartAutoSave(itemId, mnemonic, type, stepMnemonic, data);
+                case clientConfig.uiType.interactiveStockChart:
+                    buildInteractiveStockChartAutoSave(itemId, mnemonic, type, stepMnemonic, data);
+                    break;
+
+                case clientConfig.uiType.significantDevelopmentItems:
+                    buildSignificantDevelopmentItemAutoSave(itemId, mnemonic, type, stepMnemonic, data);
+                    break;
+
+                case clientConfig.uiType.interactiveFinancialChart:
+                    buildInteractiveFinancialChartAutoSave(itemId, mnemonic, type, stepMnemonic, data);
                     break;
             }
 
@@ -237,7 +256,68 @@
 		}
         
         //Build auto save for generic mnemonic items
-        function buildInteractiveChartAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
+		function buildInteractiveStockChartAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
+		    if (stepMnemonic) {
+		        var mnemonicRow = _.find(stepMnemonic.mnemonic, { itemId: itemId, mnemonic: mnemonic, type: type });
+		        if (!mnemonicRow) {
+		            stepMnemonic.mnemonic.push({
+		                itemId: itemId,
+		                mnemonic: mnemonic,
+		                type: type,
+		                data: stockChartBusiness.getSaveStockChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
+		            });
+		        }
+		        else {
+		            mnemonicRow.data = stockChartBusiness.getSaveStockChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data);
+		        }
+		    }
+		    else {
+		        business.saveMnemonics.push({
+		            projectId: commonBusiness.projectId,
+		            stepId: commonBusiness.stepId,
+		            companyId: commonBusiness.companyId,
+		            mnemonic: [{
+		                itemId: itemId,
+		                mnemonic: mnemonic,
+		                type: type,
+		                data: stockChartBusiness.getSaveStockChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
+		            }]
+		        });
+		    }
+		}
+
+		function buildSignificantDevelopmentItemAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
+		    if (stepMnemonic) {
+		        var mnemonicRow = _.find(stepMnemonic.mnemonic, { itemId: itemId, mnemonic: mnemonic, type: type });
+		        if (!mnemonicRow) {
+		            stepMnemonic.mnemonic.push({
+		                itemId: itemId,
+		                mnemonic: mnemonic,
+		                type: type,
+		                data: stockChartBusiness.getSaveStockSigDevInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
+		            });
+		        }
+		        else {
+		            mnemonicRow.data = stockChartBusiness.getSaveStockSigDevInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data);
+		        }
+		    }
+		    else {
+		        business.saveMnemonics.push({
+		            projectId: commonBusiness.projectId,
+		            stepId: commonBusiness.stepId,
+		            companyId: commonBusiness.companyId,
+		            mnemonic: [{
+		                itemId: itemId,
+		                mnemonic: mnemonic,
+		                type: type,
+		                data: stockChartBusiness.getSaveStockSigDevInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
+		            }]
+		        });
+		    }
+		}
+
+
+		function buildInteractiveFinancialChartAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
             if(stepMnemonic) {
                 var mnemonicRow = _.find(stepMnemonic.mnemonic, {itemId: itemId, mnemonic: mnemonic, type: type});
                 if (!mnemonicRow) {
@@ -245,11 +325,11 @@
                         itemId: itemId,
                         mnemonic: mnemonic,
                         type: type,
-                        data: getSaveChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
+                        data: financialChartBusiness.getSaveFinancialChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
                     });
                 }
                 else {
-                    mnemonicRow.data = getSaveChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data);
+                    mnemonicRow.data = financialChartBusiness.getSaveFinancialChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data);
                 }
             }
             else {
@@ -261,44 +341,12 @@
                         itemId: itemId,
                         mnemonic: mnemonic,
                         type: type,
-                        data: getSaveChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
+                        data: financialChartBusiness.getSaveFinancialChartInputObject(commonBusiness.projectId, commonBusiness.stepId, commonBusiness.companyId, mnemonic, itemId, data)
                     }]
                 });
             }
         }
 
-        function getSaveChartInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
-            var saveObject = new Object;
-            var startDate;
-            var endDate;
-            
-            saveObject.projectImageCode = value.projectImageCodes;
-            saveObject.ifChartSettings = [];
-            if (value.newCharts && value.newCharts.length > 0) {
-                value.newCharts.forEach(function (item) {
-                    if (item.filterState.isCustomDate === true) {
-                        startDate = item.filterState.startDate;
-                        endDate = item.filterState.endDate;
-                    } else {
-                        startDate = '';
-                        endDate = '';
-                    }
-                    saveObject.ifChartSettings.push({
-                        chart_title: item.filterState.chartTitle,
-                        compare_name: item.filterState.compareNames,
-                        short_name: item.filterState.shortNames,
-                        compare_id: item.filterState.compareIds,
-                        single_multi: item.filterState.chartMode,
-                        ratioselect: item.filterState.chartType,
-                        time_period: item.filterState.chartPeriod,
-                        is_custom_date: item.filterState.isCustomDate,
-                        startdate: startDate,
-                        enddate: endDate
-                    });
-                });
-            }
-            return saveObject;
-        }
 
         //Initiate auto-save
         function initiateAutoSave()
