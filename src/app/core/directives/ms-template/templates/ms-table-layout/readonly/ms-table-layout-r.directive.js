@@ -115,7 +115,7 @@
                                     });
 
                                     if (mnemonicVal.dataType === 'DATE') {
-                                        html += '<span style="display:none">' + formatDate(value, "YYYY-MM-DD") + '</span>'; // for easy sorting order
+                                        html += '<span style="display:none">' + templateBusinessFormat.formatDateValue(value, "YYYY-MM-DD") + '</span>'; // for easy sorting order
                                     }
 
                                     if(mnemonic == 'URL' && classValue === 'align-right-tablelayout-r') {
@@ -217,10 +217,7 @@
 			return templateBusiness.formatData(value, _.find(subMnemonics, {mnemonic: subMnemonic}));
 		}
 
-        function formatDate(dateStr, format) {
-            var date = moment(dateStr, 'DD-MMM-YY', true);
-            return date.isValid() ? date.format(format) : '';
-        }
+        
 
         return {
             restrict: 'E',

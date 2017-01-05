@@ -27,6 +27,7 @@
             getAlignmentForTableLayoutNonEditable : getAlignmentForTableLayoutNonEditable,
             getAlignmentWidthColumForTableLayout : getAlignmentWidthColumForTableLayout,
             formatDate: formatDate,
+            formatDateValue: formatDateValue,
             parseDate: parseDate
 
         }
@@ -566,6 +567,11 @@
         function formatDate(date, format)
         {
             var date = moment(date);
+            return date.isValid() ? date.format(format) : '';
+        }
+
+        function formatDateValue(dateStr, format) { // sort sorting purpose
+            var date = moment(dateStr, 'DD-MMM-YY', true);
             return date.isValid() ? date.format(format) : '';
         }
 
