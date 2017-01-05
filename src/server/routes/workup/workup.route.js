@@ -1,6 +1,6 @@
 
-(function(workupRoute)
-{
+(function (workupRoute)
+ {
 
     var _ = require('underscore');
     var interval = null;
@@ -18,7 +18,7 @@
             app.post('/api/workup/lock', lock),
             app.post('/api/workup/status', status),
             app.post('/api/workup/unlock', unlock),
-            app.post('/api/workup/delete', deleteWorkup)
+            app.post('/api/workup/delete', removeRequest)
         ]);
 
 
@@ -202,6 +202,37 @@
             });
         }
 
+        //Remove workup
+        function removeRequest(req, res, next) {
+            var context = {
+                service: getServiceDetails('templateManager'),
+                methodName: null,
+                token: null,
+                args: {}
+            };
+
+            if(context.service) {
+                context.methodName = context.service.methods.deleteWorkup;
+            }
+
+            context.args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            context.token = req.headers['x-session-token'];
+
+            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'delete');
+
+            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
+                res.status(response.statusCode).send(data);
+            });
+        }
+
+
         function notifyStatus(token, data, key, source)
         {
             console.log('Renewal done - key = ' + key + ' source = ' + source);
@@ -247,22 +278,14 @@
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
-            console.log('Broadcast workup-');
-            console.log(config.socketData.workup);
-
             if((token in config.userSocketInfo) &&
                 config.socketIO.socket)
             {
-                var workup = _.find(config.socketData.workup, function(item)
-                {
-                    if(parseInt(item.projectId) === parseInt(projectId))
-                    {
+                var workup = _.find(config.socketData.workup, function(item) {
+                    if (parseInt(item.projectId) === parseInt(projectId)) {
                         return item;
                     }
                 });
-
-                console.log('Actual workup-');
-                console.log(workup);
 
                 if(workup)
                 {
@@ -284,38 +307,6 @@
             }
         }
 
-        //delete delete workup
-        function deleteWorkup(req, res, next) {
-            var context = new Object();
-            context.service = getServiceDetails('templateManager');
-            context.methodName = '';
-
-            if(!_.isUndefined(context.service) &&
-               !_.isNull(context.service))
-            {
-                context.methodName = context.service.methods.deleteWorkup;
-            }
-
-            context.args =
-            {
-                parameters: {
-                    project_id: req.body.projectId,
-                    ssnid: req.headers['x-session-token']
-                }
-            };
-
-            context.token = req.headers['x-session-token'];
-
-            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'delete');
-
-            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                //console.log('Response - StatusCode');
-                //console.log(data);
-                //status(data.projectId, context.token, next);
-                res.status(response.statusCode).send(data);
-            });
-        }
-
         //Get the service details
         function getServiceDetails(serviceName) {
             return _.find(config.restcall.service, {name: serviceName});
@@ -323,5 +314,5 @@
 
     };
 
-})(module.exports);
+ })(module.exports);
 
