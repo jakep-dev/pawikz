@@ -47,12 +47,14 @@
                            ng-click="vm.printer()" >
                     <md-icon md-font-icon="icon-select" class="s20" ng-if="!vm.isAvailableForPrint"></md-icon>
                     <md-icon md-font-icon="icon-select-inverse" class="s20" ng-if="vm.isAvailableForPrint"></md-icon>
+                    <md-tooltip md-direction="top"> {{(vm.isAvailableForPrint)? 'Un-Select' : 'Select'}}</md-tooltip>
                 </md-button>
 
                 <md-button class="md-icon-button" aria-label="expand/collapse"
                            ng-if="vm.iscollapsible"
                            ng-click="vm.toggleCollapse()">
                     <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+                    <md-tooltip md-direction="top"> {{(vm.collapsed)? 'Expand' : 'Collapse'}}</md-tooltip>
                 </md-button>
             </div>
         </div>
