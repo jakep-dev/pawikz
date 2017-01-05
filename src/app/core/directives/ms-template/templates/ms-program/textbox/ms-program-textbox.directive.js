@@ -36,7 +36,7 @@
             if (!templateBusiness.isKMBValue(inputVal))
             {
 
-                templateBusinessFormat.removeNonNumericCharacters(inputVal);
+                templateBusinessFormat.removeNonNumericCharacters(inputVal, 'Invalid entry. Input numbers with k, m or b for thousand, million or billion respectively.');
 
                 inputVal = removeCommaValue(inputVal);
                 if (inputVal) {

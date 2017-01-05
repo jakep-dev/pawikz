@@ -177,13 +177,13 @@
                             type: 'button',
                             icon: null,
                             name: 'Add',
-                            callback: 'PP-Add'
+                            callback: 'PPH-Add'
                         }],
                 });
                 
                 $scope.$parent.$parent.actions.push({
                     id: 6,
-                    callback: "PP-Delete",
+                    callback: "PPH-Delete",
                     icon: 'icon-delete',
                     isclicked: null,
                     tooltip: 'Delete Row(s)',
@@ -192,7 +192,7 @@
                 
                 $scope.$parent.$parent.actions.push({
                     id: 1,
-                    callback: "ProposedProgram",
+                    callback: "PPH-Copy",
                     icon: 'icon-content-copy',
                     isclicked: null,
                     tooltip: 'Copy from Proposed',
@@ -201,7 +201,7 @@
 
                 $scope.$parent.$parent.actions.push({
                     id: 2,
-                    callback: "PP-Upload",
+                    callback: "PPH-Upload",
                     icon: 'icon-upload',
                     isclicked: null,
                     tooltip: 'Upload From Spreadsheet',
@@ -210,7 +210,7 @@
 
                 $scope.$parent.$parent.actions.push({
                     id: 3,
-                    callback: "PP-Download",
+                    callback: "PPH-Download",
                     icon: 'icon-download',
                     isclicked: null,
                     tooltip: 'Download to Spreadsheet',
@@ -219,7 +219,7 @@
 
                 $scope.$parent.$parent.actions.push({
                     id: 4,
-                    callback: "PP-Eraser",
+                    callback: "PPH-Eraser",
                     icon: 'icon-eraser',
                     isclicked: null,
                     tooltip: 'Clear data',
@@ -433,11 +433,8 @@
                         {
                             selectedValue = each.content;
                         }
-
-                        values.push({
-                            value: each.content || ' ',
-                            name: each.content || ' '
-                        });
+                        //fix Duplicate value flashes on screen on dropdown
+                        values.push(each.content || ' ');
                     });
 
                     var tearsheet = {
@@ -610,28 +607,28 @@
 
         function initializeMsg($scope)
         {
-            commonBusiness.onMsg('ProposedProgram', $scope, function() {
+            commonBusiness.onMsg('PPH-Copy', $scope, function() {
 
                copyProgram($scope);
             });
 
-            commonBusiness.onMsg('PP-Upload', $scope, function() {
+            commonBusiness.onMsg('PPH-Upload', $scope, function() {
                 uploadExcel();
             });
 
-            commonBusiness.onMsg('PP-Download', $scope, function() {
+            commonBusiness.onMsg('PPH-Download', $scope, function() {
                 downloadToCSV($scope);
             });
 
-            commonBusiness.onMsg('PP-Eraser', $scope, function() {
+            commonBusiness.onMsg('PPH-Eraser', $scope, function() {
                 clearProgram($scope, 'Proposed program cleared!');
             });
 
-            commonBusiness.onMsg('PP-Add', $scope, function() {
+            commonBusiness.onMsg('PPH-Add', $scope, function() {
                 addRow($scope, $scope.rowNumber);
             });
 
-            commonBusiness.onMsg('PP-Delete', $scope, function() {
+            commonBusiness.onMsg('PPH-Delete', $scope, function() {
                 deleteRows($scope);
             });
         }
