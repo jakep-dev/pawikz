@@ -437,9 +437,7 @@
                         }
 
                         //fix Duplicate value flashes on screen on dropdown
-                        values.push({
-                            value: each.content || ' '
-                        });
+                        values.push(each.content || ' ');
                     });
 
                     var tearsheet = {
