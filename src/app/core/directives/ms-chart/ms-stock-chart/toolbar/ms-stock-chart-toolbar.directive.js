@@ -6,8 +6,10 @@
         .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($rootScope, $scope, $log, stockService, $mdMenu,
-                                           dialog, toast, commonBusiness, $mdSelect, $timeout) {
+    function msStockChartToolBarController($rootScope, $scope, $log, $mdMenu, $mdSelect, $timeout,
+                                           dialog, toast,
+                                           commonBusiness, stockChartBusiness, stockService
+                                          ) {
         var vm = this;
         vm.splits = vm.filterState.splits;
         vm.earnings = vm.filterState.earnings;
@@ -47,76 +49,77 @@
 
         //Loads Indices.
         function loadIndices() {
-            stockService
-                .getIndices('', '1W')
-                .then(function (data) {
-                    if (data.indicesResp) {
+            var chartCount = vm.chartId.split('-');
+            chartCount = parseInt(chartCount[1]);
+            var savedIndicesList = [];
 
-                        //@@TODO
-                        var chartCount = vm.chartId.split('-');
-                        chartCount = parseInt(chartCount[1]);
-                        var savedIndicesList = [];
+            if(chartCount>=0){
 
-                        if(chartCount>=0){
+                if(vm.savedChartData && _.size(vm.savedChartData) > 0) {
+                    savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
+                }
 
-                            if(vm.savedChartData && _.size(vm.savedChartData) > 0) {
-                                savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
-                            }
-
-                            vm.indices = [];
-                            itemList =[];
-                            angular.forEach(data.indicesResp, function (ind) {
-                                var indicesItem = new Object();
-                                indicesItem.value = ind.value;
-                                indicesItem.display = ind.description;
-                                indicesItem.selectedIndicecheck = false;
-                                if (savedIndicesList && savedIndicesList.indexOf(indicesItem.value)>-1) {
-                                    indicesItem.selectedIndicecheck = true;
-                                    itemList.push(indicesItem);
-                                }
-                                vm.indices.push(indicesItem);
-                            });
-                        }
-
+                vm.indices = [];
+                itemList = [];
+                var indicesResp = stockService.getIndices();
+                angular.forEach(indicesResp, function (ind) {
+                    var indicesItem = new Object();
+                    indicesItem.value = ind.value;
+                    indicesItem.display = ind.description;
+                    indicesItem.selectedIndicecheck = false;
+                    if (savedIndicesList && savedIndicesList.indexOf(indicesItem.value)>-1) {
+                        indicesItem.selectedIndicecheck = true;
+                        itemList.push(indicesItem);
                     }
+                    vm.indices.push(indicesItem);
                 });
-
+            }
         }
 
         setStartEndDate(vm.selectedPeriod);
 
         function loadCompetitors() {
-            stockService
-                .getCompetitors(commonBusiness.companyId)
+
+            var competitors;
+            if (stockService.getCurrentCompanyId() === commonBusiness.companyId) {
+                competitors = stockChartBusiness.competitors;
+            } else {
+                competitors = [];
+            }
+            if (competitors.length == 0) {
+                stockService.getCompetitors(commonBusiness.companyId)
                 .then(function (data) {
-                    if (data.competitors) {
-                        var chartCount = vm.chartId.split('-');
-                        chartCount = parseInt(chartCount[1]);
-                        var savedCompetitorsList = [];
-                        competitorList = [];
-                        if(chartCount>=0) {
-                            if(vm.savedChartData && _.size(vm.savedChartData) > 0)
-                            {
-                                savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
-                            }
-
-                            angular.forEach(data.competitors, function (comp) {
-                                var competitorItem = new Object();
-                                competitorItem.value = comp.ticker;
-                                competitorItem.display = comp.companyName;
-                                competitorItem.selectedCompetitorcheck = false;
-                                if (savedCompetitorsList &&
-                                    savedCompetitorsList.indexOf(competitorItem.value)>-1) {
-                                    competitorItem.selectedCompetitorcheck = true;
-                                    competitorList.push(competitorItem);
-                                }
-                                vm.competitors.push(competitorItem);
-                            });
-                        }
-
-                    }
+                    stockChartBusiness.competitors = data;
+                    loadCompetitorsPostProcess(data);
                 });
+            } else {
+                loadCompetitorsPostProcess(competitors);
+            }
+        }
 
+        function loadCompetitorsPostProcess(competitors) {
+            var chartCount = vm.chartId.split('-');
+            chartCount = parseInt(chartCount[1]);
+            var savedCompetitorsList = [];
+            competitorList = [];
+            if (chartCount >= 0) {
+                if (vm.savedChartData && _.size(vm.savedChartData) > 0) {
+                    savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
+                }
+
+                angular.forEach(competitors, function (comp) {
+                    var competitorItem = new Object();
+                    competitorItem.value = comp.ticker;
+                    competitorItem.display = comp.companyName;
+                    competitorItem.selectedCompetitorcheck = false;
+                    if (savedCompetitorsList &&
+                        savedCompetitorsList.indexOf(competitorItem.value) > -1) {
+                        competitorItem.selectedCompetitorcheck = true;
+                        competitorList.push(competitorItem);
+                    }
+                    vm.competitors.push(competitorItem);
+                });
+            }
         }
 
         setStartEndDate(vm.selectedPeriod);

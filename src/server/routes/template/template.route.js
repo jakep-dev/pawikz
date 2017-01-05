@@ -43,8 +43,9 @@
             saveContext.userId = req.body.userId;
             saveContext.data = req.body.data;
             saveContext.token = req.headers['x-session-token'];
-            saveContext.n = saveContext.data.length;
-            for (saveContext.i = 0; saveContext.i < saveContext.n; saveContext.i++) {
+            saveContext.dataCount = saveContext.data.length;
+            //loop through steps and pass in userId and token to each step
+            for (saveContext.i = 0; saveContext.i < saveContext.dataCount; saveContext.i++) {
                 saveContext.data[saveContext.i].userId = saveContext.userId;
                 saveContext.data[saveContext.i].token = saveContext.token;
             }
@@ -57,9 +58,10 @@
                 var saveStepContext = new Object();
                 saveStepContext.stepMnemonics = step;
                 console.log(saveStepContext.stepMnemonics);
+                //loop through each mnemonic within a step and pass in token
                 if (saveStepContext.stepMnemonics.mnemonic && saveStepContext.stepMnemonics.mnemonic.length > 0) {
-                    saveStepContext.n = saveStepContext.stepMnemonics.mnemonic.length;
-                    for (saveStepContext.i = 0; saveStepContext.i < saveStepContext.n; saveStepContext.i++) {
+                    saveStepContext.dataCount = saveStepContext.stepMnemonics.mnemonic.length;
+                    for (saveStepContext.i = 0; saveStepContext.i < saveStepContext.dataCount; saveStepContext.i++) {
                         saveStepContext.stepMnemonics.mnemonic[saveStepContext.i].token = saveStepContext.stepMnemonics.token;
                     }
 

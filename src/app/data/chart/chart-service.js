@@ -14,12 +14,17 @@
          * */
         var initalStateData = {};
         var sigDevSources = null;
+        var indices = null;
+        var currentCompanyId = null;
+        var competitors = null;
+
         var service = {
             stockData: stockData,
             getSavedChartData: getSavedChartData,
             findTickers: findTickers,
             getIndices: getIndices,
             getCompetitors: getCompetitors,
+            getCurrentCompanyId: getCurrentCompanyId,
             saveChartSettings: saveChartSettings,
             saveChartAllSettings: saveChartAllSettings,
             setInitialStateData: setInitialStateData,
@@ -130,30 +135,45 @@
             });
         }
 
-        function getIndices(keyword) {
-            return $http({
-                method: "POST",
-                url: "/api/getIndices",
-                data: {}
-            }).then(function(data, status, headers, config) {
-                return data.data;
-            }).catch(function(error) {
-                logger.error(JSON.stringify(error));
-            });
+        function getIndices() {
+            if (indices) {
+                return indices;
+            } else {
+                return $http({
+                    method: "POST",
+                    url: "/api/getIndices",
+                    data: {}
+                }).then(function (data, status, headers, config) {
+                    indices = data.data.indicesResp;
+                    return data.data.indicesResp;
+                }).catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+            }
+        }
+
+        function getCurrentCompanyId() {
+            return currentCompanyId;
         }
 
         function getCompetitors(companyId) {
-            return $http({
-                method: "POST",
-                url: "/api/getCompetitors",
-                data: {
-                    companyId: companyId
-                }
-            }).then(function(data, status, headers, config) {
-                return data.data;
-            }).catch(function(error) {
-                logger.error(JSON.stringify(error));
-            });
+            if ((currentCompanyId === companyId) && (competitors)) {
+                return competitors;
+            } else { 
+                return $http({
+                    method: "POST",
+                    url: "/api/getCompetitors",
+                    data: {
+                        companyId: companyId
+                    }
+                }).then(function(data, status, headers, config) {
+                    currentCompanyId = companyId;
+                    competitors = data.data.competitors;
+                    return data.data.competitors;
+                }).catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+            }
         }
 
         function setInitialStateData(array) {

@@ -11,7 +11,11 @@
     }
 
     /** @ngInject */
-    function msChartDirective($rootScope, $compile, $q, stockService, commonBusiness, templateBusiness, templateBusinessFormat, templateBusinessSave, overviewBusiness, stockChartBusiness, financialChartBusiness, financialChartService, toast, $interval, clientConfig, store) {
+    function msChartDirective($rootScope, $compile, $q, $interval,
+                              toast, store,
+                              clientConfig, commonBusiness, templateBusiness, templateBusinessFormat, templateBusinessSave, overviewBusiness,
+                              stockChartBusiness, stockService, financialChartBusiness, financialChartService
+                             ) {
         return {
             restrict: 'E',
             scope : {
@@ -51,16 +55,47 @@
                                 return title;
                             }
 
-                            var significantDevelopmentSources = stockChartBusiness.significantDevelopmentSources;
-                            if (significantDevelopmentSources.length == 0) {
-                                stockService.getSigDevSource()
+                            var competitors;
+                            if (stockService.getCurrentCompanyId() === commonBusiness.companyId) {
+                                competitors = stockChartBusiness.competitors;
+                            } else {
+                                competitors = [];
+                            }
+                            if (competitors.length == 0) {
+                                stockService.getCompetitors(commonBusiness.companyId)
                                 .then(function (data) {
-                                    stockChartBusiness.significantDevelopmentSources = data;
-                                    getSavedStockChart();
+                                    stockChartBusiness.competitors = data;
+                                    processIndices();
                                 });
                             } else {
-                                getSavedStockChart();
+                                processIndices();
                             }
+
+                            function processIndices() {
+                                var indices = stockChartBusiness.indices;
+                                if (indices.length == 0) {
+                                    stockService.getIndices()
+                                    .then(function (data) {
+                                        stockChartBusiness.indices = data;
+                                        processSignificantDevelopmentSources();
+                                    });
+                                } else {
+                                    processSignificantDevelopmentSources();
+                                }
+                            }
+
+                            function processSignificantDevelopmentSources() {
+                                var significantDevelopmentSources = stockChartBusiness.significantDevelopmentSources;
+                                if (significantDevelopmentSources.length == 0) {
+                                    stockService.getSigDevSource()
+                                    .then(function (data) {
+                                        stockChartBusiness.significantDevelopmentSources = data;
+                                        getSavedStockChart();
+                                    });
+                                } else {
+                                    getSavedStockChart();
+                                }
+                            };
 
                             function getSavedStockChart() {
                                 stockService.getSavedChartDefer(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid)
@@ -204,10 +239,6 @@
                                                 tableInfo: getTableInfo(i)
                                             });
                                         }
-                                        //console.log(scope.jsCharts);
-                                        //reset default chart coming in from web service
-                                        resetChartFilter(scope.jsCharts[0].filterState);
-                                        scope.jsCharts[0].filterState.title = scope.jsCharts[0].title = getStockChartTitle();
                                         //console.log(scope.jsCharts);
                                         stockService.setInitialStateData(angular.copy(scope.jsCharts));
                                         $rootScope.savedChartData = scope.jsCharts;
@@ -384,11 +415,8 @@
                                             var n;
 
                                             newList = new Array();
-                                            //skip the default chart use the default chart from load time
-                                            var lastStatedata = stockService.getInitialStateData();
-                                            newList.push(lastStatedata[0]);
                                             n = scope.jsCharts.length;
-                                            for (i = 1; i < n; i++) {
+                                            for (i = 0; i < n; i++) {
                                                 newList.push(angular.copy(scope.jsCharts[i]));
                                             }
                                             stockService.setInitialStateData(newList);
@@ -396,9 +424,14 @@
                                         }
                                     );
 
-                                    commonBusiness.onMsg('updateInteractiveStockChartIds', scope, function (ev, data) {
+                                    function stockChartSaveCallback(data) {
+                                        //match up company_id, step_id, project_id, mnemonic_id and item_id before post processing
                                         //console.log('Save Postprocessing here.');
-                                    });
+                                    };
+
+                                    if (!stockChartBusiness.updateChartIdCallback) {
+                                        stockChartBusiness.updateChartIdCallback = stockChartSaveCallback;
+                                    }
 
                                 });
                             }
@@ -553,30 +586,36 @@
                                         }
                                     );
 
-                                    commonBusiness.onMsg('updateInteractiveFinancialChartIds', scope, function (ev, data) {
+                                    function financialChartSaveCallback(data) {
                                         var i;
                                         var n1;
                                         var n2;
-                                        if (data.projectImageCode && data.projectImageCode.length > 0) {
-                                            n1 = data.projectImageCode.length;
-                                            n2 = scope.oldCharts.length;
-                                            if (n1 === n2) {
-                                                for (i = 0; i < n1; i++) {
-                                                    scope.oldCharts[i].tearsheet.projectImageCode = data.projectImageCode[i];
-                                                }
-                                            }
-                                        }
-                                        if (data.ifChartSettings && data.ifChartSettings.length > 0) {
-                                            n1 = data.ifChartSettings.length;
-                                            n2 = scope.jsCharts.length - 1;
-                                            if (n1 === n2) {
-                                                for (i = 0; i < n1; i++) {
-                                                    scope.jsCharts[i + 1].filterState.chartId = data.ifChartSettings[i].chartId;
-                                                }
-                                            }
-                                        }
 
-                                    });
+                                        if (data && (parseInt(commonBusiness.companyId) === parseInt(data.company_id)) && (parseInt(commonBusiness.projectId) === parseInt(data.project_id)) && (parseInt(commonBusiness.stepId) == parseInt(data.step_id)) && (scope.mnemonicid === data.mnemonic) && (scope.itemid === data.item_id)) {
+                                            if (data.projectImageCode && data.projectImageCode.length > 0) {
+                                                n1 = data.projectImageCode.length;
+                                                n2 = scope.oldCharts.length;
+                                                if (n1 === n2) {
+                                                    for (i = 0; i < n1; i++) {
+                                                        scope.oldCharts[i].tearsheet.projectImageCode = data.projectImageCode[i];
+                                                    }
+                                                }
+                                            }
+                                            if (data.ifChartSettings && data.ifChartSettings.length > 0) {
+                                                n1 = data.ifChartSettings.length;
+                                                n2 = scope.jsCharts.length - 1;
+                                                if (n1 === n2) {
+                                                    for (i = 0; i < n1; i++) {
+                                                        scope.jsCharts[i + 1].filterState.chartId = data.ifChartSettings[i].chartId;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    };
+
+                                    if (!financialChartBusiness.updateChartIdCallback) {
+                                        financialChartBusiness.updateChartIdCallback = financialChartSaveCallback;
+                                    }
 
                                     scope.chartMoved = function (direction, index) {
                                         if (direction === 'U') {

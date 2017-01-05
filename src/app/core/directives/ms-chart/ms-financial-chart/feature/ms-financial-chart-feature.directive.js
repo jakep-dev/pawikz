@@ -157,6 +157,9 @@
                             } else if (context.diffMonths <= 120 && context.diffMonths > 60) {
                                 context.duration = moment.duration(1, 'years');
                                 context.labelFormat = 'YYYY';
+                            } else if (context.diffMonths > 120) {
+                                context.duration = moment.duration(1, 'years');
+                                context.labelFormat = 'YYYY';
                             }
                             context.nextDispDate = context.startDate.add(context.duration);
 

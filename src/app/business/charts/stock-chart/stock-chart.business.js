@@ -11,16 +11,12 @@
     /* @ngInject */
     function stockChartBusiness(commonBusiness) {
 
-        var splits = false;
-        var earnings = false;
-        var dividends = false;
-        var interval = '3Y';
-        var mainStock = 'TSLA';
-        var selectedIndices = [];
-        var selectedPeers = [];
-        var startDate;
-        var endDate;
         var sigDevSourcesMap = null;
+        var indices = [];
+        var indicesMap = null;
+        var competitors = [];
+        var competitorMap = null;
+        var updateChartIdCallback = null;
 
         function toDateString(dateObj, format) {
             if (!format) {
@@ -55,6 +51,55 @@
                         }
                     }
                 });
+            }
+        });
+
+        Object.defineProperty(business, 'indices', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return indices;
+            },
+            set: function (value) {
+                indices = value;
+                indicesMap = [];
+                indices.forEach(function (indicesItem) {
+                    if (indicesItem.value) {
+                        if (!indicesMap[indicesItem.value]) {
+                            indicesMap[indicesItem.value] = indicesItem.description;
+                        }
+                    }
+                });
+            }
+        });
+
+        Object.defineProperty(business, 'competitors', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return competitors;
+            },
+            set: function (value) {
+                competitors = value;
+                competitorMap = [];
+                competitors.forEach(function (competitorItem) {
+                    if (competitorItem.ticker) {
+                        if (!competitorMap[competitorItem.ticker]) {
+                            competitorMap[competitorItem.ticker] = competitorItem.companyName;
+                        }
+                    }
+                });
+            }
+        });
+
+        Object.defineProperty(business, 'updateChartIdCallback', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return updateChartIdCallback;
+            },
+            set: function (value) {
+                updateChartIdCallback = value;
             }
         });
 
