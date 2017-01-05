@@ -322,9 +322,10 @@
     		return 'NUMBER';
     	}
 
-    	function removeNonNumericCharacters(value)
+    	function removeNonNumericCharacters(value, msg)
     	{
     		var inputVal = $.trim(value);
+			var msg = (msg) ? msg : 'Your input is not a valid number.';
 
             /*
                 TODO change to consider negative values for numeric
@@ -333,7 +334,7 @@
 
             //allow only numberic for number datatype
 			if(regEx.test(inputVal)){
-				toast.simpleToast('Your input is not a valid number.');
+				toast.simpleToast(msg);
 				inputVal = inputVal.replace(regEx,''); 
 			}
 
