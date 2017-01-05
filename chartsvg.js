@@ -255,6 +255,9 @@
                         } else if (diffMonths <= 120 && diffMonths > 60) {
                             duration = moment.duration(1, 'years');
                             labelFormat = 'YYYY';
+                        } else if (diffMonths > 120) {
+                            duration = moment.duration(1, 'years');
+                            labelFormat = 'YYYY';
                         }
                         var nextDispDate = startDate.add(duration);
 

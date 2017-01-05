@@ -1371,7 +1371,7 @@
                     subContext.methodName = subContext.service.methods.setSVGFileStatus;
                 }
 
-                subContext.args = 'request_id=' + context.requestId + '&svg_files_ready=N&ssnid=' + context.ssnid;
+                subContext.args = 'request_id=' + context.requestId + '&svg_files_ready=Y&ssnid=' + context.ssnid;
                 subContext.url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName + '?' + subContext.args;
                 console.log(subContext.methodName + ' API call---->', subContext.url);
                 client.get(subContext.url,

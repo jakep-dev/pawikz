@@ -34,24 +34,24 @@
 
                 templateService.saveAll(input).then(function(response)
                 {
-                    if(response && response.data) {
-                        angular.forEach( response.data, function(stepResponse){
-                            if (stepResponse.interactiveStockChart) {
-                                angular.forEach(stepResponse.interactiveStockChart, function (chartPerStep) {
-                                    if (chartPerStep.data) {
-                                        //console.log('call emit');
-                                        commonBusiness.emitWithArgument('updateInteractiveStockChartIds', chartPerStep.data);
+                    if (response && response.data) {
+                        _.each(response.data, function (stepResponse) {
+                            _.each(stepResponse.interactiveStockChart, function (chartPerStep) {
+                                if (chartPerStep.data) {
+                                    var callback = stockChartBusiness.updateChartIdCallback;
+                                    if (callback) {
+                                        callback(chartPerStep.data);
                                     }
-                                });
-                            }
-                            if (stepResponse.interactiveFinancialChart) {
-                                angular.forEach(stepResponse.interactiveFinancialChart, function (chartPerStep) {
-                                    if(chartPerStep.data) {
-                                        //console.log('call emit');
-                                        commonBusiness.emitWithArgument('updateInteractiveFinancialChartIds', chartPerStep.data);
+                                }
+                            });
+                            _.each(stepResponse.interactiveFinancialChart, function (chartPerStep) {
+                                if (chartPerStep.data) {
+                                    var callback = financialChartBusiness.updateChartIdCallback;
+                                    if (callback) {
+                                        callback(chartPerStep.data);
                                     }
-                                });
-                            }
+                                }
+                            });
                         });
                     }
 
@@ -255,7 +255,7 @@
 			}
 		}
         
-        //Build auto save for generic mnemonic items
+        //Build auto save for stock chart mnemonic items
 		function buildInteractiveStockChartAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
 		    if (stepMnemonic) {
 		        var mnemonicRow = _.find(stepMnemonic.mnemonic, { itemId: itemId, mnemonic: mnemonic, type: type });
@@ -286,6 +286,7 @@
 		    }
 		}
 
+        //Build auto save for significant development selections under the stock chart
 		function buildSignificantDevelopmentItemAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
 		    if (stepMnemonic) {
 		        var mnemonicRow = _.find(stepMnemonic.mnemonic, { itemId: itemId, mnemonic: mnemonic, type: type });
@@ -316,7 +317,7 @@
 		    }
 		}
 
-
+        //Build auto save for financial chart mnemonic items
 		function buildInteractiveFinancialChartAutoSave(itemId, mnemonic, type, stepMnemonic, data) {
             if(stepMnemonic) {
                 var mnemonicRow = _.find(stepMnemonic.mnemonic, {itemId: itemId, mnemonic: mnemonic, type: type});

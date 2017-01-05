@@ -33,8 +33,10 @@
             },
             headers: { "Content-Type": "application/json" }
         };
-
-        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
+        context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+        //console.log('[saveInteractiveStockChart] url =' + context.url);
+        //console.log('[saveInteractiveStockChart]\n' + JSON.stringify(context.args));
+        client.post(context.url, context.args, function (data, response) {
             context.results.data = data;
             callback(null, context.results);
         }).on('error',
@@ -71,10 +73,10 @@
             },
             headers: { "Content-Type": "application/json" }
         };
-        console.log(mnemonic.data.item_id);
-        console.log(context.args.data.item_id);
-        console.log('[saveSigDevItems]\n' + JSON.stringify(context.args));
-        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
+        context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+        //console.log('[saveSigDevItems] url =' + context.url);
+        //console.log('[saveSigDevItems]\n' + JSON.stringify(context.args));
+        client.post(context.url, context.args, function (data, response) {
             context.results.data = data;
             callback(null, context.results);
         }).on('error',

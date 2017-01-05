@@ -15,6 +15,7 @@
         var ratioTypeMap = null;
         var defaultRatio = null;
         var defaultRatioLabel = null;
+        var updateChartIdCallback = null;
 
         //Each item has
         //label
@@ -302,6 +303,17 @@
             configurable: false,
             get: function () {
                 return defaultRatioLabel;
+            }
+        });
+
+        Object.defineProperty(business, 'updateChartIdCallback', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return updateChartIdCallback;
+            },
+            set: function (value) {
+                updateChartIdCallback = value;
             }
         });
 

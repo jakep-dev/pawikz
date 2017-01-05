@@ -50,9 +50,7 @@
                 if (($scope.chart.chartType === "JSCHART") || ($scope.chart.chartType === "IMGURL")) {
                     $scope.chart.title = vm.title;
                     $scope.chart.filterState.title = vm.title;
-                    if (!vm.isMainChart) {
-                        saveChart();
-                    }
+                    saveChart();
                 } else if ($scope.chart.chartType === "IFCHART") {
                     $scope.chart.title = vm.title;
                     $scope.chart.filterState.chartTitle = vm.title;
