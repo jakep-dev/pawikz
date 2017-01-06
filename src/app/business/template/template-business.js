@@ -264,7 +264,7 @@
                             {
                                 notification.requestId = data.requestId;
                             }
-                            toast.simpleToast('PDF download has been initiated.  Go to notification center for updates.');
+                            dialog.status('app/core/directives/ms-template/dialog/ms-template.dialog.pdf.html', false, false);
                         }
                     });
             }

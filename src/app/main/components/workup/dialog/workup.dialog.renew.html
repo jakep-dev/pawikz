@@ -1,4 +1,4 @@
-<md-dialog id="timeout-dialog" aria-label="Mango (Fruit)" ng-controller="WorkUpDialiogController as vm">
+<md-dialog id="timeout-dialog" aria-label="Mango (Fruit)" ng-controller="RenewWorkUpDialogController as vm">
     <form>
         <md-toolbar>
             <div layout="row" layout-align="space-between center">
@@ -17,10 +17,11 @@
         <md-dialog-content>
             <div class="md-dialog-content">
                 Please be patient. Renewal in-progress.
-                <div ng-if="vm.isLongProcess">
-                    <p>Taking longer than usual processing time. Adding renewal process into queue.</p>
-                    <p>Close the dialog will take to My Workup and template will be locked down until renewal process complete.</p>
-                </div>
+                <blockquote ng-if="vm.isLongProcess">
+                    Taking longer than usual processing time. Adding renewal process into queue. </br>
+                    Use Notification Center <md-icon md-font-icon="icon-bell"></md-icon> to check the status. </br>
+                    Close the dialog will take to My Workup and template will be locked down until renewal process complete.
+                </blockquote>
             </div>
         </md-dialog-content>
     </form>

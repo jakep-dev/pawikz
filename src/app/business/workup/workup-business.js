@@ -31,6 +31,7 @@
             });
         }
 
+        //Renew the workup details from dashboard.
         function renewFromDashboard(userId, projectId, projectName)
         {
             workupService.renew(userId, projectId, 'fromDashboard');
@@ -50,12 +51,11 @@
             }, 'notify-renewal-workup-notification-center');
         }
 
+        //Add create workup details to notification center and show dialog box to user.
         function createWorkUp(userId, companyId, templateId)
         {
             workupService.create(userId, companyId, templateId).then(function(response)
             {
-                console.log('CreateWorkUp-');
-                console.log(response);
                 if(response) {
                     notificationBusiness.notifyNotificationCenter({
                         id: response.projectId,
@@ -72,8 +72,10 @@
                     }, 'notify-create-workup-notification-center');
                 }
             });
+            dialog.status('app/main/components/workup/dialog/workup.dialog.create.html', false, false);
         }
 
+        //Add renew workup details to notification center and show dialog box to user.
         function renew(userId, projectId, projectName, reloadEvent)
         {
             notificationBusiness.notifyNotificationCenter({
@@ -90,7 +92,7 @@
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
             workupService.renew(userId, projectId, reloadEvent);
-            dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
+            dialog.status('app/main/components/workup/dialog/workup.dialog.renew.html', false, false);
         }
 
     }
