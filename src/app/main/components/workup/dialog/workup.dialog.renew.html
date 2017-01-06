@@ -17,13 +17,13 @@
         <md-dialog-content>
             <div class="md-dialog-content">
                 Please be patient. Renewal in-progress.
-                <blockquote ng-if="vm.isLongProcess" show-gt-xs>
+                <blockquote ng-if="vm.isLongProcess" hide-xs>
                     Taking longer than usual processing time. Adding renewal process into queue. </br>
                     Use Notification Center <md-icon md-font-icon="icon-bell"></md-icon> to check the status. </br>
                     Close the dialog will take to My Workup and template will be locked down until renewal process complete.
                 </blockquote>
 
-                <blockquote ng-if="vm.isLongProcess" show-xs>
+                <blockquote ng-if="vm.isLongProcess" hide-gt-xs>
                     Use Notification Center <md-icon md-font-icon="icon-bell"></md-icon> to check the status. </br>
                 </blockquote>
             </div>
