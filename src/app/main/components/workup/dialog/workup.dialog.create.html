@@ -17,10 +17,14 @@
         <md-dialog-content>
             <div class="md-dialog-content">
                 Please be patient. Create Workup in-progress.
-                <blockquote ng-if="vm.isLongProcess">
+                <blockquote ng-if="vm.isLongProcess" show-gt-xs>
                     Taking longer than usual processing time. Adding create workup process into queue. </br>
                     Use Notification Center <md-icon md-font-icon="icon-bell"></md-icon> to check the status. </br>
                     Close the dialog and continue using the website.
+                </blockquote>
+
+                <blockquote ng-if="vm.isLongProcess" show-xs>
+                    Use Notification Center <md-icon md-font-icon="icon-bell"></md-icon> to check the status. </br>
                 </blockquote>
             </div>
         </md-dialog-content>
