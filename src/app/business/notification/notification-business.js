@@ -61,8 +61,6 @@
 
         //Push the notification details
         function pushNotification(data) {
-            console.log('Push Notification-');
-            console.log(data);
             var returnObj = data;
             if (data) {
                 var notification = _.find(business.notifications, function (not) {
@@ -108,9 +106,11 @@
                         business.notifications.push(notification);
                     }
                     if (notification.progress === 100) {
+                        dialog.close();
                         notification.status = 'complete';
                         notification.disabled = false;
                     } else if (response.progress === -1) {
+                        dialog.close();
                         notification.status = 'error';
                         notification.progress = 100;
                         notification.disabled = false;
@@ -151,6 +151,7 @@
                         });
                     }
                     if (notification.progress === 100) {
+                        dialog.close();
                         notification.status = 'complete';
                         notification.disabled = false;
                         notification.url = response.projectId;
