@@ -87,6 +87,12 @@
                 interactiveStockChart: 'interactive-stock-chart',
                 significantDevelopmentItems: 'significant-development-items',
                 interactiveFinancialChart: 'interactive-financial-chart'
+            },
+            messages: {
+                dashboardDelete:{
+                    title: 'Would you like to delete?',
+                    content: ' will be deleted. Please confirm.'
+                }
             }
         });
 })();

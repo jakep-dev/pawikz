@@ -58,13 +58,13 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function deleteWorkup(projectId, projectName)
     {
-        dialog.confirm('Would you like to delete?', projectName + ' will be deleted. Please confirm.', null, {
+        dialog.custom(clientConfig.messages.dashboardDelete.title,
+                      projectName + clientConfig.messages.dashboardDelete.content,
+                      null, {
             ok: {
                 name: 'yes',
                 callBack: function () {
-
                     vm.deleteProjectId = projectId;
-                    //set flag here.
                     toggleRedraw();
                     redrawDataTable();
                 }
@@ -75,7 +75,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                     return false;
                 }
             }
-        });
+        }, null);
     }
 
     function toggleRedraw()

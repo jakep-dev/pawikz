@@ -106,7 +106,7 @@
                 bindToController: true,
                 clickOutsideToClose:false,
                 fullscreen: useFullScreen
-            })
+            });
         }
     }
 }());
