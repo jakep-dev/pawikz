@@ -115,7 +115,8 @@
                                     });
 
                                     if (mnemonicVal.dataType === 'DATE') {
-                                        html += '<span style="display:none">' + templateBusinessFormat.formatDateValue(value, "YYYY-MM-DD") + '</span>'; // for easy sorting order
+
+                                        html += '<span style="display:none">' + templateBusinessFormat.formatDate(templateBusinessFormat.parseDate(value, "DD-MMM-YY"), "YYYY-MM-DD") + '</span>'; // for easy sorting order
                                     }
 
                                     if(mnemonic == 'URL' && classValue === 'align-right-tablelayout-r') {
