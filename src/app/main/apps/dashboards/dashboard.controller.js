@@ -20,6 +20,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.companyId = 0;
     vm.userId = 0;
     vm.isRedrawFromDelete = false;
+    vm.deleteProjectId = null;
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -61,6 +62,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             ok: {
                 name: 'yes',
                 callBack: function () {
+
+                    vm.deleteProjectId = projectId;
                     //set flag here.
                     toggleRedraw();
                     redrawDataTable();
@@ -244,7 +247,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function redrawDataTable()
     {
         var oTable = $('#dashBoardDetails').dataTable();
-        oTable.fnClearTable();
+        //oTable.fnClearTable();
         oTable.fnDraw();
     }
 
@@ -308,7 +311,44 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             //Call Dashboard processRemoveWorkUp
             //Result from processRemoveWorkup will have filterDashboard result
             //Call fnCallback(records);
+            var filterParam = {
+                userId: $stateParams.userId,
+                searchUserId: vm.userId,
+                searchCompanyId: vm.companyId, 
+                rowNum: start, 
+                perPage: length, 
+                sortOrder: sortOrder,
+                sortFilter: sortFilter, 
+                searchFilter: searchFilter, 
+                projectId: $rootScope.projectId
+            };
 
+            dashboardService.processRemoveWorkUp(vm.deleteProjectId, filterParam).then(function(results)
+            {
+                vm.deleteProjectId = null;
+                
+                var data = results.dashboard;
+                var deleted = results.delete;
+                var blankData = {
+                    companyName: '',
+                    projectName: '',
+                    status: '',
+                    createdBy: '',
+                    lastUpdateDate: ''
+                };
+
+                var records = {
+                    draw: draw,
+                    recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults : 0,
+                    recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults   : 0,
+                    data: angular.isDefined(data) && angular.isDefined(data.projects)
+                    && data.projects !== null ? data.projects : blankData
+                };
+
+                fnCallback(records);
+            });
         }
 
     }

@@ -33,13 +33,13 @@
                 function (err, results) {
                     res.send({
                         delete: results.delete,
-                        dashboard: results
+                        dashboard: results.workUpList
                     });
                 }
             );
 
             //Delete the workup
-            function removeWorkUp(context, callback) {
+            function removeWorkUp(callback) {
                 var subContext = {
                     service: getServiceDetails('templateManager'),
                     methodName: null,
@@ -53,7 +53,7 @@
                 subContext.args =
                 {
                     parameters: {
-                        project_id: context.deleteParams.projectId,
+                        project_id: context.projectId,
                         ssnid: context.token
                     }
                 };
@@ -102,12 +102,11 @@
 
                 client.get(config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName, subContext.args,
                     function (data, response) {
-                        context.delete = context.deleteParams.projectId;
+                        context.workUpList = data;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
-                        broadcastWorkUpInfo(context.token, context.deleteParams.projectId, context.userId, 'complete');
                         callback(null, context);
                     }
                 );
@@ -229,6 +228,38 @@
             {
                 res.status(response.statusCode).send(data);
             });
+        }
+
+        //Broadcast workup details to all users.
+        function broadcastWorkUpInfo(token, projectId, userId, status)
+        {
+            if((token in config.userSocketInfo) &&
+                config.socketIO.socket)
+            {
+                var workup = _.find(config.socketData.workup, function(item) {
+                    if (parseInt(item.projectId) === parseInt(projectId)) {
+                        return item;
+                    }
+                });
+
+                if(workup)
+                {
+                    workup.status = status;
+                }
+                else {
+                    //Adding data into the socketData for future user.
+                    config.socketData.workup.push({
+                        projectId: projectId,
+                        status: status,
+                        userId: userId
+                    });
+                }
+
+                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
+                    type: 'workup-info',
+                    data: config.socketData.workup
+                });
+            }
         }
 
         function getServiceDetails(serviceName)
