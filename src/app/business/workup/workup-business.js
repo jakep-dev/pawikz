@@ -72,7 +72,6 @@
                     }, 'notify-create-workup-notification-center');
                 }
             });
-            dialog.status('app/main/components/workup/dialog/workup.dialog.create.html', false, false);
         }
 
         //Add renew workup details to notification center and show dialog box to user.
