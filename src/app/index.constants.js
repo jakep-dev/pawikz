@@ -75,7 +75,9 @@
                 idle: 14400,
                 timeout: 120,
                 interval: 1200,
-                dialogtimeout: 60
+                renewWorkupTimeout: 30,
+                createWorkupTimeout: 30,
+                pdfDownloadTimeout: 30
             },
             uiType:{
                 general: 'general',
