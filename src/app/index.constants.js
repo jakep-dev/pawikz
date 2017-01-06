@@ -16,7 +16,8 @@
                 dashboardEndPoint:{
                     get: '/api/dashboard',
                     getUsers: '/api/users/',
-                    getCompanies: '/api/companies/'
+                    getCompanies: '/api/companies/',
+                    processRemoveWorkUp: '/api/processRemoveWorkUp/'
                 },
                 overViewEndPoint:{
                     get: '/api/overview/',

@@ -19,6 +19,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     var vm = this;
     vm.companyId = 0;
     vm.userId = 0;
+    vm.isRedrawFromDelete = false;
+    vm.deleteProjectId = null;
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -60,10 +62,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             ok: {
                 name: 'yes',
                 callBack: function () {
-                    console.log('deleting ' + projectId);
-                    workupService.delete(projectId, commonBusiness.userId).then(function(data) {
-                        commonBusiness.emitMsg('FilterDashboard');    
-                    });
+
+                    vm.deleteProjectId = projectId;
+                    //set flag here.
+                    toggleRedraw();
+                    redrawDataTable();
                 }
             },
             cancel:{
@@ -73,6 +76,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 }
             }
         });
+    }
+
+    function toggleRedraw()
+    {
+        vm.isRedrawFromDelete = !vm.isRedrawFromDelete;
     }
 
     function renewTemplate()
@@ -239,7 +247,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function redrawDataTable()
     {
         var oTable = $('#dashBoardDetails').dataTable();
-        oTable.fnClearTable();
+        //oTable.fnClearTable();
         oTable.fnDraw();
     }
 
@@ -270,30 +278,79 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         var length = aoData[4].value;
         var searchFilter = aoData[5].value.value;
 
-        dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
-            start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
+        if(!vm.isRedrawFromDelete)
         {
+            dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
+                start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
+            {
 
-            var blankData = {
-                companyName: '',
-                projectName: '',
-                status: '',
-                createdBy: '',
-                lastUpdateDate: ''
+                var blankData = {
+                    companyName: '',
+                    projectName: '',
+                    status: '',
+                    createdBy: '',
+                    lastUpdateDate: ''
+                };
+
+                var records = {
+                    draw: draw,
+                    recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults : 0,
+                    recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults   : 0,
+                    data: angular.isDefined(data) && angular.isDefined(data.projects)
+                    && data.projects !== null ? data.projects : blankData
+                };
+
+                fnCallback(records);
+            });
+        }
+        else {
+
+            //Get projectId, filterParam (which is basically dashboard)
+            //Call Dashboard processRemoveWorkUp
+            //Result from processRemoveWorkup will have filterDashboard result
+            //Call fnCallback(records);
+            var filterParam = {
+                userId: $stateParams.userId,
+                searchUserId: vm.userId,
+                searchCompanyId: vm.companyId, 
+                rowNum: start, 
+                perPage: length, 
+                sortOrder: sortOrder,
+                sortFilter: sortFilter, 
+                searchFilter: searchFilter, 
+                projectId: $rootScope.projectId
             };
 
-            var records = {
-                draw: draw,
-                recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
-                (data.paging !== null) ? data.paging.totalResults : 0,
-                recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
-                (data.paging !== null) ? data.paging.totalResults   : 0,
-                data: angular.isDefined(data) && angular.isDefined(data.projects)
-                && data.projects !== null ? data.projects : blankData
-            };
+            dashboardService.processRemoveWorkUp(vm.deleteProjectId, filterParam).then(function(results)
+            {
+                vm.deleteProjectId = null;
+                
+                var data = results.dashboard;
+                var deleted = results.delete;
+                var blankData = {
+                    companyName: '',
+                    projectName: '',
+                    status: '',
+                    createdBy: '',
+                    lastUpdateDate: ''
+                };
 
-            fnCallback(records);
-        });
+                var records = {
+                    draw: draw,
+                    recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults : 0,
+                    recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults   : 0,
+                    data: angular.isDefined(data) && angular.isDefined(data.projects)
+                    && data.projects !== null ? data.projects : blankData
+                };
+
+                fnCallback(records);
+            });
+        }
+
     }
 
 

@@ -16,7 +16,8 @@
         var service = {
             get: get,
             getUsers: getUsers,
-            getCompanies: getCompanies
+            getCompanies: getCompanies,
+            processRemoveWorkUp: processRemoveWorkUp
         };
 
         return service;
@@ -71,6 +72,21 @@
                     return data.data;
                 })
                 .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function processRemoveWorkUp(deleteProjectId, filterParam)
+        {
+            var input =  {
+                projectId: deleteProjectId,
+                filterParam: filterParam
+            };
+
+            return $http.post(clientConfig.endpoints.dashboardEndPoint.processRemoveWorkUp, input)
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                },function(error) {
                     logger.error(JSON.stringify(error));
                 });
         }
