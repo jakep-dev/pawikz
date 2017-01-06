@@ -608,43 +608,46 @@
         loadChartData();   
 
         vm.onPeerRemove = function(peer) {
-            var index;
-            vm.filterState.selectedIndices.some(function(ind, i) {
+            var indicesNdx;
+            vm.filterState.selectedIndices.some(function(ind, ndx) {
                 if (ind.indexOf(peer) === 0) {
-                    index = i;
+                    indicesNdx = ndx;
                     return true;
                 }
             });
 
-            if (index >= 0) {
+            if (indicesNdx >= 0) {
                 var selectedIndices = vm.filterState.selectedIndices;
-                selectedIndices.splice(index, 1);
+                selectedIndices.splice(indicesNdx, 1);
                 vm.filterState.selectedIndices = selectedIndices;
+                $scope.$broadcast('reloadIndices');
             }
 
-            var indexCom;
-            vm.filterState.selectedCompetitors.some(function(competitor, i) {
+            var competitorNdx;
+            vm.filterState.selectedCompetitors.some(function(competitor, ndx) {
                 if (competitor.indexOf(peer) === 0) {
-                    indexCom = i;
+                    competitorNdx = ndx;
                     return true;
                 }
             });
-            if (indexCom >= 0) {
-                var selected = vm.filterState.selectedCompetitors;
-                selected.splice(indexCom, 1);
-                vm.filterState.selectedCompetitors = selected;
+            if (competitorNdx >= 0) {
+                var selectedCompetitors = vm.filterState.selectedCompetitors;
+                selectedCompetitors.splice(competitorNdx, 1);
+                vm.filterState.selectedCompetitors = selectedCompetitors;
+                $scope.$broadcast('reloadCompetitors');
             }
 
             var peerIndex;
-            vm.filterState.selectedPeers.some(function(eachpeer, i) {
+            vm.filterState.selectedPeers.some(function(eachpeer, ndx) {
                 if (eachpeer.indexOf(peer) === 0) {
-                    peerIndex = i;
+                    peerIndex = ndx;
                     return true;
                 }
             });
 
             if (peerIndex >= 0) {
                 vm.filterState.selectedPeers.splice(peerIndex, 1);
+                $scope.$broadcast('reloadPeers');
             }
 
             vm.onFilterStateUpdate();
