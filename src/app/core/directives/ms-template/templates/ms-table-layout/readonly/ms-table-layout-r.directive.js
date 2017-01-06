@@ -107,6 +107,18 @@
                                 classValue = templateBusinessFormat.getAlignmentForTableLayoutR(col, classValue);
 
                                 if (value) {
+
+                                    var mnemonicVal = _.find(scope.subMnemonics, function(mnemonic) {
+                                        if (mnemonic.dataType === 'DATE') {
+                                            return mnemonic.dataType;
+                                        }
+                                    });
+
+                                    if (mnemonicVal.dataType === 'DATE') {
+
+                                        html += '<span style="display:none">' + templateBusinessFormat.formatDate(templateBusinessFormat.parseDate(value, "DD-MMM-YY"), "YYYY-MM-DD") + '</span>'; // for easy sorting order
+                                    }
+
                                     if(mnemonic == 'URL' && classValue === 'align-right-tablelayout-r') {
                                         html += '<span class="'+ classValue +'" style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"></ms-link></span>';
                                     }else if(classValue === 'align-right-tablelayout-r'){
@@ -205,6 +217,8 @@
 		{
 			return templateBusiness.formatData(value, _.find(subMnemonics, {mnemonic: subMnemonic}));
 		}
+
+        
 
         return {
             restrict: 'E',
