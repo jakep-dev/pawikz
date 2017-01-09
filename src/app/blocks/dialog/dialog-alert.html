@@ -1,0 +1,27 @@
+<md-dialog id="timeout-dialog" aria-label="Alert Dialog">
+    <form>
+
+        <md-toolbar>
+            <div layout="row" layout-align="space-between center">
+                <div class="md-toolbar-tools">
+                    <h2>{{ vm.title }}</h2>
+                </div>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div>{{ vm.content }}</div>
+                <div ng-bind-html="vm.html"></div>
+            </div>
+
+        </md-dialog-content>
+
+        <md-divider></md-divider>
+
+        <md-dialog-actions layout="row">
+                <md-button ng-click="vm.okCallBack()" style="margin-right:20px;" md-autofocus>
+                    {{ vm.okName }}
+                </md-button>
+            </md-dialog-actions>
+    </form>
+</md-dialog>

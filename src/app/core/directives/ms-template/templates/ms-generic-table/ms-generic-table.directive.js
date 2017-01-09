@@ -80,7 +80,7 @@
                                         var values = [];
                                         var selectedValue = '';
 
-                                        angular.forEach(tearSheetItem.param, function(each)
+                                        _.each(tearSheetItem.param, function(each)
                                         {
                                             
                                             if(each.checked === 'yes')

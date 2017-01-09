@@ -91,7 +91,14 @@
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
             workupService.renew(userId, projectId, reloadEvent);
-            dialog.status('app/main/components/workup/dialog/workup.dialog.renew.html', false, false);
+            dialog.alert('Renewing Workup', 'Go to Notification Center',
+                null,
+            null, {
+                    ok: {
+                        name: 'Ok',
+                        callBack: null
+                    }
+                }, null, false);
         }
 
     }
