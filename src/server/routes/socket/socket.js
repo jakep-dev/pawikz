@@ -92,7 +92,8 @@
 
                 _.each(config.socketData.workup, function(work)
                 {
-                    if(parseInt(work.userId) === parseInt(userId))
+                    if(parseInt(work.userId) === parseInt(userId)
+                        && work.status !== 'delete')
                     {
                         work.status = 'complete';
                         unLock.push(work, token);
