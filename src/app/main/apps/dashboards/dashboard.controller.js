@@ -9,12 +9,13 @@
 
 })();
 /** @ngInject */
-function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
-                             DTColumnDefBuilder, DTColumnBuilder,
-                             DTOptionsBuilder, dashboardService, workupService,
-                             authService, authBusiness, commonBusiness, notificationBusiness,
-                             breadcrumbBusiness, dashboardBusiness, workupBusiness, store, toast,
-                             $mdToast, clientConfig, templateBusiness, $location, $interval, dialog)
+function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams, 
+                             $compile, $location, $interval, $mdToast,
+                             DTColumnDefBuilder, DTColumnBuilder, DTOptionsBuilder, 
+                             store, toast, dialog, clientConfig,
+                             authBusiness, commonBusiness, notificationBusiness, templateBusiness, 
+                             breadcrumbBusiness, dashboardBusiness, workupBusiness,
+                             dashboardService, workupService, authService)
 {
     var vm = this;
     vm.companyId = 0;
@@ -81,6 +82,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function toggleRedraw()
     {
         vm.isRedrawFromDelete = !vm.isRedrawFromDelete;
+    }    
+
+    function recompileHtml(row, data, dataIndex) {
+        $compile(angular.element(row).contents())($scope);
     }
 
     function renewTemplate()
@@ -216,22 +221,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function toggleSidenav(sidenavId) {
         $mdSidenav(sidenavId).toggle();
         $mdMenu.hide()
-    }
-
-    // Action Html
-    function actionHtml(data, type, full, meta)
-    {
-        return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
-    }
-
-    function renewHtml(data, type, full, meta)
-    {
-        return '<a href="#" class="renewStyle" renew="true" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Renew</a>';
-    }
-
-    function deleteHtml(data, type, full, meta)
-    {
-        return '<a href="#" class="deleteWorkupStyle" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Delete</a>';
     }
 
     // Clear search
@@ -383,9 +372,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     {
         //Defining column definitions
         vm.dtColumnDefs = [
-            DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
-            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml).notSortable(),
-            DTColumnDefBuilder.newColumnDef(6).renderWith(deleteHtml).notSortable()
+            DTColumnDefBuilder.newColumnDef(1).renderWith(dashboardBusiness.getWorkupHtml),
+            DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
 
         //Dashboard DataTable Configuration
@@ -397,6 +385,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('serverSide', true)
             .withOption('initComplete', initComplete)
             .withOption('drawCallback', renewTemplate)
+            .withOption('createdRow', recompileHtml)
             .withOption('paging', true)
             .withOption('autoWidth', true)
             .withOption('responsive', true)
@@ -412,8 +401,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnBuilder.newColumn('status', 'Status'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
-            DTColumnBuilder.newColumn('renew', 'Renew'),
-            DTColumnBuilder.newColumn('delete', 'Delete')
+            DTColumnBuilder.newColumn('action', 'Action')
         ];
     }
 

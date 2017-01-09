@@ -15,6 +15,11 @@
 
         var isFilterDasboard = false;
         var isClearDashboard = false;
+        
+        var business = {
+            getActionButtonsHtml: getActionButtonsHtml,
+            getWorkupHtml: getWorkupHtml
+        }
 
         Object.defineProperty(this, 'isFilterDasboard', {
             enumerable: true,
@@ -39,5 +44,30 @@
                 commonBusiness.emitMsg('ClearFilterDashboard');
             }
         });
+
+        //get action buttons html in dashboard
+        function getActionButtonsHtml(data, type, full, meta)
+        {
+            return '<div layout="row" layout-align="center center"> ' +
+                    '<div flex> ' +
+                        '<md-icon md-font-icon="icon-rotate-3d"  class="renewStyle" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'"> ' +
+                            '<md-tooltip md-direction="top">Renew</md-tooltip> ' +
+                        '</md-icon> ' +
+                    '</div> ' + 
+                    '<div flex> ' +
+                        '<md-icon md-font-icon="icon-delete" class="deleteWorkupStyle" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'"> ' +
+                            '<md-tooltip md-direction="top">Delete</md-tooltip> ' +
+                        '</md-icon> ' + 
+                    '</div> ' + 
+                '</div> ';
+        }
+
+        // get workup link html in dashboard
+        function getWorkupHtml(data, type, full, meta)
+        {
+            return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
+        }
+
+        return business;
     }
 })();
