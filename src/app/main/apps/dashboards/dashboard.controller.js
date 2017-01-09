@@ -347,6 +347,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                     && data.projects !== null ? data.projects : blankData
                 };
 
+                toggleRedraw();
                 fnCallback(records);
             });
         }
