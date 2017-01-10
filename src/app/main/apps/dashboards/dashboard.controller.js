@@ -390,7 +390,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('stateSave', true)
             .withOption('order',[4, 'desc'])
             .withPaginationType('full')
-            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
         //Defining columns for dashboard
         vm.dtColumns = [

@@ -31,24 +31,6 @@
         {
             if($scope.copyexpiring)
             {
-                /*$scope.$parent.$parent.actions.push({
-                    id: 1,
-                    callback: "ProposedProgram",
-                    icon: 'icon-content-copy',
-                    isclicked: null,
-                    tooltip: 'Copy from Expiring',
-                    type: 'button'
-                });
-
-                $scope.$parent.$parent.actions.push({
-                    id: 2,
-                    callback: "PP-Upload",
-                    icon: 'icon-upload',
-                    isclicked: null,
-                    tooltip: 'Upload From Spreadsheet',
-                    type: 'button'
-                });*/
-
                 $scope.$parent.$parent.actions.push({
                     id: 3,
                     callback: "PP-Download",
@@ -57,15 +39,6 @@
                     tooltip: 'Download to Spreadsheet',
                     type: 'button'
                 });
-
-                /*$scope.$parent.$parent.actions.push({
-                    id: 4,
-                    callback: "PP-Eraser",
-                    icon: 'icon-eraser',
-                    isclicked: null,
-                    tooltip: 'Clear data',
-                    type: 'button'
-                });*/
             }
         }
 
@@ -81,7 +54,8 @@
                 .withOption('autoWidth', true)
                 .withOption('info', false)
                 .withOption('ordering', false)
-                .withOption('responsive', false);
+                .withOption('responsive', false)
+                .withDOM('<"top padding-10" <"left"<"length"l>>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
             //Header Details
             html += '<thead>';

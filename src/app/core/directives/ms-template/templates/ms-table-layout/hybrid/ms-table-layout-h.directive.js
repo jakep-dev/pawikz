@@ -42,7 +42,7 @@
                 .withOption('sorting', [])
                 .withOption('responsive', true)
                 .withPaginationType('full')
-                .withDOM('<"top bottom topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top bottom padding-10 topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom padding-10 bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
 
             $scope.dtColumnDefs = [

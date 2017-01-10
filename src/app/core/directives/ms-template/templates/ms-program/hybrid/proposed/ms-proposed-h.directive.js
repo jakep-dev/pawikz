@@ -255,7 +255,7 @@
                 .withOption('ordering', false)
                 .withOption('responsive', false)
                 .withPaginationType('full')
-                .withDOM('<"top bottom topTableLayout"<"left"<"length"l>>>rt<"bottom bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
             $scope.dtColumnDefs = [
                 DTColumnDefBuilder.newColumnDef(0).notSortable()

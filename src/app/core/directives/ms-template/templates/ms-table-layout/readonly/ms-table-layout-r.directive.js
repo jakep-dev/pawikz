@@ -46,7 +46,7 @@
                         .withOption('sorting', [])
                         .withOption('responsive', true)
                         .withPaginationType('full')
-                        .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                        .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
                     html += '<table id="'+ scope.itemid +'" dt-options="dtOptions" ' +
                         'class="row-border hover" datatable="" width="100%" cellpadding="4" cellspacing="0">';
@@ -114,7 +114,8 @@
                                         }
                                     });
 
-                                    if (mnemonicVal.dataType === 'DATE') {
+                                    if (mnemonicVal &&
+                                        mnemonicVal.dataType === 'DATE') {
 
                                         html += '<span style="display:none">' + templateBusinessFormat.formatDate(templateBusinessFormat.parseDate(value, "DD-MMM-YY"), "YYYY-MM-DD") + '</span>'; // for easy sorting order
                                     }
