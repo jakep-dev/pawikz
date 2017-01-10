@@ -75,6 +75,19 @@
                     saveRow($scope, $scope.rows[rowNumber]);
                 }
             };
+            
+            $scope.updateDate = function(value, column, rowId)
+            {
+                var rowNumber = parseInt(rowId);
+
+                if($scope.rows[rowNumber]) {
+                    
+                    value = (value === '') ? value = '' : value; 
+                    $scope.rows[rowNumber][column].value = value;
+                    
+                    saveRow($scope, $scope.rows[rowNumber]);
+                }
+            };
 
             $scope.calculate = function(currentRow, value, rowId, columnName)
             {
@@ -311,16 +324,20 @@
                             'itemid="{{row.'+ itemId +'.itemid}}" ' +
                             'mnemonicid="{{row.'+ itemId +'.mnemonicid}}" ' +
                             'value="{{row.'+ itemId +'.value}}" isdisabled="{{row.'+ itemId +'.isdisabled}}"></ms-program-text>';
-                        //html += '<span></span>'
                         break;
 
                     case 'SingleDropDownItem':
-                        //html += '<span>{{row}}</span>';
                         html += '<ms-program-dropdown tearsheet="{{row.'+ itemId +'.tearsheet}}" ' +
                             'mnemonicid="{{row.' + itemId + '.mnemonicid}}" ' +
                             'rowid="{{$index}}" ' +
                             'compute="updateDropdown(value, \'' + itemId + '\', rowId)" ' +
                             'itemid="{{row.' + itemId + '.itemid}}"></ms-program-dropdown>';
+                        break;
+                    case 'DateItem':
+                            html += '<ms-program-calendar row="row" rowid="{{$index}}" ' +
+                            'compute="updateDate(value, \'' + itemId + '\', rowId)" ' +
+                            'value="{{row.'+ itemId +'.value}}" ' + 
+                            'columnname="'+itemId+'"></ms-program-calendar>';
                         break;
 
                     default:break;
