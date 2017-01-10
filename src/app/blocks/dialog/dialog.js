@@ -12,7 +12,8 @@
             alert: alert,
             custom: custom,
             status: status,
-            close: close
+            close: close,
+            notify: notify
         };
 
         return service;
@@ -84,10 +85,6 @@
                 vm.html = '<md-icon md-font-icon="icon-bell"></md-icon>';
                 vm.okCallBack = okCallBack;
 
-                if(action.ok && action.ok.name) {
-                    vm.okName = action.ok.name;
-                }
-
                 //okCallBack method.
                 function okCallBack() {
                     $mdDialog.hide();
@@ -141,6 +138,47 @@
                 parent: angular.element(document.body),
                 targetEvent: event,
                 controller: customDialogController,
+                controllerAs: 'vm',
+                bindToController: true,
+                clickOutsideToClose: clickOutsideToClose || false,
+                fullscreen: useFullScreen
+            });
+        }
+
+        function notify(title, content, html, event, action, customFullscreen, clickOutsideToClose) {
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && customFullscreen;
+
+            function notifyDialogController($compile, $interval){
+                var vm = this;
+                vm.title = title;
+                vm.okCallBack = okCallBack;
+
+                addContent();
+
+                function okCallBack() {
+                    $mdDialog.hide();
+                    if(action &&
+                       action.ok && action.ok.callBack) {
+                        action.ok.callBack.apply(this);
+                    }
+                }
+
+                function addContent()
+                {
+                    var prom = $interval(function() {
+                        var contentElem = angular.element(document.body).find('#md-dialog-content');
+                        contentElem.append(content);
+                        contentElem.append($compile(html)(vm));
+                        $interval.cancel(prom);
+                    }, 10);
+                }
+            }
+
+            $mdDialog.show({
+                templateUrl: 'app/blocks/dialog/dialog-notification.html',
+                parent: angular.element(document.body),
+                targetEvent: event,
+                controller: notifyDialogController,
                 controllerAs: 'vm',
                 bindToController: true,
                 clickOutsideToClose: clickOutsideToClose || false,

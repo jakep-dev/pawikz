@@ -15,7 +15,7 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
 
     $rootScope.passedUserId = $stateParams.userId;
     breadcrumbBusiness.title = 'Create WorkUp';
-    if ($stateParams.token != '') {
+    if ($stateParams.token !== '') {
         $rootScope.passedToken = $stateParams.token;
     }
 
@@ -30,8 +30,15 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
         workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
     });
 
-    dialog.status('app/main/components/workup/dialog/workup.dialog.create.html', false, false);
-
-    var token =  store.get('x-session-token');
-    $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
+    dialog.notify('Creating Workup', 'Go to Notification Center ',
+        '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+        null,
+        {
+            ok: {
+                callBack: function() {
+                    var token =  store.get('x-session-token');
+                    $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
+                }
+            }
+        }, null, false);
 }
