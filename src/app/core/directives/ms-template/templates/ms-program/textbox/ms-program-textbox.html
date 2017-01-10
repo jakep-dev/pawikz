@@ -1,4 +1,4 @@
 <md-input-container class="md-block md-accent" style="margin: 0; padding: 0">
-    <input type="text" numeric-shortcut  ng-model="value" ng-change="textChange()" ng-model-options="{updateOn: 'blur'}" aria-label="Text Field"
+    <input type="text" numeric-shortcut  ng-model="value" ng-blur="textChange()" ng-focus="removeFixes()" aria-label="Text Field"
            ng-disabled="disabled" style="width:100%; position: absolute; color: black; bottom: 0px;"/>
 </md-input-container>

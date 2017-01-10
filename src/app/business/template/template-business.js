@@ -1106,7 +1106,8 @@
                             break;
                     }
                 }
-                finalValue = $filter("currency")(longValue, '', 0);
+                //finalValue = $filter("currency")(longValue, '', 0);
+                finalValue = longValue + '';
             }
             return finalValue;
         }

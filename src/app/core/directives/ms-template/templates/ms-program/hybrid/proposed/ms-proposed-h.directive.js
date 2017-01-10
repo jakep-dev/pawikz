@@ -306,16 +306,16 @@
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
+                        var formats = templateBusinessFormat.getProgramTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
                         html += '<ms-program-text columnname="'+ itemId +'" rowid="{{$index}}" ' +
                             'row="row.'+ itemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
                             'itemid="{{row.'+ itemId +'.itemid}}" ' +
                             'mnemonicid="{{row.'+ itemId +'.mnemonicid}}" ' +
-                            'value="{{row.'+ itemId +'.value}}" isdisabled="{{row.'+ itemId +'.isdisabled}}"></ms-program-text>';
-                        //html += '<span></span>'
+                            'value="{{row.'+ itemId +'.value}}" isdisabled="{{row.'+ itemId +'.isdisabled}}" ' +
+                            'formats="' + _.escape(angular.toJson(formats)) + '"></ms-program-text>';
                         break;
 
                     case 'SingleDropDownItem':
-                        //html += '<span>{{row}}</span>';
                         html += '<ms-program-dropdown tearsheet="{{row.'+ itemId +'.tearsheet}}" ' +
                             'mnemonicid="{{row.' + itemId + '.mnemonicid}}" ' +
                             'rowid="{{$index}}" ' +
