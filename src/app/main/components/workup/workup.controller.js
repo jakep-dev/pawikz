@@ -29,16 +29,4 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
     {
         workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
     });
-
-    dialog.notify('Creating Workup', 'Go to Notification Center ',
-        '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
-        null,
-        {
-            ok: {
-                callBack: function() {
-                    var token =  store.get('x-session-token');
-                    $location.url('/dashboard/'+ $stateParams.userId +'/'+token+'/'+ true);
-                }
-            }
-        }, null, false);
 }

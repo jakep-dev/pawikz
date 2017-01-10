@@ -75,6 +75,17 @@
                     }, 'notify-create-workup-notification-center');
                 }
             });
+            dialog.notify('Creating Workup', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null,
+                {
+                    ok: {
+                        callBack: function() {
+                            var token =  store.get('x-session-token');
+                            $location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
+                        }
+                    }
+                }, null, false);
         }
 
         //Add renew workup details to notification center and show dialog box to user.
