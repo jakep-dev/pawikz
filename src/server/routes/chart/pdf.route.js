@@ -161,7 +161,6 @@
             context.dateArr = new Array();
             context.ratioNames = new Array();
             context.ratioNameArr = new Array();
-            //context.datasets = new Array();
             context.seriesSet = new Array();
 
             if (Array.isArray(data)) {
@@ -208,11 +207,9 @@
             context.dateArr.sort();
             context.n1 = context.dateArr.length;
             for (context.i = 0; context.i < context.n1; context.i++) {
-                //context.dateArr[context.i]
                 context.currentList = context.dateList[context.dateArr[context.i]];
                 context.n2 = context.ratioNameArr.length;
                 for (context.j = 0; context.j < context.n2; context.j++) {
-                    //context.ratioNameArr[context.j]
                     context.currentObj = context.ratioNames[context.ratioNameArr[context.j]];
                     context.value = context.currentList[context.ratioNameArr[context.j]];
                     if (context.value) {
@@ -226,48 +223,18 @@
 
             context.n1 = context.ratioNameArr.length;
             for (context.i = 0; context.i < context.n1; context.i++) {
-                //context.ratioNameArr[context.i]
                 context.currentObj = context.ratioNames[context.ratioNameArr[context.i]];
                 if (context.currentObj.shortName) {
                     context.finalName = context.currentObj.shortName;
                 } else {
                     context.finalName = context.ratioNameArr[context.i];
                 }
-/*
-                context.datasets.push({
-                    name: context.finalName,
-                    data: context.currentObj.data,
-                    type: "line",
-                    valueDecimals: 1
-                });
-*/
                 context.seriesSet.push({
                     data: context.currentObj.data,
                     connectNulls: true,
                     name: context.finalName
                 });
-
             }
-
-/**
-            return {
-                dateList: context.dateList,
-                ratioNameArr: context.ratioNameArr,
-                ratioNames: context.ratioNames,
-                xData: context.dateArr,
-                name: "",
-                yaxisTitle: "",
-                xaxisTitle: "",
-                datasets: context.datasets,
-                series: context.seriesSet,
-                type: "line",
-                valueDecimals: 1,
-                showlegend: true,
-                showxaxisLabel: true,
-                showtooltip: true,
-                spacingTop: 30,
-            };
-*/
 
             context.chartObject = {
                 chart: {
@@ -465,7 +432,6 @@
                             subContext.defaultRatioLabel = null;
                             subContext.n = subContext.ratioTypes.length;
                             for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
-                                //subContext.ratioTypes[subContext.i]
                                 if (!subContext.defaultRatio && subContext.ratioTypes[subContext.i].value) {
                                     subContext.defaultRatio = subContext.ratioTypes[subContext.i].value;
                                     subContext.defaultRatioLabel = subContext.ratioTypes[subContext.i].label;
@@ -548,7 +514,7 @@
                     function (data, response) {
                         subContext.errorMessage = null;
                         try {
-                            chartSetting.context.chartSettings[chartSetting.index].output.activity = convServiceResptoChartFormat(data);
+                            chartSetting.context.chartSettings[chartSetting.index].output.activity = groupChartData(data);
                             subContext.activity = chartSetting.context.chartSettings[chartSetting.index].output.activity;
                             if (subContext.activity.datasets.length > 0) {
                                 subContext.dataset = subContext.activity.datasets[0];
@@ -778,196 +744,272 @@
             }
         }
 
-        function convServiceResptoChartFormat(data) {
+        function groupChartData(data) {
             var subContext = new Object();
-            subContext.xdataArr = [];
-            subContext.datasetArr = [];
             subContext.results = data;
-            if (subContext.results && subContext.results.stockChartPrimaryData && subContext.results.stockChartPrimaryData.length > 0) {
-                subContext.firstDatasetArr = [];
-                subContext.secondDatasetArr = [];
-                subContext.firstchartSerArr = [];
-                subContext.seriesByVolumes = {};
-                subContext.seriesByTickers = {};
-                subContext.secondchartSerArr = [];
-                subContext.primarTickerName = '';
-                subContext.firstChartTitle = 'Price';
-                if (subContext.results && subContext.results.stockChartPrimaryData && subContext.results.stockChartPrimaryData.length > 0)
-                    subContext.primarTickerName = subContext.results.stockChartPrimaryData[0].ticker;
-                subContext.peerData = null;
-                subContext.lengthDiff = false;
 
-                if (subContext.results.stockChartPeerData && subContext.results.stockChartPeerData.length) {
-                    subContext.peerData = subContext.results.stockChartPeerData;
-                    if (subContext.results.stockChartPeerData.length > 0) {
-                        subContext.lengthDiff = true;
+            subContext.stockNames = new Array();
+            subContext.stockNameArr = new Array();
+            subContext.dateList = new Array();
+            subContext.dateArr = new Array();
+            subContext.dividendsList = new Array();
+            subContext.earningsList = new Array();
+            subContext.splitsList = new Array();
+            subContext.volumeArr = new Array();
+            subContext.datasets = new Array();
+            subContext.seriesSet = new Array();
+            subContext.datasetArr = new Array();
+            subContext.volumeSetArr = new Array();
+
+            if (subContext.results) {
+                if (subContext.results.stockChartPrimaryData && Array.isArray(subContext.results.stockChartPrimaryData)) {
+                    subContext.n = subContext.results.stockChartPrimaryData.length;
+                    if (subContext.n > 0) {
+                        for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
+                            subContext.primaryChartDataItem = subContext.results.stockChartPrimaryData[subContext.i];
+                            if (subContext.primaryChartDataItem) {
+                                if (subContext.primaryChartDataItem.ticker) {
+                                    if (!subContext.stockNames[subContext.primaryChartDataItem.ticker]) {
+                                        subContext.currentObj = new Object();
+                                        subContext.currentObj._count = 1;
+                                        subContext.currentObj.data = new Array();
+                                        subContext.stockNames[subContext.primaryChartDataItem.ticker] = subContext.currentObj;
+                                        subContext.mainTicker = subContext.primaryChartDataItem.ticker;
+                                        subContext.stockNameArr.push(subContext.primaryChartDataItem.ticker);
+                                    } else {
+                                        subContext.currentObj = subContext.stockNames[subContext.primaryChartDataItem.ticker];
+                                        subContext.currentObj._count = subContext.currentObj._count + 1;
+                                    }
+                                }
+                                if (subContext.primaryChartDataItem.dataDate) {
+                                    subContext.dateValue = subContext.primaryChartDataItem.dataDate.substring(0, 10);
+                                    subContext.valueObject = new Object();
+                                    subContext.valueObject.priceClose = parseFloat(subContext.primaryChartDataItem.priceClose);
+                                    subContext.valueObject.percentChange = parseFloat(subContext.primaryChartDataItem.percentChange);
+                                    subContext.valueObject.securityCode = subContext.primaryChartDataItem.securityCode;
+                                    subContext.valueObject.priceOpen = subContext.primaryChartDataItem.priceOpen;
+                                    subContext.valueObject.priceHigh = subContext.primaryChartDataItem.priceHigh;
+                                    subContext.valueObject.priceLow = subContext.primaryChartDataItem.priceLow;
+                                    subContext.valueObject.volume = parseFloat(subContext.primaryChartDataItem.volume);
+                                    subContext.valueObject.currency = subContext.primaryChartDataItem.currency;
+
+                                    if (!subContext.dateList[subContext.dateValue]) {
+                                        subContext.dateArr.push(subContext.dateValue);
+                                        subContext.currentList = new Array();
+                                        subContext.currentList[subContext.primaryChartDataItem.ticker] = subContext.valueObject;
+                                        subContext.dateList[subContext.dateValue] = subContext.currentList;
+                                    } else {
+                                        subContext.currentList = subContext.dateList[subContext.dateValue];
+                                        if (subContext.primaryChartDataItem.ticker) {
+                                            if (!subContext.currentList[subContext.primaryChartDataItem.ticker]) {
+                                                subContext.currentList[subContext.primaryChartDataItem.ticker] = subContext.valueObject;
+                                            } else {
+                                                console.log('Duplicate chart value for the same ticker and dataDate.[' + subContext.dateValue + ',' + subContext.primaryChartDataItem.ticker + ']');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+                if (subContext.results.stockChartPeerData && Array.isArray(subContext.results.stockChartPeerData)) {
+                    subContext.n = subContext.results.stockChartPeerData.length;
+                    if (subContext.n > 0) {
+                        for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
+                            subContext.peerDataItem = subContext.results.stockChartPeerData[subContext.i];
+                            if (subContext.peerDataItem) {
+                                if (subContext.peerDataItem.ticker) {
+                                    if (!subContext.stockNames[subContext.peerDataItem.ticker]) {
+                                        subContext.currentObj = new Object();
+                                        subContext.currentObj._count = 1;
+                                        subContext.currentObj.data = new Array();
+                                        subContext.stockNames[subContext.peerDataItem.ticker] = subContext.currentObj;
+                                        subContext.stockNameArr.push(subContext.peerDataItem.ticker);
+                                    } else {
+                                        subContext.currentObj = subContext.stockNames[subContext.peerDataItem.ticker];
+                                        subContext.currentObj._count = subContext.currentObj._count + 1;
+                                    }
+                                }
+                                if (subContext.peerDataItem.dataDate) {
+                                    subContext.dateValue = subContext.peerDataItem.dataDate.substring(0, 10);
+                                    subContext.valueObject = new Object();
+                                    subContext.valueObject.priceClose = parseFloat(subContext.peerDataItem.priceClose);
+                                    subContext.valueObject.percentChange = parseFloat(subContext.peerDataItem.percentChange);
 
-                if (subContext.peerData) {
+                                    if (!subContext.dateList[subContext.dateValue]) {
+                                        subContext.dateArr.push(subContext.dateValue);
+                                        subContext.currentList = new Array();
+                                        subContext.currentList[subContext.peerDataItem.ticker] = subContext.valueObject;
+                                        subContext.dateList[subContext.dateValue] = subContext.currentList;
+                                    } else {
+                                        subContext.currentList = subContext.dateList[subContext.dateValue];
+                                        if (subContext.peerDataItem.ticker) {
+                                            if (!subContext.currentList[subContext.peerDataItem.ticker]) {
+                                                subContext.currentList[subContext.peerDataItem.ticker] = subContext.valueObject;
+                                            } else {
+                                                console.log('Duplicate chart value for the same ticker and dataDate.[' + subContext.dateValue + ',' + subContext.peerDataItem.ticker + ']');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (subContext.results.dividends && Array.isArray(subContext.results.dividends)) {
+                    subContext.n = subContext.results.dividends.length;
+                    for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
+                        if (subContext.results.dividends[subContext.i] && subContext.results.dividends[subContext.i].dataDate) {
+                            subContext.dateValue = subContext.results.dividends[subContext.i].dataDate.substring(0, 10);
+                            subContext.dividendsList[subContext.dateValue] = {
+                                value: subContext.results.dividends[subContext.i].value,
+                                valueInUsd: subContext.results.dividends[subContext.i].valueInUsd
+                            };
+                            if (!subContext.dateList[subContext.dateValue]) {
+                                console.log('Can\'t find data point for dividend that happen on ' + subContext.dateValue + ' with value = ' + subContext.dividendsList[subContext.dateValue].value);
+                            }
+                        }
+                    }
+                }
+                if (subContext.results.earnings && Array.isArray(subContext.results.earnings)) {
+                    subContext.n = subContext.results.earnings.length;
+                    for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
+                        if (subContext.results.earnings[subContext.i] && subContext.results.earnings[subContext.i].dataDate) {
+                            subContext.dateValue = subContext.results.earnings[subContext.i].dataDate.substring(0, 10);
+                            subContext.earningsList[subContext.dateValue] = {
+                                value: subContext.results.earnings[subContext.i].value,
+                                valueInUsd: subContext.results.earnings[subContext.i].valueInUsd
+                            };
+                            if (!subContext.dateList[subContext.dateValue]) {
+                                console.log('Can\'t find data point for earnings that happen on ' + subContext.dateValue + ' with value = ' + subContext.earningsList[subContext.dateValue].value);
+                            }
+                        }
+                    }
+                }
+                if (subContext.results.splits && Array.isArray(subContext.results.splits)) {
+                    subContext.n = subContext.results.splits.length;
+                    for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
+                        if (subContext.results.splits[subContext.i] && subContext.results.splits[subContext.i].dataDate) {
+                            subContext.dateValue = subContext.results.splits[subContext.i].dataDate.substring(0, 10);
+                            subContext.splitsList[subContext.dateValue] = {
+                                value: subContext.results.splits[subContext.i].value,
+                                valueInUsd: subContext.results.splits[subContext.i].valueInUsd
+                            };
+                            if (!subContext.dateList[subContext.dateValue]) {
+                                console.log('Can\'t find data point for split that happen on ' + subContext.dateValue + ' with value = ' + subContext.splitsList[subContext.dateValue].value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (subContext.results && subContext.results.stockChartPrimaryData && Array.isArray(subContext.results.stockChartPrimaryData) && (subContext.results.stockChartPrimaryData.length > 0)) {
+                subContext.dateArr.sort();
+                subContext.dateArr.forEach(function (dataDate) {
+                    subContext.currentList = subContext.dateList[dataDate];
+                    subContext.stockNameArr.forEach(function (ticker) {
+                        subContext.currentObj = subContext.stockNames[ticker];
+                        subContext.valueObject = subContext.currentList[ticker];
+                        if (subContext.valueObject) {
+                            if (subContext.stockNameArr.length > 1) {
+                                subContext.value = subContext.valueObject.percentChange
+                            } else {
+                                subContext.value = subContext.valueObject.priceClose
+                            }
+                            if (ticker === subContext.mainTicker) {
+                                subContext.volumeArr.push(subContext.valueObject.volume);
+                                if (subContext.dividendsList[dataDate]) {
+                                    subContext.currentObj.data.push({
+                                        y: subContext.value,
+                                        marker: {
+                                            enabled: true,
+                                            symbol: 'url(../assets/icons/images/Stock_Dividend.jpg)'
+                                        }
+                                    });
+                                } else if (subContext.earningsList[dataDate]) {
+                                    subContext.currentObj.data.push({
+                                        y: subContext.value,
+                                        marker: {
+                                            enabled: true,
+                                            symbol: 'url(../assets/icons/images/Stock_Earnings.jpg)'
+                                        }
+                                    });
+                                } else if (subContext.splitsList[dataDate]) {
+                                    subContext.currentObj.data.push({
+                                        y: subContext.value,
+                                        marker: {
+                                            enabled: true,
+                                            symbol: 'url(../assets/icons/images/Stock_Split.jpg)'
+                                        }
+                                    });
+                                } else {
+                                    subContext.currentObj.data.push(subContext.value);
+                                }
+                            } else {
+                                subContext.currentObj.data.push(subContext.value);
+                            }
+                        } else {
+                            console.log('Missing ' + ticker + ' value for datadate ' + dataDate);
+                            subContext.currentObj.data.push(null);
+                            if (ticker === subContext.mainTicker) {
+                                subContext.volumeArr.push(null);
+                            }
+                        }
+                    });
+                });
+
+                subContext.stockNameArr.forEach(function (ticker) {
+                    subContext.currentObj = subContext.stockNames[ticker];
+                    subContext.datasets.push({
+                        name: ticker,
+                        data: subContext.currentObj.data,
+                        type: "spline",
+                        valueDecimals: 1
+                    });
+                    subContext.seriesSet.push({
+                        data: subContext.currentObj.data,
+                        connectNulls: true,
+                        name: ticker
+                    });
+                });
+
+                if (subContext.stockNameArr.length > 1) {
                     subContext.firstChartTitle = 'Percent Change';
+                } else {
+                    subContext.firstChartTitle = 'Price';
                 }
-
-                for (subContext.i = 0; subContext.i < subContext.results.stockChartPrimaryData.length; subContext.i++) {
-
-                    subContext.stock = subContext.results.stockChartPrimaryData[subContext.i];
-                    subContext.applyDividend = false;
-                    subContext.applyEarning = false;
-                    subContext.applySplit = false;
-                    //if(i%90 == 0)
-                    subContext.xdataArr[subContext.xdataArr.length] = subContext.stock.dataDate.substring(0, 10);
-
-                    subContext.firstDatasetArr[subContext.firstDatasetArr.length] = parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose);
-                    subContext.secondDatasetArr[subContext.secondDatasetArr.length] = parseFloat(subContext.stock.volume);
-
-                    if (!subContext.seriesByTickers[subContext.stock.ticker]) {
-                        subContext.seriesByTickers[subContext.stock.ticker] = [];
-                    }
-
-                    if (subContext.results.dividends) {
-                        for (subContext.dividendCntr = 0; subContext.dividendCntr < subContext.results.dividends.length; subContext.dividendCntr++) {
-                            if (subContext.stock.dataDate == subContext.results.dividends[subContext.dividendCntr].dataDate) {
-                                subContext.applyDividend = true;
-                            }
-                        }
-                    }
-
-                    if (subContext.results.earnings) {
-                        for (subContext.earningCntr = 0; subContext.earningCntr < subContext.results.earnings.length; subContext.earningCntr++) {
-                            if (subContext.stock.dataDate == subContext.results.earnings[subContext.earningCntr].dataDate) {
-                                subContext.applyEarning = true;
-                            }
-                        }
-                    }
-
-                    if (subContext.results.splits) {
-                        for (subContext.splitsCntr = 0; subContext.splitsCntr < subContext.results.splits.length; subContext.splitsCntr++) {
-                            if (subContext.stock.dataDate == subContext.results.splits[subContext.splitsCntr].dataDate) {
-                                subContext.applySplit = true;
-                            }
-                        }
-                    }
-                    if (subContext.applyDividend) {
-                        subContext.seriesByTickers[subContext.stock.ticker].push({
-                            'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
-                            'marker': {
-                                'enabled': true,
-                                'symbol': 'url(data:image/jpeg;base64,' + dividendImageData + ')'
-                            }
-                        });
-                    }
-                    else if (subContext.applyEarning) {
-                        subContext.seriesByTickers[subContext.stock.ticker].push({
-                            'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
-                            'marker': {
-                                'enabled': true,
-                                'symbol': 'url(data:image/jpeg;base64,' + earningsImageData + ')'
-                            }
-                        });
-                    }
-                    else if (subContext.applySplit) {
-                        subContext.seriesByTickers[subContext.stock.ticker].push({
-                            'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
-                            'marker': {
-                                'enabled': true,
-                                'symbol': 'url(data:image/jpeg;base64,' + splitImageData + ')'
-                            }
-                        });
-                    }
-                    else {
-                        subContext.seriesByTickers[subContext.stock.ticker].push(parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose));
-                    }
-
-                    if (!subContext.seriesByVolumes[subContext.stock.ticker]) {
-                        subContext.seriesByVolumes[subContext.stock.ticker] = [];
-                    }
-                    subContext.seriesByVolumes[subContext.stock.ticker].push(parseFloat(subContext.stock.volume));
-                }
-
-                if (subContext.peerData) {
-
-                    for (subContext.i = 0; subContext.i < subContext.results.stockChartPeerData.length; subContext.i++) {
-
-                        subContext.stock = subContext.results.stockChartPeerData[subContext.i];
-                        if (subContext.stock.ticker !== subContext.primarTickerName) {
-                            subContext.xdataArr[subContext.xdataArr.length] = subContext.stock.dataDate;
-                            subContext.firstDatasetArr[subContext.firstDatasetArr.length] = parseFloat(subContext.stock.percentChange);
-                            // secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
-
-                            if (!subContext.seriesByTickers[subContext.stock.ticker]) {
-                                subContext.seriesByTickers[subContext.stock.ticker] = [];
-                            }
-                            subContext.seriesByTickers[subContext.stock.ticker].push(parseFloat(subContext.stock.percentChange));
-
-                            if (!subContext.seriesByVolumes[subContext.stock.ticker]) {
-                                subContext.seriesByVolumes[subContext.stock.ticker] = [];
-                            }
-                            subContext.seriesByVolumes[subContext.stock.ticker].push(parseFloat(subContext.stock.volume));
-                        }
-                    }
-                }
-
-                // var stockName = results.stockChartPeerData[0].ticker;
-                subContext.seriesSet = [];
-                subContext.dataSet = [];
-                for (subContext.key in subContext.seriesByTickers) {
-                    if (subContext.seriesByTickers.hasOwnProperty(subContext.key)) {
-                        subContext.seriesSet.push({
-                            data: subContext.seriesByTickers[subContext.key],
-                            name: subContext.key
-                        });
-                        subContext.dataSet.push(data);
-                    }
-                }
-                subContext.volumeSet = [];
-                for (subContext.key in subContext.seriesByVolumes) {
-                    if (subContext.seriesByVolumes.hasOwnProperty(subContext.key)) {
-                        subContext.volumeSet.push({
-                            data: subContext.seriesByVolumes[subContext.key]
-                        });
-                        subContext.dataSet.push(data);
-                    }
-                }
-                //console.log('seriesSet----->',seriesSet);
-                // firstchartSerArr[firstchartSerArr.length] = {"name":stockName, "data": firstDatasetArr};
-                //console.log('peerData: ' + peerData);
 
                 subContext.datasetArr[subContext.datasetArr.length] = {
-                    "name": "",
-                    "yaxisTitle": subContext.firstChartTitle,
-                    "xaxisTitle": "",
-                    "series": subContext.seriesSet,
-                    "data": subContext.dataSet,
-                    "type": "spline",
-                    "valueDecimals": 1,
-                    "showlegend": true,
-                    "showxaxisLabel": false,
-                    "showtooltip": true,
-                    "spacingTop": 30,
-                    "xAxis": {
-                        labels: {
-                            step: 3
-                        }
-                    }
+                    name: "",
+                    yaxisTitle: subContext.firstChartTitle,
+                    xaxisTitle: "",
+                    series: subContext.seriesSet,
+                    data: subContext.datasets,
+                    type: "spline",
+                    valueDecimals: 1,
+                    showlegend: true,
+                    showxaxisLabel: false,
+                    showtooltip: true,
+                    spacingTop: 30
                 };
-                subContext.secondchartSerArr[subContext.secondchartSerArr.length] = {
-                    "data": subContext.secondDatasetArr
-                    //,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
-                    //,"pointStart": Date(xdataArr[0])
-                    //,"pointInterval": 24 * 3600 * 1000
+
+                subContext.volumeSetArr[subContext.volumeSetArr.length] = {
+                    data: subContext.volumeArr
                 };
+
                 subContext.datasetArr[subContext.datasetArr.length] = {
-                    "name": "",
-                    "yaxisTitle": "Volume (Millions)",
-                    "xaxisTitle": "",
-                    "series": subContext.secondchartSerArr,
-                    "data": subContext.secondDatasetArr,
-                    "type": "column",
-                    "valueDecimals": 0,
-                    "showlegend": false,
-                    "showxaxisLabel": true,
-                    "showtooltip": false,
-                    "spacingTop": 7
+                    name: '',
+                    yaxisTitle: 'Volume (Millions)',
+                    xaxisTitle: '',
+                    series: subContext.volumeSetArr,
+                    data: subContext.volumeArr,
+                    type: 'column',
+                    valueDecimals: 0,
+                    showlegend: false,
+                    showxaxisLabel: true,
+                    showtooltip: false,
+                    spacingTop: 7
                 };
             } else {
                 subContext.datasetArr[subContext.datasetArr.length] = {
@@ -984,22 +1026,279 @@
                     "showxaxisLabel": false,
                     "showtooltip": false,
                     "spacingTop": 30,
-                    "xAxis": {
-                        labels: {
-                            step: 3
-                        }
-                    },
                     "valueDecimals": 1
                 };
             }
             subContext.ouput = {
-                "xData": subContext.xdataArr,
-                "datasets": subContext.datasetArr
+                xData: subContext.dateArr,
+                datasets: subContext.datasetArr
             };
             //console.log(subContext.ouput);
-            return subContext.ouput;
 
+            subContext.dividendsList = {};
+            subContext.dividendsList = null;
+            delete subContext.dividendsList;
+            subContext.earningsList = {};
+            subContext.earningsList = null;
+            delete subContext.earningsList;
+            subContext.splitsList = {};
+            subContext.splitsList = null;
+            delete subContext.splitsList;
+            subContext.dateList = {};
+            subContext.dateList = null;
+            delete subContext.dateList;
+            subContext.stockNames = {};
+            subContext.stockNames = null;
+            delete subContext.stockNames;
+            subContext.stockNameArr.length = 0;
+            subContext.stockNameArr = null;
+            delete subContext.stockNameArr;
+
+            delete subContext.i;
+            delete subContext.n;
+            delete subContext.primaryChartDataItem;
+            delete subContext.currentObj;
+            delete subContext.mainTicker;
+            delete subContext.dateValue;
+            delete subContext.valueObject;
+            delete subContext.dateArr;
+            delete subContext.currentList;
+            delete subContext.peerDataItem;
+            delete subContext.value;
+            delete subContext.volumeArr;
+            delete subContext.datasets;
+            delete subContext.seriesSet;
+            delete subContext.firstChartTitle;
+            delete subContext.datasetArr;
+            delete subContext.volumeSetArr;
+
+            return subContext.ouput;
         }
+
+/*
+        //function convServiceResptoChartFormat(data) {
+        //    var subContext = new Object();
+        //    subContext.xdataArr = [];
+        //    subContext.datasetArr = [];
+        //    subContext.results = data;
+        //    if (subContext.results && subContext.results.stockChartPrimaryData && subContext.results.stockChartPrimaryData.length > 0) {
+        //        subContext.firstDatasetArr = [];
+        //        subContext.secondDatasetArr = [];
+        //        subContext.firstchartSerArr = [];
+        //        subContext.seriesByVolumes = {};
+        //        subContext.seriesByTickers = {};
+        //        subContext.secondchartSerArr = [];
+        //        subContext.primarTickerName = '';
+        //        subContext.firstChartTitle = 'Price';
+        //        if (subContext.results && subContext.results.stockChartPrimaryData && subContext.results.stockChartPrimaryData.length > 0)
+        //            subContext.primarTickerName = subContext.results.stockChartPrimaryData[0].ticker;
+        //        subContext.peerData = null;
+        //        subContext.lengthDiff = false;
+
+        //        if (subContext.results.stockChartPeerData && subContext.results.stockChartPeerData.length) {
+        //            subContext.peerData = subContext.results.stockChartPeerData;
+        //            if (subContext.results.stockChartPeerData.length > 0) {
+        //                subContext.lengthDiff = true;
+        //            }
+        //        }
+
+        //        if (subContext.peerData) {
+        //            subContext.firstChartTitle = 'Percent Change';
+        //        }
+
+        //        for (subContext.i = 0; subContext.i < subContext.results.stockChartPrimaryData.length; subContext.i++) {
+
+        //            subContext.stock = subContext.results.stockChartPrimaryData[subContext.i];
+        //            subContext.applyDividend = false;
+        //            subContext.applyEarning = false;
+        //            subContext.applySplit = false;
+        //            //if(i%90 == 0)
+        //            subContext.xdataArr[subContext.xdataArr.length] = subContext.stock.dataDate.substring(0, 10);
+
+        //            subContext.firstDatasetArr[subContext.firstDatasetArr.length] = parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose);
+        //            subContext.secondDatasetArr[subContext.secondDatasetArr.length] = parseFloat(subContext.stock.volume);
+
+        //            if (!subContext.seriesByTickers[subContext.stock.ticker]) {
+        //                subContext.seriesByTickers[subContext.stock.ticker] = [];
+        //            }
+
+        //            if (subContext.results.dividends) {
+        //                for (subContext.dividendCntr = 0; subContext.dividendCntr < subContext.results.dividends.length; subContext.dividendCntr++) {
+        //                    if (subContext.stock.dataDate == subContext.results.dividends[subContext.dividendCntr].dataDate) {
+        //                        subContext.applyDividend = true;
+        //                    }
+        //                }
+        //            }
+
+        //            if (subContext.results.earnings) {
+        //                for (subContext.earningCntr = 0; subContext.earningCntr < subContext.results.earnings.length; subContext.earningCntr++) {
+        //                    if (subContext.stock.dataDate == subContext.results.earnings[subContext.earningCntr].dataDate) {
+        //                        subContext.applyEarning = true;
+        //                    }
+        //                }
+        //            }
+
+        //            if (subContext.results.splits) {
+        //                for (subContext.splitsCntr = 0; subContext.splitsCntr < subContext.results.splits.length; subContext.splitsCntr++) {
+        //                    if (subContext.stock.dataDate == subContext.results.splits[subContext.splitsCntr].dataDate) {
+        //                        subContext.applySplit = true;
+        //                    }
+        //                }
+        //            }
+        //            if (subContext.applyDividend) {
+        //                subContext.seriesByTickers[subContext.stock.ticker].push({
+        //                    'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
+        //                    'marker': {
+        //                        'enabled': true,
+        //                        'symbol': 'url(data:image/jpeg;base64,' + dividendImageData + ')'
+        //                    }
+        //                });
+        //            }
+        //            else if (subContext.applyEarning) {
+        //                subContext.seriesByTickers[subContext.stock.ticker].push({
+        //                    'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
+        //                    'marker': {
+        //                        'enabled': true,
+        //                        'symbol': 'url(data:image/jpeg;base64,' + earningsImageData + ')'
+        //                    }
+        //                });
+        //            }
+        //            else if (subContext.applySplit) {
+        //                subContext.seriesByTickers[subContext.stock.ticker].push({
+        //                    'y': parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose),
+        //                    'marker': {
+        //                        'enabled': true,
+        //                        'symbol': 'url(data:image/jpeg;base64,' + splitImageData + ')'
+        //                    }
+        //                });
+        //            }
+        //            else {
+        //                subContext.seriesByTickers[subContext.stock.ticker].push(parseFloat((subContext.peerData && subContext.lengthDiff) ? subContext.stock.percentChange : subContext.stock.priceClose));
+        //            }
+
+        //            if (!subContext.seriesByVolumes[subContext.stock.ticker]) {
+        //                subContext.seriesByVolumes[subContext.stock.ticker] = [];
+        //            }
+        //            subContext.seriesByVolumes[subContext.stock.ticker].push(parseFloat(subContext.stock.volume));
+        //        }
+
+        //        if (subContext.peerData) {
+
+        //            for (subContext.i = 0; subContext.i < subContext.results.stockChartPeerData.length; subContext.i++) {
+
+        //                subContext.stock = subContext.results.stockChartPeerData[subContext.i];
+        //                if (subContext.stock.ticker !== subContext.primarTickerName) {
+        //                    subContext.xdataArr[subContext.xdataArr.length] = subContext.stock.dataDate;
+        //                    subContext.firstDatasetArr[subContext.firstDatasetArr.length] = parseFloat(subContext.stock.percentChange);
+        //                    // secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
+
+        //                    if (!subContext.seriesByTickers[subContext.stock.ticker]) {
+        //                        subContext.seriesByTickers[subContext.stock.ticker] = [];
+        //                    }
+        //                    subContext.seriesByTickers[subContext.stock.ticker].push(parseFloat(subContext.stock.percentChange));
+
+        //                    if (!subContext.seriesByVolumes[subContext.stock.ticker]) {
+        //                        subContext.seriesByVolumes[subContext.stock.ticker] = [];
+        //                    }
+        //                    subContext.seriesByVolumes[subContext.stock.ticker].push(parseFloat(subContext.stock.volume));
+        //                }
+        //            }
+        //        }
+
+        //        // var stockName = results.stockChartPeerData[0].ticker;
+        //        subContext.seriesSet = [];
+        //        subContext.dataSet = [];
+        //        for (subContext.key in subContext.seriesByTickers) {
+        //            if (subContext.seriesByTickers.hasOwnProperty(subContext.key)) {
+        //                subContext.seriesSet.push({
+        //                    data: subContext.seriesByTickers[subContext.key],
+        //                    name: subContext.key
+        //                });
+        //                subContext.dataSet.push(data);
+        //            }
+        //        }
+        //        subContext.volumeSet = [];
+        //        for (subContext.key in subContext.seriesByVolumes) {
+        //            if (subContext.seriesByVolumes.hasOwnProperty(subContext.key)) {
+        //                subContext.volumeSet.push({
+        //                    data: subContext.seriesByVolumes[subContext.key]
+        //                });
+        //                subContext.dataSet.push(data);
+        //            }
+        //        }
+        //        //console.log('seriesSet----->',seriesSet);
+        //        // firstchartSerArr[firstchartSerArr.length] = {"name":stockName, "data": firstDatasetArr};
+        //        //console.log('peerData: ' + peerData);
+
+        //        subContext.datasetArr[subContext.datasetArr.length] = {
+        //            "name": "",
+        //            "yaxisTitle": subContext.firstChartTitle,
+        //            "xaxisTitle": "",
+        //            "series": subContext.seriesSet,
+        //            "data": subContext.dataSet,
+        //            "type": "spline",
+        //            "valueDecimals": 1,
+        //            "showlegend": true,
+        //            "showxaxisLabel": false,
+        //            "showtooltip": true,
+        //            "spacingTop": 30,
+        //            "xAxis": {
+        //                labels: {
+        //                    step: 3
+        //                }
+        //            }
+        //        };
+        //        subContext.secondchartSerArr[subContext.secondchartSerArr.length] = {
+        //            "data": subContext.secondDatasetArr
+        //            //,"pointStart": Date.UTC(xdataArr[0].split('-')[0], xdataArr[0].split('-')[1]-1, xdataArr[0].split('-')[2])
+        //            //,"pointStart": Date(xdataArr[0])
+        //            //,"pointInterval": 24 * 3600 * 1000
+        //        };
+        //        subContext.datasetArr[subContext.datasetArr.length] = {
+        //            "name": "",
+        //            "yaxisTitle": "Volume (Millions)",
+        //            "xaxisTitle": "",
+        //            "series": subContext.secondchartSerArr,
+        //            "data": subContext.secondDatasetArr,
+        //            "type": "column",
+        //            "valueDecimals": 0,
+        //            "showlegend": false,
+        //            "showxaxisLabel": true,
+        //            "showtooltip": false,
+        //            "spacingTop": 7
+        //        };
+        //    } else {
+        //        subContext.datasetArr[subContext.datasetArr.length] = {
+        //            "name": "",
+        //            "yaxisTitle": "",
+        //            "xaxisTitle": "",
+        //            "series": [{
+        //                "data": [],
+        //                "name": " "
+        //            }],
+        //            "data": [],
+        //            "type": "spline",
+        //            "showlegend": false,
+        //            "showxaxisLabel": false,
+        //            "showtooltip": false,
+        //            "spacingTop": 30,
+        //            "xAxis": {
+        //                labels: {
+        //                    step: 3
+        //                }
+        //            },
+        //            "valueDecimals": 1
+        //        };
+        //    }
+        //    subContext.ouput = {
+        //        "xData": subContext.xdataArr,
+        //        "datasets": subContext.datasetArr
+        //    };
+        //    //console.log(subContext.ouput);
+        //    return subContext.ouput;
+
+        //}
+*/
 
         //context.chartSettings[i].output.url
         function getAllChartSettings(context, callback) {
@@ -1433,10 +1732,8 @@
                                 next(subContext.statusResponse);
                             } else {
                                 console.log('[' + context.requestId + '][' + context.elapsedTime + '][Code:' + context.PDFStatusCode + ']PDF generation ' + context.PDFPercentComplete + '% complete.');
-                                //subContext.room = 'pdf_' + context.requestId;
                                 context.data.progress = context.PDFPercentComplete;
                                 sendStatus(context.ssnid, context.data);
-                                //config.socketIO.socket.emit('[' + subContext.room + ']pdf-download-status', subContext.data);
                                 setTimeout(function () {
                                     next();
                                 }, 1000);
@@ -1571,7 +1868,6 @@
                                     context.data.progress = context.PDFPercentComplete;
                                     console.log('Sending socket message for request:' + context.data.requestId);
                                     sendStatus(context.ssnid, context.data);
-                                    //config.socketIO.socket.emit('[' + context.room + ']pdf-download-status', context.data);
                                 }
                             );
 

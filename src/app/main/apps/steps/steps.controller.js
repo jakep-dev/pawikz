@@ -10,9 +10,9 @@
 
     /** @ngInject */
     function StepController($rootScope, $stateParams, $scope,
-                            bottomSheetConfig, navConfig,
-                            templateBusiness, breadcrumbBusiness, commonBusiness,
-                            stepsBusiness, overviewBusiness, toast, store)
+                            toast, store,
+                            bottomSheetConfig, commonBusiness, breadcrumbBusiness, navConfig, templateBusiness, templateBusinessSave, stepsBusiness, overviewBusiness
+                           )
     {
         var vm = this;
         var projectId = $stateParams.projectId;
@@ -63,9 +63,8 @@
 
         function saveAll()
         {
-            templateBusiness.save();
-            templateBusiness.saveTable();
-            templateBusiness.saveHybridTable();
+            commonBusiness.emitMsg('saveAllChart');
+            templateBusinessSave.save();
         }
 
         //Go to top
@@ -82,7 +81,6 @@
         //Get Schema
         function getSchemaAndData()
         {
-            //templateBusiness.showTemplateProgress();
             stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
             {
                 toast.simpleToast('AutoSave Enabled');
@@ -123,14 +121,6 @@
         function initialize()
         {
             getSchemaAndData();
-
-            //commonBusiness.onMsg('step-load-completed', $scope, function() {
-            //    templateBusiness.hideTemplateProgress();
-            //});
-            //
-            //commonBusiness.onMsg('step-load-initiated', $scope, function() {
-            //    templateBusiness.showTemplateProgress();
-            //});
         }
 
         //Move to the previous step
