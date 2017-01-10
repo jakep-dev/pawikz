@@ -9,7 +9,8 @@
         .factory('workupBusiness', workupBusiness);
 
     /* @ngInject */
-    function workupBusiness(workupService, authService, toast, store, dialog, clientConfig, commonBusiness, notificationBusiness) {
+    function workupBusiness($location, navConfig, workupService, authService, toast, store, dialog,
+                            clientConfig, notificationBusiness, commonBusiness) {
 
         var business = {
                 initialize: initialize,
@@ -34,8 +35,6 @@
         //Renew the workup details from dashboard.
         function renewFromDashboard(userId, projectId, projectName)
         {
-            workupService.renew(userId, projectId, 'fromDashboard');
-            toast.simpleToast(projectName + ' getting ready for renewal');
             notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
@@ -49,6 +48,10 @@
                 istrackable: false,
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
+            workupService.renew(userId, projectId, 'fromDashboard');
+            dialog.notify('Renewing Workup', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null, null, null, false);
         }
 
         //Add create workup details to notification center and show dialog box to user.
@@ -91,8 +94,18 @@
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
             workupService.renew(userId, projectId, reloadEvent);
-            dialog.status('app/main/components/workup/dialog/workup.dialog.renew.html', false, false);
-        }
 
+            dialog.notify('Renewing Workup', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null,
+                {
+                    ok: {
+                        callBack: function() {
+                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+                            $location.url('/dashboard/'+ commonBusiness.userId );
+                        }
+                    }
+                }, null, false);
+        }
     }
 })();

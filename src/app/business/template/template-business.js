@@ -264,7 +264,9 @@
                             {
                                 notification.requestId = data.requestId;
                             }
-                            dialog.status('app/core/directives/ms-template/dialog/ms-template.dialog.pdf.html', false, false);
+                            dialog.notify('Pdf Download', 'Go to Notification Center ',
+                                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to download.</span>',
+                                null, null, null, false);
                         }
                     });
             }

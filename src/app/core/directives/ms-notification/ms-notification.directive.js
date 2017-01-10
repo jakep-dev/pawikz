@@ -85,7 +85,7 @@
             controller: 'MsNotificationController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-notification/ms-notification.html'
-        }
+        };
     }
 
 })();

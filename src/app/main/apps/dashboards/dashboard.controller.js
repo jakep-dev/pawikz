@@ -21,7 +21,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.companyId = 0;
     vm.userId = 0;
     vm.isRedrawFromDelete = false;
-    vm.deleteProjectId = null;
+    vm.selectedProjectId = null;
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -59,24 +59,22 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function deleteWorkup(projectId, projectName)
     {
-        dialog.custom(clientConfig.messages.dashboardDelete.title,
-                      projectName + clientConfig.messages.dashboardDelete.content,
-                      null, {
-            ok: {
-                name: 'yes',
-                callBack: function () {
-                    vm.deleteProjectId = projectId;
-                    toggleRedraw();
-                    redrawDataTable();
+        dialog.confirm(clientConfig.messages.dashboardDelete.title,
+            projectName + clientConfig.messages.dashboardDelete.content,
+            null, {
+                ok: {
+                    callBack: function () {
+                        vm.selectedProjectId = projectId;
+                        toggleRedraw();
+                        redrawDataTable();
+                    }
+                },
+                cancel:{
+                    callBack:function(){
+                        return false;
+                    }
                 }
-            },
-            cancel:{
-                name:'no',
-                callBack:function(){
-                    return false;
-                }
-            }
-        }, null);
+            }, null, false);
     }
 
     function toggleRedraw()
@@ -312,9 +310,9 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 projectId: $rootScope.projectId
             };
 
-            dashboardService.processRemoveWorkUp(vm.deleteProjectId, filterParam).then(function(results)
+            dashboardService.processRemoveWorkUp(vm.selectedProjectId, filterParam).then(function(results)
             {
-                vm.deleteProjectId = null;
+                vm.selectedProjectId = null;
                 
                 var data = results.dashboard;
                 var deleted = results.delete;
