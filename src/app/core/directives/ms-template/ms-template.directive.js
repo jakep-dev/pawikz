@@ -8,7 +8,8 @@
         .directive('msTemplate', msTemplateDirective);
 
     function msTemplateController($rootScope, $scope, $mdMenu, $window,
-                                  templateBusiness, commonBusiness, notificationBusiness, workupBusiness)
+                                  commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
+                                 )
     {
         var vm = this;
 
@@ -26,10 +27,8 @@
         {
             //Changed Date: 28/4/2016 as per Bug - Chart title not saving
             commonBusiness.emitMsg('saveAllChart');
-            templateBusiness.save();
-            templateBusiness.saveTable();
+            templateBusinessSave.save();
             $mdMenu.hide();
-            templateBusiness.cancelPromise();
         }
 
         function pdfDownload() {

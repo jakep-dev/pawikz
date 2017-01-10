@@ -24,7 +24,8 @@
 
         //Save template details
         function save()
-        {   if(business.saveMnemonics.length > 0){
+        {
+            if (business.saveMnemonics.length > 0) {
                 var input = {
                     userId: commonBusiness.userId,
                     data: business.saveMnemonics
@@ -60,9 +61,9 @@
                 });
 
                 business.saveMnemonics = [];
-            }
-            else {
-                toast.simpleToast('No changes to save');
+            } else {
+                console.log('No changes to save');
+                toast.simpleToast('Saved sucessfully');
             }
         }
 
