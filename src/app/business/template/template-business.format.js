@@ -66,9 +66,12 @@
 
 		function getProgramTableFormatObject(tearsheet, mnemonicType) {
 			var formatObject = getFormatObject(tearsheet);
-			formatObject.dataType = mnemonicType.dataType;
-    	    formatObject.dataSubtype = mnemonicType.dataSubtype;
-			formatObject.precision = 2;
+			
+			if(formatObject) {	
+				formatObject.dataType = mnemonicType.dataType;
+    	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
+				formatObject.precision = 2;
+			}
 
 			return formatObject;
 		}
