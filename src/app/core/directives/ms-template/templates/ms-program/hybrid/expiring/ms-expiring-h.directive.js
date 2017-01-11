@@ -855,7 +855,7 @@
                 );
             } else {
                 removeAllRows($scope);
-                angular.forEach(tableMnemonic.rows, function(row, index){
+                _.each(tableMnemonic.rows, function(row, index){
                     
                     //sets sequence to its previous max sequence so that no conflict on delete condition  
                     row.SEQUENCE = maxSequence + index + 1;
