@@ -9,6 +9,7 @@
     function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness) {
         var business = {
             getFormatObject: getFormatObject,
+			getProgramTableFormatObject: getProgramTableFormatObject,
             removeFixes: removeFixes,
             formatData: formatData,
 
@@ -62,6 +63,18 @@
     	    formatObject.isNumeric = templateBusiness.isMnemonicNumberType(tearsheet.Mnemonic);
     	    return formatObject;
     	}
+
+		function getProgramTableFormatObject(tearsheet, mnemonicType) {
+			var formatObject = getFormatObject(tearsheet);
+			
+			if(formatObject) {	
+				formatObject.dataType = mnemonicType.dataType;
+    	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
+				formatObject.precision = 2;
+			}
+
+			return formatObject;
+		}
         
     	function removeFixes(value, formatObj) {
 

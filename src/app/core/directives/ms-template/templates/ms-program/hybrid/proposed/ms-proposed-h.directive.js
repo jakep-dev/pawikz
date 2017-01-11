@@ -49,7 +49,7 @@
                         $scope.$parent.$parent.isprocesscomplete = true;
 
                         $scope.rows = [];
-                        angular.forEach(response.dynamicTableDataResp, function(row, index){
+                        _.each(response.dynamicTableDataResp, function(row, index){
                             $scope.rows.push(buildRow($scope, row, index == 0));
                         });
 
@@ -280,7 +280,7 @@
             html += '<th><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" class="no-padding-margin"></md-checkbox></th>';
             if($scope.tearsheet.header && $scope.tearsheet.header.length > 0) 
             {
-                angular.forEach($scope.tearsheet.header, function(header)
+                _.each($scope.tearsheet.header, function(header)
                 {
                     html += '<th>';
                     html += header.HLabel;
@@ -302,7 +302,7 @@
             html += '<tr ng-repeat="row in rows">';
             html += '<td><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();"></md-checkbox></td>';
             
-            angular.forEach($scope.tearsheet.rows.col, function(eachCol)
+            _.each($scope.tearsheet.rows.col, function(eachCol)
             {
                 var tearSheetItem = eachCol.TearSheetItem;
                 var itemId = tearSheetItem.ItemId;
@@ -319,11 +319,13 @@
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
+                        var formats = templateBusinessFormat.getProgramTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
                         html += '<ms-program-text columnname="'+ itemId +'" rowid="{{$index}}" ' +
                             'row="row.'+ itemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
                             'itemid="{{row.'+ itemId +'.itemid}}" ' +
                             'mnemonicid="{{row.'+ itemId +'.mnemonicid}}" ' +
-                            'value="{{row.'+ itemId +'.value}}" isdisabled="{{row.'+ itemId +'.isdisabled}}"></ms-program-text>';
+                            'value="{{row.'+ itemId +'.value}}" isdisabled="{{row.'+ itemId +'.isdisabled}}" ' +
+                            'formats="' + _.escape(angular.toJson(formats)) + '"></ms-program-text>';
                         break;
 
                     case 'SingleDropDownItem':
@@ -361,7 +363,7 @@
             var totalCount = $scope.tearsheet.rows.col.length;
             var isRowComputed = false;
             makeColDef = '{'
-            angular.forEach($scope.tearsheet.rows.col, function(eachCol)
+            _.each($scope.tearsheet.rows.col, function(eachCol)
             {
                 var tearSheetItem = eachCol.TearSheetItem;
                 var itemId = tearSheetItem.ItemId;
@@ -444,7 +446,7 @@
                 {
                     var values = [];
                     var selectedValue = '';
-                    angular.forEach(tearSheetItem.param, function(each)
+                    _.each(tearSheetItem.param, function(each)
                     {
                         if(each.checked === 'yes')
                         {
@@ -466,9 +468,9 @@
                 }
 
                 if(colCount === totalCount) {
-                    makeColDef += '}'
+                    makeColDef += '}';
                 }else {
-                    makeColDef += '},'
+                    makeColDef += '},';
                 }
                 colCount++;
             });
@@ -487,7 +489,7 @@
 
         function makeSelections($scope)
         {
-			angular.forEach($scope.rows, function(eachRow)
+			_.each($scope.rows, function(eachRow)
             {
 				if(eachRow.IsChecked !== $scope.IsAllChecked)
 				{
@@ -667,7 +669,7 @@
                         //console.log('adding sequence : ' + sequence);
                         
                         var makeColDef = '{';
-                        angular.forEach($scope.tearsheet.header, function(header)
+                        _.each($scope.tearsheet.header, function(header)
                         {
                             makeColDef += '"'+header.HMnemonic + '":"",';
                         });
@@ -724,12 +726,12 @@
             var dataInfo = [];
             var data = null;
 
-            angular.forEach($scope.rows, function(row)
+            _.each($scope.rows, function(row)
             {
                 var data = '';
                 data += '{';
                 var colCount = 1;
-               angular.forEach($scope.tearsheet.header, function(header)
+               _.each($scope.tearsheet.header, function(header)
                {
                    var value = row[header.HMnemonic].value;
                    var headerName = header.HLabel;
@@ -773,8 +775,8 @@
 
         function clearProgram($scope, message)
         {
-            angular.forEach($scope.rows, function(row){
-                angular.forEach($scope.tearsheet.header, function(header){
+            _.each($scope.rows, function(row){
+                _.each($scope.tearsheet.header, function(header){
                     if(row[header.HMnemonic].id === 'SingleDropDownItem'){
                         row[header.HMnemonic].tearsheet.selectedValue = '';
                     }
@@ -810,7 +812,7 @@
                     $scope.mnemonic, $scope.copyexpiring, columns).then(function(response) {
                         $scope.$parent.$parent.isprocesscomplete = true;
 
-                        angular.forEach(response.dynamicTableDataResp, function(row, index){
+                        _.each(response.dynamicTableDataResp, function(row, index){
                             
                             //sets sequence to its previous max sequence so that no conflict on delete condition  
                             row.SEQUENCE = maxSequence + index + 1;
@@ -858,7 +860,7 @@
                 var headerStatus = [];
                 var rowIndex = 0;
 
-                angular.forEach($scope.tearsheet.header, function(eachHeader)
+                _.each($scope.tearsheet.header, function(eachHeader)
                 {
                     var headerName = eachHeader.HLabel;
                     var headerMnemonic = eachHeader.HMnemonic;
@@ -895,7 +897,7 @@
 
                     removeAllRows($scope);
 
-                    angular.forEach(data.data, function(content, rowCount)
+                    _.each(data.data, function(content, rowCount)
                     {
                         if(rowCount === 50)
                         {
@@ -906,7 +908,7 @@
                         if(rowCount !== 0)
                         {
                             var makeColDef = '{';
-                            angular.forEach($scope.tearsheet.header, function(header)
+                            _.each($scope.tearsheet.header, function(header)
                             {
                                 var findHeader = _.find(headerStatus, function(head)
                                 {
@@ -954,7 +956,7 @@
 		function removeAllRows($scope){
 			
 			//clearFilter($scope);
-			angular.forEach($scope.rows, function(row){
+			_.each($scope.rows, function(row){
 				row.IsChecked = true;
 			});
 			
@@ -985,7 +987,7 @@
 			};
 			
 			setTLStatus(row);
-			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key)
+			_.each(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key)
 			{
                 if(angular.isObject(value)) {
                     if(value.value && value.itemid){
@@ -1019,7 +1021,7 @@
 				condition: []
 			};
 			
-			angular.forEach(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key){
+			_.each(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key){
                 if(angular.isObject(value)) {
                     if(value.value && value.itemid){
                         save.row.push({
