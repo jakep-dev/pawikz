@@ -714,6 +714,11 @@
 						value: row.SEQUENCE
 					});
 
+                    deleteRow.condition.push({
+                        columnName: 'ITEM_ID',
+                        value: $scope.itemId
+                    });
+
                     if(index < minIndex) {
                         minIndex = index;
                     }

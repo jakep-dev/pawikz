@@ -512,6 +512,11 @@
 						columnName: 'SEQUENCE',
 						value: row.SEQUENCE
 					});
+
+                    deleteRow.condition.push({
+                        columnName: 'ITEM_ID',
+                        value: $scope.itemid
+                    });
 					
 					$scope.rows.splice(index, 1);
 					$scope.data.splice(getRowIndexBySequence($scope.data, row.SEQUENCE), 1);
