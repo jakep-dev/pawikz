@@ -300,7 +300,7 @@
 
             html += '<tbody>';
             html += '<tr ng-repeat="row in rows">';
-            html += '<td><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();"></md-checkbox></td>';
+            html += '<td class="checkbox-column"><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();"></md-checkbox></td>';
             
             _.each($scope.tearsheet.rows.col, function(eachCol)
             {
