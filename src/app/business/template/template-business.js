@@ -19,6 +19,7 @@
            saveMnemonics: [],
 		   saveTableMnemonics: [],
 		   saveHybridTableMnemonics: [],
+           programTableMnemonics: [],
 		   //saveInteractiveStockChartMnemonics: [],
 		   //saveSignificantDevelopmentMnemonics: [],
 		   //saveInteractiveFinancialChartMnemonics: [],
@@ -92,7 +93,8 @@
            getComponentHeader: getComponentHeader,
 		   isMnemonicNumberType: isMnemonicNumberType,
            getTearSheetItems: getTearSheetItems,
-           getCompInitialLoadCount: getCompInitialLoadCount
+           getCompInitialLoadCount: getCompInitialLoadCount,
+           updateProgramTableMnemonics: updateProgramTableMnemonics
         };
 
         return business;
@@ -952,14 +954,16 @@
             var newScope  = scope.$new(true);
             newScope.isnoneditable = scope.isnoneditable;
             newScope.copyproposed = null;
+            newScope.copyStepId = null;
             newScope.tearsheet = {
                 header: null,
                 rows: null
             }
 
-            if(tearheader)
+            if(content)
             {
-                newScope.copyproposed =  content.copyProposedTable || null;
+                newScope.copyproposed = content.copyProposedTable || null;
+                newScope.copyStepId = content.copyStepId || '';
             }
 
             if(content && content.HeaderRowTemplate && content.HeaderRowTemplate.Headers) {
@@ -970,7 +974,7 @@
                 newScope.tearsheet.rows = content.TableRowTemplate.row;
             }
             
-            comp.html += '<ms-expiring-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'" copyproposed="'+ newScope.copyproposed +'" isnoneditable="isnoneditable"></ms-expiring-h>';
+            comp.html += '<ms-expiring-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'" copyproposed="'+ newScope.copyproposed +'" copstepid="'+ newScope.copyStepId +'" isnoneditable="isnoneditable"></ms-expiring-h>';
             comp.scope = newScope;
 
             return comp;
@@ -986,14 +990,16 @@
             newScope.tearsheet = null;
             newScope.isnoneditable = scope.isnoneditable;
             newScope.copyexpiring = null;
+            content.copyStepId = null;
             newScope.tearsheet = {
                 header: null,
                 rows: null
             }
 
-            if(tearheader)
+            if(content)
             {
                 newScope.copyexpiring =  content.copyExpiringTable || null;
+                newScope.copyStepId = content.copyStepId || '';
             }
 
             if(content && content.HeaderRowTemplate && content.HeaderRowTemplate.Headers) {
@@ -1004,7 +1010,7 @@
                 newScope.tearsheet.rows = content.TableRowTemplate.row;
             }
 
-            comp.html += '<ms-proposed-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'"  copyexpiring="'+ newScope.copyexpiring +'"  isnoneditable="isnoneditable"></ms-proposed-h>';
+            comp.html += '<ms-proposed-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'" copyexpiring="'+ newScope.copyexpiring +'"  copystepid="'+ newScope.copyStepId +'" isnoneditable="isnoneditable"></ms-proposed-h>';
             comp.scope = newScope;
 
             return comp;
@@ -1930,6 +1936,23 @@
 			
 			business.saveHybridTableMnemonics = [];
 		}
+
+        //maintain business variable for copy expiring/proposed program
+        function updateProgramTableMnemonics(projectId, mnemonic, itemId, rows)
+        {
+            var tableMnemonic = _.find(business.programTableMnemonics, {projectId: projectId, mnemonic: mnemonic, itemId: itemId});
+
+            if(angular.isUndefined(tableMnemonic)) {
+                business.programTableMnemonics.push({
+                    projectId: projectId, 
+                    mnemonic: mnemonic, 
+                    itemId: itemId,
+                    rows: rows
+                })
+            } else {
+                tableMnemonic.rows = rows;
+            }
+        }
 
         //Cancel the auto-save promise.
         function cancelPromise()
