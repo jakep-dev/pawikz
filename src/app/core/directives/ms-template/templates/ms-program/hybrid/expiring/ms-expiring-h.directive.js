@@ -695,6 +695,9 @@
 		
 		function deleteRows($scope)
 		{
+             //to get the starting index for recalculation
+            var minIndex = $scope.rows.length - 1;
+
 			for(var index = $scope.rows.length - 1; index >= 0; index--)
 			{
 				var row = $scope.rows[index];
@@ -710,14 +713,22 @@
 						columnName: 'SEQUENCE',
 						value: row.SEQUENCE
 					});
+
+                    if(index < minIndex) {
+                        minIndex = index;
+                    }
 					
 					$scope.rows.splice(index, 1);
-					//$scope.data.splice(getRowIndexBySequence($scope.data, row.SEQUENCE), 1);
 					autoSave($scope, deleteRow);
 					
 					calculateHeaderSelection($scope);
 				}
 			}
+
+            //recalculate based on minimum deleted index
+            if($scope.rows.length > 0) {
+                computeOthers($scope, $scope.rows, minIndex);
+            }
 		}
 
         function downloadToCSV($scope)
