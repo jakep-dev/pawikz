@@ -116,8 +116,8 @@
               vm.title = title;
               vm.content = content;
               vm.event = event;
-              vm.cancelName = action.cancel && action.cancel.name;
-              vm.okName = action.ok && action.ok.name;
+              vm.cancelName = action && action.cancel && action.cancel.name;
+              vm.okName = action && action.ok && action.ok.name;
               vm.cancelCallBack = cancelCallBack;
               vm.okCallBack = okCallBack;
 

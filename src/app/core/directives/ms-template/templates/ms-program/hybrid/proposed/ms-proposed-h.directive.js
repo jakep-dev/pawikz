@@ -12,7 +12,7 @@
                                     templateBusinessFormat, templateBusinessSave,
                                     toast, deviceDetector, clientConfig,
                                     DTOptionsBuilder, DTColumnDefBuilder,
-                                    templateService)
+                                    templateService, dialog)
     {
         return {
             restrict: 'E',
@@ -21,6 +21,7 @@
                 itemId: '@',
                 tearsheet: '=',
                 copyexpiring: '@',
+                copystepid: '@',
                 isnoneditable: '=?'
             },
             templateUrl: 'app/core/directives/ms-template/templates/ms-program/hybrid/proposed/ms-proposed-h.html',
@@ -58,6 +59,8 @@
                             //create empty rows total of 5
                         }
 
+                        templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
+
                         defineLayout($scope, el);
                     }
             );
@@ -73,6 +76,7 @@
                     $scope.rows[rowNumber][column].value = value;
                     
                     saveRow($scope, $scope.rows[rowNumber]);
+                    templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                 }
             };
             
@@ -135,6 +139,7 @@
                         saveRow($scope, $scope.rows[rowNumber]);
                     }
                 }
+                templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
             };
 
             $scope.upload = function()
@@ -518,8 +523,6 @@
         {
             for(var count = (rowNum); count < rows.length; count++)
             {
-                /*console.log('computing others');
-                console.log(rows[count]);*/
                 if(rows[count].iscompute)
                 {
                     
@@ -527,7 +530,6 @@
                     computeRate(rows[count], count + 1);
                     computeRol(rows[count], rows[count - 1], count + 1);
                     saveRow($scope, rows[count]);
-                    //console.log('computed');
                 }
             }
         }
@@ -666,7 +668,6 @@
                     for( var i = 0; i < rowNumber; i ++){
                         
                         var sequence = (maxSequence + i + 1);
-                        //console.log('adding sequence : ' + sequence);
                         
                         var makeColDef = '{';
                         _.each($scope.tearsheet.header, function(header)
@@ -685,6 +686,7 @@
                         
                         $scope.rows.push(row);
                     }
+                    templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                 }
 			}
 			else
@@ -734,6 +736,7 @@
             if($scope.rows.length > 0) {
                 computeOthers($scope, $scope.rows, minIndex);
             }
+            templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
 		}
 
         function downloadToCSV($scope)
@@ -812,35 +815,64 @@
         function copyProgram($scope){
 
             var maxSequence = getMaxSequence($scope);
-            removeAllRows($scope);
+            var tableMnemonic = _.find(templateBusiness.programTableMnemonics, {projectId: commonBusiness.projectId, mnemonic: $scope.mnemonic, itemId: $scope.copyproposed});
 
-            $scope.$parent.$parent.isprocesscomplete = false;
-            var columns = '';
-            if($scope.tearsheet.header && $scope.tearsheet.header.length > 0){
-                columns = _.map($scope.tearsheet.header, function(mnemonic){
-                    return mnemonic.HMnemonic;
-                }).join(',');
+            //if no found in programTableMnemonics, call webservice to get data
+            if(angular.isUndefined(tableMnemonic)) {
+                
+                //used dialog custom to have no buttons to close the dialog
+                dialog.custom('Copy Program', 'Please be patient. Copy in-progress.', null, null, null, false);
+                
+                var columns = '';
+                var stepId = ($scope.copystepid && $scope.copystepid.length > 0)? $scope.copystepid : commonBusiness.stepId;
+                
+                if($scope.tearsheet.header && $scope.tearsheet.header.length > 0){
+                    columns = _.map($scope.tearsheet.header, function(mnemonic){
+                        return mnemonic.HMnemonic;
+                    }).join(',');
 
-                columns += ',TL_STATUS,SEQUENCE';
+                    columns += ',TL_STATUS,SEQUENCE';
+                }
+
+                templateService.getDynamicTableData(commonBusiness.projectId, stepId,
+                        $scope.mnemonic, $scope.copyexpiring, columns).then(function(response) {
+                            
+                            removeAllRows($scope);
+                            _.each(response.dynamicTableDataResp, function(row, index){
+                                
+                                //sets sequence to its previous max sequence so that no conflict on delete condition  
+                                row.SEQUENCE = maxSequence + index + 1;
+                                
+                                var copyRow = buildRow($scope, row, index == 0);
+                                insertRow($scope, copyRow, row.SEQUENCE);
+                            
+                                $scope.rows.push(copyRow);
+                            });
+                            
+                            dialog.close();
+                            toast.simpleToast('Proposed program copied!');
+                            
+                            templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
+                            templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.copyproposed, angular.copy($scope.rows));
+                        }
+                );
+            } else {
+                removeAllRows($scope); 
+                
+                angular.forEach(tableMnemonic.rows, function(row, index){
+                                
+                    //sets sequence to its previous max sequence so that no conflict on delete condition  
+                    row.SEQUENCE = maxSequence + index + 1;
+                    row.IsChecked = false;
+                    
+                    insertRow($scope, row, row.SEQUENCE);
+                
+                    $scope.rows.push(row);
+                });
+                
+                toast.simpleToast('Proposed program copied!');
+                templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
             }
-
-            templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
-                    $scope.mnemonic, $scope.copyexpiring, columns).then(function(response) {
-                        $scope.$parent.$parent.isprocesscomplete = true;
-
-                        _.each(response.dynamicTableDataResp, function(row, index){
-                            
-                            //sets sequence to its previous max sequence so that no conflict on delete condition  
-                            row.SEQUENCE = maxSequence + index + 1;
-                            
-                            var copyRow = buildRow($scope, row, index == 0);
-                            insertRow($scope, copyRow, row.SEQUENCE);
-                        
-                            $scope.rows.push(copyRow);
-                        });
-                        toast.simpleToast('Proposed program copied!');
-                    }
-            );
             
         }
 
@@ -961,7 +993,7 @@
                     {
                         message = 'Uploaded successfully!';
                     }
-
+                    templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                     toast.simpleToast(message);
                 }
             }
