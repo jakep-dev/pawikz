@@ -208,7 +208,7 @@
                     callback: "PPH-Copy",
                     icon: 'icon-content-copy',
                     isclicked: null,
-                    tooltip: 'Copy from Proposed',
+                    tooltip: 'Copy from Expiring',
                     type: 'button'
                 });
 
