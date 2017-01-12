@@ -396,7 +396,7 @@
                 {
                     if (value)
                     {
-                        makeColDef += '"' + $filter("currency")(value, '', 0) + '",';
+                        makeColDef += '"' + $filter("currency")(value, '') + '",';
                     }
                     else
                     {
@@ -407,7 +407,7 @@
                 {
                     if (value)
                     {
-                        makeColDef += '"' + $filter("currency")(value, '', 2) + '",';
+                        makeColDef += '"' + $filter("currency")(value, '') + '",';
                     }
                     else
                     {
@@ -418,7 +418,7 @@
                 {
                     if (value)
                     {
-                        makeColDef += '"' + removeCommaValue($filter("number")(value, 2)) + '",';
+                        makeColDef += '"' + removeCommaValue($filter("number")(value)) + '",';
                     }
                     else
                     {
@@ -522,9 +522,13 @@
         {
             for(var count = (rowNum); count < rows.length; count++)
             {
-                if(rows[count].iscompute)
+                //enable RETAIN/ATT field if first row
+                if(rows[count] && rows[count].RETAIN && rows[count].RETAIN.isdisabled){
+                    rows[count].RETAIN.isdisabled = count > 0;
+                }
+
+                if(rows[count] && rows[count].iscompute)
                 {
-                    
                     computeAtt(rows[count], rows[count - 1], count + 1);
                     computeRate(rows[count], count + 1);
                     computeRol(rows[count], rows[count - 1], count + 1);
