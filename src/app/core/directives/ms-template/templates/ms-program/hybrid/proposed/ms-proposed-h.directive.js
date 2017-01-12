@@ -398,7 +398,7 @@
                 {
                     if (value)
                     {
-                        makeColDef += '"' + $filter("currency")(value, '', 0) + '",';
+                        makeColDef += '"' + $filter("currency")(value, '') + '",';
                     }
                     else
                     {
@@ -409,7 +409,7 @@
                 {
                     if (value)
                     {
-                        makeColDef += '"' + $filter("currency")(value, '', 2) + '",';
+                        makeColDef += '"' + $filter("currency")(value, '') + '",';
                     }
                     else
                     {
@@ -420,7 +420,7 @@
                 {
                     if (value)
                     {
-                        makeColDef += '"' + removeCommaValue($filter("number")(value, 2)) + '",';
+                        makeColDef += '"' + removeCommaValue($filter("number")(value)) + '",';
                     }
                     else
                     {
@@ -523,9 +523,13 @@
         {
             for(var count = (rowNum); count < rows.length; count++)
             {
-                if(rows[count].iscompute)
-                {
-                    
+                //enable RETAIN/ATT field if first row
+                if(rows[count] && rows[count].RETAIN && rows[count].RETAIN.isdisabled){
+                    rows[count].RETAIN.isdisabled = count > 0;
+                }
+                
+                if(rows[count] && rows[count].iscompute)
+                {   
                     computeAtt(rows[count], rows[count - 1], count + 1);
                     computeRate(rows[count], count + 1);
                     computeRol(rows[count], rows[count - 1], count + 1);
@@ -815,7 +819,7 @@
         function copyProgram($scope){
 
             var maxSequence = getMaxSequence($scope);
-            var tableMnemonic = _.find(templateBusiness.programTableMnemonics, {projectId: commonBusiness.projectId, mnemonic: $scope.mnemonic, itemId: $scope.copyproposed});
+            var tableMnemonic = _.find(templateBusiness.programTableMnemonics, {projectId: commonBusiness.projectId, mnemonic: $scope.mnemonic, itemId: $scope.copyexpiring});
 
             //if no found in programTableMnemonics, call webservice to get data
             if(angular.isUndefined(tableMnemonic)) {
@@ -853,7 +857,7 @@
                             toast.simpleToast('Proposed program copied!');
                             
                             templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
-                            templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.copyproposed, angular.copy($scope.rows));
+                            templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.copyexpiring, angular.copy($scope.rows));
                         }
                 );
             } else {
