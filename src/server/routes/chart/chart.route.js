@@ -336,9 +336,9 @@
                             searchedStocks: [],
                             to: {},
                             from: {},
-                            isSplits: (savedChart.dividends === 'Y') ? true : false,
+                            isSplits: (savedChart.splits === 'Y') ? true : false,
                             isEarnings: (savedChart.earnings === 'Y') ? true : false,
-                            isDividents: (savedChart.splits === 'Y') ? true : false,
+                            isDividends: (savedChart.dividends === 'Y') ? true : false,
                             eventOptionVisibility: false,
                             dateOptionVisibility: false,
                             comparisonOptionVisibility: false,
@@ -400,7 +400,7 @@
                 return console.log('success');
             });
         }
-        
+
         //function saveSigDevItems(req, res, next) {
         //    var service = getServiceDetails('charts');
         //    var methodName = '';
@@ -556,7 +556,7 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-            
+
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
                 res.status(response.statusCode).send(data);

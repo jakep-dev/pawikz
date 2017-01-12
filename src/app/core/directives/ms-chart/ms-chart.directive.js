@@ -178,7 +178,7 @@
                                         //         companyName: commonBusiness.companyName,
                                         //         date_end: "",
                                         //         date_start: "",
-                                        //         isDividents: false,
+                                        //         isDividends: false,
                                         //         isEarnings: false,
                                         //         isSplits: false,
                                         //         item_id: "WU_STOCK_CHART_3YR_EM",
@@ -227,7 +227,7 @@
                                                     endDate: templateBusinessFormat.parseDate(chartSettings.date_end, 'YYYY-MM-DD'),
                                                     splits: chartSettings.isSplits,
                                                     earnings: chartSettings.isEarnings,
-                                                    dividends: chartSettings.isDividents,
+                                                    dividends: chartSettings.isDividends,
                                                     selectedIndices: chartSettings.selectedIndicesList,
                                                     selectedPeers: chartSettings.selectedPeerList,
                                                     selectedCompetitors: chartSettings.selectedCompetitorsList,
@@ -512,7 +512,7 @@
                                                 title: title,
                                                 chartType: 'IFCHART'
                                             });
-                                            
+
                                             n = data.chartSettings.length;
 
                                             data.chartSettings.sort(function (a, b) {
