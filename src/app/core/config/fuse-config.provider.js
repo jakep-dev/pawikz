@@ -13,6 +13,7 @@
         var fuseConfiguration = {
             'disableCustomScrollbars'        : false,
             'disableMdInkRippleOnMobile'     : false,
+            'disableMdInkRippleOnIE'         : true,
             'disableCustomScrollbarsOnMobile': true
         };
 

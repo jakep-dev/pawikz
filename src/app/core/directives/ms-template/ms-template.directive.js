@@ -89,7 +89,6 @@
 
                 scope.loadMore = function()
                 {
-
                     if(!scope.isLoadMoreDisabled) {
                        var comPromise = $interval(function(){//using $interval seems to work fine
                             var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
