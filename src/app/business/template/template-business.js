@@ -92,10 +92,22 @@
            getComponentHeader: getComponentHeader,
 		   isMnemonicNumberType: isMnemonicNumberType,
            getTearSheetItems: getTearSheetItems,
-           getCompInitialLoadCount: getCompInitialLoadCount
+           getCompInitialLoadCount: getCompInitialLoadCount,
+           buildNewsComponent: buildNewsComponent
         };
 
         return business;
+
+        function buildNewsComponent(subtype)
+        {
+            switch (subtype){
+                case 'newssearch':
+                    break;
+
+                case 'newsattachment':
+                    break;
+            }
+        }
 
         function getCompInitialLoadCount() {
             var compCount = clientConfig.appSettings.compInitialLoadForDesktop;
@@ -594,7 +606,7 @@
 
                 if (content.TearSheetItem) {
                     if (content.TearSheetItem.length) {
-                        tearSheets.push.apply(tearSheets, content.TearSheetItem)
+                        tearSheets.push.apply(tearSheets, content.TearSheetItem);
                     }
                     else {
                         tearSheets.push(content.TearSheetItem);

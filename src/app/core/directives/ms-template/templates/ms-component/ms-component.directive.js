@@ -172,12 +172,12 @@
 
                     if($scope.subtype !== '')
                     {
-                        switch($scope.subtype)
+                        switch($scope.subtype.toLocaleLowerCase())
                         {
-                            case 'Expiring':
-                            case 'Proposed':
-                            case 'ExpiringHybrid':
-                            case 'ProposedHybrid':
+                            case 'expiring':
+                            case 'proposed':
+                            case 'expiringhybrid':
+                            case 'proposedhybrid':
 
                                 var tearSheets = templateBusiness.getTearSheetItems($scope.tearcontent);
 
@@ -189,10 +189,10 @@
                                 });
                                 break;
 
-                            case 'TableLayOut1':
-                            case 'TableLayOut2':
-                            case 'TableLayOut3':
-                            case 'TableLayOut5':
+                            case 'tablelayout1':
+                            case 'tablelayout2':
+                            case 'tablelayout3':
+                            case 'tablelayout5':
                                 comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
                                 if(comp && comp.html !== '')
                                 {
@@ -200,7 +200,7 @@
                                 }
                                 break;
 
-                            case 'TableLayOut4':
+                            case 'tablelayout4':
                                 comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
                                 if(comp && comp.html !== '')
                                 {
@@ -208,28 +208,37 @@
                                 }
                                 bindTableLayout4Components($scope, el, $scope.tearcontent);
                                 break;
-
-                            case 'SubComponent':
+                            case 'subcomponent':
                                 var subComponents = templateBusiness.getSubComponents($scope.tearcontent);
                                 if(subComponents)
                                 {
-                                    _.each(subComponents, function(component)
-                                    {
-                                        if(!component.header) {
-                                            comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
-                                            if(comp && comp.html !== '') {
-                                                comp.html += '<div style="height:5px"></div>'
-                                            }
-                                        }
-                                        else {
-                                            comp = templateBusiness.buildSubComponent($scope, component);
-                                        }
-
-                                        if(comp && comp.html !== '')
+                                    var msCompElem = el.find('#ms-accordion-content');
+                                    if(msCompElem) {
+                                        _.each(subComponents, function(component)
                                         {
-                                            el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                                        }
-                                    });
+                                            if(!component.header) {
+                                                comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
+                                                if(comp && comp.html !== '') {
+                                                    comp.html += '<div style="height:5px"></div>';
+                                                }
+                                            }
+                                            else {
+                                                comp = templateBusiness.buildSubComponent($scope, component);
+                                            }
+
+                                            if(comp && comp.html !== '') {
+                                                msCompElem.append($compile(comp.html)(comp.scope));
+                                            }
+                                        });
+                                    }
+                                }
+                                break;
+
+                            case 'newssearch':
+                            case 'newsattachment':
+                                var comp = templateBusiness.buildNewsComponent('pass needed parameters');
+                                if(comp) {
+                                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                 }
                                 break;
                         }
@@ -253,17 +262,18 @@
                 scope: null
             };
 
-            _.each(tearcontent, function(content)
-            {
-               if(content.id !== 'TableLayOut')
-               {
-                   comp = templateBusiness.buildComponents(scope, content, scope.subtype);
-                   if(comp && comp.html !== '')
-                   {
-                       el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                   }
-               }
-            });
+            var msCompElem = el.find('#ms-accordion-content');
+
+            if(msCompElem) {
+                _.each(tearcontent, function (content) {
+                    if (content.id !== 'TableLayOut') {
+                        comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+                        if (comp && comp.html !== '') {
+                            msCompElem.append($compile(comp.html)(comp.scope));
+                        }
+                    }
+                });
+            }
         }
 
         function bindComponents(scope, el, tearcontent)
@@ -274,14 +284,16 @@
             },
             tearSheets = templateBusiness.getTearSheetItems(tearcontent);
 
-            _.each(tearSheets, function(content) {
-                comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+            var msCompElem = el.find('#ms-accordion-content');
 
-                if(comp && comp.html !== '')
-                {
-                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                }
-            });
+            if(msCompElem) {
+                _.each(tearSheets, function (content) {
+                    comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+                    if (comp && comp.html !== '') {
+                        msCompElem.append($compile(comp.html)(comp.scope));
+                    }
+                });
+            }
         }
     }
 

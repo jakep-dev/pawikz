@@ -16,6 +16,7 @@
                 'app.chart.stockchart.business',
                 'app.chart.financialchart.business',
                 'app.breadcrumb.business',
-                'app.auth.business'
+                'app.auth.business',
+                'app.news.business'
             ]);
 })();
