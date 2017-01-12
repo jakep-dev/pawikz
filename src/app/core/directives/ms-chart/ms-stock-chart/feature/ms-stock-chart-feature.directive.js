@@ -35,18 +35,18 @@
 
                         $timeout(function() {
                             $(elem).find('.highcharts-legend-item').off('mouseover').on('mouseover', function(evt) {
-                                var text = $(this).find('tspan').text();
                                 $('.highcharts-legend-box').css({
                                     left:evt.clientX - 320,
                                     top:evt.clientY - $(this).position().top + 30
                                 }).parent().css({'position':'relative'})
 
-                                if (!$('.highcharts-legend-box').html()) {
-                                    $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                                        '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                                        '</div><div class="delete"><i class="fa fa-trash-o fa-lg pointer"></i></div>').show();
-                                }
-                                $('.highcharts-legend-box .name').text(text);
+                                // if (!$('.highcharts-legend-box').html()) {
+                                //     $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
+                                //         '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
+                                //         '</div><div class="delete"><i class="fa fa-trash-o fa-lg pointer"></i></div>').show();
+                                // }
+                                // var text = $(this).find('tspan').text();
+                                // $('.highcharts-legend-box .name').text(text);
                             });
                         }, 500);
 
@@ -535,6 +535,20 @@
                                                                     left:$(this).position().left,
                                                                     top:$(this).position().top + 7
                                                                 }).parent().css({'position':'relative'});
+
+                                                                tooltipBox.html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
+                                                                    '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
+                                                                    '</div><div class="delete"><a href="javascript:" class="trashIconTooltip"><i class="fa fa-trash-o fa-lg pointer"></i></a></div>');
+
+                                                                tooltipBox.find('.name').html(text);
+                                                                tooltipBox.show();
+
+                                                                $('.trashIconTooltip').click(function() {
+                                                                    var peer = $(this).parent().parent().find('.name').text().replace('&amp;', '&');
+                                                                    // peer = peer.substring(0, peer.lastIndexOf(' ')).trim();
+                                                                    scope.onPeerRemove(peer);
+                                                                });
+
                                                                 tooltipBox.mouseover(function() {
                                                                     tooltipBox.show();
                                                                 });
@@ -542,9 +556,6 @@
                                                                 tooltipBox.mouseout(function() {
                                                                     tooltipBox.hide();
                                                                 });
-
-                                                                tooltipBox.find('.name').html(text);
-                                                                tooltipBox.show();
                                                             }).on('mouseout', function (evt) {
                                                                 var tooltipBox = $(this).closest('div').closest('#stock-chart').find('.highcharts-legend-box');
                                                                 tooltipBox.hide();
@@ -808,15 +819,15 @@
                                 $(elem).append('<div class="highcharts-legend-box" style="display:none;"></div>');
                             }
 
-                            $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                                '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                                '</div><div class="delete"><a href="javascript:" class="trashIconTooltip"><i class="fa fa-trash-o fa-lg pointer"></i></a></div>');
+                            // $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
+                            //     '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
+                            //     '</div><div class="delete"><a href="javascript:" class="trashIconTooltip"><i class="fa fa-trash-o fa-lg pointer"></i></a></div>');
 
-                            $('.trashIconTooltip').click(function() {
-                                var peer = $(this).parent().parent().find('.name').text().replace('&amp;', '&');
-                                peer = peer.substring(0, peer.lastIndexOf(' ')).trim();
-                                scope.onPeerRemove(peer);
-                            });
+                            // $('.trashIconTooltip').click(function() {
+                            //     var peer = $(this).parent().parent().find('.name').text().replace('&amp;', '&');
+                            //     peer = peer.substring(0, peer.lastIndexOf(' ')).trim();
+                            //     scope.onPeerRemove(peer);
+                            // });
                         });
 
                         resizeSensor = new ResizeSensor($(elem).find('#container'), function () {
