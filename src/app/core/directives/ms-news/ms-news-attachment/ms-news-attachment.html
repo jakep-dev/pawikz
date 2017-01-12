@@ -1,3 +1,37 @@
-<div>
+<!--<div>
     <ms-accordion ng-repeat=""></ms-accordion>
+</div>-->
+<div ng-if="vm.bookmarkedItems.length == 0">
+    <div flex>
+        <ms-message message="No News Articles Attached"></ms-message>
+    </div>
+</div>
+<div ng-repeat="items in vm.bookmarkedItems" style=" padding-top:10px;">
+    <div id="ms-accordion" style="min-height: 50px;" class="md-amber-A200-bg layout-padding" ng-class="titleClass" layout="row" layout-align="space-between center">
+        <div layout-align="space-between center">
+            <div style="padding-left: 5px; font-size: 18px">
+                <span>{{items.title}}</span>
+            </div>
+        </div>
+        <div layout="row" layout-align="end center">
+            <md-button class="md-icon-button" aria-label="bookmark" ng-disabled="isdisabled" style="margin-right: -20px" ng-click="removeBookmark()">
+                <md-tooltip md-direction="top">
+                    Remove Bookmark
+                </md-tooltip>
+                <md-icon md-font-icon="icon-delete"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="expand/collapse" ng-if="!vm.iscollapsible" value="$index" ng-model="vm.bookmarkedItems[$index].isOpen" style="margin-right: -10px" ng-click="vm.toggleCollapseData($index)">
+                <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsedData ? 'ms-expand' : 'ms-collapse'"></md-icon>
+                <md-tooltip md-visible="expression" ng-if="!vm.collapsedData" md-delay="number" md-autohide="boolean" md-direction=string>
+                    Collapse
+                </md-tooltip>
+                <md-tooltip md-visible="expression" ng-if="vm.collapsedData" md-delay="number" md-autohide="boolean" md-direction=string>
+                    Expand
+                </md-tooltip>
+            </md-button>
+        </div>
+    </div>
+    <md-content id="ms-accordion-content" class="md-whiteframe-1dp" ng-show="collapsedData[$index]" layout-padding ms-lazy-loading>
+        {{items.externalUrl}}
+    </md-content>
 </div>
