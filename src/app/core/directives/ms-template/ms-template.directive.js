@@ -83,6 +83,7 @@
                 templateBusiness.components = scope.components;
                 scope.showLoadingBar = true;
                 scope.isLoadMoreDisabled = false;
+                scope.isCompLoaded = false;
 
                 console.log('Template component creation initiated - ');
                 console.log(scope);
@@ -264,14 +265,20 @@
                     }
                 });
 
-                console.log(bindHtml);
-
                 if(bindHtml && bindHtml.length > 0) {
-                    var element = el.find('#template-content');
+                    var divElem = angular.element('<div></div>');
                     _.each(bindHtml, function(html)
                     {
-                        element.append(html.content);
+                        divElem.append(html.content);
                     });
+                    scope.isCompLoaded = true;
+                    var bindCompProm = $interval(function(){
+                        var element = el.find('#template-content');
+                        console.log('Element - ');
+                        console.log(element);
+                        element.append(divElem);
+                        $interval.cancel(bindCompProm);
+                    }, 1);
                 }
 
                 return count;
