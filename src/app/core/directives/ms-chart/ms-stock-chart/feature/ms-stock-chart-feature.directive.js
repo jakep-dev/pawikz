@@ -39,14 +39,6 @@
                                     left:evt.clientX - 320,
                                     top:evt.clientY - $(this).position().top + 30
                                 }).parent().css({'position':'relative'})
-
-                                // if (!$('.highcharts-legend-box').html()) {
-                                //     $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                                //         '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                                //         '</div><div class="delete"><i class="fa fa-trash-o fa-lg pointer"></i></div>').show();
-                                // }
-                                // var text = $(this).find('tspan').text();
-                                // $('.highcharts-legend-box .name').text(text);
                             });
                         }, 500);
 
@@ -545,7 +537,6 @@
 
                                                                 $('.trashIconTooltip').click(function() {
                                                                     var peer = $(this).parent().parent().find('.name').text().replace('&amp;', '&');
-                                                                    // peer = peer.substring(0, peer.lastIndexOf(' ')).trim();
                                                                     scope.onPeerRemove(peer);
                                                                 });
 
@@ -563,16 +554,12 @@
                                                         })(legendNum);
                                                     }
                                                 }
-                                                //if (i == 0) {
-                                                //    addSeriesLabels(this);
-                                                //}
                                             }
                                         },
                                         marginLeft: 80, // Keep all charts left aligned
                                         marginRight: 80,
                                         spacingTop: dataset.spacingTop,
                                         spacingBottom: 4,
-                                        //zoomType: 'x',
                                         type: dataset.type
                                     },
                                     title: {
@@ -611,11 +598,6 @@
                                         labels: {
                                             align: 'center',
                                             enabled: dataset.showxaxisLabel
-                                            //,
-                                            //autoRotationLimit: 0,
-                                            //formatter: function () {
-                                            //    return Highcharts.dateFormat('%m-%d-%Y', this.value);
-                                            //}
                                         }
                                         ,
                                         tickPositioner: function () {
@@ -626,23 +608,7 @@
                                                 //show all marks for volume chart (i=1)
                                                 return null;
                                             }
-                                        //    var tickPositions = [];
-                                        //    var primaryDataLength = stockDataResp.stockChartPrimaryData.length;
-                                        //    var increment = 1;
-                                        //    if (primaryDataLength > 3) {
-                                        //        increment = parseInt(primaryDataLength / 4);
-                                        //    var remainder = primaryDataLength - (increment * 4);
-                                        //    increment += parseInt(remainder / 4);
-                                        //    }
-                                        //    for (var tickNdx = 0; tickNdx <= primaryDataLength; tickNdx += increment) {
-                                        //        var tickPositionNdx = tickNdx == primaryDataLength ? tickNdx - 1 : tickNdx;
-                                        //        tickPositions.push(tickPositionNdx);
-                                        //    }
-                                        //    return tickPositions;
                                         }
-                                        //,
-                                        //tickLength: (i == 0 ?  0 : 5),
-                                        //tickmarkPlacement: 'on'
                                     },
                                     yAxis: {
                                         title: {
@@ -744,8 +710,8 @@
                                                                             animate: 'full-screen-dialog',
                                                                             clickOutsideToClose:true,
                                                                             controller: function DialogController($scope, $mdDialog) {
-                                                                                $scope.selectedSources = [scope.sourceOptions[0]]; //$scope.$parent.vm.selectedSources || [scope.sourceOptions[0]];
-                                                                                $scope.selectedRange = '+/- 3 months'; //$scope.$parent.vm.selectedRange || '+/- 3 months';
+                                                                                $scope.selectedSources = [scope.sourceOptions[0]];
+                                                                                $scope.selectedRange = '+/- 3 months';
                                                                                 $scope.rangeOptions = '+/- 1 week, +/- 1 month, +/- 3 months, +/- 6 months, +/- 1 year'.split(', ');
                                                                                 $scope.selectedDate = new Date(v.dataDate);
                                                                                 $scope.errorMessage = 'Please select source(s)';
@@ -818,41 +784,24 @@
                             if (!$(elem).find('.highcharts-legend-box').length) {
                                 $(elem).append('<div class="highcharts-legend-box" style="display:none;"></div>');
                             }
-
-                            // $('.highcharts-legend-box').html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                            //     '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                            //     '</div><div class="delete"><a href="javascript:" class="trashIconTooltip"><i class="fa fa-trash-o fa-lg pointer"></i></a></div>');
-
-                            // $('.trashIconTooltip').click(function() {
-                            //     var peer = $(this).parent().parent().find('.name').text().replace('&amp;', '&');
-                            //     peer = peer.substring(0, peer.lastIndexOf(' ')).trim();
-                            //     scope.onPeerRemove(peer);
-                            // });
                         });
 
                         resizeSensor = new ResizeSensor($(elem).find('#container'), function () {
                             var context = new Object();
-                            //activity.currentSize = context.chart.chartWidth;
-                            //console.log('[1]Chart ' + activity.name + ':' + activity.currentSize);
-
                             if (activity.bottomChart.xAxis != null && activity.bottomChart.xAxis.length > 0) {
                                 activity.bottomChart.xAxis[0].setCategories(activity.xData);
                             }
                             $timeout(function (params) {
                                 params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
-
-                                //console.log('[3]Chart ' + params.name + ':Labels Changed:' + params.labelsChanged + ':width:' + params.chart.chartWidth);
                                 if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
                                     params.chart.xAxis[0].labelRotation = 0;
                                     params.chart.isDirty = true;
                                     params.chart.redraw();
                                 }
                             }, 500, false, { chart: activity.bottomChart, name: activity.name });
-                            //console.log('[2]Calling reflow for ' + activity.name);
                             activity.topChart.reflow();
                             activity.bottomChart.reflow();
                         });
-
                     }
                 }
             };
