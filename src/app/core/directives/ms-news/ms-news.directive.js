@@ -36,16 +36,7 @@
             },
             controller: 'msNewsController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-news/ms-news.html',
-            transclude: true,
-            link: function(scope, el, attrs) {
-                /*var html = '<div style="border:1px solid red;">Some text</div>';
-                var sort = el.find('#newsPageDetails_sort');
-                $("#newsPageDetails_sort").append(html);
-                console.log("Visible" + sort);
-                $compile(sort)(scope);
-                el.append(sort);*/
-            }
+            templateUrl: 'app/core/directives/ms-news/ms-news.html'
         };
     }
 })();

@@ -19,12 +19,26 @@
 
         vm.collapse = collapse;
 
+        vm.isExpandable = $scope.isExpandable;
+
         vm.titleClass =  $scope.titlebg || 'md-amber-A200-bg';
+
+        init();
 
         //Toggle the collapse
         function collapse()
         {
             vm.collapsed = !$scope.collapsed;
+        }
+
+
+
+        function init()
+        {
+            if(!vm.isExpandable)
+            {
+                vm.collapse = false;
+            }
         }
     }
 

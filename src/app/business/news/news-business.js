@@ -12,7 +12,7 @@
     function newsBusiness() {
 
         var business = {
-
+           selectedNews: []
         };
 
         return business;

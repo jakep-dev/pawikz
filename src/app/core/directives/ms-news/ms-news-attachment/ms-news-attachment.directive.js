@@ -37,6 +37,11 @@
            vm.loadAttachments();
         });
 
+        commonBusiness.onMsg('news-bookmark', $scope, function() {
+            vm.loadAttachments();
+        });
+
+
         function toggleCollapse() {
             vm.collapsed = !vm.collapsed;
         }

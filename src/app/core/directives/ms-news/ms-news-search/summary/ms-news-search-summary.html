@@ -1,21 +1,12 @@
-<div style="height: 40px" class="md-light-blue-A100-bg" layout="row" layout-align="space-between center">
-    <div layout-align="space-between center">
-        <div style="padding-left: 10px; font-size: 14px;">
-            <strong>Search Summary</strong>
-        </div>
-    </div>
-</div>
-<md-content id="ms-accordion-content" class="md-whiteframe-1dp" layout-padding>
+<ms-accordion is-expandable="false" title="Search Summary">
     <table>
         <tr>
             <td>Company Search :</td>
             <td>{{vm.company}}</td>
-        </tr>
-        <tr>
+
             <td>Articles Found :</td>
             <td>{{vm.articlesFound}}</td>
-        </tr>
-        <tr>
+
             <td>Showing Articles :</td>
             <td>{{vm.articlesShown}}</td>
         </tr>
@@ -28,5 +19,4 @@
             <td>{{vm.period}}</td>
         </tr>
     </table>
-</md-content>
-<div style="padding-top:10px;"></div>
+</ms-accordion>

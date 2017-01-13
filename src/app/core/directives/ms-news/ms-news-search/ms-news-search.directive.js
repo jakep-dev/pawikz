@@ -14,7 +14,6 @@
         vm.tableDetails = [];
         vm.selectAttachment = [];
         vm.resultDetails = [];
-
         vm.value = $scope.value;
         vm.collapsed = false;
         vm.company = '';
@@ -24,13 +23,15 @@
         vm.title = '';
         vm.summary = '';
         vm.sortVal = 'D';
-
-        $scope.isdisabled = false;
+        vm.isdisabled = false;
         vm.iscollapsible = $scope.iscollapsible;
+        vm.isProcessComplete = $scope.isprocesscomplete;
+
         vm.toggleCollapse = toggleCollapse;
         vm.clearSelection = clearSelection;
+        vm.closeDialog = closeDialog;
+        vm.showInfo = showInfo;
 
-        vm.isProcessComplete = $scope.isprocesscomplete;
 
 
         dataTableConfiguration();
@@ -47,11 +48,11 @@
             });
         }
 
-        $scope.closeDialog = function() {
+        function closeDialog() {
             $mdDialog.hide();
-        }
+        };
 
-        $scope.showInfo = function(event) {
+        function showInfo(event) {
             dialog.confirm('Are you sure you want to include the full text of the checked article(s) in your work-up?', '', event, {
                 ok: {
                     name: 'yes',
@@ -115,6 +116,7 @@
                 '<span><strong>' + full.publisher + '</strong></span><br>' +
                 '<span>' + full.summaryText + '</span>';
         }
+
         // Redraw datatable
         function redrawDataTable() {
             var oTable = $('#newsPageDetails').dataTable();
@@ -290,43 +292,10 @@
         }
 
         $scope.open = function(ev, title, exUrl) {
-
-            $mdDialog.show({
-                template: '<md-dialog>' +
-                    // '   <div style="text-align:left; padding: 0px 0px 0px 5px;" ng-model="value">' +
-                    '<div id="ms-accordion" style="min-height: 50px; padding: 0px 15px 0px 15px;" class="md-amber-A200-bg" ng-class="titleClass" layout="row" layout-align="space-between center">' +
-                    '  <h3><span>' + title + '</span></h3>' +
-                    '<div layout="row" layout-align="end center">' +
-                    '   <md-button class="md-icon-button" aria-label="close"  style="margin-right:-10px" ng-click="closeDialog()">' +
-                    '       <md-tooltip md-direction="top">' +
-                    'Close' +
-                    '       </md-tooltip>' +
-                    '       <md-icon md-font-icon="icon-close"></md-icon>' +
-                    '   <md-button>' +
-                    '</div>' +
-                    '</div>' +
-                    '<md-dialog-content style="padding: 20px 15px">' +
-                    '<div layout="row" layout-align="space-around center" >' +
-                    '<md-dialog-content style="padding: 0px 30px ;max-width:800px;max-height:810px;" >' +
-                    '<span>' + exUrl + '</span>' +
-                    '</md-dialog-content>' +
-                    '</md-dialog>' +
-                    '</div>' +
-                    '</md-dialog-content>' +
-                    '</md-dialog>',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: true,
-                controllerAs: 'vm',
-                controller: function DialogController($scope, $mdDialog, dialog) {
-                    var vm = this;
-
-                    $scope.closeDialog = function() {
-                        $mdDialog.hide();
-                    };
-
-                }
-            });
+            dialog.notify(title, exUrl,
+                null,
+                null,
+                null, null, false);
         };
 
         $scope.close = function() {
@@ -341,12 +310,10 @@
             scope: {
                 name: '@',
                 isdisabled: '@'
-
             },
             controller: 'msNewsSearchController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html',
-            transclude: true
+            templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html'
         };
     }
 })();
