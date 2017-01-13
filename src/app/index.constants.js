@@ -65,6 +65,7 @@
                 autoSaveTimeOut: 10000,
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
                 compInitialLoadForDesktop:  3,
+                compInitialLoadForDesktopIE:  30,
                 compInitialLoadForMobile:  1,
                 compInitialLoadForTablet:  3
             },

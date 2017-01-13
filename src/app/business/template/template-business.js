@@ -107,6 +107,10 @@
             else if (deviceDetector.isTablet()) {
                 compCount = clientConfig.appSettings.compInitialLoadForTablet;
             }
+            else if (deviceDetector.browser ==='ie')
+            {
+                compCount = clientConfig.appSettings.compInitialLoadForDesktopIE;
+            }
             return compCount;
         }
 
