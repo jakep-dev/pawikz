@@ -123,7 +123,6 @@
             {
                 if(data.templateOverview)
                 {
-                    toast.simpleToast('AutoSave Enabled');
                     vm.templateOverview = data.templateOverview;
                     commonBusiness.companyId = vm.templateOverview.companyId;
                     commonBusiness.projectName = vm.templateOverview.projectName;

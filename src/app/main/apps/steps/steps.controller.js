@@ -83,7 +83,6 @@
         {
             stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
             {
-                toast.simpleToast('AutoSave Enabled');
                 if(response)
                 {
                     angular.forEach(response, function(data)
