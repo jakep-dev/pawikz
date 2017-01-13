@@ -274,8 +274,6 @@
                     scope.isCompLoaded = true;
                     var bindCompProm = $interval(function(){
                         var element = el.find('#template-content');
-                        console.log('Element - ');
-                        console.log(element);
                         element.append(divElem);
                         $interval.cancel(bindCompProm);
                     }, 1);
