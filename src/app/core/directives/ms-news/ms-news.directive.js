@@ -7,22 +7,30 @@
         .directive('msNews', msNewsDirective);
 
     function msNewsController($scope) {
+        var vm = this;
+        vm.actions = [];
+        
+        defineAction();
 
-        defineAction($scope);
+        function defineAction() {
 
-        function defineAction($scope) {
+             vm.actions.push({
+                id: 1,
+                callback: '-Clear',
+                icon: 'icon-eraser',
+                isclicked: null,
+                tooltip: 'Clear Selected Article',
+                type: 'button'
+            });
 
-            if ($scope.name) {
-                $scope.$parent.$parent.action.push({
-                    id: 1,
-                    callback: $scope.itemid + '-Bookmark',
-                    icon: 'icon-bookmark',
-                    isclicked: null,
-                    tooltip: 'Attach Checked Article',
-                    type: 'button'
-                });
-            }
-
+            vm.actions.push({
+                id: 2,
+                callback: '-Bookmark',
+                icon: 'icon-bookmark',
+                isclicked: null,
+                tooltip: 'Attach Checked Article',
+                type: 'button'
+            });
         }
     }
 

@@ -7,54 +7,16 @@
         .directive('msNewsAttachment', msNewsAttachmentDirective);
 
     /** @ngInject */
-    function MsNewsAttachmentController($scope, newsService, commonBusiness, templateBusiness, $compile, $element) {
+    function MsNewsAttachmentController($scope, newsService, newsBusiness, commonBusiness, templateBusiness, $compile, $element) {
         var vm = this;
-        var title = '';
-        var resourceId = '';
-        var externalUrl = '';
 
-        vm.collapsed = false;
-        $scope.collapsedData = {};
         vm.bookmarkedItems = [];
-        vm.collapsed = $scope.initialCollapsed;
-        vm.iscollapsible = $scope.iscollapsible;
-        vm.toggleCollapse = toggleCollapse;
-        vm.toggleCollapseData = toggleCollapseData;
-        vm.isProcessComplete = $scope.isprocesscomplete;
-        vm.loadAttachments = loadAttachments;
-
-
-/*        $scope.$watch(
-            "isprocesscomplete",
-            function handleProgress(value) {
-                vm.isProcessComplete = value;
-            }
-        );
-*/
-        vm.loadAttachments();
-
-        commonBusiness.onMsg('reload-news-attachments', $scope, function() {
-           vm.loadAttachments();
-        });
+        
+        loadAttachments();
 
         commonBusiness.onMsg('news-bookmark', $scope, function() {
-            vm.loadAttachments();
+            vm.bookmarkedItems = newsBusiness.selectedNews;
         });
-
-
-        function toggleCollapse() {
-            vm.collapsed = !vm.collapsed;
-        }
-
-        function toggleCollapseData(index) {
-            $scope.collapsedData[index] = !$scope.collapsedData[index];
-        }
-
-        //Toggle the collapse
-        function collapse() {
-            vm.collapsed = !$scope.collapsed;
-        }
-
 
         function recompileHtml(row, data, dataIndex) {
             $compile(angular.element(row).contents())($scope);
@@ -66,7 +28,7 @@
                 vm.bookmarkedItems = [];
                 if (response.bookmarks) {
                     _.each(response.bookmarks, function(details, index) {
-                        vm.bookmarkedItems.push({
+                            vm.bookmarkedItems.push({
                             rowId: index,
                             isOpen: false,
                             title: details.title,
@@ -74,6 +36,8 @@
                             externalUrl: details.externalUrl
                         });
                     });
+
+                    newsBusiness.selectedNews = vm.bookmarkedItems;
                 }
             });
         }
@@ -84,7 +48,6 @@
         return {
             restrict: 'E',
             scope: {
-                value: '@'
             },
             controller: 'MsNewsAttachmentController',
             controllerAs: 'vm',

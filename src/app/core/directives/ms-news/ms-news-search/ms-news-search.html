@@ -1,22 +1,4 @@
 <div>
-    <div id="ms-accordion" style="min-height: 50px" class="md-amber-A200-bg" layout="row" layout-align="space-between center">
-        <div layout-align="space-between center">
-        </div>
-        <div layout="row" layout-align="space-between end center">
-            <md-button class="md-icon-button" aria-label="clear" style="margin-right: -20px" ng-click="vm.clearSelection()">
-                <md-tooltip md-direction="top">
-                    Clear Selection
-                </md-tooltip>
-                <md-icon md-font-icon="icon-eraser"></md-icon>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="bookmark" ng-disabled="!isdisabled" ng-click="showInfo()">
-                <md-tooltip md-direction="top">
-                    Attach Checked Article
-                </md-tooltip>
-                <md-icon md-font-icon="icon-bookmark"></md-icon>
-            </md-button>
-        </div>
-    </div>
     <div ng-include="'app/core/directives/ms-news/ms-news-search/summary/ms-news-search-summary.html'">
     </div>
     <div ng-include="'app/core/directives/ms-news/ms-news-search/result/ms-news-search-result.html'">

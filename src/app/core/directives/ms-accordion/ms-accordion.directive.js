@@ -11,24 +11,24 @@
         .directive('msAccordion', msAccordionDirective)
 
 
-    function MsAccordionController($scope)
+    function MsAccordionController($scope, commonBusiness)
     {
         var vm = this;
 
         vm.collapsed = $scope.initialCollapsed;
-
-        vm.collapse = collapse;
-
         vm.isExpandable = $scope.isExpandable;
-
+        vm.actions = $scope.actions;
         vm.titleClass =  $scope.titlebg || 'md-amber-A200-bg';
+        
+        vm.collapse = collapse;
+        vm.applyClickEvent = applyClickEvent;
 
         init();
 
         //Toggle the collapse
         function collapse()
         {
-            vm.collapsed = !$scope.collapsed;
+            vm.collapsed = !vm.collapsed;
         }
 
 
@@ -38,6 +38,20 @@
             if(!vm.isExpandable)
             {
                 vm.collapse = false;
+            }
+        }
+
+        function applyClickEvent(action, $mdOpenMenu, ev) {
+            if (action) {
+                if (action.type === 'button' && action.callback) {
+                    commonBusiness.emitMsg(action.callback);
+                } else if (action.type === 'menu') {
+                    $mdOpenMenu(ev);
+                }
+
+                if (action.isclicked !== null) {
+                    action.isclicked = !action.isclicked;
+                }
             }
         }
     }
@@ -52,7 +66,7 @@
                 initialCollapsed: '=?collapsed',
                 titlebg: '@',
                 isExpandable: '=?',
-                actions: "="
+                actions: '='
             },
             controller: 'MsAccordionController',
             controllerAs: 'vm',
