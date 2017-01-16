@@ -71,6 +71,7 @@
 				formatObject.dataType = mnemonicType.dataType;
     	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
 				formatObject.precision = 2;
+				formatObject.invalidMessage = 'Invalid entry. Input numbers with k, m or b for thousand, million or billion respectively.';
 			}
 
 			return formatObject;
@@ -197,7 +198,7 @@
     	                    formatted = formatted.substr(1);
     	                    isNegative = true;
     	                }
-    	                numericValue = Number(removeNonNumericCharacters(formatted));
+    	                numericValue = Number(removeNonNumericCharacters(formatted, formatObj.invalidMessage));
     	                formatObj.postProcessingNeeded = true;
     	                formatObj.isNegative = isNegative;
     	                formatObj.numericValue = numericValue;
