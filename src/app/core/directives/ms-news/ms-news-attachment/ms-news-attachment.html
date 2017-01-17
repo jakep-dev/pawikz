@@ -1,6 +1,6 @@
 <div ng-repeat="items in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0">
     <ms-accordion is-expandable="true" id="ms-accordion" collapsed="true" title="{{items.title}}" action="">
-        {{items.externalUrl}}
+        <div ng-show="items.isLoaded" ng-bind-html="items.htmlArticle"></div>
     </ms-accordion>
 </div>
 

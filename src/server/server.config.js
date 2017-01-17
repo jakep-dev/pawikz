@@ -3,9 +3,9 @@
  */
 
 exports.webservice = {
-    protocol: 'https',
-    url: 'wsint.advisen.com', //dev-vm-websvc.advisen.com',
-    port: '', //8080',
+    protocol: 'http', //https
+    url: 'dev-vm-websvc.advisen.com',
+    port: '8080',
     service: 'advwebservice'
 };
 
@@ -102,7 +102,8 @@ exports.restcall = {
             methods: {
                 search: 'newsSearch',
                 attachNewsArticles: 'attachNewsArticles',
-                getAttachedArticles: 'getAttachedArticles'
+                getAttachedArticles: 'getAttachedArticles',
+                showArticleContent: 'getArticle'
             }
         }
     ]

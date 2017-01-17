@@ -1,40 +1,35 @@
-(function ()
-{
+(function() {
     'use strict';
 
     angular
         .module('advisen')
-        .constant('clientConfig',{
-            nodeJS:
-            {
-                protocol:'http:',
+        .constant('clientConfig', {
+            nodeJS: {
+                protocol: 'http:',
                 ipAddress: 'localhost',
-                port:'4000'
+                port: '4000'
             },
-            endpoints:
-            {
-                dashboardEndPoint:{
+            endpoints: {
+                dashboardEndPoint: {
                     get: '/api/dashboard',
                     getUsers: '/api/users/',
                     getCompanies: '/api/companies/',
                     processRemoveWorkUp: '/api/processRemoveWorkUp/'
                 },
-                overViewEndPoint:{
+                overViewEndPoint: {
                     get: '/api/overview/',
                     save: '/api/saveOverview',
                     getDefer: '/api/overview/defer'
                 },
-                chartEndPoint:{
+                chartEndPoint: {
                     get: ''
                 },
-                authEndPoint:
-                {
-                    auth:'/api/authenticate/',
+                authEndPoint: {
+                    auth: '/api/authenticate/',
                     logout: '/api/logout',
                     getUser: '/api/userInfo'
                 },
-                templateEndPoint:
-                {
+                templateEndPoint: {
                     schema: '/api/schema',
                     mnemonics: '/api/mnemonics',
                     save: '/api/saveTemplate',
@@ -45,13 +40,11 @@
                     deleteDynamic: '/api/deleteDynamicTable',
                     getScrapedHTML: '/api/getScrapedHTML'
                 },
-                loggerEndPoint:
-                {
+                loggerEndPoint: {
                     error: '/api/errorLog',
                     debug: '/api/debugLog'
                 },
-                workUpEndPoint:
-                {
+                workUpEndPoint: {
                     create: '/api/workup/create',
                     renew: '/api/workup/renew',
                     status: '/api/workup/status',
@@ -61,23 +54,23 @@
                 },
                 newsEndPoint: {
                     search: '/api/news/search',
-                    attachNewsArticles : '/api/news/attachNewsArticles',
-                    getAttachedArticles: '/api/news/getAttachedArticles'
+                    attachNewsArticles: '/api/news/attachNewsArticles',
+                    getAttachedArticles: '/api/news/getAttachedArticles',
+                    showArticleContent: '/api/news/showArticleContent'
                 }
             },
-            appSettings:
-            {
+            appSettings: {
                 autoSaveTimeOut: 10000,
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
-                compInitialLoadForDesktop:  3,
-                compInitialLoadForDesktopIE:  30,
-                compInitialLoadForMobile:  1,
-                compInitialLoadForTablet:  3
+                compInitialLoadForDesktop: 3,
+                compInitialLoadForDesktopIE: 30,
+                compInitialLoadForMobile: 1,
+                compInitialLoadForTablet: 3
             },
             socketInfo: {
                 socket: undefined
             },
-            activity:{
+            activity: {
                 //In Seconds
                 idle: 14400,
                 timeout: 120,
@@ -86,7 +79,7 @@
                 createWorkupTimeout: 30,
                 pdfDownloadTimeout: 30
             },
-            uiType:{
+            uiType: {
                 general: 'general',
                 tableLayout: 'table-layout',
                 hybridLayout: 'hybrid-layout',
@@ -95,7 +88,7 @@
                 interactiveFinancialChart: 'interactive-financial-chart'
             },
             messages: {
-                dashboardDelete:{
+                dashboardDelete: {
                     title: 'Would you like to delete?',
                     content: ' will be deleted. Please confirm.'
                 },

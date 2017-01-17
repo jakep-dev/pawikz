@@ -1,7 +1,7 @@
 (function(newsRoute) {
     var _ = require('underscore');
     var u = require('underscore');
-    var config = null; 
+    var config = null;
     var client = null;
 
     function getServiceDetails(serviceName) {
@@ -33,11 +33,11 @@
 
         context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
 
-        client.post(context.url, context.args, function (data, response) {
+        client.post(context.url, context.args, function(data, response) {
             context.results.data = data;
             callback(null, context.results);
         }).on('error',
-            function (err) {
+            function(err) {
                 context.results.error = 'Error saving boormarked articles';
                 callback(null, context.results);
             }
@@ -46,18 +46,41 @@
 
     newsRoute.attachNewsArticles = attachNewsArticles;
 
-    newsRoute.init = function (app, c) {
+    newsRoute.init = function(app, c) {
         config = c;
         client = config.restcall.client;
 
         config.parallel([
             app.post('/api/news/search', search),
             app.post('/api/news/attachNewsArticles', attachNewsArticles),
-            app.post('/api/news/getAttachedArticles', getAttachedArticles)
+            app.post('/api/news/getAttachedArticles', getAttachedArticles),
+            app.post('/api/news/showArticleContent', showArticleContent)
         ]);
 
         function getServiceDetails(serviceName) {
             return _.find(config.restcall.service, { name: serviceName });
+        }
+
+        function showArticleContent(req, res, next) {
+            var service = getServiceDetails('news');
+
+            var methodName = '';
+
+            if (!_.isUndefined(service) && !_.isNull(service)) {
+                console.log(service.name);
+                methodName = service.methods.showArticleContent;
+            }
+
+            var args = {
+                parameters: {
+                    url: req.body.url,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            client.get(config.restcall.url + '/' + service.name + '/' + methodName, args, function(data, response) {
+                res.status(response.statusCode).send(data);
+            });
         }
 
         function search(req, res, next) {

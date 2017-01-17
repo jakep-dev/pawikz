@@ -202,14 +202,6 @@
                                     }
                                 }
                                 break;
-
-                            case 'newssearch':
-                            case 'newsattachment':
-                                var comp = templateBusiness.buildNewsComponent($scope, $scope.tearcontent);
-                                if (comp) {
-                                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                                }
-                                break;
                         }
                     } else {
                         bindComponents($scope, el, $scope.tearcontent);

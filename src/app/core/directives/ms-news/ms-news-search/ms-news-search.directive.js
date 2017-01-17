@@ -241,7 +241,6 @@
 
         function showArticleDetails(ev, title, exUrl) {
 
-            //console.log(exUrl); 
             newsBusiness.showArticleContent(title, exUrl);
         }
     }
