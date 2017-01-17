@@ -9,12 +9,12 @@
     function msNewsController($scope) {
         var vm = this;
         vm.actions = [];
-        
+        vm.title = $scope.title;
         defineAction();
 
         function defineAction() {
 
-             vm.actions.push({
+            vm.actions.push({
                 id: 1,
                 callback: '-Clear',
                 icon: 'icon-eraser',
@@ -40,7 +40,8 @@
             restrict: 'E',
             scope: {
                 name: '@',
-                action: '@'
+                action: '@',
+                title: '@'
             },
             controller: 'msNewsController',
             controllerAs: 'vm',

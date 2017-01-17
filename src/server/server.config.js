@@ -3,9 +3,9 @@
  */
 
 exports.webservice = {
-    protocol: 'http',
-    url: 'dev-vm-websvc.advisen.com',
-    port: '8080',
+    protocol: 'https',
+    url: 'wsint.advisen.com', //dev-vm-websvc.advisen.com',
+    port: '', //8080',
     service: 'advwebservice'
 };
 

@@ -9,12 +9,23 @@
         .factory('newsBusiness', newsBusiness);
 
     /* @ngInject */
-    function newsBusiness() {
+    function newsBusiness(newsService, dialog) {
 
         var business = {
-           selectedNews: []
+            selectedNews: [],
+            showArticleContent: showArticleContent
         };
 
         return business;
+
+        function showArticleContent(title, url) {
+            newsService.downloadNews(url).then(function(data) {
+                //console.log(data.data) 
+                dialog.notify(title, null,
+                    data,
+                    null,
+                    null, null, false);
+            });
+        }
     }
 })();
