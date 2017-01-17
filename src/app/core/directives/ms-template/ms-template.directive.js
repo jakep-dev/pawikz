@@ -232,7 +232,7 @@
                             }
                         }
                         else {
-                            switch (renderContent.id) {
+                            switch (renderContent.subtype || renderContent.id) {
                                 case 'WU_RATIOS_CHART':
                                     var newScope = scope.$new();
                                     newScope.iscollapsible = true;
@@ -251,7 +251,18 @@
                                 case 'LinkItem':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
+
                                     html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="' + renderContent.GoBack + '"></ms-link>';
+                                    html += '</div>';
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
+                                    break;
+
+                                case 'AdvisenNewsSearch':
+                                    var newScope = scope.$new();
+                                    var html = '<div layout-padding>';
+                                    html += '<ms-news></ms-news>';
                                     html += '</div>';
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
