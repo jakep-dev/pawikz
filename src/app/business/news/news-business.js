@@ -19,10 +19,11 @@
         return business;
 
         function showArticleContent(title, url) {
-            newsService.downloadNews(url).then(function(data) {
-                //console.log(data.data) 
+
+            newsService.showArticleContent(url).then(function(response) {
+                console.log(response.htmlContent);
                 dialog.notify(title, null,
-                    data,
+                    response.htmlContent,
                     null,
                     null, null, false);
             });

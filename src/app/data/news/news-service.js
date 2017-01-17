@@ -13,23 +13,65 @@
             search: search,
             attachNewsArticles: attachNewsArticles,
             getAttachedArticles: getAttachedArticles,
+            showArticleContent: showArticleContent,
             downloadNews: downloadNews
         };
 
         return service;
 
+
+        function showArticleContent(url) {
+            var input = {
+                url: url
+            }
+
+            return $http({
+                    url: clientConfig.endpoints.newsEndPoint.showArticleContent,
+                    method: "POST",
+                    data: input,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
         function downloadNews(url) {
             return $http({
-                url: url,
-                method: "GET",
-                contentType: "application/xml; charset=utf-8",
-                dataType: "xml"
-            })
-                .then(function (data, status, headers, config) {
+                    url: url,
+                    method: "GET",
+                    contentType: "application/xml; charset=utf-8",
+                    dataType: "xml"
+                })
+                .then(function(data, status, headers, config) {
                     console.log(data);
                     return data;
                 })
-                .catch(function (error) {
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function getArticle(url) {
+            var input = {
+                url: url
+            };
+
+            return $http({
+                    url: clientConfig.endpoints.newsEndPoint.search,
+                    method: "POST",
+                    data: input,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
                     logger.error(JSON.stringify(error));
                 });
         }

@@ -1,16 +1,18 @@
+div#news {
+    >ms-accordion {
+        >div#ms-accordion {
+            padding: 0;
+            min-height: 60px;
+            >div {
+                padding-left: 1%;
+                min-height: 60px;
+            }
+        }
+    }
+}
 
-  div#ms-accordion 
-  { 
-    min-height: 50px !important;
-    padding: 10px !important;
-    // padding-left:10px !important; 
-  }
-
- 
- 
-button.md-button 
-{
-  min-width: 15px;
+button.md-button {
+    min-width: 15px;
 }
 
 .minPadding {

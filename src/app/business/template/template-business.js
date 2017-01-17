@@ -15,101 +15,80 @@
         templateService, stockService, financialChartService
     ) {
         var business = {
-           mnemonics: null,
-           saveMnemonics: [],
-		   saveTableMnemonics: [],
-		   saveHybridTableMnemonics: [],
-           programTableMnemonics: [],
-           autoSavePromise: [],
-           isExpandAll: false,
-           componentStatus: [],
-           components:[],
-           remainingComponentCount: 0,
-           save: save,
-           saveTable: saveTable,
-           saveHybridTable: saveHybridTable,
-           cancelPromise: cancelPromise,
-           getMnemonicValue: getMnemonicValue,
-           getTemplateElement: getTemplateElement,
-           getReadyForAutoSave: getReadyForAutoSave,
-		   getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
-		   getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
-           getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
-           getEvalMnemonicValue: getEvalMnemonicValue,
-           getNewItemId: getNewItemId,
-           getCopyItemId: getCopyItemId,
-           updateMnemonicValue: updateMnemonicValue,
-           showPrintIcon:  showPrintIcon,
-           getPrintableValue: getPrintableValue,
-           calculateProgramRate: calculateProgramRate,
-           calculateProgramRol: calculateProgramRol,
-           calculateProgramAtt: calculateProgramAtt,
-           parseCsvToJson: parseCsvToJson,
-           unParseJsonToCsv: unParseJsonToCsv,
-           isKMBValue: isKMBValue,
-           transformKMB: transformKMB,
-           buildComponents: buildComponents,
-           buildExpiringProgram: buildExpiringProgram,
-           buildProposedProgram: buildProposedProgram,
-           buildExpiringProgramHybrid: buildExpiringProgramHybrid,
-           buildProposedProgramHybrid: buildProposedProgramHybrid,
-           buildLabel: buildLabel,
-           buildGenericTableItem: buildGenericTableItem,
-           buildRichTextArea: buildRichTextArea,
-           buildScrapeItem: buildScrapeItem,
-           buildMessage: buildMessage,
-           determineTableLayout: determineTableLayout,
-           getSubComponents: getSubComponents,
-           buildSubComponent: buildSubComponent,
-           showTemplateProgress: showTemplateProgress,
-           hideTemplateProgress: hideTemplateProgress,
-           requestPdfDownload: requestPdfDownload,
-           downloadTemplatePdf:downloadTemplatePdf,
-           pushComponentStatus: pushComponentStatus,
-		   getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
-		   getMnemonicPostfix: getMnemonicPostfix,
-		   getMnemonicParameters: getMnemonicParameters,
-		   getMnemonicPrecision: getMnemonicPrecision,
-		   getMnemonicDataType: getMnemonicDataType,
-		   getMnemonicDataSubtype: getMnemonicDataSubtype,
-		   formatData: formatData,
-		   removeFormatData: removeFormatData,
-           removeCommaValue: removeCommaValue,
-           numberWithCommas: numberWithCommas,
-		   parenthesisForNegative: parenthesisForNegative,
-		   removeParenthesis: removeParenthesis,
-		   formatDate: formatDate,
-		   parseDate: parseDate,
-           loadComponents: loadComponents,
-           getComponentHeader: getComponentHeader,
-		   isMnemonicNumberType: isMnemonicNumberType,
-           getTearSheetItems: getTearSheetItems,
-           getCompInitialLoadCount: getCompInitialLoadCount,
-           updateProgramTableMnemonics: updateProgramTableMnemonics,
-           buildNewsComponent: buildNewsComponent
+            mnemonics: null,
+            saveMnemonics: [],
+            saveTableMnemonics: [],
+            saveHybridTableMnemonics: [],
+            programTableMnemonics: [],
+            autoSavePromise: [],
+            isExpandAll: false,
+            componentStatus: [],
+            components: [],
+            remainingComponentCount: 0,
+            save: save,
+            saveTable: saveTable,
+            saveHybridTable: saveHybridTable,
+            cancelPromise: cancelPromise,
+            getMnemonicValue: getMnemonicValue,
+            getTemplateElement: getTemplateElement,
+            getReadyForAutoSave: getReadyForAutoSave,
+            getReayForAutoSaveTableLayout: getReayForAutoSaveTableLayout,
+            getReayForAutoSaveHybridTable: getReayForAutoSaveHybridTable,
+            getTableLayoutMnemonicValue: getTableLayoutMnemonicValue,
+            getEvalMnemonicValue: getEvalMnemonicValue,
+            getNewItemId: getNewItemId,
+            getCopyItemId: getCopyItemId,
+            updateMnemonicValue: updateMnemonicValue,
+            showPrintIcon: showPrintIcon,
+            getPrintableValue: getPrintableValue,
+            calculateProgramRate: calculateProgramRate,
+            calculateProgramRol: calculateProgramRol,
+            calculateProgramAtt: calculateProgramAtt,
+            parseCsvToJson: parseCsvToJson,
+            unParseJsonToCsv: unParseJsonToCsv,
+            isKMBValue: isKMBValue,
+            transformKMB: transformKMB,
+            buildComponents: buildComponents,
+            buildExpiringProgram: buildExpiringProgram,
+            buildProposedProgram: buildProposedProgram,
+            buildExpiringProgramHybrid: buildExpiringProgramHybrid,
+            buildProposedProgramHybrid: buildProposedProgramHybrid,
+            buildLabel: buildLabel,
+            buildGenericTableItem: buildGenericTableItem,
+            buildRichTextArea: buildRichTextArea,
+            buildScrapeItem: buildScrapeItem,
+            buildMessage: buildMessage,
+            determineTableLayout: determineTableLayout,
+            getSubComponents: getSubComponents,
+            buildSubComponent: buildSubComponent,
+            showTemplateProgress: showTemplateProgress,
+            hideTemplateProgress: hideTemplateProgress,
+            requestPdfDownload: requestPdfDownload,
+            downloadTemplatePdf: downloadTemplatePdf,
+            pushComponentStatus: pushComponentStatus,
+            getTableLayoutSubMnemonics: getTableLayoutSubMnemonics,
+            getMnemonicPostfix: getMnemonicPostfix,
+            getMnemonicParameters: getMnemonicParameters,
+            getMnemonicPrecision: getMnemonicPrecision,
+            getMnemonicDataType: getMnemonicDataType,
+            getMnemonicDataSubtype: getMnemonicDataSubtype,
+            formatData: formatData,
+            removeFormatData: removeFormatData,
+            removeCommaValue: removeCommaValue,
+            numberWithCommas: numberWithCommas,
+            parenthesisForNegative: parenthesisForNegative,
+            removeParenthesis: removeParenthesis,
+            formatDate: formatDate,
+            parseDate: parseDate,
+            loadComponents: loadComponents,
+            getComponentHeader: getComponentHeader,
+            isMnemonicNumberType: isMnemonicNumberType,
+            getTearSheetItems: getTearSheetItems,
+            getCompInitialLoadCount: getCompInitialLoadCount,
+            updateProgramTableMnemonics: updateProgramTableMnemonics
         };
 
         return business;
-
-        function buildNewsComponent(scope, content) {
-            var subtype = 'newssearch';
-            var newScope = scope.$new(true),
-                comp = {
-                    html: '',
-                    scope: null
-                };
-            comp.scope = newScope;
-            switch (subtype) {
-                case 'newssearch':
-                    comp.html = '<ms-news></ms-news>';
-                    break;
-
-                case 'newsattachment':
-                    break;
-            }
-
-            return comp;
-        }
 
         function getCompInitialLoadCount() {
             var compCount = clientConfig.appSettings.compInitialLoadForDesktop;
@@ -117,9 +96,7 @@
                 compCount = clientConfig.appSettings.compInitialLoadForMobile;
             } else if (deviceDetector.isTablet()) {
                 compCount = clientConfig.appSettings.compInitialLoadForTablet;
-            }
-            else if (deviceDetector.browser ==='ie')
-            {
+            } else if (deviceDetector.browser === 'ie') {
                 compCount = clientConfig.appSettings.compInitialLoadForDesktopIE;
             }
             return compCount;
@@ -898,8 +875,7 @@
                 rows: null
             }
 
-            if(content)
-            {
+            if (content) {
                 newScope.copyproposed = content.copyProposedTable || null;
                 newScope.copyStepId = content.copyStepId || '';
             }
@@ -912,7 +888,7 @@
                 newScope.tearsheet.rows = content.TableRowTemplate.row;
             }
 
-            comp.html += '<ms-expiring-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'" copyproposed="'+ newScope.copyproposed +'" copstepid="'+ newScope.copyStepId +'" isnoneditable="isnoneditable"></ms-expiring-h>';
+            comp.html += '<ms-expiring-h tearsheet="tearsheet" mnemonic="' + content.Mnemonic + '" item-id="' + content.ItemId + '" copyproposed="' + newScope.copyproposed + '" copstepid="' + newScope.copyStepId + '" isnoneditable="isnoneditable"></ms-expiring-h>';
             comp.scope = newScope;
 
             return comp;
@@ -933,9 +909,8 @@
                 rows: null
             }
 
-            if(content)
-            {
-                newScope.copyexpiring =  content.copyExpiringTable || null;
+            if (content) {
+                newScope.copyexpiring = content.copyExpiringTable || null;
                 newScope.copyStepId = content.copyStepId || '';
             }
 
@@ -947,7 +922,7 @@
                 newScope.tearsheet.rows = content.TableRowTemplate.row;
             }
 
-            comp.html += '<ms-proposed-h tearsheet="tearsheet" mnemonic="'+content.Mnemonic+'" item-id="'+content.ItemId+'" copyexpiring="'+ newScope.copyexpiring +'"  copystepid="'+ newScope.copyStepId +'" isnoneditable="isnoneditable"></ms-proposed-h>';
+            comp.html += '<ms-proposed-h tearsheet="tearsheet" mnemonic="' + content.Mnemonic + '" item-id="' + content.ItemId + '" copyexpiring="' + newScope.copyexpiring + '"  copystepid="' + newScope.copyStepId + '" isnoneditable="isnoneditable"></ms-proposed-h>';
             comp.scope = newScope;
 
             return comp;
@@ -1745,14 +1720,13 @@
         }
 
         //maintain business variable for copy expiring/proposed program
-        function updateProgramTableMnemonics(projectId, mnemonic, itemId, rows)
-        {
-            var tableMnemonic = _.find(business.programTableMnemonics, {projectId: projectId, mnemonic: mnemonic, itemId: itemId});
+        function updateProgramTableMnemonics(projectId, mnemonic, itemId, rows) {
+            var tableMnemonic = _.find(business.programTableMnemonics, { projectId: projectId, mnemonic: mnemonic, itemId: itemId });
 
-            if(angular.isUndefined(tableMnemonic)) {
+            if (angular.isUndefined(tableMnemonic)) {
                 business.programTableMnemonics.push({
-                    projectId: projectId, 
-                    mnemonic: mnemonic, 
+                    projectId: projectId,
+                    mnemonic: mnemonic,
                     itemId: itemId,
                     rows: rows
                 })
