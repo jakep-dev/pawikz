@@ -58,6 +58,11 @@
                     lock: '/api/workup/lock',
                     unlock: '/api/workup/unlock',
                     delete: '/api/workup/delete'
+                },
+                newsEndPoint: {
+                    search: '/api/news/search',
+                    attachNewsArticles : '/api/news/attachNewsArticles',
+                    getAttachedArticles: '/api/news/getAttachedArticles'
                 }
             },
             appSettings:

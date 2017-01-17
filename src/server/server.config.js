@@ -5,8 +5,8 @@
 exports.webservice = {
     protocol: 'http',
     url: 'dev-vm-websvc.advisen.com',
-    port: 8080,
-    service:'advwebservice'
+    port: '8080',
+    service: 'advwebservice'
 };
 
 exports.client = {
@@ -23,11 +23,10 @@ var moment = require('moment');
 exports.restcall = {
     client: new Client(),
     url: exports.webservice.protocol.concat('://', exports.webservice.url, ':', exports.webservice.port, '/', exports.webservice.service),
-    service: [
-        {
+    service: [{
             name: 'templateManager',
             methods: {
-                auth:'authenticate',
+                auth: 'authenticate',
                 saveOverview: 'updateTemplateOverview',
                 logout: 'deleteSession',
                 userInfo: 'getUserInfo',
@@ -38,7 +37,7 @@ exports.restcall = {
                 createWorkUp: 'createNewTemplateProject',
                 renewWorkUp: 'renewTemplateProject',
                 lockWorkUp: 'lockWorkUp',
-                unlockWorkUp:'unLockWorkUp',
+                unlockWorkUp: 'unLockWorkUp',
                 createWorkUpStatus: 'getTemplateProjectStatus',
                 createTemplatePDFRequest: 'createTemplatePDFRequest',
                 setSVGFileStatus: 'setSVGFileStatus',
@@ -56,9 +55,9 @@ exports.restcall = {
                 overView: 'getTemplateOverview',
                 templateSchema: 'getTemplateUIStructure',
                 templateMnemonics: 'getTemplateMnemonics',
-                findTickers : 'findTickers',
+                findTickers: 'findTickers',
                 dynamicTableData: 'getDynamicTableData',
-                getCompetitors:'getCompetitors',
+                getCompetitors: 'getCompetitors',
                 saveChartSvgInFile: 'saveChartSvgInFile',
                 getScrapedHTML: 'getScrapedHTML'
             }
@@ -66,10 +65,10 @@ exports.restcall = {
         {
             name: 'charts',
             methods: {
-                getStockData:'getStockData',
-                getIndices:'getIndices',
-                getSavedChartData : 'getChartSettingsPerStep', // getChartSettings
-                saveChartSettings : 'saveCharts', // saveChartSettings_v2
+                getStockData: 'getStockData',
+                getIndices: 'getIndices',
+                getSavedChartData: 'getChartSettingsPerStep', // getChartSettings
+                saveChartSettings: 'saveCharts', // saveChartSettings_v2
                 getAllChartSettings: 'getAllCharts', // getAllChartSettings
                 getFinancialChartData: 'getInteractiveFinancialRatiosData',
                 getSavedFinancialChartData: 'getSavedIFChartSettings',
@@ -97,6 +96,14 @@ exports.restcall = {
                 volumeChartHeight: 225,
                 pdfRequestTimeout: 120
             }
+        },
+        {
+            name: 'news',
+            methods: {
+                search: 'newsSearch',
+                attachNewsArticles: 'attachNewsArticles',
+                getAttachedArticles: 'getAttachedArticles'
+            }
         }
     ]
 };
@@ -109,7 +116,7 @@ exports.socketIO = {
 };
 
 exports.socketData = {
-  workup: []
+    workup: []
 };
 
 exports.log = {
@@ -119,8 +126,8 @@ exports.log = {
 };
 
 exports.parallel = function(middlewares) {
-    return function (req, res, next) {
-        async.each(middlewares, function (mw, cb) {
+    return function(req, res, next) {
+        async.each(middlewares, function(mw, cb) {
             mw(req, res, cb);
         }, next);
     };

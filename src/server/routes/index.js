@@ -15,6 +15,7 @@
     var pdfRoute = require('./chart/pdf.route.js');
     var workupRoute = require('./workup/workup.route');
     var socket = require('./socket/socket');
+    var newsRoute = require('./news/news.route');
 
     var config = require('../server.config');
 
@@ -30,6 +31,7 @@
         chartRoute.init(app, config);
         financialChartRoute.init(app, config);
         pdfRoute.init(app, config);
+        newsRoute.init(app, config);
     };
 
 })(module.exports);

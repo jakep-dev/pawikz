@@ -1,0 +1,11 @@
+<div ng-repeat="items in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0">
+    <ms-accordion is-expandable="true" id="ms-accordion" collapsed="true" title="{{items.title}}" action="">
+        {{items.externalUrl}}
+    </ms-accordion>
+</div>
+
+<div ng-if="vm.bookmarkedItems.length == 0">
+    <div flex>
+        <ms-message message="No News Articles Attached"></ms-message>
+    </div>
+</div>
