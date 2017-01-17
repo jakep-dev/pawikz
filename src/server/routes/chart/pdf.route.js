@@ -924,7 +924,7 @@
                                         y: subContext.value,
                                         marker: {
                                             enabled: true,
-                                            symbol: 'url(../assets/icons/images/Stock_Dividend.jpg)'
+                                            symbol: 'url(data:image/jpeg;base64,' + dividendImageData + ')'
                                         }
                                     });
                                 } else if (subContext.earningsList[dataDate]) {
@@ -932,7 +932,7 @@
                                         y: subContext.value,
                                         marker: {
                                             enabled: true,
-                                            symbol: 'url(../assets/icons/images/Stock_Earnings.jpg)'
+                                            symbol: 'url(data:image/jpeg;base64,' + earningsImageData + ')'
                                         }
                                     });
                                 } else if (subContext.splitsList[dataDate]) {
@@ -940,7 +940,7 @@
                                         y: subContext.value,
                                         marker: {
                                             enabled: true,
-                                            symbol: 'url(../assets/icons/images/Stock_Split.jpg)'
+                                            symbol: 'url(data:image/jpeg;base64,' + splitImageData + ')'
                                         }
                                     });
                                 } else {

@@ -29,7 +29,6 @@
                 pre: function(scope, el) {
                     var html = '';
                     var newScope = null;
-                    toast.simpleToast("Auto Save Enabled");
 
                     function getDefaultTicker() {
                         var ticker;
@@ -779,18 +778,23 @@
                                 financialChartService.getFinancialChartPeerAndIndustries(commonBusiness.companyId)
                                 .then(function (data) {
                                     financialChartBusiness.peerIndustries = data;
-                                });
-                            }
-
-                            var ratioTypes = financialChartBusiness.ratioTypes;
-                            if (ratioTypes.length == 0) {
-                                financialChartService.getFinancialChartRatioTypes()
-                                .then(function (data) {
-                                    financialChartBusiness.ratioTypes = data;
-                                    getSavedFinancialChart();
+                                    processRatioTypes();
                                 });
                             } else {
-                                getSavedFinancialChart();
+                                processRatioTypes();
+                            }
+
+                            function processRatioTypes() {
+                                var ratioTypes = financialChartBusiness.ratioTypes;
+                                if (ratioTypes.length == 0) {
+                                    financialChartService.getFinancialChartRatioTypes()
+                                    .then(function (data) {
+                                        financialChartBusiness.ratioTypes = data;
+                                        getSavedFinancialChart();
+                                    });
+                                } else {
+                                    getSavedFinancialChart();
+                                }
                             }
                             break;
                         case 'bar':
