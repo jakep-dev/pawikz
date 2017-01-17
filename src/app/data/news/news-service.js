@@ -12,10 +12,27 @@
         var service = {
             search: search,
             attachNewsArticles: attachNewsArticles,
-            getAttachedArticles: getAttachedArticles
+            getAttachedArticles: getAttachedArticles,
+            downloadNews: downloadNews
         };
 
         return service;
+
+        function downloadNews(url) {
+            return $http({
+                url: url,
+                method: "GET",
+                contentType: "application/xml; charset=utf-8",
+                dataType: "xml"
+            })
+                .then(function (data, status, headers, config) {
+                    console.log(data);
+                    return data;
+                })
+                .catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
 
         function search(companyId, userId, pageNo, sortBy, numPerPage) {
             var input = {

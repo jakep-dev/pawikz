@@ -92,7 +92,6 @@
         return business;
 
         function buildNewsComponent(scope, content) {
-            console.log(content);
             var subtype = 'newssearch';
             var newScope = scope.$new(true),
                 comp = {

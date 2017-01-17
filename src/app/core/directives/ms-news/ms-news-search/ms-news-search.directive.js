@@ -241,7 +241,24 @@
 
         function showArticleDetails(ev, title, exUrl) {
 
-            var html = '<ms-link value="' + exUrl + '" href="' + exUrl + '"></ms-link>';
+            //Download the xml content.
+
+
+
+            //$.ajax('get',{
+            //    url: exUrl,
+            //    success: function(response)
+            //    {
+            //        //If the response itself an xml
+            //        //<content></content>
+            //        //Read the xml and get the content tag info and pass it to dialog.
+            //        console.log(response);
+            //        // Either you can read the xml directly if its a content.
+            //        dialog.notify(title, response, null, null,
+            //        null, null, false);
+            //
+            //    }
+            //});
 
             dialog.notify(title, null,
                 html,
