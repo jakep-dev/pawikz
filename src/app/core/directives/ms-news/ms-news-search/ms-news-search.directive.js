@@ -241,11 +241,13 @@
 
         function showArticleDetails(ev, title, exUrl) {
 
-            dialog.notify(title, exUrl,
-                null,
+            var html = '<ms-link value="' + exUrl + '" href="' + exUrl + '"></ms-link>';
+
+            dialog.notify(title, null,
+                html,
                 null,
                 null, null, false);
-        };
+        }
     }
 
     /** @ngInject */

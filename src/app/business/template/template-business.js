@@ -85,10 +85,32 @@
 		   isMnemonicNumberType: isMnemonicNumberType,
            getTearSheetItems: getTearSheetItems,
            getCompInitialLoadCount: getCompInitialLoadCount,
-           updateProgramTableMnemonics: updateProgramTableMnemonics
+           updateProgramTableMnemonics: updateProgramTableMnemonics,
+           buildNewsComponent: buildNewsComponent
         };
 
         return business;
+
+        function buildNewsComponent(scope, content) {
+            console.log(content);
+            var subtype = 'newssearch';
+            var newScope = scope.$new(true),
+                comp = {
+                    html: '',
+                    scope: null
+                };
+            comp.scope = newScope;
+            switch (subtype) {
+                case 'newssearch':
+                    comp.html = '<ms-news></ms-news>';
+                    break;
+
+                case 'newsattachment':
+                    break;
+            }
+
+            return comp;
+        }
 
         function getCompInitialLoadCount() {
             var compCount = clientConfig.appSettings.compInitialLoadForDesktop;
