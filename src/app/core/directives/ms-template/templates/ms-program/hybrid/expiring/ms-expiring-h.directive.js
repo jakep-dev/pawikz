@@ -177,7 +177,7 @@
                     callback: null,
                     icon: 'icon-plus',
                     isclicked: null,
-                    tooltip: 'Add Rows',
+                    tooltip: 'Add Row(s)',
                     type: 'menu',
                     scope: $scope,
                     menus:[{
@@ -480,7 +480,7 @@
             });
             makeColDef += '"iscompute":';
             makeColDef += ''+ isRowComputed +'';
-            makeColDef += ',"isChecked":';
+            makeColDef += ',"IsChecked":';
             makeColDef += 'false';
             makeColDef += ',"SEQUENCE":';
             makeColDef += row.SEQUENCE;
@@ -665,8 +665,7 @@
 			{
                 if(rowNumber + $scope.rows.length > 50) {
                     rowNumber = 50 - $scope.rows.length;
-                    console.log('Reach max row to add, only allowed to add ' + rowNumber + ' row(s).');
-                    toast.simpleToast('Reach max row to add, only allowed to add ' + rowNumber + ' row(s).');
+                    toast.simpleToast(clientConfig.messages.programTableHybrid.maxRow + ' ' + rowNumber );
                 } else {
                     for( var i = 0; i < rowNumber; i ++){
                         
@@ -701,12 +700,15 @@
 		{
              //to get the starting index for recalculation
             var minIndex = $scope.rows.length - 1;
+            var hasDeleted = false;
 
 			for(var index = $scope.rows.length - 1; index >= 0; index--)
 			{
 				var row = $scope.rows[index];
 				if(row.IsChecked)
 				{
+                    hasDeleted = true;
+
 					var deleteRow = {
                         action: 'deleted', 
                         sequence: row.SEQUENCE,
@@ -734,11 +736,17 @@
 				}
 			}
 
-            //recalculate based on minimum deleted index
-            if($scope.rows.length > 0) {
-                computeOthers($scope, $scope.rows, minIndex);
+            if(hasDeleted) {
+                
+                //recalculate based on minimum deleted index
+                if($scope.rows.length > 0) {
+                    computeOthers($scope, $scope.rows, minIndex);
+                }
+
+                templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
+            } else {
+                toast.simpleToast(clientConfig.messages.programTableHybrid.deleteRow);
             }
-            templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
 		}
 
         function downloadToCSV($scope)
@@ -851,7 +859,7 @@
                                 $scope.rows.push(copyRow);
                             });
                             dialog.close();
-                            toast.simpleToast('Proposed program copied!');
+                            toast.simpleToast('Proposed ' + clientConfig.messages.programTableHybrid.copyProgram);
 
                             templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                             templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.copyproposed, angular.copy($scope.rows));
@@ -870,7 +878,7 @@
                     $scope.rows.push(row);
                 });
                 
-                toast.simpleToast('Proposed program copied!');
+                toast.simpleToast('Proposed ' + clientConfig.messages.programTableHybrid.copyProgram);
                 templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
             }
             
@@ -1035,7 +1043,7 @@
 			};
 			
 			setTLStatus(row);
-			_.each(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key)
+			_.each(_.omit(row, '$$hashKey', 'ROW_SEQ', 'IsChecked', 'iscompute'), function(value, key)
 			{
                 if(angular.isObject(value)) {
                     if(value.value && value.itemid){
@@ -1069,18 +1077,20 @@
 				condition: []
 			};
 			
-			_.each(_.omit(row, '$$hashKey', 'ROW_SEQ', 'isChecked', 'iscompute'), function(value, key){
+			_.each(_.omit(row, '$$hashKey', 'ROW_SEQ', 'IsChecked', 'iscompute'), function(value, key){
                 if(angular.isObject(value)) {
-                    if(value.value && value.itemid){
+                    if(value.itemid){
+                        var mnemonicValue = value.value || '';
                         save.row.push({
                             columnName: value.itemid,
-                            value: (_.find($scope.subMnemonics, {mnemonic: key}).dataType === 'NUMBER') ? removeCommaValue(value.value): value.value
+                            value: (_.find($scope.subMnemonics, {mnemonic: key}).dataType === 'NUMBER') ? removeCommaValue(mnemonicValue): mnemonicValue
                         });
                     }
                 }else {
+                    var mnemonicValue = value || '';
                     save.row.push({
                         columnName: key,
-                        value: value
+                        value: mnemonicValue
                     });
                 }
 			});

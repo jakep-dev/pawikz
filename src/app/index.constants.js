@@ -98,6 +98,12 @@
                 dashboardDelete:{
                     title: 'Would you like to delete?',
                     content: ' will be deleted. Please confirm.'
+                },
+                programTableHybrid: {
+                    invalidInput: 'Invalid entry. Input numbers with k, m or b for thousand, million or billion respectively.',
+                    maxRow: 'Reached max rows. Available row(s) to add is',
+                    deleteRow: 'Check row(s) to delete.',
+                    copyProgram: 'program copied!'
                 }
             }
         });
