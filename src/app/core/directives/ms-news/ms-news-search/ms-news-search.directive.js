@@ -10,7 +10,7 @@
         DTOptionsBuilder, $mdDialog, commonBusiness, newsBusiness, templateService, newsService, dialog, templateBusiness, $http, $element, $compile) {
 
         var vm = this;
-        
+
         vm.resultDetails = [];
         vm.company = '';
         vm.articlesShown = '';
@@ -24,7 +24,7 @@
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
 
-        dataTableConfiguration(); 
+        dataTableConfiguration();
         initializeActionButtons();
 
         function initializeActionButtons() {
@@ -65,7 +65,7 @@
                         _.each(vm.resultDetails, function(article) {
 
                             if (article.isSelected) {
-                                
+
                                 //WS param requirement for articles
                                 selectAttachment.push({
                                     step_id: commonBusiness.stepId,
@@ -75,10 +75,10 @@
                                     dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
                                     collection: angular.isUndefined(article.collection) ? '' : article.collection,
                                 });
-                               
+
                             }
                         });
-                        
+
                         newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
                             function(response) {
                                 newsBusiness.selectedNews.push.apply(newsBusiness.selectedNews, selectAttachment);
@@ -241,29 +241,8 @@
 
         function showArticleDetails(ev, title, exUrl) {
 
-            //Download the xml content.
-
-
-
-            //$.ajax('get',{
-            //    url: exUrl,
-            //    success: function(response)
-            //    {
-            //        //If the response itself an xml
-            //        //<content></content>
-            //        //Read the xml and get the content tag info and pass it to dialog.
-            //        console.log(response);
-            //        // Either you can read the xml directly if its a content.
-            //        dialog.notify(title, response, null, null,
-            //        null, null, false);
-            //
-            //    }
-            //});
-
-            dialog.notify(title, null,
-                html,
-                null,
-                null, null, false);
+            //console.log(exUrl); 
+            newsBusiness.showArticleContent(title, exUrl);
         }
     }
 
@@ -271,8 +250,7 @@
     function msNewsSearchDirective($compile) {
         return {
             restrict: 'E',
-            scope: {
-            },
+            scope: {},
             controller: 'msNewsSearchController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html'

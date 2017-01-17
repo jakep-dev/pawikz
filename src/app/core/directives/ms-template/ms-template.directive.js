@@ -1,5 +1,4 @@
-(function ()
-{
+(function() {
     'use strict';
 
     angular
@@ -8,23 +7,21 @@
         .directive('msTemplate', msTemplateDirective);
 
     function msTemplateController($rootScope, $scope, $mdMenu, $window,
-                                  commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
-                                 )
-    {
+        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
+    ) {
         var vm = this;
 
         vm.isExpandAll = true;
-		vm.isPrintableAll = commonBusiness.isPrintableAll;
+        vm.isPrintableAll = commonBusiness.isPrintableAll;
         templateBusiness.isTemplateExpandAll = vm.isExpandAll;
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
-		vm.printableAll = printableAll;
+        vm.printableAll = printableAll;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
 
         //Save the entire template data.
-        function saveAll()
-        {
+        function saveAll() {
             //Changed Date: 28/4/2016 as per Bug - Chart title not saving
             commonBusiness.emitMsg('saveAllChart');
             templateBusinessSave.save();
@@ -36,26 +33,24 @@
             templateBusiness.requestPdfDownload();
         }
 
-        function renew()
-        {
+        function renew() {
             notificationBusiness.initializeMessages($scope);
             workupBusiness.renew(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
         }
 
 
         //Toggle expand or collapse
-        function toggleExpand()
-        {
+        function toggleExpand() {
             vm.isExpandAll = !vm.isExpandAll;
             commonBusiness.isTemplateExpandAll = vm.isExpandAll;
             $mdMenu.hide();
         }
-		
-		function printableAll(){
-			vm.isPrintableAll = !vm.isPrintableAll;
-			commonBusiness.isPrintableAll = vm.isPrintableAll;
+
+        function printableAll() {
+            vm.isPrintableAll = !vm.isPrintableAll;
+            commonBusiness.isPrintableAll = vm.isPrintableAll;
             $mdMenu.hide();
-		}
+        }
 
         commonBusiness.onMsg('step-load-more', $scope, function() {
             $scope.loadMore();
@@ -65,20 +60,18 @@
     /** @ngInject */
 
     function msTemplateDirective($compile, $templateRequest, $templateCache,
-                                 $interval, templateBusiness,
-                                 commonBusiness, clientConfig)
-    {
+        $interval, templateBusiness,
+        commonBusiness, clientConfig) {
         return {
             restrict: 'E',
-            scope   : {
+            scope: {
                 components: '=',
                 refreshstep: '='
             },
             controller: 'msTemplateController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
-            link:function(scope, el, attrs)
-            {
+            link: function(scope, el, attrs) {
                 //Storing the components for future load.
                 templateBusiness.components = scope.components;
                 scope.showLoadingBar = true;
@@ -88,10 +81,9 @@
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
-                scope.loadMore = function()
-                {
-                    if(!scope.isLoadMoreDisabled) {
-                       var comPromise = $interval(function(){//using $interval seems to work fine
+                scope.loadMore = function() {
+                    if (!scope.isLoadMoreDisabled) {
+                        var comPromise = $interval(function() { //using $interval seems to work fine
                             var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
                                 components = [],
                                 loadSize = templateBusiness.getCompInitialLoadCount(),
@@ -101,19 +93,19 @@
                             components = components.splice(loadedIndex, _.size(components));
                             compSize = getNumberOfComp(components);
 
-                            if(compSize < templateBusiness.getCompInitialLoadCount()) {
+                            if (compSize < templateBusiness.getCompInitialLoadCount()) {
                                 loadSize = compSize
                             }
 
-                            var actualCompCount  = bindComponent(scope, el, components, loadSize);
+                            var actualCompCount = bindComponent(scope, el, components, loadSize);
                             var newLoadedIndex = loadedIndex + actualCompCount;
 
-                            if(_.size(templateBusiness.components.content) === newLoadedIndex) {
+                            if (_.size(templateBusiness.components.content) === newLoadedIndex) {
                                 scope.isLoadMoreDisabled = true;
                             }
 
                             el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
-                           $interval.cancel(comPromise);
+                            $interval.cancel(comPromise);
                         }.bind(this), 10);
                     }
                 };
@@ -122,19 +114,18 @@
                 var actualCompCount = bindComponent(scope, el, scope.components.content, actualCount(scope));
                 el.find('#btnLoadMore').attr('loadedIndex', actualCompCount);
 
-                commonBusiness.onMsg('reached-page-bottom', scope, function(){
+                commonBusiness.onMsg('reached-page-bottom', scope, function() {
                     scope.loadMore();
                 });
             }
         };
 
         //Get the actual count details
-        function actualCount(scope)
-        {
+        function actualCount(scope) {
             var compCount = templateBusiness.getCompInitialLoadCount(),
                 compSize = getNumberOfComp(scope.components.content);
 
-            if(compSize < compCount) {
+            if (compSize < compCount) {
                 compCount = compSize;
                 scope.isLoadMoreDisabled = true;
             }
@@ -143,28 +134,26 @@
 
         ///Bind header details for the component
         ///Header & Sub-Header
-        function bindHeader(scope)
-        {
+        function bindHeader(scope) {
             var header = templateBusiness.getComponentHeader();
 
-            if(header){
+            if (header) {
                 scope.stepName = header.name;
                 scope.stepSubHeader = header.subHeader;
             }
         }
 
         //Bind components
-        function bindComponent(scope, el, contents, componentLoadCount)
-        {
-            if(contents) {
+        function bindComponent(scope, el, contents, componentLoadCount) {
+            if (contents) {
                 var totalComponent = componentLoadCount,
                     currentComponent = 0,
                     isSkip = false,
                     count = 0,
                     bindHtml = [];
 
-                _.each(contents, function (renderContent) {
-                    if(!isSkip) {
+                _.each(contents, function(renderContent) {
+                    if (!isSkip) {
                         count++;
                         if (renderContent.header &&
                             renderContent.sections &&
@@ -173,7 +162,7 @@
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
                             newScope.subtype = null;
-                            _.each(renderContent.sections, function (section) {
+                            _.each(renderContent.sections, function(section) {
                                 newScope.isnoneditable = (section.type === 'nonEditableUnmark');
 
                                 if (!newScope.subtype) {
@@ -183,17 +172,14 @@
                                 if (section.TearSheetItem &&
                                     section.TearSheetItem.length) {
                                     newScope.tearcontent.push(section);
-                                }
-                                else if (section.TearSheetItem) {
+                                } else if (section.TearSheetItem) {
                                     if (newScope.subtype === 'SubComponent' && section.subtype) {
                                         section.TearSheetItem.subtype = section.subtype;
                                     }
                                     newScope.tearcontent.push(section);
-                                }
-                                else if (section.Label) {
+                                } else if (section.Label) {
                                     newScope.tearcontent.push(section);
-                                }
-                                else if (section.row || section.ItemId) {
+                                } else if (section.row || section.ItemId) {
                                     newScope.tearcontent.push(section);
                                 }
                             });
@@ -204,7 +190,7 @@
                                 var isChartComp = false;
 
                                 //Check for chart component
-                                _.each(newScope.tearcontent, function (each) {
+                                _.each(newScope.tearcontent, function(each) {
                                     var tearSheet = each.TearSheetItem;
                                     if (tearSheet &&
                                         tearSheet.id === 'ScrapedItem' &&
@@ -230,8 +216,7 @@
                                 });
                                 currentComponent++;
                             }
-                        }
-                        else {
+                        } else {
                             switch (renderContent.subtype || renderContent.id) {
                                 case 'WU_RATIOS_CHART':
                                     var newScope = scope.$new();
@@ -262,7 +247,7 @@
                                 case 'AdvisenNewsSearch':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
-                                    html += '<ms-news></ms-news>';
+                                    html += '<ms-news title="' + renderContent.Label + '"></ms-news>';
                                     html += '</div>';
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
@@ -276,14 +261,13 @@
                     }
                 });
 
-                if(bindHtml && bindHtml.length > 0) {
+                if (bindHtml && bindHtml.length > 0) {
                     var divElem = angular.element('<div></div>');
-                    _.each(bindHtml, function(html)
-                    {
+                    _.each(bindHtml, function(html) {
                         divElem.append(html.content);
                     });
                     scope.isCompLoaded = true;
-                    var bindCompProm = $interval(function(){
+                    var bindCompProm = $interval(function() {
                         var element = el.find('#template-content');
                         element.append(divElem);
                         $interval.cancel(bindCompProm);
@@ -294,16 +278,13 @@
             }
         }
 
-        function getNumberOfComp(contents)
-        {
+        function getNumberOfComp(contents) {
             var totalComp = 0;
 
-            _.each(contents, function(content)
-            {
+            _.each(contents, function(content) {
                 if (content.header &&
                     content.sections &&
-                    content.sections.length > 0)
-                {
+                    content.sections.length > 0) {
                     totalComp++;
                 }
             });
