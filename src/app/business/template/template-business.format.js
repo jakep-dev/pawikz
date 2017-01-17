@@ -6,7 +6,7 @@
         .service('templateBusinessFormat', templateBusinessFormat);
 
     /* @ngInject */
-    function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness) {
+    function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness, clientConfig) {
         var business = {
             getFormatObject: getFormatObject,
 			getProgramTableFormatObject: getProgramTableFormatObject,
@@ -71,7 +71,7 @@
 				formatObject.dataType = mnemonicType.dataType;
     	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
 				formatObject.precision = 2;
-				formatObject.invalidMessage = 'Invalid entry. Input numbers with k, m or b for thousand, million or billion respectively.';
+				formatObject.invalidMessage = clientConfig.messages.programTableHybrid.invalidInput;
 			}
 
 			return formatObject;
