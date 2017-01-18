@@ -24,6 +24,10 @@ $generic-table-input-height: 25px;
     background-color: rgba(15, 185, 255, 0.11);
     border-radius: $generic-table-border-radius;
   }
+
+  #generic-table{
+    overflow: hidden;
+  }
 }
 
 
