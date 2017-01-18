@@ -98,6 +98,7 @@
                     company_id: req.body.companyId,
                     user_id: req.body.userId,
                     sort_by: req.body.sortBy,
+                    search_within: req.body.searchWithin,
                     num_per_page: req.body.numPerPage,
                     ssnid: req.headers['x-session-token']
                 }

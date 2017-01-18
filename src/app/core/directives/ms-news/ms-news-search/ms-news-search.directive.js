@@ -13,23 +13,24 @@
 
         vm.resultDetails = [];
         vm.company = '';
-        vm.articlesShown = '';
+        vm.articlesFound = '';
         vm.articlesShown = '';
         vm.date = '';
         vm.period = '';
         vm.sortVal = 'D';
 
-        vm.toggleCollapse = toggleCollapse;
         vm.bookmarkNews = bookmarkNews;
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
+        vm.newsSelection = newsSelection;
+        var validate = false;
 
         dataTableConfiguration();
         initializeActionButtons();
 
         function initializeActionButtons() {
             commonBusiness.onMsg('-Bookmark', $scope, function(ev) {
-                bookmarkNews();
+                (validate) ? bookmarkNews(): confirmationMessage();
             });
 
             commonBusiness.onMsg('-Clear', $scope, function(ev) {
@@ -45,6 +46,17 @@
             angular.forEach(vm.resultDetails, function(item) {
                 if (item.isSelected) {
                     item.isSelected = false;
+                    validate = item.isSelected;
+                }
+            });
+        }
+
+        function newsSelection() {
+            // function newsSelection() {
+
+            angular.forEach(vm.resultDetails, function(item) {
+                if (item.isSelected) {
+                    validate = item.isSelected;
                 }
             });
         }
@@ -53,56 +65,81 @@
             $mdDialog.hide();
         };
 
-        function bookmarkNews() {
-            dialog.confirm('Bookmark News', 'Are you sure you want to include the full text of the checked article(s) in your work-up?', null, {
-                ok: {
-                    name: 'yes',
-                    callBack: function() {
-
-                        toggleCollapse();
-
-                        var selectAttachment = [];
-                        _.each(vm.resultDetails, function(article) {
-
-                            if (article.isSelected) {
-
-                                //WS param requirement for articles
-                                selectAttachment.push({
-                                    step_id: commonBusiness.stepId,
-                                    article_id: article.resourceId,
-                                    title: article.title,
-                                    article_url: article.externalUrl,
-                                    dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
-                                    collection: angular.isUndefined(article.collection) ? '' : article.collection,
-                                });
-
-                            }
-                        });
-
-                        newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
-                            function(response) {
-                                newsBusiness.selectedNews.push.apply(newsBusiness.selectedNews, selectAttachment);
-                                commonBusiness.emitMsg('news-bookmark');
-                            }
-                        );
-
-                        dialog.close();
-
-                    }
-                },
-                cancel: {
-                    name: 'no',
-                    callBack: function() {
-                        return false;
-                    }
+        function confirmationMessage() {
+            var val = false;
+            _.filter(vm.resultDetails, function(article) {
+                if (article.isSelected) {
+                    val = article.isSelected;
                 }
             });
+
+            if (!val) {
+                dialog.alert("Alert Message", "Please select news item(s)",
+                    null, {
+                        ok: {
+                            name: 'ok',
+                            callBack: function() {}
+                        }
+                    }, '', null, null);
+                dialog.close();
+            }
+        }
+
+        function bookmarkNews() {
+
+            if (validate) {
+                dialog.confirm('Bookmark News', 'Are you sure you want to include the full text of the checked article(s) in your work-up?', null, {
+                    ok: {
+                        name: 'yes',
+                        callBack: function() {
+
+                            toggleCollapse();
+
+                            var selectAttachment = [];
+                            _.each(vm.resultDetails, function(article) {
+
+                                if (article.isSelected) {
+
+                                    //WS param requirement for articles
+                                    selectAttachment.push({
+                                        step_id: commonBusiness.stepId,
+                                        article_id: article.resourceId,
+                                        title: article.title,
+                                        article_url: article.externalUrl,
+                                        dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
+                                        collection: angular.isUndefined(article.collection) ? '' : article.collection,
+                                    });
+
+                                }
+                            });
+
+                            newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
+                                function(response) {
+                                    newsBusiness.selectedNews.push.apply(newsBusiness.selectedNews, selectAttachment);
+                                    commonBusiness.emitMsg('news-bookmark');
+                                }
+                            );
+
+                            dialog.close();
+
+                        }
+                    },
+                    cancel: {
+                        name: 'no',
+                        callBack: function() {
+                            return false;
+                        }
+                    }
+                });
+            } else {
+                confirmationMessage();
+            }
         }
 
         function actionHtml(data, type, full, meta) {
 
             vm.isSelected = full.isSelected;
-            var html = '<md-checkbox aria-label="select" ng-model="vm.resultDetails[' + full.rowId + '].isSelected" class="no-padding-margin" checked="selected"></md-checkbox>';
+            var html = '<md-checkbox aria-label="select" ng-model="vm.resultDetails[' + full.rowId + '].isSelected" class="no-padding-margin" checked="selected" ng-change="vm.newsSelection(this)"></md-checkbox>';
 
             return html;
         }
@@ -186,9 +223,10 @@
             var columns = aoData[1].value;
             var start = aoData[3].value;
             var length = aoData[4].value;
+            var searchFilter = aoData[5].value.value;
             var pageNo = (start / length) + 1;
 
-            newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, length).then(function(response) {
+            newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length).then(function(response) {
 
                 var blankData = {
                     rowId: '',
