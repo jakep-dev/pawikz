@@ -482,9 +482,9 @@
             makeColDef += ''+ isRowComputed +'';
             makeColDef += ',"IsChecked":';
             makeColDef += 'false';
-            makeColDef += ',"SEQUENCE":';
+            makeColDef += ',"SEQUENCE":"';
             makeColDef += row.SEQUENCE;
-            makeColDef += ',"TL_STATUS":';
+            makeColDef += '","TL_STATUS":';
             makeColDef += '"' + row.TL_STATUS + '"';
             makeColDef += '}';
 
