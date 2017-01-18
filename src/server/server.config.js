@@ -3,16 +3,16 @@
  */
 
 exports.webservice = {
-    protocol: 'http', //https
+    protocol: 'http',
     url: 'dev-vm-websvc.advisen.com',
-    port: '8080',
-    service: 'advwebservice'
+    port: 8080,
+    service:'advwebservice'
 };
 
 exports.client = {
     protocol: 'http',
-    domain: '192.168.1.216',
-    port: '4000',
+    domain: 'devcrm.advisen.com',
+    port: '80',
     loglevel: 1,
     transports: ['polling']
 };
@@ -26,7 +26,7 @@ exports.restcall = {
     service: [{
             name: 'templateManager',
             methods: {
-                auth: 'authenticate',
+                auth:'authenticate',
                 saveOverview: 'updateTemplateOverview',
                 logout: 'deleteSession',
                 userInfo: 'getUserInfo',
@@ -37,7 +37,7 @@ exports.restcall = {
                 createWorkUp: 'createNewTemplateProject',
                 renewWorkUp: 'renewTemplateProject',
                 lockWorkUp: 'lockWorkUp',
-                unlockWorkUp: 'unLockWorkUp',
+                unlockWorkUp:'unLockWorkUp',
                 createWorkUpStatus: 'getTemplateProjectStatus',
                 createTemplatePDFRequest: 'createTemplatePDFRequest',
                 setSVGFileStatus: 'setSVGFileStatus',
@@ -55,9 +55,9 @@ exports.restcall = {
                 overView: 'getTemplateOverview',
                 templateSchema: 'getTemplateUIStructure',
                 templateMnemonics: 'getTemplateMnemonics',
-                findTickers: 'findTickers',
+                findTickers : 'findTickers',
                 dynamicTableData: 'getDynamicTableData',
-                getCompetitors: 'getCompetitors',
+                getCompetitors:'getCompetitors',
                 saveChartSvgInFile: 'saveChartSvgInFile',
                 getScrapedHTML: 'getScrapedHTML'
             }
@@ -65,10 +65,10 @@ exports.restcall = {
         {
             name: 'charts',
             methods: {
-                getStockData: 'getStockData',
-                getIndices: 'getIndices',
-                getSavedChartData: 'getChartSettingsPerStep', // getChartSettings
-                saveChartSettings: 'saveCharts', // saveChartSettings_v2
+                getStockData:'getStockData',
+                getIndices:'getIndices',
+                getSavedChartData : 'getChartSettingsPerStep', // getChartSettings
+                saveChartSettings : 'saveCharts', // saveChartSettings_v2
                 getAllChartSettings: 'getAllCharts', // getAllChartSettings
                 getFinancialChartData: 'getInteractiveFinancialRatiosData',
                 getSavedFinancialChartData: 'getSavedIFChartSettings',
@@ -117,7 +117,7 @@ exports.socketIO = {
 };
 
 exports.socketData = {
-    workup: []
+  workup: []
 };
 
 exports.log = {
@@ -127,8 +127,8 @@ exports.log = {
 };
 
 exports.parallel = function(middlewares) {
-    return function(req, res, next) {
-        async.each(middlewares, function(mw, cb) {
+    return function (req, res, next) {
+        async.each(middlewares, function (mw, cb) {
             mw(req, res, cb);
         }, next);
     };
