@@ -17,6 +17,7 @@
 
         commonBusiness.onMsg('news-bookmark', $scope, function() {
             vm.bookmarkedItems = newsBusiness.selectedNews;
+            loadAttachments();
         });
 
         function showArticleContent(article) {

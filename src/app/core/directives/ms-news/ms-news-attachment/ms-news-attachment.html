@@ -1,4 +1,4 @@
-<div ng-repeat="items in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0">
+<div ng-repeat="items in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0" id="msNewsAttachment">
     <ms-accordion is-expandable="true" id="ms-accordion" collapsed="true" title="{{items.title}}" action="">
         <div ng-show="items.isLoaded" ng-bind-html="items.htmlArticle"></div>
     </ms-accordion>
