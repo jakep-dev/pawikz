@@ -76,12 +76,13 @@
                 });
         }
 
-        function search(companyId, userId, pageNo, sortBy, numPerPage) {
+        function search(companyId, userId, pageNo, sortBy, searchWithin, numPerPage) {
             var input = {
                 companyId: companyId,
                 userId: userId,
                 pageNo: pageNo,
                 sortBy: sortBy,
+                searchWithin: searchWithin,
                 numPerPage: numPerPage
             };
 
