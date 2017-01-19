@@ -119,14 +119,16 @@
                             var prevRowNum = rowNumber - 1;
 
                             if($scope.rows[prevRowNum]) {
-                                computeAtt($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
+                                if(columnName !== 'RETAIN') {
+                                    computeAtt($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
+                                }
                                 computeRate($scope.rows[rowNumber], rowNumber + 1);
                                 computeRol($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
                                 saveRow($scope, $scope.rows[rowNumber]);
                             }
                         }
 
-                        computeOthers($scope, $scope.rows, rowId);
+                        computeOthers($scope, $scope.rows, rowNumber + 1);
                     }
                 } else {
                     var rowNumber = parseInt(rowId);
@@ -381,8 +383,7 @@
                 
                 var value = row[itemId];
                 var isDisabled = (itemId.indexOf('RATE') !== -1) ||
-                                    (itemId.indexOf('ROL') !== -1) ||
-                                    (itemId.indexOf('RETAIN') !== -1 && !(isFirst));
+                                    (itemId.indexOf('ROL') !== -1);
 
                 if(!isRowComputed)
                 {
@@ -521,15 +522,8 @@
         * */
         function computeOthers($scope, rows, rowNum)
         {
-            for(var count = (rowNum); count < rows.length; count++)
-            {
-                //enable RETAIN/ATT field if first row
-                if(rows[count] && rows[count].RETAIN && rows[count].RETAIN.isdisabled){
-                    rows[count].RETAIN.isdisabled = count > 0;
-                }
-                
-                if(rows[count] && rows[count].iscompute)
-                {   
+            for(var count = (rowNum); count < rows.length; count++) {
+                if (rows[count] && rows[count].iscompute) {
                     computeAtt(rows[count], rows[count - 1], count + 1);
                     computeRate(rows[count], count + 1);
                     computeRol(rows[count], rows[count - 1], count + 1);

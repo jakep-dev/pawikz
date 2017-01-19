@@ -487,6 +487,7 @@
                     mnemonic: req.body.mnemonic,
                     item_id: req.body.item_id,
                     columns: req.body.columns,
+                    sort_order: 'SEQUENCE',
                     ssnid: req.headers['x-session-token']
                 },
                 headers:{'Content-Type':'application/json'}

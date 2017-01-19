@@ -4,7 +4,8 @@
         <md-toolbar>
             <div layout="row" layout-align="space-between center">
                 <div class="md-toolbar-tools">
-                    <h2>{{ vm.title }}</h2>
+                    <!--<h2>{{ vm.title }}</h2>-->
+                    <span ng-bind-html="vm.title"></span>
                 </div>
             </div>
         </md-toolbar>
