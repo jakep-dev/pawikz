@@ -12,11 +12,11 @@
     {
         $scope.disabled = ($scope.isdisabled === 'true');
         $scope.formatObj = angular.fromJson(_.unescape($scope.formats));
-        $scope.value = formatData();
+        $scope.value = templateBusinessFormat.formatProgramTableData($scope);
 
         $scope.textChange = function()
         {
-            $scope.value = formatData();
+            $scope.value = templateBusinessFormat.formatProgramTableData($scope);
 
             $scope.compute({
                 currentRow: $scope.row, value: $scope.value,
@@ -29,20 +29,6 @@
 		{
             $scope.value = templateBusinessFormat.removeFixes($scope.value, $scope.formatObj);;
 		};
-
-        /*
-        * formats input except
-        * 1) if 1st row and
-        * 2) columnName === 'ROL'
-        */ 
-        function formatData() {            
-            var formatted = $scope.value;
-            if($scope.rowId !== 0 && $scope.columnname !== 'ROL') {
-                formatted = templateBusinessFormat.formatData($scope.value, $scope.formatObj);
-            }
-
-            return formatted;
-        }
     }
 
     /** @ngInject */

@@ -12,6 +12,7 @@
 			getProgramTableFormatObject: getProgramTableFormatObject,
             removeFixes: removeFixes,
             formatData: formatData,
+			formatProgramTableData: formatProgramTableData,
 
     		getMnemonicAlignment: getMnemonicAlignment,
     		getMnemonicDataType: getMnemonicDataType,
@@ -75,6 +76,28 @@
 			}
 
 			return formatObject;
+		}
+
+		function formatProgramTableData(scope) {
+			var formatted = scope.value;
+
+            /*
+                force to zero if columnName === RETAIN and if 1st row
+            */
+            if(scope.rowid === '0' && scope.columnname === 'RETAIN' && formatted === '') {
+                formatted = '0.00';
+            }
+
+             /*
+                * formats input except
+                * 1) if 1st row and
+                * 2) columnName === 'ROL'
+            */ 
+            if(scope.rowid !== 0 && scope.columnname !== 'ROL') {
+                formatted = formatData(formatted, scope.formatObj);
+            }
+
+            return formatted;
 		}
         
     	function removeFixes(value, formatObj) {
