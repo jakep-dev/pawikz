@@ -93,7 +93,7 @@
                 * 1) if 1st row and
                 * 2) columnName === 'ROL'
             */ 
-            if(scope.rowid !== '0' && scope.columnname !== 'ROL') {
+            if(scope.rowid !== 0 && scope.columnname !== 'ROL') {
                 formatted = formatData(formatted, scope.formatObj);
             }
 
