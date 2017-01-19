@@ -97,6 +97,7 @@
                 parameters: {
                     company_id: req.body.companyId,
                     user_id: req.body.userId,
+                    page_no: req.body.pageNo,
                     sort_by: req.body.sortBy,
                     search_within: req.body.searchWithin,
                     num_per_page: req.body.numPerPage,

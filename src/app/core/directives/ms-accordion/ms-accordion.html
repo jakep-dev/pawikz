@@ -1,18 +1,15 @@
 <div id="ms-accordion" class="step-table-title  md-whiteframe-2dp" ng-class="titleClass">
-    <div layout="row" layout-align="space-between center" >
+    <div layout="row" layout-align="space-between center">
         <div>
-            {{ title }}
+            <!--{{ title }}-->
+            <span ng-bind-html="title"></span>
         </div>
         <div layout="row" layout-align="end center">
-            <md-button ng-repeat="action in vm.actions" style="margin-right: -20px"
-                        ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)"
-                        aria-label="action buttons"
-                        ng-if="!!vm.actions">
-                <md-icon md-menu-align-target  md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
+            <md-button ng-repeat="action in vm.actions" style="margin-right: -20px" ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)" aria-label="action buttons" ng-if="!!vm.actions">
+                <md-icon md-menu-align-target md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
                 <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
             </md-button>
-            <md-button class="md-icon-button" aria-label="expand/collapse"
-                    ng-click="vm.collapse()" ng-if="isExpandable">
+            <md-button class="md-icon-button" aria-label="expand/collapse" ng-click="vm.collapse()" ng-if="isExpandable">
                 <md-tooltip md-direction="top">
                     expand/collapse
                 </md-tooltip>
