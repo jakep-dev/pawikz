@@ -522,10 +522,8 @@
         * */
         function computeOthers($scope, rows, rowNum)
         {
-            for(var count = (rowNum); count < rows.length; count++)
-            {                
-                if(rows[count] && rows[count].iscompute)
-                {   
+            for(var count = (rowNum); count < rows.length; count++) {
+                if (rows[count] && rows[count].iscompute) {
                     computeAtt(rows[count], rows[count - 1], count + 1);
                     computeRate(rows[count], count + 1);
                     computeRol(rows[count], rows[count - 1], count + 1);

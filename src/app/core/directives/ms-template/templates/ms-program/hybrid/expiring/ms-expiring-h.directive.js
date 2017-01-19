@@ -121,7 +121,6 @@
                                 if(columnName !== 'RETAIN') {
                                     computeAtt($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
                                 }
-
                                 computeRate($scope.rows[rowNumber], rowNumber + 1);
                                 computeRol($scope.rows[rowNumber], $scope.rows[prevRowNum], rowNumber + 1);
                                 saveRow($scope, $scope.rows[rowNumber]);
