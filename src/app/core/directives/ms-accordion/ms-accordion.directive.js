@@ -28,13 +28,6 @@
             vm.collapsed = !vm.collapsed;
         }
 
-        commonBusiness.onMsg('-Collapsed', $scope, function(ev) {
-            if ($scope.title === 'Advisen News Search') {
-
-                collapse();
-            }
-        });
-
         function init() {
             if (!vm.isExpandable) {
                 vm.collapse = false;

@@ -72,7 +72,7 @@
 
                             // toggleCollapse();
 
-                            commonBusiness.emitMsg('-Collapsed');
+                            // commonBusiness.emitMsg('-Collapsed');
 
                             var selectAttachment = [];
                             _.each(scope, function(article) {

@@ -120,6 +120,7 @@
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
                 .withOption('stateSave', true)
+                .withOption('order', false)
                 .withOption('createdRow', recompileHtml)
                 .withOption('initComplete', sort)
                 .withPaginationType('full')
@@ -127,7 +128,7 @@
         }
 
         function sort() {
-            var html = '<label>Sort by:</label>' +
+            var html = '<label style="padding-left: 15px;">Sort by:</label>' +
                 '<select data-ng-options="o.name for o in options" ng-model="selectedOption" ng-change="vm.onSortChange(selectedOption)"></select>';
             $element.find('#newsPageDetails_sort').append($compile(html)($scope));
 
