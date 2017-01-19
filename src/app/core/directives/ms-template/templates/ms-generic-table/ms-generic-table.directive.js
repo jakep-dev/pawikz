@@ -33,7 +33,8 @@
                 console.log('Generic Table Item Scope');
                 console.log(scope);
 
-                html += '<table id="generic-table" style="overflow: hidden" cellspacing="0" cellpadding="0" width="100%">';
+                html += '<table id="generic-table" ' +
+                    'cellspacing="0" cellpadding="0" width="100%">';
 
                 //Creating Rows for Generic-Table
                 _.each(scope.tearsheet.rows, function(row)
