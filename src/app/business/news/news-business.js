@@ -72,58 +72,24 @@
 
                             // toggleCollapse();
 
-                            commonBusiness.emitMsg('-Collapse');
-
-
-                            // var exist = _.uniq(scope, function(items){
-
-                            // });
+                            commonBusiness.emitMsg('-Collapsed');
 
                             var selectAttachment = [];
                             _.each(scope, function(article) {
 
-                                // if (article.isSelected && (article.resourceId !== business.selectedNews.resourceId)) {
                                 if (article.isSelected) {
 
-                                    console.log("================================");
-                                    console.log(article.isSelected);
-                                    console.log(newsBusiness.selectedNews);
-
-                                    _.each(business.selectedNews, function(items) {
-
-                                        console.log("666666666666666666666666666");
-                                        console.log(article.resourceId);
-                                        console.log(items.resourceId);
-
-                                        if (angular.isUndefined(article.resourceId) && article.resourceId !== items.resourceId) {
-                                            //WS param requirement for articles
-                                            selectAttachment.push({
-                                                isExist: false,
-                                                step_id: commonBusiness.stepId,
-                                                article_id: article.resourceId,
-                                                title: article.title,
-                                                article_url: article.externalUrl,
-                                                dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
-                                                collection: angular.isUndefined(article.collection) ? '' : article.collection,
-                                            });
-                                        }
-
+                                    selectAttachment.push({
+                                        step_id: commonBusiness.stepId,
+                                        article_id: article.resourceId,
+                                        title: article.title,
+                                        article_url: article.externalUrl,
+                                        dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
+                                        collection: angular.isUndefined(article.collection) ? '' : article.collection,
                                     });
-
-                                    // //WS param requirement for articles
-                                    // selectAttachment.push({
-                                    //     step_id: commonBusiness.stepId,
-                                    //     article_id: article.resourceId,
-                                    //     title: article.title,
-                                    //     article_url: article.externalUrl,
-                                    //     dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
-                                    //     collection: angular.isUndefined(article.collection) ? '' : article.collection,
-                                    // });
                                 }
 
                             });
-
-
 
                             newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
                                 function(response) {

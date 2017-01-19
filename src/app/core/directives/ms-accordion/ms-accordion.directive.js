@@ -1,8 +1,7 @@
 /**
  * Created by sherindharmarajan on 11/24/15.
  */
-(function ()
-{
+(function() {
     'use strict';
 
     angular
@@ -11,32 +10,33 @@
         .directive('msAccordion', msAccordionDirective)
 
 
-    function MsAccordionController($scope, commonBusiness)
-    {
+    function MsAccordionController($scope, commonBusiness) {
         var vm = this;
 
         vm.collapsed = $scope.initialCollapsed;
         vm.isExpandable = $scope.isExpandable;
         vm.actions = $scope.actions;
-        vm.titleClass =  $scope.titlebg || 'md-amber-A200-bg';
-        
+        vm.titleClass = $scope.titlebg || 'md-amber-A200-bg';
+
         vm.collapse = collapse;
         vm.applyClickEvent = applyClickEvent;
 
         init();
 
         //Toggle the collapse
-        function collapse()
-        {
+        function collapse() {
             vm.collapsed = !vm.collapsed;
         }
 
+        commonBusiness.onMsg('-Collapsed', $scope, function(ev) {
+            if ($scope.title === 'Advisen News Search') {
 
+                collapse();
+            }
+        });
 
-        function init()
-        {
-            if(!vm.isExpandable)
-            {
+        function init() {
+            if (!vm.isExpandable) {
                 vm.collapse = false;
             }
         }
@@ -57,11 +57,10 @@
     }
 
     /** @ngInject */
-    function msAccordionDirective()
-    {
+    function msAccordionDirective() {
         return {
-            restrict  : 'E',
-            scope     : {
+            restrict: 'E',
+            scope: {
                 title: '@',
                 initialCollapsed: '=?collapsed',
                 titlebg: '@',
