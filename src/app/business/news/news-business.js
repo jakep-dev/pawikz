@@ -23,7 +23,6 @@
         function showArticleContent(title, url) {
 
             newsService.showArticleContent(url).then(function(response) {
-                console.log(response.htmlContent);
                 dialog.notify(title, null,
                     response.htmlContent,
                     null,

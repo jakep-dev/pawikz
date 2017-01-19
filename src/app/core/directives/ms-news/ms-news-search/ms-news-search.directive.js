@@ -70,7 +70,6 @@
         }
 
         function bookmarkNews() {
-
             newsBusiness.bookmarkNewsArticle(vm.resultDetails, validate);
         }
 
@@ -121,6 +120,7 @@
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
                 .withOption('stateSave', true)
+                .withOption('order', false)
                 .withOption('createdRow', recompileHtml)
                 .withOption('initComplete', sort)
                 .withPaginationType('full')
