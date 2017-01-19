@@ -43,7 +43,7 @@
         }
 
         function clearSelection() {
-            angular.forEach(vm.resultDetails, function(item) {
+            _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
                     item.isSelected = false;
                     validate = item.isSelected;
@@ -54,7 +54,7 @@
         function newsSelection() {
             // function newsSelection() {
 
-            angular.forEach(vm.resultDetails, function(item) {
+            _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
                     validate = item.isSelected;
                 }
@@ -66,74 +66,11 @@
         };
 
         function confirmationMessage() {
-            var val = false;
-            _.filter(vm.resultDetails, function(article) {
-                if (article.isSelected) {
-                    val = article.isSelected;
-                }
-            });
-
-            if (!val) {
-                dialog.alert("Alert Message", "Please select news item(s)",
-                    null, {
-                        ok: {
-                            name: 'ok',
-                            callBack: function() {}
-                        }
-                    }, '', null, null);
-                dialog.close();
-            }
+            newsBusiness.alertMessage(vm.resultDetails);
         }
 
         function bookmarkNews() {
-
-            if (validate) {
-                dialog.confirm('Bookmark News', 'Are you sure you want to include the full text of the checked article(s) in your work-up?', null, {
-                    ok: {
-                        name: 'yes',
-                        callBack: function() {
-
-                            toggleCollapse();
-
-                            var selectAttachment = [];
-                            _.each(vm.resultDetails, function(article) {
-
-                                if (article.isSelected) {
-
-                                    //WS param requirement for articles
-                                    selectAttachment.push({
-                                        step_id: commonBusiness.stepId,
-                                        article_id: article.resourceId,
-                                        title: article.title,
-                                        article_url: article.externalUrl,
-                                        dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
-                                        collection: angular.isUndefined(article.collection) ? '' : article.collection,
-                                    });
-
-                                }
-                            });
-
-                            newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
-                                function(response) {
-                                    newsBusiness.selectedNews.push.apply(newsBusiness.selectedNews, selectAttachment);
-                                    commonBusiness.emitMsg('news-bookmark');
-                                }
-                            );
-
-                            dialog.close();
-
-                        }
-                    },
-                    cancel: {
-                        name: 'no',
-                        callBack: function() {
-                            return false;
-                        }
-                    }
-                });
-            } else {
-                confirmationMessage();
-            }
+            newsBusiness.bookmarkNewsArticle(vm.resultDetails, validate);
         }
 
         function actionHtml(data, type, full, meta) {
