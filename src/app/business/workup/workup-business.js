@@ -75,14 +75,15 @@
                     }, 'notify-create-workup-notification-center');
                 }
             });
+            var token =  store.get('x-session-token');
+            $location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
             dialog.notify('Creating Workup', 'Go to Notification Center ',
                 '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
                 null,
                 {
                     ok: {
                         callBack: function() {
-                            var token =  store.get('x-session-token');
-                            $location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
+                            dialog.close();
                         }
                     }
                 }, null, false);
