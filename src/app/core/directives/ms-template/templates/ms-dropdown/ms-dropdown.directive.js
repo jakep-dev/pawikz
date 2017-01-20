@@ -22,14 +22,15 @@
     }
 
     /** @ngInject */
-    function msDropDownDirective()
+    function msDropDownDirective(fuseHelper)
     {
         return {
             restrict: 'E',
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                tearsheet: '@'
+                tearsheet: '@',
+                isIE: '=?'
             },
             controller: 'MsDropdownController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-dropdown/ms-dropdown.html',
@@ -37,16 +38,7 @@
             {
                 return function($scope)
                 {
-                    //$scope.$watch(
-                    //    "tearsheet",
-                    //    function tearSheetObj(newValue, oldValue) {
-                    //        if(newValue !== oldValue)
-                    //        {
-                    //            $scope.tearsheetobj = angular.fromJson($scope.tearsheet);
-                    //        }
-                    //    }
-                    //);
-
+                    $scope.isIE = fuseHelper.isIE();
                     $scope.tearsheetobj = angular.fromJson(_.unescape($scope.tearsheet));
                 };
             }
