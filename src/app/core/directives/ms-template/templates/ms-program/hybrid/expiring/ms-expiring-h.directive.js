@@ -182,22 +182,59 @@
                     tooltip: 'Add Row(s)',
                     type: 'menu',
                     scope: $scope,
-                    menus:[{
-                            type: 'input', 
-                            isNumeric: true, 
-                            model: $scope.rowNumber,
-                            min: 1,
-                            max: 50,
-                            setValue : function (number) {
-                                $scope.rowNumber = number;
-                            }
+                    menus: [
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '1 row',
+                            callback: 'EPH-Add',
+                            callbackParam: 1
                         },
                         {
                             type: 'button',
                             icon: null,
-                            name: 'Add',
-                            callback: 'EPH-Add'
-                        }],
+                            name: '5 rows',
+                            callback: 'EPH-Add',
+                            callbackParam: 5
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '10 rows',
+                            callback: 'EPH-Add',
+                            callbackParam: 10
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '15 rows',
+                            callback: 'EPH-Add',
+                            callbackParam: 15
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '20 rows',
+                            callback: 'EPH-Add',
+                            callbackParam: 20
+                        }
+                        //{
+                        //    type: 'input', 
+                        //    isNumeric: true, 
+                        //    model: $scope.rowNumber,
+                        //    min: 1,
+                        //    max: 50,
+                        //    setValue : function (number) {
+                        //        $scope.rowNumber = number;
+                        //    }
+                        //},
+                        //{
+                        //    type: 'button',
+                        //    icon: null,
+                        //    name: 'Add',
+                        //    callback: 'EPH-Add'
+                        //}
+                    ],
                 });
                 
                 $scope.$parent.$parent.actions.push({
@@ -644,8 +681,8 @@
                 clearProgram($scope, 'Expiring program cleared!');
             });
 
-            commonBusiness.onMsg('EPH-Add', $scope, function() {
-                addRow($scope, $scope.rowNumber);
+            commonBusiness.onMsg('EPH-Add', $scope, function(ev, data) {
+                addRow($scope, data);
             });
 
             commonBusiness.onMsg('EPH-Delete', $scope, function() {
