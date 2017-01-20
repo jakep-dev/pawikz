@@ -38,7 +38,7 @@
             {
                 return function($scope)
                 {
-                    $scope.isIE = fuseHelper.isIE();
+                    $scope.isIE = fuseHelper.isIE() || fuseHelper.isIECheck();
                     $scope.tearsheetobj = angular.fromJson(_.unescape($scope.tearsheet));
                 };
             }

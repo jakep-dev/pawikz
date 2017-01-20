@@ -14,7 +14,8 @@
 
         var service = {
             isMobile: isMobile,
-            isIE: isIE
+            isIE: isIE,
+            isIECheck: isIECheck
         };
 
         return service;
@@ -34,6 +35,11 @@
         {
             return (deviceDetector.browser &&
             (deviceDetector.browser.toLowerCase() === 'ie') );
+        }
+
+        function isIECheck(){
+            var isIe = ((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ));
+            return isIe;
         }
     }
 }());

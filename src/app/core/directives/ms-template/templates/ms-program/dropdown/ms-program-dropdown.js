@@ -45,7 +45,7 @@
             {
                 return function($scope)
                 {
-                    $scope.isIE = fuseHelper.isIE();
+                    $scope.isIE = fuseHelper.isIE() || fuseHelper.isIECheck();
                     $scope.$watch(
                         "tearsheet",
                         function handleAutoSave(newValue, oldValue) {
