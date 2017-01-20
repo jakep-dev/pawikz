@@ -975,6 +975,9 @@
                                 if(findHeader)
                                 {
                                     var value = (_.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic}).dataType === 'NUMBER') ? removeCommaValue(content[findHeader.index]): content[findHeader.index]; //;
+                                    if((value || value.length === 0)  && header.HMnemonic === 'RETAIN') {
+                                        value = '0.00';
+                                    }
                                     makeColDef += '"'+header.HMnemonic + '":"' + value + '",';
                                 }
                             });
