@@ -128,9 +128,9 @@
                                     valueObject.priceClose = parseFloat(primaryChartDataItem.priceClose);
                                     valueObject.percentChange = parseFloat(primaryChartDataItem.percentChange);
                                     valueObject.securityCode = primaryChartDataItem.securityCode;
-                                    valueObject.priceOpen = primaryChartDataItem.priceOpen;
-                                    valueObject.priceHigh = primaryChartDataItem.priceHigh;
-                                    valueObject.priceLow = primaryChartDataItem.priceLow;
+                                    valueObject.priceOpen = parseFloat(primaryChartDataItem.priceOpen);
+                                    valueObject.priceHigh = parseFloat(primaryChartDataItem.priceHigh);
+                                    valueObject.priceLow = parseFloat(primaryChartDataItem.priceLow);
                                     valueObject.volume = parseFloat(primaryChartDataItem.volume);
                                     valueObject.currency = primaryChartDataItem.currency;
 

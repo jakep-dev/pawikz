@@ -787,9 +787,9 @@
                                     subContext.valueObject.priceClose = parseFloat(subContext.primaryChartDataItem.priceClose);
                                     subContext.valueObject.percentChange = parseFloat(subContext.primaryChartDataItem.percentChange);
                                     subContext.valueObject.securityCode = subContext.primaryChartDataItem.securityCode;
-                                    subContext.valueObject.priceOpen = subContext.primaryChartDataItem.priceOpen;
-                                    subContext.valueObject.priceHigh = subContext.primaryChartDataItem.priceHigh;
-                                    subContext.valueObject.priceLow = subContext.primaryChartDataItem.priceLow;
+                                    subContext.valueObject.priceOpen = parseFloat(subContext.primaryChartDataItem.priceOpen);
+                                    subContext.valueObject.priceHigh = parseFloat(subContext.primaryChartDataItem.priceHigh);
+                                    subContext.valueObject.priceLow = parseFloat(subContext.primaryChartDataItem.priceLow);
                                     subContext.valueObject.volume = parseFloat(subContext.primaryChartDataItem.volume);
                                     subContext.valueObject.currency = subContext.primaryChartDataItem.currency;
 

@@ -748,11 +748,38 @@
                                             var value;
                                             $.each(stockDataResp.stockChartPrimaryData, function(i, v) {
                                                 if (v.dataDate.substring(0, 10) == xPoint) {
+                                                    tooltipText = Highcharts.dateFormat('%m-%d-%Y', new Date(xPoint)) + "<br/>" + "Open: ";
+                                                    value = parseFloat(v.priceOpen);
+                                                    if (!isNaN(value)) {
+                                                        value = $filter("number")(value, 2);
+                                                    }
+                                                    tooltipText += value;
+                                                    tooltipText += "<br/>" + "Close: ";
+                                                    value = parseFloat(v.priceClose);
+                                                    if (!isNaN(value)) {
+                                                        value = $filter("number")(value, 2);
+                                                    }
+                                                    tooltipText += value;
+                                                    tooltipText += "<br/>" + "High: ";
+                                                    value = parseFloat(v.priceHigh);
+                                                    if (!isNaN(value)) {
+                                                        value = $filter("number")(value, 2);
+                                                    }
+                                                    tooltipText += value;
+                                                    tooltipText += "<br/>" + "Low: ";
+                                                    value = parseFloat(v.priceLow);
+                                                    if (!isNaN(value)) {
+                                                        value = $filter("number")(value, 2);
+                                                    }
+                                                    tooltipText += value;
+                                                    tooltipText += "<br/>" + "Vol: ";
                                                     value = parseFloat(v.volume);
                                                     if (!isNaN(value)) {
                                                         value = $filter("number")(value / 1000000.0, 2);
                                                     }
-                                                    tooltipText = Highcharts.dateFormat('%m-%d-%Y',  new Date(xPoint)) + "<br/>" + "Open: " + v.priceOpen + "<br/>" + "Close: " + v.priceClose + "<br/>" + "High: " + v.priceHigh + "<br/>" + "Low: " + v.priceLow + "<br/>" + "Vol: " + value + 'M';
+                                                    tooltipText += value;
+                                                    tooltipText += "M";
+                                                    //tooltipText = Highcharts.dateFormat('%m-%d-%Y', new Date(xPoint)) + "<br/>" + "Open: " + v.priceOpen + "<br/>" + "Close: " + v.priceClose + "<br/>" + "High: " + v.priceHigh + "<br/>" + "Low: " + v.priceLow + "<br/>" + "Vol: " + value + 'M';
                                                 }
                                             });
                                             return tooltipText;

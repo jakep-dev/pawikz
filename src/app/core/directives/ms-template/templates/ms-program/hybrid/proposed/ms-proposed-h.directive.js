@@ -216,7 +216,7 @@
                             type: 'button',
                             icon: null,
                             name: '20 rows',
-                            callback: 'EPH-Add',
+                            callback: 'PPH-Add',
                             callbackParam: 20
                         }
                         //{
@@ -683,6 +683,7 @@
             commonBusiness.onMsg('PPH-Add', $scope, function (ev, data) {
                 addRow($scope, data);
             });
+
 
             commonBusiness.onMsg('PPH-Delete', $scope, function() {
                 deleteRows($scope);
