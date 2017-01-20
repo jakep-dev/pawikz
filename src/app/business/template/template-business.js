@@ -238,12 +238,13 @@
                             if (notification) {
                                 notification.requestId = data.requestId;
                             }
-                            dialog.notify('Pdf Download', 'Go to Notification Center ',
-                                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to download.</span>',
-                                null, null, null, false);
                         }
                     });
             }
+
+            dialog.notify('Pdf Download', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to download.</span>',
+                null, null, null, false);
         }
 
 
