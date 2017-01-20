@@ -93,7 +93,11 @@
         function applyMenuEvent(menu, action) {
             if (menu && action) {
                 if (action.type === 'menu' && menu.callback) {
-                    commonBusiness.emitMsg(menu.callback);
+                    if (menu.callbackParam) {
+                        commonBusiness.emitWithArgument(menu.callback, menu.callbackParam);
+                    } else {
+                        commonBusiness.emitMsg(menu.callback);
+                    }
                 }
             }
         }

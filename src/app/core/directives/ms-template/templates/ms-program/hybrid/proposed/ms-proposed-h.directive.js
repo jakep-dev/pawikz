@@ -183,22 +183,59 @@
                     tooltip: 'Add Row(s)',
                     type: 'menu',
                     scope: $scope,
-                    menus:[{
-                            type: 'input', 
-                            isNumeric: true, 
-                            model: $scope.rowNumber,
-                            min: 1,
-                            max: 50,
-                            setValue : function (number) {
-                                $scope.rowNumber = number;
-                            }
+                    menus: [
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '1 row',
+                            callback: 'PPH-Add',
+                            callbackParam: 1
                         },
                         {
                             type: 'button',
                             icon: null,
-                            name: 'Add',
-                            callback: 'PPH-Add'
-                        }],
+                            name: '5 rows',
+                            callback: 'PPH-Add',
+                            callbackParam: 5
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '10 rows',
+                            callback: 'PPH-Add',
+                            callbackParam: 10
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '15 rows',
+                            callback: 'PPH-Add',
+                            callbackParam: 15
+                        },
+                        {
+                            type: 'button',
+                            icon: null,
+                            name: '20 rows',
+                            callback: 'EPH-Add',
+                            callbackParam: 20
+                        }
+                        //{
+                        //    type: 'input', 
+                        //    isNumeric: true, 
+                        //    model: $scope.rowNumber,
+                        //    min: 1,
+                        //    max: 50,
+                        //    setValue : function (number) {
+                        //        $scope.rowNumber = number;
+                        //    }
+                        //},
+                        //{
+                        //    type: 'button',
+                        //    icon: null,
+                        //    name: 'Add',
+                        //    callback: 'PPH-Add'
+                        //}
+                    ],
                 });
                 
                 $scope.$parent.$parent.actions.push({
@@ -643,8 +680,8 @@
                 clearProgram($scope, 'Proposed program cleared!');
             });
 
-            commonBusiness.onMsg('PPH-Add', $scope, function() {
-                addRow($scope, $scope.rowNumber);
+            commonBusiness.onMsg('PPH-Add', $scope, function (ev, data) {
+                addRow($scope, data);
             });
 
             commonBusiness.onMsg('PPH-Delete', $scope, function() {
