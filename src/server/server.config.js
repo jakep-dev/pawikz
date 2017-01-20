@@ -3,16 +3,16 @@
  */
 
 exports.webservice = {
-    protocol: 'http', //https
+    protocol: 'http',
     url: 'dev-vm-websvc.advisen.com',
-    port: '8080',
-    service: 'advwebservice'
+    port: 8080,
+    service:'advwebservice'
 };
 
 exports.client = {
     protocol: 'http',
-    domain: '192.168.1.216',
-    port: '4000',
+    domain: 'devcrm.advisen.com',
+    port: '80',
     loglevel: 1,
     transports: ['polling']
 };
