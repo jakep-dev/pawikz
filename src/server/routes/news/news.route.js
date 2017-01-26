@@ -101,6 +101,7 @@
                     sort_by: req.body.sortBy,
                     search_within: req.body.searchWithin,
                     num_per_page: req.body.numPerPage,
+                    search_name: req.body.searchName,
                     ssnid: req.headers['x-session-token']
                 }
             };
