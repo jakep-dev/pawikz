@@ -7,7 +7,7 @@
         .directive('msExpiringH', msExpiringDirectiveH);
 
     /** @ngInject */
-    function msExpiringDirectiveH($compile, $filter, $window, 
+    function msExpiringDirectiveH($compile, $filter, $timeout,
                                     commonBusiness, templateBusiness, 
                                     templateBusinessFormat, templateBusinessSave,
                                     toast, deviceDetector, clientConfig,
@@ -682,7 +682,10 @@
             });
 
             commonBusiness.onMsg('EPH-Add', $scope, function(ev, data) {
-                addRow($scope, data);
+
+                $timeout(function(){
+                    addRow($scope, data);
+                }, 0);
             });
 
             commonBusiness.onMsg('EPH-Delete', $scope, function() {
