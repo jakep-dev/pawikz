@@ -595,7 +595,7 @@
 
                 if ((currentRow.LIMIT.value != '') && (currentRow.PREMIUM.value != '') && !isNaN(computedAtt) && isFinite(computedAtt))
                 {
-                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 0);
+                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 2);
                 }
                 else
                 {
@@ -1015,7 +1015,7 @@
                                 if(findHeader)
                                 {
                                     var value = (_.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic}).dataType === 'NUMBER') ? removeCommaValue(content[findHeader.index]): content[findHeader.index]; //;
-                                    if((value || value.length === 0)  && header.HMnemonic === 'RETAIN') {
+                                    if(header.HMnemonic === 'RETAIN' && !value) {
                                         value = '0.00';
                                     }
                                     makeColDef += '"'+header.HMnemonic + '":"' + value + '",';
