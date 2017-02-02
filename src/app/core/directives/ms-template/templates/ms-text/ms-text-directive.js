@@ -34,7 +34,10 @@
             "value",
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue) {
-                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
+                    var savedValue = ($scope.formatObj && $scope.formatObj.dataType && $scope.formatObj.dataType === 'DATE') ?
+                                        templateBusinessFormat.formatDate(templateBusinessFormat.parseDate(newValue, 'M/D/YYYY'), 'DD-MMM-YY')
+                                        : newValue;
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, savedValue, clientConfig.uiType.general);
                     templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }
