@@ -231,6 +231,7 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
 
                                 case 'LinkItem':
@@ -242,6 +243,7 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
 
                                 case 'AdvisenNewsSearch':
@@ -253,10 +255,11 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
                             }
                         }
-                        if (currentComponent >= totalComponent) {
+                        if (currentComponent > totalComponent) {
                             isSkip = true;
                         }
                     }
@@ -286,6 +289,11 @@
                 if (content.header &&
                     content.sections &&
                     content.sections.length > 0) {
+                    //counting standard components with headers and child components
+                    //for example stock charts, all table types, large text boxes
+                    totalComp++;
+                } else if (content.ItemId && content.Mnemonic && (content.subtype || content.id)) {
+                    //counting WU_RATIOS_CHARTS, LinkItem, AdvisenNewsSearch
                     totalComp++;
                 }
             });
