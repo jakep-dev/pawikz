@@ -188,13 +188,17 @@
                         if (!context.dateList[context.dateValue]) {
                             context.dateArr.push(context.dateValue);
                             context.currentList = new Array();
-                            context.currentList[data[context.i].ratio_name] = parseFloat(data[context.i].ratio_value);
+                            context.currentList[data[context.i].ratio_name] = new Object();
+                            context.currentList[data[context.i].ratio_name].ratio_value = parseFloat(data[context.i].ratio_value);
+                            context.currentList[data[context.i].ratio_name].percent_change = parseFloat(data[context.i].percent_change);
                             context.dateList[context.dateValue] = context.currentList;
                         } else {
                             context.currentList = context.dateList[context.dateValue];
                             if (data[context.i].ratio_name) {
                                 if (!context.currentList[data[context.i].ratio_name]) {
-                                    context.currentList[data[context.i].ratio_name] = parseFloat(data[context.i].ratio_value);
+                                    context.currentList[data[context.i].ratio_name] = new Object();
+                                    context.currentList[data[context.i].ratio_name].ratio_value = parseFloat(data[context.i].ratio_value);
+                                    context.currentList[data[context.i].ratio_name].percent_change = parseFloat(data[context.i].percent_change);
                                 } else {
                                     console.log('Duplicate chart value for the same ratio_name and datadate.[' + context.dateValue + ',' + data[context.i].ratio_name + ']');
                                 }
@@ -206,14 +210,18 @@
 
             context.dateArr.sort();
             context.n1 = context.dateArr.length;
+            context.n2 = context.ratioNameArr.length;
             for (context.i = 0; context.i < context.n1; context.i++) {
                 context.currentList = context.dateList[context.dateArr[context.i]];
-                context.n2 = context.ratioNameArr.length;
                 for (context.j = 0; context.j < context.n2; context.j++) {
                     context.currentObj = context.ratioNames[context.ratioNameArr[context.j]];
                     context.value = context.currentList[context.ratioNameArr[context.j]];
                     if (context.value) {
-                        context.currentObj.data.push(context.value);
+                        if (context.n2 > 1) {
+                            context.currentObj.data.push(context.value.percent_change);
+                        } else {
+                            context.currentObj.data.push(context.value.ratio_value);
+                        }
                     } else {
                         console.log('Missing ' + context.ratioNameArr[context.j] + ' value for datadate ' + context.dateArr[context.i]);
                         context.currentObj.data.push(null);
@@ -235,7 +243,9 @@
                     name: context.finalName
                 });
             }
-
+            if (context.n2 > 1) {
+                yAxisLabel += ' - Percent Change';
+            }
             context.chartObject = {
                 chart: {
                     marginRight: 80,
