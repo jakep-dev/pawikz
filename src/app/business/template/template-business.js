@@ -204,8 +204,19 @@
                     notification.status = 'in-process';
                     notification.requestId = 0;
                 } else {
-                    notificationBusiness.notifications.push(notificationBusiness.addNotification(commonBusiness.projectId, commonBusiness.projectName, 'PDF-Download',
-                        'icon-file-pdf-box', 0, true, '', 'in-process', userId.toString(), true, 0));
+                    notificationBusiness.pushNotification({
+                        id: commonBusiness.projectId,
+                        title: commonBusiness.projectName,
+                        type: 'PDF-Download',
+                        icon: 'icon-file-pdf-box',
+                        progress: 0,
+                        disabled: true,
+                        tooltip: 'PDF Generation still in-progress',
+                        status: 'in-process',
+                        userId: userId,
+                        istrackable: true,
+                        requestId: 0
+                    });
                 }
 
                 templateService.createTemplatePdfRequest(commonBusiness.projectId, userId,
@@ -222,6 +233,7 @@
 
                         if (!data) {
                             if (notification) {
+                                notification.requestId = data.requestId;
                                 notification.status = 'error';
                                 notification.progress = 100;
                                 notification.disabled = false;
@@ -230,6 +242,7 @@
                         } else if (data && data.errorMessages &&
                             data.errorMessages.length > 0) {
                             if (notification) {
+                                notification.requestId = data.requestId;
                                 notification.status = 'error';
                                 notification.progress = 100;
                                 notification.disabled = false;

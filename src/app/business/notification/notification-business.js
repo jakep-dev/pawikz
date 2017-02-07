@@ -12,10 +12,11 @@
         var business = {
             notifications: [],
             initializeMessages: initializeMessages,
-            addNotification: addNotification,
+            //addNotification: addNotification,
             listenToPDFDownloadStatus: listenToPDFDownloadStatus,
             listenToWorkUpStatus: listenToWorkUpStatus,
             pushNotification: pushNotification,
+            clearNotifications: clearNotifications,
             setDashboardCallback: setDashboardCallback,
             notifyNotificationCenter: notifyNotificationCenter,
             listenToRenewStatus: listenToRenewStatus
@@ -43,20 +44,24 @@
         ///type - PDF-Download, Renew, CreateWorkUp - will expand in future
         ///icon - To display for actions icon-file-pdf-box (PDF Download), icon-rotate-3d (Renew)
         ///progress - To show the progress of actions initiated
-        function addNotification(id, title, type, icon, progress, disabled, tooltip, status, userId, istrackable, requestId) {
-            return {
-                id: id,
-                title: title,
-                type: type,
-                icon: icon,
-                progress: progress,
-                disabled: disabled,
-                tooltip: tooltip,
-                status: status,
-                userId: userId,
-                istrackable: istrackable,
-                requestId: requestId
-            };
+        //function addNotification(id, title, type, icon, progress, disabled, tooltip, status, userId, istrackable, requestId) {
+        //    return {
+        //        id: id,
+        //        title: title,
+        //        type: type,
+        //        icon: icon,
+        //        progress: progress,
+        //        disabled: disabled,
+        //        tooltip: tooltip,
+        //        status: status,
+        //        userId: userId,
+        //        istrackable: istrackable,
+        //        requestId: requestId
+        //    };
+        //}
+
+        function clearNotifications() {
+            business.notifications.length = 0;
         }
 
         //Push the notification details
@@ -90,9 +95,8 @@
                 if (response) {
 
                     var notification = _.find(business.notifications, function (not) {
-                        if (not.status === 'in-process' &&
-                            not.type === 'PDF-Download' &&
-                            not.requestId === response.requestId) {
+                        if (not.id === response.projectId &&
+                            not.type === 'PDF-Download') {
                             return not;
                         }
                     });
@@ -101,17 +105,29 @@
                         notification.requestId = response.requestId;
                         notification.progress = response.progress;
                     } else {
-                        notification = addNotification(response.projectId, decodeURIComponent(response.projectName), 'PDF-Download', 'icon-file-pdf-box', response.progress, true, '', 'in-process', userId, true, 0);
-                        notification.requestId = response.requestId;
-                        business.notifications.push(notification);
+                        business.pushNotification({
+                            id: response.projectId,
+                            title: decodeURIComponent(response.project_name),
+                            type: 'PDF-Download',
+                            icon: 'icon-file-pdf-box',
+                            progress: response.progress,
+                            disabled: true,
+                            tooltip: 'PDF Generation still in-progress',
+                            status: 'in-process',
+                            userId: userId,
+                            istrackable: true,
+                            requestId: response.requestId
+                        });
                     }
                     if (notification.progress === 100) {
                         dialog.close();
                         notification.status = 'complete';
+                        notification.tooltip = 'PDF Generation complete';
                         notification.disabled = false;
                     } else if (response.progress === -1) {
                         dialog.close();
                         notification.status = 'error';
+                        notification.tooltip = 'PDF Generation error';
                         notification.progress = 100;
                         notification.disabled = false;
                         toast.simpleToast("Issue with PDF Download. Please try again.");
