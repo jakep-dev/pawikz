@@ -581,14 +581,18 @@
             var columnWidth = colWidth;
 
             if(!angular.isUndefined(col) && typeof(col.css) != 'object'){
-                if((col.css && col.css.indexOf('tableWidth40') > -1)){
+                if ((col.css && col.css.indexOf('tableWidth50') > -1)) {
+                    columnWidth = '50%';
+                } else if ((col.css && col.css.indexOf('tableWidth40') > -1)) {
                     columnWidth = '20%';
-                }else if((col.css && col.css.indexOf('tableWidth30') > -1)){
+                } else if ((col.css && col.css.indexOf('tableWidth30') > -1)) {
                     columnWidth = '15%';
-                }else if((col.css && col.css.indexOf('tableWidth') > -1)){
+                } else if ((col.css && col.css.indexOf('tableWidth15') > -1)) {
+                    columnWidth = '';
+                } else if ((col.css && col.css.indexOf('tableWidth') > -1)) {
                     columnWidth = '10%';
-                }else{
-                    columnWidth = '2%';
+                } else {
+                    columnWidth = '';
                 }
             }
 
