@@ -9,7 +9,6 @@
                 restrict: 'EA',
                 scope: {
                     'config': '=',
-                    'onPeerRemove': '='
                 },
                 link: function (scope, elem, attr) {
                     scope.$watch('config', function (newVal, oldVal) {
