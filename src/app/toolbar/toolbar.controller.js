@@ -9,7 +9,8 @@
     /** @ngInject */
     function ToolbarController($rootScope, $scope, $mdSidenav, $stateParams, $location, $translate, $interval,
                                store, toast, Idle,
-                               msNavFoldService, authService, commonBusiness, authBusiness, notificationBusiness)
+                               commonBusiness, authBusiness, notificationBusiness,
+                               msNavFoldService, authService)
     {
         var vm = this;
         vm.userName = '';

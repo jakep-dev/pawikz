@@ -1805,8 +1805,11 @@
 
         function sendStatus(token, data) {
             if (token in config.userSocketInfo) {
-                //console.log(data);
+                //The value config.userSocketInfo[token] is null if user logs out from method disConnectionSocket in server/routes/socket/socket.js
+                //Check if the token is still valid before sending status message
+                if (config.userSocketInfo[token]) {
                 config.userSocketInfo[token].emit('pdf-download-status', data);
+                }
             }
         }
 
