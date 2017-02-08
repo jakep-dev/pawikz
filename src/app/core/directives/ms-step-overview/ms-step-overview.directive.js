@@ -25,7 +25,7 @@
         //set the step select and unselect feature.
         function setStepSelection()
         {
-            $scope.step.value = !$scope.step.value;
+            // $scope.step.value = !$scope.step.value;
             setChildSelection();
         }
 

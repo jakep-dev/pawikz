@@ -8,13 +8,14 @@
         </div>
         <div>
             <div layout="row" layout-align="end center">
-                <md-button class="md-icon-button" style="margin-right: -20px"
+                <!--<md-button class="md-icon-button" style="margin-right: -20px"
                            aria-label="select/unselect"
                            ng-disabled="(step.sections.length === 0)"
                            ng-click="setStepSelection()">
                     <md-icon ng-if="!step.value" md-font-icon="icon-select"></md-icon>
                     <md-icon ng-if="step.value" md-font-icon="icon-select-inverse"></md-icon>
-                </md-button>
+                </md-button>-->
+                <md-checkbox aria-label="select" class="no-padding-margin" ng-model="step.value" ng-disabled="(step.sections.length === 0)"  ng-change="setStepSelection($event)" style="margin-right: -20px"></md-checkbox>
                 <md-button class="md-icon-button" aria-label="expand/collapse"
                            ng-disabled="!expandable"
                            ng-click="toggleExpanded()">
