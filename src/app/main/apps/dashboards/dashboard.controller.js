@@ -41,16 +41,12 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     // Make Initial call
     vm.initialize($stateParams.isNav, $stateParams.token);
 
-    commonBusiness.onMsg('FilterDashboard', $scope, function() {
-        if(dashboardBusiness.isFilterDasboard){
-            vm.companyId = dashboardBusiness.searchCompanyId;
-            vm.userId = dashboardBusiness.searchUserId;
+    commonBusiness.onMsg('FilterMyWorkUp', $scope, function(ev, data) {
+        if(data) {
+            vm.companyId = data.companyId;
+            vm.userId = data.userId;
+            redrawDataTable();
         }
-        else {
-            vm.companyId = 0;
-            vm.userId = 0;
-        }
-        redrawDataTable();
     });
 
     commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
@@ -218,14 +214,14 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     //Toggle Sidenav
     function toggleSidenav(sidenavId) {
         $mdSidenav(sidenavId).toggle();
-        $mdMenu.hide()
+        $mdMenu.hide();
     }
 
     // Clear search
     function reload() {
         vm.companyId = 0;
         vm.userId = 0;
-        dashboardBusiness.isClearDashboard = true;
+        commonBusiness.emitMsg("ClearFilter");
         redrawDataTable();
         $mdMenu.hide();
     }

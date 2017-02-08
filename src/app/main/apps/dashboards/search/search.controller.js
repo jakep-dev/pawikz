@@ -25,9 +25,7 @@
         vm.toggleSidenav = toggleSidenav;
 
 
-        commonBusiness.onMsg('ClearFilterDashboard', $scope, function() {
-            dashboardBusiness.searchCompanyId = 0;
-            dashboardBusiness.searchUserId = 0;
+        commonBusiness.onMsg('ClearFilter', $scope, function() {
             vm.companyId = 0;
             vm.userId = 0;
         });
@@ -36,9 +34,10 @@
         //Filter Dashboard
         function filterDashboard() {
             toggleSidenav('quick-panel');
-            dashboardBusiness.searchCompanyId = vm.companyId;
-            dashboardBusiness.searchUserId = vm.userId;
-            dashboardBusiness.isFilterDasboard = true;
+            commonBusiness.emitWithArgument('FilterMyWorkUp',{
+                companyId: vm.companyId,
+                userId: vm.userId
+            });
         }
 
         //Toggle Sidenav
@@ -50,9 +49,11 @@
         function searchClear() {
             vm.companyId = 0;
             vm.userId = 0;
-            dashboardBusiness.searchCompanyId = vm.companyId;
-            dashboardBusiness.searchUserId = vm.userId;
-            dashboardBusiness.isFilterDasboard = false;
+            toggleSidenav('quick-panel');
+            commonBusiness.emitWithArgument('FilterMyWorkUp',{
+                companyId: 0,
+                userId: 0
+            });
         }
 
         // Load User Names
@@ -61,11 +62,10 @@
                 vm.isSearching = true;
                 dashboardService.getUsers(commonBusiness.userId).then(function(data)
                 {
-                    if(angular.isDefined(data))
+                    if(data)
                     {
                         var result = data.list;
-
-                        angular.forEach(result, function(row)
+                        _.each(result, function(row)
                         {
                             vm.users.push(row);
                         });
@@ -81,11 +81,10 @@
                 vm.isSearching = true;
                 dashboardService.getCompanies(commonBusiness.userId).then(function(data)
                 {
-                    if(angular.isDefined(data))
+                    if(data)
                     {
                         var result = data.list;
-
-                        angular.forEach(result, function(row)
+                        _.each(result, function(row)
                         {
                             vm.companyNames.push(row);
                         });

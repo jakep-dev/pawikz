@@ -59,9 +59,9 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, $templateRequest, $templateCache,
+    function msTemplateDirective($compile, $timeout,
         $interval, templateBusiness,
-        commonBusiness, clientConfig) {
+        commonBusiness) {
         return {
             restrict: 'E',
             scope: {
@@ -266,16 +266,14 @@
                 });
 
                 if (bindHtml && bindHtml.length > 0) {
-                    var divElem = angular.element('<div></div>');
-                    _.each(bindHtml, function(html) {
-                        divElem.append(html.content);
-                    });
-                    scope.isCompLoaded = true;
-                    var bindCompProm = $interval(function() {
+
+                    $timeout(function(){
                         var element = el.find('#template-content');
-                        element.append(divElem);
-                        $interval.cancel(bindCompProm);
-                    }, 1);
+                        _.each(bindHtml, function(html) {
+                            element.append(html.content);
+                        });
+                        scope.isCompLoaded = true;
+                    }, 0);
                 }
 
                 return count;
