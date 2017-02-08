@@ -296,23 +296,6 @@
             //$mdMenu.hide();
         }
 
-        function reloadIndices() {
-            indicesList = [];
-            vm.indices.forEach(function(index) {
-                index.selectedIndicecheck = false;
-            });
-
-            vm.filterState.selectedIndices.forEach(function(selectedIndex) {
-                for (var i = 0; i < vm.indices.length; i++) {
-                    if (vm.indices[i].value == selectedIndex) {
-                        vm.indices[i].selectedIndicecheck = true;
-                        indicesList.push(vm.indices[i]);
-                        break;
-                    }
-                }
-            }); 
-        }
-
         var peerList = [];
         function addPeer() {
             vm.filterState.selectedPeers = [];
@@ -324,15 +307,6 @@
             vm.selectedPeerItem = null;
             vm.searchPeerText = "";
             $mdMenu.hide();
-        }
-
-        function reloadPeers() {
-            peerList = [];
-            vm.filterState.selectedPeers.forEach(function (item, key) {
-                if (item && item.value) {
-                    peerList.push(item);
-                }
-            })
         }
 
         function selectedPeerChange(item) {
@@ -390,23 +364,6 @@
             // $mdMenu.hide();
         }
 
-        function reloadCompetitors() {
-            competitorList = [];
-            vm.competitors.forEach(function(competitor) {
-                competitor.selectedCompetitorcheck = false;
-            });
-
-            vm.filterState.selectedCompetitors.forEach(function(selCompetitor) {
-                for (var i = 0; i < vm.competitors.length; i++) {
-                    if (vm.competitors[i].value == selCompetitor) {
-                        vm.competitors[i].selectedCompetitorcheck = true;
-                        competitorList.push(vm.competitors[i]);
-                        break;
-                    }
-                }
-            }); 
-        }
-
         function presetComparisonMenu() {
             vm.selectedPeerItem = null;
             vm.searchPeerText = "";
@@ -448,21 +405,6 @@
             vm.splits = false;
             vm.earnings = false;
             vm.dividends = false;
-        });
-
-        $scope.$on('reloadIndices', function (event) {
-            reloadIndices();
-            vm.onFilterStateUpdate();
-        });
-
-        $scope.$on('reloadPeers', function (event) {
-            reloadPeers();
-            vm.onFilterStateUpdate();
-        });
-
-        $scope.$on('reloadCompetitors', function (event) {
-            reloadCompetitors();
-            vm.onFilterStateUpdate();
         });
 
         /* Peers Logic End*/

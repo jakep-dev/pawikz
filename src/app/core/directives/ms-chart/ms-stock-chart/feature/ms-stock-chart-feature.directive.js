@@ -9,7 +9,6 @@
                 restrict: 'EA',
                 scope: {
                     'config': '=',
-                    'onPeerRemove': '='
                 },
                 link: function (scope, elem, attr) {
                     scope.$watch('config', function (newVal, oldVal) {
@@ -32,15 +31,6 @@
                         var stockDataResp = JSON.parse(scope.config.split('|')[1]);
 
                         scope.enableLabelRewrite = true;
-
-                        $timeout(function() {
-                            $(elem).find('.highcharts-legend-item').off('mouseover').on('mouseover', function(evt) {
-                                $('.highcharts-legend-box').css({
-                                    left:evt.clientX - 320,
-                                    top:evt.clientY - $(this).position().top + 30
-                                }).parent().css({'position':'relative'})
-                            });
-                        }, 500);
 
                         $timeout(function() {
                             Highcharts.each(Highcharts.charts, function(chart, chartNdx) {
@@ -508,52 +498,6 @@
 
                                             // side labels tooltip and legends to show the stock & peer name ticker in sorted order with custom dates
                                             load: function() {
-                                                $(".highcharts-legend-item path").attr({'stroke-width': 20});
-                                                var chart = this;
-                                                var legend = chart.legend;
-                                                if (legend && legend.allItems) {
-                                                    for (var legendNum = 0, len = legend.allItems.length; legendNum < len; legendNum++) {
-                                                        (function (legendNum) {
-                                                            var item = legend.allItems[legendNum].legendItem;
-                                                            item.on('mouseover', function (evt) {
-                                                                var text = $(this)[0].innerHTML;
-                                                                if ($(this)[0].innerHTML.indexOf(' ') > -1) {
-                                                                    text = $(this)[0].innerHTML.substring(0, $(this)[0].innerHTML.lastIndexOf(' '));
-                                                                }
-
-                                                                var tooltipBox = $(this).closest('div').closest('#stock-chart').find('.highcharts-legend-box');
-
-                                                                tooltipBox.css({
-                                                                    left:$(this).position().left,
-                                                                    top:$(this).position().top + 7
-                                                                }).parent().css({'position':'relative'});
-
-                                                                tooltipBox.html('<div class="name"></div><div class="view"><i class="fa fa-eye fa-lg pointer"></i></div><div class="size">'+
-                                                                    '<div class="size-val">E</div><div class="size-val">S</div><div class="size-val">M</div><div class="size-val">L</div>'+
-                                                                    '</div><div class="delete"><a href="javascript:" class="trashIconTooltip"><i class="fa fa-trash-o fa-lg pointer"></i></a></div>');
-
-                                                                tooltipBox.find('.name').html(text);
-                                                                tooltipBox.show();
-
-                                                                $('.trashIconTooltip').click(function() {
-                                                                    var peer = $(this).parent().parent().find('.name').text().replace('&amp;', '&');
-                                                                    scope.onPeerRemove(peer);
-                                                                });
-
-                                                                tooltipBox.mouseover(function() {
-                                                                    tooltipBox.show();
-                                                                });
-
-                                                                tooltipBox.mouseout(function() {
-                                                                    tooltipBox.hide();
-                                                                });
-                                                            }).on('mouseout', function (evt) {
-                                                                var tooltipBox = $(this).closest('div').closest('#stock-chart').find('.highcharts-legend-box');
-                                                                tooltipBox.hide();
-                                                            });
-                                                        })(legendNum);
-                                                    }
-                                                }
                                             }
                                         },
                                         marginLeft: 80, // Keep all charts left aligned
@@ -807,9 +751,6 @@
                                 activity.topChart = currentChart.highcharts();
                             } else {
                                 activity.bottomChart = currentChart.highcharts();
-                            }
-                            if (!$(elem).find('.highcharts-legend-box').length) {
-                                $(elem).append('<div class="highcharts-legend-box" style="display:none;"></div>');
                             }
                         });
 
