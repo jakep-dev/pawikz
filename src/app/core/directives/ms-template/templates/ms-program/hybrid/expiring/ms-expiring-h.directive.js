@@ -670,7 +670,11 @@
             });
 
             commonBusiness.onMsg('EPH-Upload', $scope, function() {
-                uploadExcel();
+                toast.simpleToast("Please choose file!");
+                $timeout(function () {
+                    uploadExcel();
+                }, 1000);
+                
             });
 
             commonBusiness.onMsg('EPH-Download', $scope, function() {
@@ -922,24 +926,21 @@
 
         function uploadExcel()
         {
-            toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#expiring-upload');
+            var uploadElement = angular.element('#expiring-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-                    setTimeout(function () {
-                        uploadElement.change(function(e)
-                        {
-                            setTimeout(function () {
-                                $(this).off('change');
-                                angular.element('#btn-expiring-upload').trigger('click');
-                                // $('#btn-expiring-upload').click();
-                            }, 500);
-                        });
+                $timeout(function(){
+                    uploadElement.off('change');
+                    uploadElement.change(function(e)
+                    {
+                        $timeout(function(){
+                            angular.element('#btn-expiring-upload').trigger('click');
+                        }, 0);
+                    });
 
-                        uploadElement.click();
-                    }, 500);
+                    uploadElement.click();
+                }, 0);
             }
         }
 

@@ -669,7 +669,10 @@
             });
 
             commonBusiness.onMsg('PPH-Upload', $scope, function() {
-                uploadExcel();
+                toast.simpleToast("Please choose file!");
+                setTimeout(function () {
+                    uploadExcel();
+                }, 1000);
             });
 
             commonBusiness.onMsg('PPH-Download', $scope, function() {
@@ -924,24 +927,22 @@
 
         function uploadExcel()
         {
-            toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#proposed-upload');
+            var uploadElement = angular.element('#proposed-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-                    setTimeout(function () {
+                    $timeout(function () {
+                        uploadElement.off('change');
                         uploadElement.change(function(e)
                         {
-                            setTimeout(function () {
-                                $(this).off('change');
+                            $timeout(function () {
                                 angular.element('#btn-proposed-upload').trigger('click');
                                 // $('#btn-expiring-upload').click();
-                            }, 500);
+                            }, 0);
                         });
 
                         uploadElement.click();
-                    }, 500);
+                    }, 0);
             }
         }
 

@@ -390,8 +390,11 @@
             });	
 
             commonBusiness.onMsg($scope.itemid + '-Upload', $scope, function() {
-
-                excelUpload($scope);
+				toast.simpleToast("Please choose file!");
+				$timeout(function(){
+					excelUpload($scope);
+				}, 1000);
+                
             });
 
             commonBusiness.onMsg($scope.itemid + '-Delete', $scope, function() {
@@ -631,23 +634,21 @@
 		
 		function excelUpload($scope)
 		{
-			toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#hybrid-upload');
+            var uploadElement = angular.element('#hybrid-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-				setTimeout(function () {
+				$timeout(function(){
+					uploadElement.off('change');
 					uploadElement.change(function()
 					{
-						setTimeout(function () {
-							$(this).off('change');
+						$timeout(function(){
 							angular.element('#btn-hybrid-upload').trigger('click');
-							//$('#btn-hybrid-upload').click();
-						}, 500);
+						}, 0);
 					});
+
 					uploadElement.click();
-				}, 500);
+				}, 0);
             }
 		}
 		
