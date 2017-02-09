@@ -670,9 +670,13 @@
 
             commonBusiness.onMsg('PPH-Upload', $scope, function() {
                 toast.simpleToast("Please choose file!");
-                setTimeout(function () {
+                if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        uploadExcel();
+                    }, 1000);
+                } else {
                     uploadExcel();
-                }, 1000);
+                }
             });
 
             commonBusiness.onMsg('PPH-Download', $scope, function() {

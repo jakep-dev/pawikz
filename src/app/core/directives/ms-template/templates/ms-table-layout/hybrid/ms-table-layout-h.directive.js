@@ -391,9 +391,13 @@
 
             commonBusiness.onMsg($scope.itemid + '-Upload', $scope, function() {
 				toast.simpleToast("Please choose file!");
-				$timeout(function(){
-					excelUpload($scope);
-				}, 1000);
+				if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        excelUpload($scope);
+                    }, 1000);
+                } else {
+                    excelUpload($scope);
+                }
                 
             });
 
