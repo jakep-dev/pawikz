@@ -145,10 +145,38 @@
                     });
                 } else {
                     if (vm.startDate && vm.endDate) {
-                        vm.filterState.startDate = vm.startDate;
-                        vm.filterState.endDate = vm.endDate;
-                        vm.changedPeriod('CUSTOM');
-                        vm.onFilterStateUpdate();
+                        var newStartDate = new Date();
+                        var newEndDate = new Date();
+                        var limitStartDate = new Date();
+
+                        newStartDate.setMonth(vm.startDate.getMonth());
+                        newStartDate.setDate(vm.startDate.getDate());
+                        newStartDate.setFullYear(vm.startDate.getFullYear());
+
+                        newEndDate.setMonth(vm.endDate.getMonth());
+                        newEndDate.setDate(vm.endDate.getDate());
+                        newEndDate.setFullYear(vm.endDate.getFullYear());
+
+                        limitStartDate.setMonth(vm.endDate.getMonth());
+                        limitStartDate.setDate(vm.endDate.getDate());
+                        limitStartDate.setFullYear(vm.endDate.getFullYear() - 10);
+
+                        // alert(newStartDate.getTime() + ' == ' + limitStartDate.getTime() + ' : ' + (newStartDate.getTime() >= limitStartDate.getTime()));
+
+                        if (newStartDate.getTime() >= limitStartDate.getTime()) {
+                            vm.filterState.startDate = vm.startDate;
+                            vm.filterState.endDate = vm.endDate;
+                            vm.changedPeriod('CUSTOM');
+                            vm.onFilterStateUpdate();
+                        } else {
+                            vm.startDate = vm.filterState.startDate;
+                            dialog.alert('Warning!', "Custom date range cannot exceed 10 years. Please adjust the date range.", null, {
+                                ok: {
+                                    name: 'ok', callBack: function () {
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
             }, 1000);
