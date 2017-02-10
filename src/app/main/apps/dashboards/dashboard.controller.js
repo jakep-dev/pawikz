@@ -39,6 +39,19 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.toggleSidenav = toggleSidenav;
     vm.filterAgain = filterAgain;
 
+    defineMenuActions();
+
+    function defineMenuActions(){
+        "use strict";
+        commonBusiness.emitWithArgument("InjectMainMenu", {
+            url: 'app/main/apps/dashboards/menu/menu.html'
+        });
+
+        commonBusiness.onMsg('Dashboard-Reload', $scope, function(ev, data){
+           vm.reload();
+        });
+    }
+
     function filterAgain(name){
         if(vm.searches.length === 0){
             vm.companyId = 0;
@@ -259,6 +272,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function reload() {
         vm.companyId = 0;
         vm.userId = 0;
+        vm.searches = [];
         commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
         redrawDataTable();
         $mdMenu.hide();

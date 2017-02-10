@@ -14,6 +14,7 @@
     {
         var vm = this;
         vm.userName = '';
+        vm.url = '';
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
@@ -31,6 +32,11 @@
 
         commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
             vm.userName = data;
+        });
+
+        commonBusiness.onMsg('InjectMainMenu', $scope, function(ev, data) {
+            console.log(data);
+            vm.url = data.url;
         });
 
 
@@ -68,6 +74,7 @@
         vm.logout = logout;
         vm.setUserStatus = setUserStatus;
         vm.changeLanguage = changeLanguage;
+        vm.executeMenuAction = executeMenuAction;
 
         //////////
 
@@ -84,6 +91,10 @@
             } else {
                 console.log('[setupListeners]userId not available.');
             }
+        }
+
+        function executeMenuAction(name, data){
+            commonBusiness.emitWithArgument(name, data);
         }
 
         /**
