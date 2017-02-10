@@ -1,100 +1,65 @@
-<div layout="row" layout-align="start center">
-    <div layout="row" layout-align="start center" flex>
-        <md-button id="navigation-toggle" class="md-icon-button" ng-click="vm.toggleSidenav('navigation')"
-                   hide-gt-md aria-label="Toggle navigation">
-            <md-icon md-font-icon="icon-menu" class="icon"></md-icon>
-        </md-button>
+<div layout="row" layout-align="start center" ng-clock>
+    <md-button id="navigation-toggle" class="md-icon-button" style="padding-top: 20px" ng-click="vm.toggleSidenav('navigation')"
+    hide-gt-md aria-label="Toggle navigation">
+    <md-icon md-font-icon="icon-menu" class="icon"></md-icon>
+    </md-button>
 
-        <md-button id="navigation-sidenav-mode-toggle" class="md-icon-button"
-                   ng-click="vm.toggleNavigationSidenavFold($event)" hide show-gt-md
-                   aria-label="Toggle navigation mode">
-            <md-icon md-font-icon="icon-backburger" class="icon"></md-icon>
-        </md-button>
-		<!--
-        <div id="search" flex layout="row" layout-align="start center">
-            <label for="search-input">
-                <md-icon md-font-icon="icon-magnify" class="icon s24"></md-icon>
-            </label>
-            <input id="search-input" type="text" ng-model="global.search" placeholder="Search"
-                   translate translate-attr-placeholder="TOOLBAR.SEARCH"  flex>
-        </div>
-		-->
+    <md-button id="navigation-sidenav-mode-toggle" class="md-icon-button" style="padding-top: 20px"
+    ng-click="vm.toggleNavigationSidenavFold($event)" hide show-gt-md
+    aria-label="Toggle navigation mode">
+    <md-icon md-font-icon="icon-backburger" class="icon"></md-icon>
+    </md-button>
+
+    <div layout="row" layout-align="start center" style="padding-left: 5px">
+        <i class="fa fa-folder-open-o s16"></i>
+        <span style="padding-left: 5px">My Work-ups </span>
     </div>
 
-    <div layout="row" layout-align="start center">
+    <div flex>
+        <div layout="row" layout-align="end center" show-gt-xs hide-xs>
 
-        <ms-notification></ms-notification>
+            <md-button class="md-accent" aria-label="Filter" ng-click="vm.toggleSidenav('quick-panel')">
+                <md-icon md-font-icon="icon-filter"></md-icon>
+                <md-tooltip md-direction="bottom">
+                    Filter
+                </md-tooltip>
+            </md-button>
 
-        <md-menu-bar id="user-menu">
-            <md-menu md-offset="0 80" md-position-mode="target-right target">
-                <md-button class="user-button" ng-click="$mdOpenMenu()"
-                           aria-label="User settings"
-                           md-menu-origin>
-                    <div layout="row" layout-align="space-between center">
-                        <div class="avatar-wrapper">
-                            <img md-menu-align-target class="avatar" src="assets/images/avatars/profile.jpg">
-                        </div>
-                        <span class="username" hide-sm>{{ vm.userName }}</span>
-                        <md-icon md-font-icon="icon-chevron-down"
-                                 class="icon s16" hide-sm></md-icon>
-                    </div>
+            <md-button class="md-accent" aria-label="Reload" ng-click="vm.reload()">
+                <md-icon md-font-icon="icon-reload"></md-icon>
+                <md-tooltip md-direction="bottom">
+                    Reload
+                </md-tooltip>
+            </md-button>
+        </div>
+        <div style="float: right" hide-gt-xs>
+            <md-menu md-position-mode="target-right target">
+                <md-button aria-label="more" class="md-icon-button"
+                           ng-click="$mdOpenMenu($event)">
+                    <md-icon md-font-icon="icon-dots-vertical" style="float: right"></md-icon>
                 </md-button>
 
-                <md-menu-content width="3" class="md-background-bg">
-                    <!--<md-menu-item ui-sref="app.pages_profile">-->
-                        <!--<md-button>-->
-                            <!--<span layout="row" layout-align="start center">-->
-                                <!--<md-icon md-font-icon="icon-account" class="icon"></md-icon>-->
-                                <!--<span translate="TOOLBAR.MY_PROFILE">My Profile</span>-->
-                            <!--</span>-->
-                        <!--</md-button>-->
-                    <!--</md-menu-item>-->
-
-                    <!--<md-menu-item ui-sref="app.pages_feedback">-->
-                        <!--<md-button>-->
-                            <!--<span layout="row" layout-align="start center">-->
-                                <!--<md-icon md-font-icon="icon-pen" class="icon"></md-icon>-->
-                                <!--<span translate="TOOLBAR.FEEDBACK">Feedback</span>-->
-                            <!--</span>-->
-                        <!--</md-button>-->
-                    <!--</md-menu-item>-->
-
-                    <!--<md-menu-divider></md-menu-divider>-->
-
+                <md-menu-content>
                     <md-menu-item>
-                        <md-button ng-click="vm.logout()">
-                            <span layout="row" layout-align="start center">
-                                <md-icon md-font-icon="icon-logout" class="icon"></md-icon>
-                                <span translate="TOOLBAR.LOGOUT">Logout</span>
-                            </span>
+                        <md-button  aria-label="Filter widget" ng-click="vm.toggleSidenav('quick-panel')">
+                                              <span layout="row" layout-align="start center">
+                                                    <md-icon md-font-icon="icon-filter"></md-icon>
+                                                    <span>Filter</span>
+                                              </span>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button  aria-label="Refresh widget" ng-click="vm.reload()">
+                                              <span layout="row" layout-align="start center">
+                                                <md-icon md-font-icon="icon-reload"></md-icon>
+                                                <span>Reload</span>
+                                              </span>
                         </md-button>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>
-        </md-menu-bar>
+        </div>
 
-        <div class="toolbar-separator"></div>
-
-        <!--<md-menu id="language-menu" md-offset="0 72" md-position-mode="target-right target">-->
-            <!--<md-button class="language-button" ng-click="$mdOpenMenu()"-->
-                       <!--aria-label="Language" md-menu-origin md-menu-align-target>-->
-                <!--<div layout="row" layout-align="center center">-->
-                    <!--&lt;!&ndash;<img class="flag" ng-src="assets/images/flags/{{vm.selectedLanguage.flag}}.png">&ndash;&gt;-->
-                    <!--<span class="iso">{{vm.selectedLanguage.code}}</span>-->
-                <!--</div>-->
-            <!--</md-button>-->
-
-            <!--<md-menu-content width="3" id="language-menu-content">-->
-                <!--<md-menu-item ng-repeat="lang in vm.languages">-->
-                    <!--<md-button ng-click="vm.changeLanguage(lang)" aria-label="{{lang.title}}" translate-->
-                               <!--translate-attr-aria-label="{{lang.title}}">-->
-                        <!--<span layout="row" layout-align="start center">-->
-                            <!--&lt;!&ndash;<img class="flag" ng-src="assets/images/flags/{{lang.flag}}.png">&ndash;&gt;-->
-                            <!--<span translate="{{lang.translation}}">{{lang.title}}</span>-->
-                        <!--</span>-->
-                    <!--</md-button>-->
-                <!--</md-menu-item>-->
-            <!--</md-menu-content>-->
-        <!--</md-menu>-->
     </div>
+
 </div>

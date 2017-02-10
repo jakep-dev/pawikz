@@ -102,6 +102,24 @@ md-select-menu.md-advisen-theme md-content
   padding: 0px;
 }
 
+.div-content{
+  height: 100%;
+  border: 1px solid lightgrey;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.div-header{
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border: 1px solid lightgrey;
+}
+
+.div-main-content{
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+}
+
 
 /*
  ******************************************

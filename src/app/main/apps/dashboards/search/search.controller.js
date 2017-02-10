@@ -25,19 +25,72 @@
         vm.toggleSidenav = toggleSidenav;
 
 
-        commonBusiness.onMsg('ClearFilter', $scope, function() {
-            vm.companyId = 0;
-            vm.userId = 0;
+        commonBusiness.onMsg('ClearFilter', $scope, function(ev, data) {
+            console.log('Clear Filter');
+            console.log(data);
+            if(data && data.type){
+                switch (data.type){
+                    case 'All':
+                        vm.companyId = 0;
+                        vm.userId = 0;
+                        break;
+
+                    case 'Company':
+                        vm.companyId = 0;
+                        break;
+
+                    case 'User':
+                        vm.userId = 0;
+                        break;
+                }
+            }
         });
 
 
         //Filter Dashboard
         function filterDashboard() {
             toggleSidenav('quick-panel');
+            var companyName = getCompanyName(vm.companyId);
+            var userName = getUserName(vm.userId);
+
             commonBusiness.emitWithArgument('FilterMyWorkUp',{
                 companyId: vm.companyId,
-                userId: vm.userId
+                userId: vm.userId,
+                userName: userName,
+                companyName: companyName
             });
+        }
+
+        //Get company Name details
+        function getCompanyName(companyId){
+            var selectedCompany = _.find(vm.companyNames, function(company){
+                if(parseInt(company.id) === parseInt(companyId)){
+                    return company;
+                }
+            });
+
+            if(!selectedCompany){
+                return null;
+            }
+
+            return selectedCompany.name;
+        }
+
+        //Get UserName
+        function getUserName(userId){
+            var selectedUser = _.find(vm.users, function(user){
+                if(parseInt(user.id) === parseInt(userId)){
+                    return user;
+                }
+            });
+
+
+
+            if(!selectedUser){
+                return null;
+            }
+
+            return selectedUser.name;
         }
 
         //Toggle Sidenav
