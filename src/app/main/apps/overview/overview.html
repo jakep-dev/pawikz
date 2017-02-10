@@ -57,27 +57,20 @@
                                           </md-menu-item>
 
                                           <md-menu-item>
-                                              <span layout="row" layout-align="start center">
-                                                <div>
-                                                    <md-checkbox aria-label="select" class="no-padding-margin" style="margin-left:5px;" ng-click="vm.flipSelectionView()">
-                                                        <span style="font-size: 16px;margin-left:7px;">{{(vm.isAllSelected) ? 'Unselect All' : 'Select All'}}</span>
-                                                    </md-checkbox>
-                                                </div>
-                                              </span>
-                                              <!--<md-button  aria-label="select all" ng-click="vm.flipSelectionView()">
+                                              <md-button  aria-label="select all" ng-click="vm.flipSelectionView()">
 
                                                   <span layout="row" layout-align="start center" >
                                                       <div ng-if="vm.isAllSelected">
-                                                          <md-icon md-font-icon="icon-select"></md-icon>
+                                                          <md-icon md-font-icon="icon-checkbox-marked"></md-icon>
                                                           <span>UnSelect All</span>
                                                       </div>
                                                       <div ng-if="!vm.isAllSelected">
-                                                          <md-icon md-font-icon="icon-select-inverse"></md-icon>
+                                                          <md-icon md-font-icon="icon-checkbox-blank-outline"></md-icon>
                                                           <span>Select All</span>
                                                       </div>
 
                                                   </span>
-                                              </md-button>-->
+                                              </md-button>
                                           </md-menu-item>
 
                                           <md-menu-item>
