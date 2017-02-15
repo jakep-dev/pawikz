@@ -12,12 +12,12 @@
             endpoints: {
                 dashboardEndPoint: {
                     get: '/api/dashboard',
-                    getUsers: '/api/users/',
-                    getCompanies: '/api/companies/',
+                    getUsers: '/api/users',
+                    getCompanies: '/api/companies',
                     processRemoveWorkUp: '/api/processRemoveWorkUp/'
                 },
                 overViewEndPoint: {
-                    get: '/api/overview/',
+                    get: '/api/overview',
                     save: '/api/saveOverview',
                     getDefer: '/api/overview/defer'
                 },

@@ -16,8 +16,8 @@
 
         config.parallel([
             app.post('/api/dashboard', getDashboard),
-            app.get('/api/users/:userId', getDashboardUsers),
-            app.get('/api/companies/:userId', getDashboardCompanies),
+            app.post('/api/users', getDashboardUsers),
+            app.post('/api/companies', getDashboardCompanies),
             app.post('/api/processRemoveWorkUp', processRemoveWorkUp)
         ]);
 
@@ -182,25 +182,26 @@
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
-            if(!_.isUndefined(service) && !_.isNull(service))
-            {
+            if(!_.isUndefined(service) && !_.isNull(service)) {
                 methodName = service.methods.userLookUp;
             }
-
-            console.log(methodName);
 
             var args =
             {
                 parameters: {
-                    user_id: req.params.userId,
+                    user_id: req.body.userId,
                     ssnid: req.headers['x-session-token']
+                },
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             };
 
-            client.get(config.restcall.url + '/templateSearch/' + methodName,args,function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            client.get(config.restcall.url + '/templateSearch/' + methodName, args,
+                function (data, response) {
+                    res.status(response.statusCode).send(data);
+                }
+            );
         }
 
         //Get dashboard filter company details
@@ -214,20 +215,22 @@
                 methodName = service.methods.companyLookUp;
             }
 
-            console.log(methodName);
-
             var args =
             {
                 parameters: {
-                    user_id: req.params.userId,
+                    user_id: req.body.userId,
                     ssnid: req.headers['x-session-token']
+                },
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             };
 
-            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            client.get(config.restcall.url + '/templateSearch/' + methodName, args,
+                function (data, response) {
+                    res.status(response.statusCode).send(data);
+                }
+            );
         }
 
         //Broadcast workup details to all users.
