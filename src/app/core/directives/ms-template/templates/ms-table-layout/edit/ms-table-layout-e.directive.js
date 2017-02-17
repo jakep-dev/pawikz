@@ -8,7 +8,7 @@
 
 
     /** @ngInject */
-    function msTablelayoutEDirective($compile, templateService, commonBusiness, DTOptionsBuilder)
+    function msTablelayoutEDirective($compile, templateService, templateBusiness, commonBusiness, DTOptionsBuilder)
     {
         return {
             restrict: 'E',
@@ -63,7 +63,8 @@
                         html += '</div>';
                     }
                     else {
-
+                        templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, scope.mnemonicid, scope.itemid, data);
+                        
                         dtDefineOptions(scope);
                         dtDefineColumn(scope);
 

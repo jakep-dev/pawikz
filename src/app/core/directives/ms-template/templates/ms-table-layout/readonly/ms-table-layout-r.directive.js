@@ -37,6 +37,8 @@
                     html += '</div>';
                 }
                 else {
+                    templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, scope.mnemonicid, scope.itemid, data, scope.subMnemonics);
+
                     scope.dtOptions = DTOptionsBuilder
                         .newOptions()
                         .withOption('processing', true)
@@ -172,6 +174,8 @@
                     html += '</div>';
                 }
                 else if(data.length >= 1) {
+                    templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, scope.mnemonicid, scope.itemid, data, scope.subMnemonics);
+                    
                     html += '<table class="tb-v2-layout" width="100%" cellpadding="4" cellspacing="0">';
                     html += '<tbody>';
                     angular.forEach(row, function(eachRow)

@@ -20,6 +20,7 @@
             saveTableMnemonics: [],
             saveHybridTableMnemonics: [],
             programTableMnemonics: [],
+            tableLayoutMnemonics:[],
             autoSavePromise: [],
             isExpandAll: false,
             componentStatus: [],
@@ -86,7 +87,8 @@
             getTearSheetItems: getTearSheetItems,
             getCompInitialLoadCount: getCompInitialLoadCount,
             updateProgramTableMnemonics: updateProgramTableMnemonics,
-            getNewsHeader: getNewsHeader
+            getNewsHeader: getNewsHeader,
+            updateTableLayoutMnemonics: updateTableLayoutMnemonics
         };
 
         return business;
@@ -318,6 +320,11 @@
                     tearSheet = content.TearSheetItem;
                 } else {
                     tearSheet = content;
+                }
+
+                //add attribute for excel download
+                if(content && content.excelDownLoadForCom) {
+                    tearSheet.excelDownLoadForCom = content.excelDownLoadForCom;
                 }
 
                 if (tearSheet.id === 'LabelItem') {
@@ -1747,6 +1754,25 @@
                 })
             } else {
                 tableMnemonic.rows = rows;
+            }
+        }
+
+        //maintain business variable for excel download tablelayout mnemonics
+        //saves the data so that no WS call
+        //add data type for formatting data
+        function updateTableLayoutMnemonics(projectId, mnemonic, itemId, data, dataType) {
+            var tableMnemonic = _.find(business.tableLayoutMnemonics, { projectId: projectId, mnemonic: mnemonic, itemId: itemId });
+            
+            if (angular.isUndefined(tableMnemonic)) {
+                business.tableLayoutMnemonics.push({
+                    projectId: projectId,
+                    mnemonic: mnemonic,
+                    itemId: itemId,
+                    data: data,
+                    type: dataType
+                });
+            } else {
+                tableMnemonic.data = data;
             }
         }
 

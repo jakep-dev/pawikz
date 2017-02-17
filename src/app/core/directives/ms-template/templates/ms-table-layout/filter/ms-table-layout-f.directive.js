@@ -351,6 +351,9 @@
 
         function defineFilterLink(scope, el, attrs)
         {
+            //disable excel download in ms-componenet
+            scope.$parent.$parent.vm.isExcelDownloadable = false;
+
             var dataTableId = scope.itemid;
             if(scope.tearsheet.columns.length > 0)
             {
