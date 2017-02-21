@@ -23,6 +23,10 @@
             vm.onChartSave();
         };
 
+        vm.onTableUpdate = function(){
+            vm.onChartSave();
+        }
+
         $scope.$watch('vm.selectedSources + vm.selectedRange + vm.selectedDate', function (newValue, oldValue) {
             if(newValue !== oldValue){
                vm.tableInfo = defineTableInfo();
