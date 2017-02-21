@@ -738,7 +738,6 @@
                 
                 var container = document.createElement('div');
                 container.id = 'container';
-                //container.setAttribute('style', 'font-family: Arial;');
                 document.body.appendChild(container);
 
                 function sigDevHTML(data) {
@@ -746,20 +745,16 @@
                     function getSigDevTableHeader() {
                         var html = '';
 
-                        //html += '<thead style="font-size: 12px !important; font-weight: bold !important;">';
                         html += '<tr style="font-size: 12px !important; font-weight: bold !important;">';
                         html += '<td><span>Event</span></td>';
                         html += '<td><span>Event Summary</span></td>';
                         html += '</tr>';
-                        //html += '</thead>';
 
                         return html;
                     }
 
                     function getSigDevTableBody() {
                         var html = '';
-
-                        //html += '<tbody>';
                         
                         data.forEach( function (row, index){
                             html += '<tr ' + ((index % 2 === 0) ? '' : 'class="alternateRow"') + '>'; //use advisen csss
@@ -768,9 +763,14 @@
                             html += '<td>' + (row.devhHeadline || '') + '</td>';
                             
                             html += '</tr>';
+                            
+                            if(row.description) {
+                                html += '<tr ' + ((index % 2 === 0) ? '' : 'class="alternateRow"') + '>'; //use advisen csss
+                                html += '<td colspan="2">' + (row.description || '') + '</td>';
+                                
+                                html += '</tr>';
+                            }
                         });
-                        
-                        //html += '</tbody>';
 
                         return html;
                     }
@@ -789,7 +789,6 @@
                     html += '</table>';
                     html += '</div>';
 
-                    ///$('#sigdev_div').appned(html);
                     sigdevDiv.innerHTML = html;
                 }
 
@@ -798,7 +797,6 @@
                     function getMascadTableHeader() {
                         var html = '';
 
-                        //html += '<thead style="font-weight: bold !important">';
                         html += '<tr style="font-size: 12px !important; font-weight: bold !important;">';
                         html += '<td><span>Company</span></td>';
                         html += '<td><span>Filing/Accident Date</span></td>';
@@ -810,15 +808,12 @@
                         html += '<td><span>MASCAd ID</span></td>';
                         html += '<td><span>Type</span></td>';
                         html += '</tr>';
-                        //html += '</thead>';
 
                         return html;
                     }
 
                     function getMascadTableBody() {
                         var html = '';
-
-                        //html += '<tbody>';
                         
                         data.forEach( function (row, index){
                             html += '<tr ' + ((index % 2 === 0) ? '' : 'class="alternateRow"') + '>';  //use advisen csss
@@ -835,8 +830,15 @@
                             
                             html += '</tr>';
 
+                            if(row.description) {
+                                console.log('#################### creating description');
+                                html += '<tr ' + ((index % 2 === 0) ? '' : 'class="alternateRow"') + '>'; //use advisen csss
+                                html += '<td colspan="9">' + (row.description || '') + '</td>';
+                                
+                                html += '</tr>';
+                            }
+
                         });
-                        //html += '</tbody>';
 
                         return html;
                     }
@@ -854,7 +856,6 @@
                     html += '</table>';
                     html += '</div>';
 
-                    //$('#mascad_div').appned(html);
                     mascadDiv.innerHTML = html;
                 }
 
@@ -872,9 +873,7 @@
             if(filename) {
 
                 console.log('Writing to file: ' + filename);
-                //var base64 = page.renderBase64('PNG');
                 fs.write(filename, stockTable);
-                //page.render(filename);
             }
 
             exit(filename);
