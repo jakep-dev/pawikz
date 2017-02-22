@@ -45,10 +45,11 @@
                     null, {
                         ok: {
                             name: 'ok',
-                            callBack: function() {}
+                            callBack: function() {
+                                dialog.close();
+                            }
                         }
                     }, '', null, null);
-                dialog.close();
             }
         }
 
@@ -61,7 +62,7 @@
 
                             // toggleCollapse();
 
-                            // commonBusiness.emitMsg('-Collapsed');
+                            commonBusiness.emitMsg('collapsed');
 
                             var selectAttachment = [];
                             _.each(scope, function(article) {

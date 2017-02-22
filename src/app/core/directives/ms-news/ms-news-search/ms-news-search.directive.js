@@ -10,6 +10,7 @@
         DTOptionsBuilder, $mdDialog, commonBusiness, newsBusiness, templateService, newsService, dialog, templateBusiness, $http, $element, $compile) {
 
         var vm = this;
+        var validate = false;
 
         vm.resultDetails = [];
         vm.company = '';
@@ -18,17 +19,40 @@
         vm.date = '';
         vm.period = '';
         vm.sortVal = 'D';
+        vm.loadData = null;
+        vm.loadingValue = null;
+        vm.reloadValue = false;
 
         vm.bookmarkNews = bookmarkNews;
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
         vm.newsSelection = newsSelection;
-        var validate = false;
+        vm.initialize = initialize;
 
-        dataTableConfiguration();
-        initializeActionButtons();
+        // dataTableConfiguration();
+        // initializeActionButtons();
 
-        function initializeActionButtons() {
+        //Make initial call
+        initialize();
+
+        function initialize()
+        {
+            dataTableConfiguration();
+            
+        }
+
+        commonBusiness.onMsg('loadDataValue', $scope, function(ev, data) {
+
+            vm.loadData = data;
+            if(!vm.reloadValue){
+                redrawDataTable();
+            }
+            
+            initialize();  
+            
+        });
+
+        // function initializeActionButtons() {
             commonBusiness.onMsg('-Bookmark', $scope, function(ev) {
                 (validate) ? bookmarkNews(): confirmationMessage();
             });
@@ -36,7 +60,7 @@
             commonBusiness.onMsg('-Clear', $scope, function(ev) {
                 clearSelection();
             });
-        }
+        // }
 
         function toggleCollapse() {
             vm.collapsed = !vm.collapsed;
@@ -53,10 +77,12 @@
 
         function newsSelection() {
             // function newsSelection() {
-
+            validate = false;
+            
             _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
                     validate = item.isSelected;
+                    vm.reloadValue = validate;
                 }
             });
         }
@@ -154,7 +180,7 @@
         // Server Data callback for pagination
         function serverData(sSource, aoData, fnCallback, oSettings) {
 
-            $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = false;
+            // $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = false;
 
             var draw = aoData[0].value;
             var columns = aoData[1].value;
@@ -163,55 +189,61 @@
             var searchFilter = aoData[5].value.value;
             var pageNo = (start / length) + 1;
 
-            newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
+            if(vm.loadData){
+                newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
 
-                var blankData = {
-                    rowId: '',
-                    isSelected: '',
-                    title: '',
-                    resourceId: '',
-                    publisher: '',
-                    summaryText: '',
-                    externalUrl: '',
-                    pubDate: ''
-                };
+                    var blankData = {
+                        rowId: '',
+                        isSelected: '',
+                        title: '',
+                        resourceId: '',
+                        publisher: '',
+                        summaryText: '',
+                        externalUrl: '',
+                        pubDate: ''
+                    };
 
-                vm.company = response.summary.company;
-                vm.articlesFound = response.summary.articlesFound;
-                vm.articlesShown = response.summary.articlesShown;
-                vm.date = response.summary.dateTime;
-                vm.period = response.summary.searchPeriod;
+                    vm.company = response.summary.company;
+                    vm.articlesFound = response.summary.articlesFound;
+                    vm.articlesShown = response.summary.articlesShown;
+                    vm.date = response.summary.dateTime;
+                    vm.period = response.summary.searchPeriod;
 
-                vm.resultDetails = [];
-                angular.forEach(response.results, function(details, index) {
+                    vm.resultDetails = [];
+                    angular.forEach(response.results, function(details, index) {
 
-                    vm.resultDetails.push({
-                        rowId: index,
-                        isSelected: false,
-                        title: details.title,
-                        resourceId: details.resourceId,
-                        publisher: details.publisher,
-                        summaryText: details.summaryText,
-                        externalUrl: details.externalUrl,
-                        pubDate: details.pubDate
+                        vm.resultDetails.push({
+                            rowId: index,
+                            isSelected: false,
+                            title: details.title,
+                            resourceId: details.resourceId,
+                            publisher: details.publisher,
+                            summaryText: details.summaryText,
+                            externalUrl: details.externalUrl,
+                            pubDate: details.pubDate
+                        });
                     });
+
+                    var records = {
+                        draw: draw,
+                        recordsTotal: angular.isDefined(response) && angular.isDefined(response.summary) &&
+                            (response.summary !== null) ? response.summary.articlesFound : 0,
+                        recordsFiltered: angular.isDefined(response) && angular.isDefined(response.summary) &&
+                            (response.summary !== null) ? response.summary.articlesFound : 0,
+                        data: angular.isDefined(response) && angular.isDefined(response.results) &&
+                            vm.resultDetails !== null ? vm.resultDetails : blankData
+                    };
+
+
+                    // $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = true;
+                    
+                    vm.loadingValue = $scope.$parent.$parent.$parent.$parent.isprocesscomplete;
+
+                    commonBusiness.emitWithArgument('loadValue', vm.loadingValue);
+
+                    fnCallback(records);
                 });
-
-                var records = {
-                    draw: draw,
-                    recordsTotal: angular.isDefined(response) && angular.isDefined(response.summary) &&
-                        (response.summary !== null) ? response.summary.articlesFound : 0,
-                    recordsFiltered: angular.isDefined(response) && angular.isDefined(response.summary) &&
-                        (response.summary !== null) ? response.summary.articlesFound : 0,
-                    data: angular.isDefined(response) && angular.isDefined(response.results) &&
-                        vm.resultDetails !== null ? vm.resultDetails : blankData
-                };
-
-
-                $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = true;
-
-                fnCallback(records);
-            });
+            }
         }
 
         function showArticleDetails(ev, title, exUrl) {
@@ -229,7 +261,8 @@
             },
             controller: 'msNewsSearchController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html'
+            templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html',
+            bindToController: true 
         };
     }
 })();

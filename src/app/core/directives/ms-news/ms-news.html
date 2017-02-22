@@ -1,5 +1,5 @@
 <div id="news">
-    <ms-accordion is-expandable="true" title="{{vm.title}}" actions="vm.actions">
+    <ms-accordion id="SearchResult" is-expandable="true" title="{{vm.title}}" actions="vm.actions">
         <ms-news-search search-name="{{vm.searchName}}"></ms-news-search>
     </ms-accordion>
 
@@ -8,4 +8,6 @@
     <ms-accordion is-expandable="true" title="News Attachments">
         <ms-news-attachment></ms-news-attachment>
     </ms-accordion>
+
+    <div class="minPadding"></div>
 </div>
