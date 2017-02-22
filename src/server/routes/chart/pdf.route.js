@@ -1430,9 +1430,6 @@
                     function (data, response) {
                         try {
                             context.savedTable = data.items;
-                            async.parallel([getSavedTable.bind(null, context)], function(err, result){
-                                callback(null, context);
-                            });
                         } catch (exception) {
                             console.log('[getAllSavedTableList]Error\n' + exception);
                             context.errorMessages.push(exception.message);
@@ -1679,7 +1676,7 @@
                     function (data, response) {
                         subContext.pdfRequest = null;
                         try {
-                            context.requestId = 11329; //data.request.requestNo;
+                            context.requestId = data.request.requestNo;
                             console.log("Created PDF request: " + context.requestId);
                             context.chartPath = createPath(context);
                             addImagePath(context);
@@ -1965,7 +1962,7 @@
             context.sequences = [
                 [getFinancialChartRatioTypes, getAllSavedIFChartSettings, setupGetIFCChartDataPoints],
                 [getAllChartSettings, setupGetChartDataPoints],
-                [getAllSavedTableList]
+                [getAllSavedTableList, getSavedTable]
             ];
 
             function startup(callback) {
