@@ -34,24 +34,24 @@
                     </md-menu-content>
                 </md-menu>
                 <md-menu flex="33" style="text-align: center">
-                    <button ng-click="vm.presetComparisonMenu();$mdOpenMenu();" style="width:130px; border: 1px solid rgba(0,0,0,0.12);">
+                    <button ng-click="$mdOpenMenu();" style="width:130px; border: 1px solid rgba(0,0,0,0.12);">
                         COMPARISON
                         <md-icon md-font-icon="icon-chevron-down" aria-label="icon-chevron-down"></md-icon>
                     </button>
                     <md-menu-content width="4" class="advison-comparison-menu-content">
                         <md-menu-item>
                             <md-menu md-offset="13 3">
-                                <md-button ng-click="$mdOpenMenu();" md-theme="advisen"
-                                           class="md-raised btncomp">Search Indices
+                                <md-button ng-click="$mdOpenMenu();" md-theme="advisen" class="md-raised btncomp">
+                                    Peers &amp; Industries
                                 </md-button>
                                 <md-menu-content class="md-menu-content-height">
-                                    <md-menu-item ng-repeat="item in vm.indices" style="padding-bottom: 25px; padding-left: 15px;">
-                                        <md-checkbox ng-change="vm.indicesOrCompetitorDropDownChange('INDICE', item)"
-                                                     ng-model="item.selectedIndicecheck"
+                                    <md-menu-item ng-repeat="item in vm.peerIndustryList" style="padding-bottom: 25px; padding-left: 15px;">
+                                        <md-checkbox ng-change="vm.updatePeerIds(item)"
+                                                     ng-model="item.selectedPeerIndustryCheck"
+                                                     ng-disabled="{{item.value == null}}"
                                                      aria-label="{{item.display}}">
                                             {{item.display}}
                                         </md-checkbox>
-
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
@@ -59,8 +59,8 @@
                         <md-menu-divider></md-menu-divider>
                         <md-menu-item>
                             <md-autocomplete
-                                    md-no-cache="vm.noCache"
-                                    md-search-text-change="vm.searchTextChange(vm.searchText)"
+                                    md-no-cache="false"
+                                    md-search-text-change=""
                                     md-search-text="vm.searchPeerText"
                                     md-selected-item-change="vm.selectedPeerChange(item)"
                                     md-items="item in vm.queryPeerSearch(vm.searchPeerText)"
@@ -81,14 +81,13 @@
                         <md-menu-divider></md-menu-divider>
                         <md-menu-item>
                             <md-menu md-offset="13 3">
-                                <md-button ng-click="$mdOpenMenu();" md-theme="advisen"
-                                           class="md-raised btncomp">Search Competitors
+                                <md-button ng-click="$mdOpenMenu();" md-theme="advisen" class="md-raised btncomp">
+									Search Competitors
                                 </md-button>
                                 <md-menu-content class="md-menu-content-height">
-                                    <md-menu-item ng-repeat="item in vm.competitors" style="padding-bottom: 25px; padding-left: 15px;">
-                                        <md-checkbox
-                                                ng-change="vm.indicesOrCompetitorDropDownChange('COMPETITOR', item)"
-                                                ng-model="item.selectedCompetitorcheck"
+                                    <md-menu-item ng-repeat="item in vm.competitorList" style="padding-bottom: 25px; padding-left: 15px;">
+                                        <md-checkbox ng-change="vm.updateCompetitorIds(item)"
+                                                     ng-model="item.selectedCompetitorCheck"
                                                 aria-label="{{item.display}}">
                                             {{item.display}}
                                         </md-checkbox>
@@ -99,7 +98,7 @@
                         <md-menu-divider></md-menu-divider>
                         <md-menu-item>
                             <section layout="row" layout-sm="column" layout-align="space-around center">
-                                <md-button style="text-align:center" class="md-raised md-cornered" ng-click="vm.add();"> Apply</md-button>
+                                <md-button style="text-align:center" class="md-raised md-cornered" ng-click="vm.commitChanges();"> Apply</md-button>
                                 <md-button style="text-align:center" class="md-raised md-cornered" ng-click="vm.clear();"> Clear</md-button>
                             </section>
                         </md-menu-item>

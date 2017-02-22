@@ -229,6 +229,7 @@
                                                     dividends: chartSettings.isDividends,
                                                     selectedIndices: chartSettings.selectedIndicesList,
                                                     selectedPeers: chartSettings.selectedPeerList,
+                                                    selectedPeerNames: chartSettings.selectedPeerNameList,
                                                     selectedCompetitors: chartSettings.selectedCompetitorsList,
                                                     isDefault: chartSettings.isDefault
                                                 },
@@ -414,8 +415,11 @@
                                             var n;
 
                                             newList = new Array();
+                                            //skip the default chart use the default chart from load time
+                                            var lastStatedata = stockService.getInitialStateData();
+                                            newList.push(lastStatedata[0]);
                                             n = scope.jsCharts.length;
-                                            for (i = 0; i < n; i++) {
+                                            for (i = 1; i < n; i++) {
                                                 newList.push(angular.copy(scope.jsCharts[i]));
                                             }
                                             stockService.setInitialStateData(newList);
