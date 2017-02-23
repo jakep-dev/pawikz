@@ -38,18 +38,24 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.renewTemplate = renewTemplate;
     vm.toggleSidenav = toggleSidenav;
     vm.filterAgain = filterAgain;
+    $scope.checkForParentFunction = checkForParentFunction;
 
     defineMenuActions();
 
     function defineMenuActions(){
         "use strict";
+        $rootScope.toolBarMenuCtrl = function(){
+         return $scope;
+        };
         commonBusiness.emitWithArgument("InjectMainMenu", {
-            url: 'app/main/apps/dashboards/menu/menu.html'
+            menuName: 'My Work-ups',
+            menuIcon: 'fa fa-folder-open-o s16'
         });
+    }
 
-        commonBusiness.onMsg('Dashboard-Reload', $scope, function(ev, data){
-           vm.reload();
-        });
+    function checkForParentFunction(){
+        console.log('Hey dashboard controller');
+        reload();
     }
 
     function filterAgain(name){

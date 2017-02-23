@@ -1,5 +1,11 @@
+
+<div ng-include="'app/main/apps/dashboards/menu/menu.html'" class="menu-action" >
+
+</div>
+
 <div id="dashboard-project" class="page-layout simple fullwidth white-bg" layout="row"
      ng-cloak md-swipe-left="vm.toggleSidenav('quick-panel')">
+
     <div class="center" flex layout-padding>
         <div style="border: 1px solid lightgrey; border-radius: 3px; margin-bottom: 5px" layout-padding
              ng-show="vm.searches && vm.searches.length > 0">
@@ -16,4 +22,5 @@
                 </table>
         </md-content>
     </div>
+
 </div>

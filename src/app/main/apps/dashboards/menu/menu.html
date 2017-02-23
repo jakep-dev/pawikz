@@ -1,26 +1,9 @@
-<div layout="row" layout-align="end center" show-gt-xs hide-xs>
-
-    <md-button class="md-accent" aria-label="Filter" ng-click="vm.toggleSidenav('quick-panel')">
-        <md-icon md-font-icon="icon-filter"></md-icon>
-        <md-tooltip md-direction="bottom">
-            Filter
-        </md-tooltip>
-    </md-button>
-
-    <md-button class="md-accent" aria-label="Reload" ng-click="vm.executeMenuAction('Dashboard-Reload')">
-        <md-icon md-font-icon="icon-reload"></md-icon>
-        <md-tooltip md-direction="bottom">
-            Reload
-        </md-tooltip>
-    </md-button>
-</div>
-<div style="float: right" hide-gt-xs>
+<div style="float: right">
     <md-menu md-position-mode="target-right target">
         <md-button aria-label="more" class="md-icon-button"
                    ng-click="$mdOpenMenu($event)">
             <md-icon md-font-icon="icon-dots-vertical" style="float: right"></md-icon>
         </md-button>
-
         <md-menu-content>
             <md-menu-item>
                 <md-button  aria-label="Filter widget" ng-click="vm.toggleSidenav('quick-panel')">

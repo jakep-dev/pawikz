@@ -33,10 +33,6 @@
                     'breadcrumb@app': {
                       templateUrl: 'app/breadcrumb/breadcrumb.html',
                       controller : 'BreadcrumbController as vm'
-                    },
-                    'bottomsheet@app': {
-                        templateUrl: 'app/bottomsheet/bottomsheet.html',
-                        controller : 'BottomsheetController as vm'
                     }
                 }
             });

@@ -15,6 +15,8 @@
         var vm = this;
         vm.userName = '';
         vm.url = '';
+        vm.menuIcon = '';
+        vm.menuName = '';
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
@@ -22,7 +24,6 @@
         if(userDetails)
         {
             vm.userName = userDetails.fullName;
-            console.log('Start background listeners with userDetails.userId. [' + userDetails.userId + ']');
             notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
             notificationBusiness.listenToWorkUpStatus(userDetails.userId);
             notificationBusiness.listenToRenewStatus(userDetails.userId);
@@ -35,10 +36,9 @@
         });
 
         commonBusiness.onMsg('InjectMainMenu', $scope, function(ev, data) {
-            console.log(data);
-            vm.url = data.url;
+            vm.menuIcon = data.menuIcon;
+            vm.menuName = data.menuName;
         });
-
 
         vm.selectedLanguage = {
             'title'      : 'English',
@@ -75,8 +75,11 @@
         vm.setUserStatus = setUserStatus;
         vm.changeLanguage = changeLanguage;
         vm.executeMenuAction = executeMenuAction;
+        vm.checkForParentFunction = checkForParentFunction;
 
-        //////////
+        function checkForParentFunction(){
+            console.log('Hey toolbar controller');
+        }
 
         function setupListeners() {
             var userDetails = store.get('user-info');

@@ -16,12 +16,9 @@
                     templateUrl: 'app/main/apps/dashboards/dashboard.html',
                     controller : 'DashboardController as vm'
                 },
-              'search-engine@app': {
-                templateUrl: 'app/main/apps/dashboards/search/search.html',
-                controller : 'DashboardSearchController as vm'
-              },
-               'toolbar-menu@app.dashboard':{
-                   template: '<p>It works</p>'
+                  'search-engine@app': {
+                    templateUrl: 'app/main/apps/dashboards/search/search.html',
+                    controller : 'DashboardSearchController as vm'
                 }
             }
         });
