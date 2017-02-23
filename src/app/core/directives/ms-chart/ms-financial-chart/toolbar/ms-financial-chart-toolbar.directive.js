@@ -263,6 +263,8 @@
             } else {
                 setStartEndDate('3');
             }
+            vm.filterState.startDate = financialChartBusiness.toDateString(vm.startDate);
+            vm.filterState.endDate = financialChartBusiness.toDateString(vm.endDate);
         }
 
         if (vm.filterState.isCustomDate) {
@@ -282,8 +284,9 @@
 
         function customDateChange() {
             if (vm.startDate > vm.endDate) {
+                vm.startDate = new Date(vm.filterState.startDate);
                 vm.endDate = new Date(vm.filterState.endDate);
-                dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, {
+                dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, null, {
                     ok: {
                         name: 'ok', callBack: function () {
                         }
@@ -292,11 +295,24 @@
             }
             else {
                 if (vm.startDate && vm.endDate) {
-                    vm.filterState.startDate = financialChartBusiness.toDateString(vm.startDate);
-                    vm.filterState.endDate = financialChartBusiness.toDateString(vm.endDate);
-                    vm.filterState.isCustomDate = true;
-                    vm.filterState.chartPeriod = ' ';
-                    vm.onFilterStateUpdate();
+                    var duration;
+                    duration = moment.duration(moment(vm.endDate).diff(moment(vm.startDate)));
+                    if (duration.asYears() >= 10.0) {
+                        vm.startDate = new Date(vm.filterState.startDate);
+                        vm.endDate = new Date(vm.filterState.endDate);
+                        dialog.alert('Warning!', "Custom date range cannot exceed 10 years. Please adjust the date range.", null, null, {
+                            ok: {
+                                name: 'ok', callBack: function () {
+                                }
+                            }
+                        });
+                    } else {
+                        vm.filterState.startDate = financialChartBusiness.toDateString(vm.startDate);
+                        vm.filterState.endDate = financialChartBusiness.toDateString(vm.endDate);
+                        vm.filterState.isCustomDate = true;
+                        vm.filterState.chartPeriod = ' ';
+                        vm.onFilterStateUpdate();
+                    }
                 }
             }
         }
