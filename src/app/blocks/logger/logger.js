@@ -46,16 +46,16 @@
 
             // use AJAX (in this example jQuery) and NOT
             // an angular service such as $http
-            $.ajax({
-                type: "POST",
-                url: "/api/errorLog",
-                contentType: "application/json",
-                data: angular.toJson({
-                    url: $window.location.href,
-                    message: message,
-                    type: "error"
-                })
-            });
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/api/errorLog",
+            //    contentType: "application/json",
+            //    data: angular.toJson({
+            //        url: $window.location.href,
+            //        message: message,
+            //        type: "error"
+            //    })
+            //});
         }
 
         function debug(message)
@@ -64,16 +64,16 @@
 
             // use AJAX (in this example jQuery) and NOT
             // an angular service such as $http
-            $.ajax({
-                type: "POST",
-                url: "/api/debugLog",
-                contentType: "application/json",
-                data: angular.toJson({
-                    url: $window.location.href,
-                    message: message,
-                    type: "debug"
-                })
-            });
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/api/debugLog",
+            //    contentType: "application/json",
+            //    data: angular.toJson({
+            //        url: $window.location.href,
+            //        message: message,
+            //        type: "debug"
+            //    })
+            //});
         }
     }
 }());

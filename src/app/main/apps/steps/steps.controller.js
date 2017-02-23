@@ -40,9 +40,13 @@
         defineMenuActions();
 
         function defineMenuActions(){
+            console.log(commonBusiness.companyId);
+            console.log(commonBusiness.companyName);
             commonBusiness.emitWithArgument("InjectMainMenu", {
                 menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
-                menuIcon: 'icon-view-module'
+                menuIcon: 'icon-view-module',
+                companyId: commonBusiness.companyId,
+                companyName: commonBusiness.companyName
             });
         }
 

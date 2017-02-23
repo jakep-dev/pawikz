@@ -17,6 +17,8 @@
         vm.url = '';
         vm.menuIcon = '';
         vm.menuName = '';
+        vm.companyId = null;
+        vm.companyName = null;
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
@@ -38,6 +40,8 @@
         commonBusiness.onMsg('InjectMainMenu', $scope, function(ev, data) {
             vm.menuIcon = data.menuIcon;
             vm.menuName = data.menuName;
+            vm.companyId = data.companyId || null;
+            vm.companyName = data.companyName || null;
         });
 
         vm.selectedLanguage = {
