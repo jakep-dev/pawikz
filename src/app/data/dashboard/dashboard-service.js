@@ -47,33 +47,39 @@
         }
 
         //Get Dashboard Users
-        function getUsers(userId)
-        {
-            var url = clientConfig.endpoints.dashboardEndPoint.getUsers.concat(userId)
+        function getUsers(userId) {
+            var input = {
+                userId: userId
+            };
 
-            return $http.get(url)
-                .then(function(data, status, headers, config)
-                {
-                    return data.data;
-                })
-                .catch(function(error) {
-                    logger.error(JSON.stringify(error));
-                });
+            return $http.post(clientConfig.endpoints.dashboardEndPoint.getUsers, input)
+                .then(
+                    function (data, status, headers, config) {
+                        return data.data;
+                    },
+                    function (error) {
+                        logger.error(JSON.stringify(error));
+                    }
+                );
         }
 
         //Get Dashboard Companies
-        function getCompanies(userId)
-        {
-            var url = clientConfig.endpoints.dashboardEndPoint.getCompanies.concat(userId);
+        function getCompanies(userId) {
+            var input = {
+                userId: userId
+            };
 
-            return $http.get(url)
-                .then(function(data, status, headers, config)
-                {
-                    return data.data;
-                })
-                .catch(function(error) {
-                    logger.error(JSON.stringify(error));
-                });
+            return $http.post(clientConfig.endpoints.dashboardEndPoint.getCompanies, input)
+                .then(
+                    function (data, status, headers, config) {
+                        return data.data;
+                    }
+                )
+                .catch(
+                    function (error) {
+                        logger.error(JSON.stringify(error));
+                    }
+                );
         }
 
         function processRemoveWorkUp(deleteProjectId, filterParam)

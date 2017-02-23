@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html ng-app="advisen">
     <head>
         <base href="/">
@@ -362,71 +362,58 @@
         your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <body md-theme="{{vm.themes.active.name}}" md-theme-watch ng-controller="AppController as vm">
+<body md-theme="{{vm.themes.active.name}}" md-theme-watch ng-controller="AppController as vm">
 
-        <div ng-cloak id="splash-screen">
-            <div class="center">
-                <!--<div class="logo">-->
-                  <!--Loading-->
-                <!--</div>-->
-                <!-- Material Design Spinner -->
-                <div class="spinner-wrapper">
-                    <div class="outer-spinner">
-                        <div class="spinner">
-                            <div class="left">
-                                <div class="circle"></div>
-                            </div>
-                            <div class="right">
-                                <div class="circle"></div>
-                            </div>
+    <div ng-cloak id="splash-screen">
+        <div class="center">
+            <!--<div class="logo">-->
+            <!--Loading-->
+            <!--</div>-->
+            <!-- Material Design Spinner -->
+            <div class="spinner-wrapper">
+                <div class="outer-spinner">
+                    <div class="spinner">
+                        <div class="left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="right">
+                            <div class="circle"></div>
                         </div>
                     </div>
                 </div>
-
-                <!-- / Material Design Spinner -->
             </div>
 
-            <!--<div class="center" style="color: red">-->
-                <!--Loading...-->
-            <!--</div>-->
+            <!-- / Material Design Spinner -->
         </div>
 
-        <div id="main" class="animate slide-up" ms-window-exit flex layout="row" ui-view="main"></div>
-       <!-- <script type="application/javascript" src="../bower_components/socket.io/lib/socket.js"></script>
-        <script>
-            var socket = io.connect('http://localhost:3000');
-            socket.on('message', function (data) {
-                console.log(data);
-                alert(data);
+        <!--<div class="center" style="color: red">-->
+        <!--Loading...-->
+        <!--</div>-->
+    </div>
 
-            });
-        </script>-->
+    <div id="main" class="animate slide-up" ms-window-exit flex layout="row" ui-view="main"></div>
 
-        <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+    <!-- Server side version of socket.io provides client socket.io javascript through the path socket.io/socket.io.js -->
+    <script src="socket.io/socket.io.js"></script>
 
-        <!-- build:js(src) scripts/vendor.js -->
-        <!-- bower:js -->
-        <!-- run `gulp inject` to automatically populate bower script dependencies -->
-        <!-- endbower -->
-        <!-- endbuild -->
+    <!-- build:js(src) scripts/vendor.js -->
+    <!-- bower:js -->
+    <!-- run `gulp inject` to automatically populate bower script dependencies -->
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:js({.tmp/serve,.tmp/partials,src}) scripts/app.js -->
+    <!-- inject:js -->
+    <!-- js files will be automatically insert here -->
+    <!-- endinject -->
+    <!-- inject:partials -->
+    <!-- angular templates will be automatically converted in js and inserted here -->
+    <!-- endinject -->
+    <!-- endbuild -->
+    <!--<script type="application/javascript" src="assets/scripts/tableExport.js"></script>-->
+    <!--<script type="application/javascript" src="assets/scripts/jquery.base64.js"></script>-->
+    <!--<script type="text/javascript" src="assets/scripts/jspdf/libs/sprintf.js"></script>-->
+    <!--<script type="text/javascript" src="assets/scripts/jspdf/jspdf.js"></script>-->
+    <!--<script type="text/javascript" src="assets/scripts/jspdf/libs/base64.js"></script>-->
 
-        <!-- build:js({.tmp/serve,.tmp/partials,src}) scripts/app.js -->
-        <!-- inject:js -->
-        <!-- js files will be automatically insert here -->
-        <!-- endinject -->
-
-        <!-- inject:partials -->
-        <!-- angular templates will be automatically converted in js and inserted here -->
-        <!-- endinject -->
-        <!-- endbuild -->
-
-
-        <!--<script type="application/javascript" src="assets/scripts/tableExport.js"></script>-->
-        <!--<script type="application/javascript" src="assets/scripts/jquery.base64.js"></script>-->
-
-        <!--<script type="text/javascript" src="assets/scripts/jspdf/libs/sprintf.js"></script>-->
-        <!--<script type="text/javascript" src="assets/scripts/jspdf/jspdf.js"></script>-->
-        <!--<script type="text/javascript" src="assets/scripts/jspdf/libs/base64.js"></script>-->
-
-    </body>
+</body>
 </html>

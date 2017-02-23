@@ -43,7 +43,7 @@
         function downloadNews(url) {
             return $http({
                     url: url,
-                    method: "GET",
+                    method: "POST",
                     contentType: "application/xml; charset=utf-8",
                     dataType: "xml"
                 })
