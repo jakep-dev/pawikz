@@ -7,8 +7,7 @@
         .directive('msTemplate', msTemplateDirective);
 
     function msTemplateController($rootScope, $scope, $mdMenu, $window,
-        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
-    ) {
+        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness, overviewBusiness, stepsBusiness) {
         var vm = this;
 
         vm.isExpandAll = true;
@@ -19,6 +18,25 @@
         vm.printableAll = printableAll;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.previousStep = previousStep;
+        vm.nextStep = nextStep;
+
+        //Move to the previous step
+        function previousStep() {
+            if (overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps) {
+                stepsBusiness.getPrevStep($scope.stepId, overviewBusiness.templateOverview.steps);
+            }
+        }
+
+        //Move to the next step
+        function nextStep() {
+            if (overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps) {
+                stepsBusiness.getNextStep($scope.stepId, overviewBusiness.templateOverview.steps);
+            }
+        }
+
 
         //Save the entire template data.
         function saveAll() {
@@ -66,7 +84,8 @@
             restrict: 'E',
             scope: {
                 components: '=',
-                refreshstep: '='
+                refreshstep: '=',
+                stepId: '='
             },
             controller: 'msTemplateController',
             controllerAs: 'vm',

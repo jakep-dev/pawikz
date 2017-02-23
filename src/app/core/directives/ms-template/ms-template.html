@@ -1,103 +1,19 @@
+<div ng-include="'app/core/directives/ms-template/menu/menu.html'" class="step-menu-action" >
 
-<div id="dashboard-project" class="page-layout simple fullwidth white-bg" layout="row"
-     ng-cloak md-swipe-left="vm.toggleSidenav('quick-panel')">
+</div>
+
+<div id="template-step" class="page-layout simple fullwidth white-bg" layout="row"
+     ng-cloak>
     <div class="center" flex>
-        <div class="widget-group" layout="row" flex layout-wrap>
-            <ms-widget  layout="row" flex>
-                <ms-widget-front class="white-bg">
-                    <div class="simple-table-container">
-                        <div>
-                            <div class="table-title" layout="row"  layout-align="space-between center">
-                                <div layout="row" layout-align="start center">
-                                    <md-icon md-font-icon="icon-menu" class="s20"> </md-icon>
-                                    <h2>{{stepName}}</h2>
-                                </div>
-
-                                <md-menu md-position-mode="target-right target">
-                                    <md-button aria-label="more" class="md-icon-button"
-                                               ng-click="$mdOpenMenu($event)">
-                                        <md-icon md-font-icon="icon-dots-vertical"></md-icon>
-                                    </md-button>
-
-                                    <md-menu-content>
-                                        <md-menu-item>
-                                            <md-button aria-label="save all" ng-click="vm.saveAll()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-content-save-all"></md-icon>
-                                                        <span>Save All</span>
-                                                  </span>
-                                            </md-button>
-                                        </md-menu-item>
-
-                                        <md-menu-item ng-if="false">
-                                            <md-button aria-label="mode widget">
-                                                  <span layout="row" layout-align="start center">
-                                                    <md-icon md-font-icon="icon-tablet-ipad"></md-icon>
-                                                    <span>Tablet Mode</span>
-                                                  </span>
-
-                                            </md-button>
-                                        </md-menu-item>
-
-                                        <md-menu-item>
-                                            <md-button aria-label="expand all" ng-click="vm.toggleExpand()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-backburger"
-                                                                 ng-class="vm.isExpandAll ? 'ms-expand' : 'ms-collapse'"></md-icon>
-                                                        <span ng-if="vm.isExpandAll">Collapse All</span>
-                                                       <span ng-if="!vm.isExpandAll">Expand All</span>
-                                                  </span>
-                                            </md-button>
-                                        </md-menu-item>
-
-                                        <md-menu-item>
-                                             <span layout="row" layout-align="start center">
-                                                <div>
-                                                    <md-checkbox aria-label="On/Off Pdf" class="no-padding-margin" style="margin-left:5px;" ng-click="vm.printableAll()"></md-checkbox>
-                                                    <span style="font-size: 16px;margin-left:7px;">{{(vm.isPrintableAll) ? 'Unselect All' : 'Select All'}}</span>
-                                                </div>
-                                            </span>
-                                        </md-menu-item>
-
-
-                                        <md-menu-item>
-                                            <md-button aria-label="save all" ng-click="vm.pdfDownload()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-file-pdf-box"></md-icon>
-                                                        <span>PDF Download</span>
-                                                  </span>
-                                            </md-button>
-                                        </md-menu-item>
-
-                                        <md-menu-item>
-                                            <md-button  aria-label="save all" ng-click="vm.renew()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-rotate-3d"></md-icon>
-                                                        <span>Renew</span>
-                                                  </span>
-                                            </md-button>
-                                        </md-menu-item>
-
-                                    </md-menu-content>
-                                </md-menu>
-                            </div>
-
-                            <md-divider></md-divider>
-
-                            <div id="template-content" layout-padding>
-                                <div style="font-size: large" ng-if="stepSubHeader !== ''">
-                                    {{stepSubHeader}}
-                                </div>
-                            </div>
-                            <md-divider></md-divider>
-                            <md-button layout="row" id="btnLoadMore" ng-hide="true" ng-disabled="isLoadMoreDisabled"
-                                       layout-align="center center" ng-click="loadMore()">
-                                <span> Load More</span>
-                            </md-button>
-                        </div>
-                    </div>
-                </ms-widget-front>
-            </ms-widget>
+        <div id="template-content" layout-padding>
+            <div style="font-size: large" ng-if="stepSubHeader !== ''">
+                {{stepSubHeader}}
+            </div>
         </div>
+        <md-button layout="row" id="btnLoadMore" ng-hide="true" ng-disabled="isLoadMoreDisabled"
+                   layout-align="center center" ng-click="loadMore()">
+            <span> Load More</span>
+        </md-button>
     </div>
 </div>
+

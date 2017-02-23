@@ -44,9 +44,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function defineMenuActions(){
         "use strict";
-        $rootScope.toolBarMenuCtrl = function(){
-         return $scope;
-        };
         commonBusiness.emitWithArgument("InjectMainMenu", {
             menuName: 'My Work-ups',
             menuIcon: 'fa fa-folder-open-o s16'

@@ -21,9 +21,7 @@
             $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
 
-
-        defineBottomSheet();
-
+        defineMenuActions();
         var userDetails = store.get('user-info');
 
         if(userDetails)
@@ -68,11 +66,11 @@
            templateBusiness.requestPdfDownload();
         }
 
-        function defineBottomSheet()
-        {
-            $scope.saveAll = saveAll;
-            $scope.goTop = goTop;
-            commonBusiness.defineBottomSheet('app/main/apps/overview/sheet/overview-sheet.html', $scope, true);
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("InjectMainMenu", {
+                menuName: 'Work-up Overview',
+                menuIcon: 'icon-view-agenda'
+            });
         }
 
         function showOverviewDetails(step)

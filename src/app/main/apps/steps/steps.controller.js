@@ -18,6 +18,7 @@
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+        vm.stepId = stepId;
         $scope.stepId = stepId;
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
@@ -36,9 +37,17 @@
         commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
-        vm.TearSheetStep = null;
+        defineMenuActions();
 
-        breadcrumbBusiness.title = unescape(stepName);
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("InjectMainMenu", {
+                menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
+                menuIcon: 'icon-view-module'
+            });
+        }
+
+
+        vm.TearSheetStep = null;
 
         var userDetails = store.get('user-info');
 
