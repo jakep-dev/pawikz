@@ -1413,6 +1413,8 @@
 
         }
 
+        //context.savedTable
+        //context.chartObjectArr
         function getAllSavedTableList(context, callback) {
             if (context.errorMessages.length > 0) {
                 callback(null, context);
@@ -1433,8 +1435,8 @@
                         } catch (exception) {
                             console.log('[getAllSavedTableList]Error\n' + exception);
                             context.errorMessages.push(exception.message);
-                            callback(null, context);
                         }
+                        callback(null, context);
                     }
                 ).on('error',
                     function (err) {
@@ -1469,8 +1471,9 @@
                 async.map(context.savedSigDevItemList, function(item, callback){
                         processSavedList(item, mainContext, context.info, callback);
                     }, function(err, results){
-                    callback(null, context);
-                });
+                        callback(null, context);
+                    }
+                );
             } else {
                 callback(null, context);
             }
@@ -1479,22 +1482,26 @@
         
         function processSavedList(context, mainContext, tableInfo, callback) {
             if(context.savedSigDevItems && context.savedSigDevItems.length > 0) {
-                async.map(context.savedSigDevItems, function(item, callback){
+                async.map(context.savedSigDevItems, 
+                    function(item, callback){
                         getExpandedDescription(item, mainContext, callback);
                     }, function(err, results){
-                        u.each(results, function(item){
-                            mainContext.chartObjectArr.push({
-                                infile: JSON.stringify(item),
-                                callback: '',
-                                constr: '',
-                                outfile: tableInfo.stepId + '.' + tableInfo.mnemonic + '.' + tableInfo.itemId + '.' + 'chart_id_placeholder' + '.part2.html',
-                                page: 'STOCK_TABLE',
-                                stepId: tableInfo.stepId,
-                                seqNo: item.seqNo
-                            });
-                        });
+                        u.each(results, 
+                            function(item){
+                                mainContext.chartObjectArr.push({
+                                    infile: JSON.stringify(item),
+                                    callback: '',
+                                    constr: '',
+                                    outfile: tableInfo.stepId + '.' + tableInfo.mnemonic + '.' + tableInfo.itemId + '.' + 'chart_id_placeholder' + '.part2.html',
+                                    page: 'STOCK_TABLE',
+                                    stepId: tableInfo.stepId,
+                                    seqNo: item.seqNo
+                                });
+                            }
+                        );
                         callback(null, context);
-                });
+                    }
+                );
             } else {
                 callback(null, context);
             }
@@ -1517,15 +1524,17 @@
         }
 
         function getMscadList(context, mainContext, callback) {
-            async.map(context, function(item, callback){
+            async.map(context, 
+                function(item, callback){
                         getMscadDesc(item, mainContext, callback);
-                    }, function(err, results){
-                callback(null, context);
-            });
+                }, function(err, results){
+                    callback(null, context);
+                }
+            );
         }
 
         function getMscadDesc(context, mainContext, callback) {
-            if(context.tl_status && context.tl_status === 'Y') {
+            if (context.tl_status && context.tl_status === 'Y') {
                 var subContext = new Object();
                 subContext.methodName = '';
                 if (!u.isUndefined(mainContext.service) && !u.isNull(mainContext.service)) {
@@ -1560,19 +1569,20 @@
                 context.description = null;
                 callback(null, context);
             }
-            
         }
 
         function getSigDevList(context, mainContext, callback) {
-            async.map(context, function(item, callback){
+            async.map(context, 
+                function(item, callback){
                         getSigDevDesc(item, mainContext, callback);
-                    }, function(err, results){
-                callback(null, context);
-            });
+                }, function(err, results){
+                    callback(null, context);
+                }
+            );
         }
 
         function getSigDevDesc(context, mainContext, callback) {
-            if(context.tl_status && context.tl_status === 'Y') {
+            if (context.tl_status && context.tl_status === 'Y') {
                 var subContext = new Object();
                 subContext.methodName = '';
                 if (!u.isUndefined(mainContext.service) && !u.isNull(mainContext.service)) {
@@ -1601,13 +1611,12 @@
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
-                    }
-                );
+                        }
+                    );
             } else {
                 context.description = null;
                 callback(null, context);
             }
-            
         }
 
         function processTables(context, callback) {
