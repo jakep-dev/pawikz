@@ -9,7 +9,7 @@
 
     /** @ngInject */
     function msNotificationController(toast,
-                                      $location, $interval, $scope, 
+                                      $location, $interval, $scope, $window,
                                       commonBusiness, templateBusiness, notificationBusiness
                                      )
     {
@@ -17,6 +17,7 @@
 
         //Variables.
         vm.notifications = notificationBusiness.notifications;
+        vm.notificationWidth = parseInt(($window.innerWidth - 300) * 0.5);
 
         //Functions
         vm.processNotification = processNotification;
@@ -25,6 +26,10 @@
         //Refresh binding to immediately show pdf status changes
         commonBusiness.onMsg('update-notification-binding', $scope, function () {
             $scope.$apply();
+        });
+
+        angular.element($window).bind('resize', function () {
+            vm.notificationWidth = parseInt(($window.innerWidth - 300) * 0.5);
         });
 
         function close(notification)

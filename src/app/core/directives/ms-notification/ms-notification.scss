@@ -73,3 +73,9 @@ $toolbarHeight: 64px;
   font-size: 10px;
   font-weight: 600;
 }
+
+.text-ellipsis{
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
