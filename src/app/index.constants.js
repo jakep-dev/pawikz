@@ -60,7 +60,7 @@
                 }
             },
             appSettings: {
-                autoSaveTimeOut: 10000,
+                autoSaveTimeOut: 600000,
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
                 compInitialLoadForDesktop: 3,
                 compInitialLoadForDesktopIE: 30,
