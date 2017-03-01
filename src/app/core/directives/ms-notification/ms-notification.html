@@ -8,7 +8,7 @@
         </notification-icon>
     </md-button>
 
-    <md-menu-content width="6" id="notification-menu-content">
+    <md-menu-content width="2" id="notification-menu-content">
         <md-menu-item ng-repeat="notification in vm.notifications"  ng-if="vm.notifications.length > 0">
             <span layout="column">
                 <span layout-wrap layout="row" layout-fill layout-align="space-between center">
@@ -16,8 +16,8 @@
                         <table>
                             <tr>
                                 <td><md-icon md-font-icon="{{notification.icon}}"></md-icon> &nbsp;</td>
-                                <td><span>{{notification.title}} &nbsp;</span></td>
-                                <td><span> - {{notification.type}} &nbsp;</span></td>
+                                <td ng-hide="vm.notificationWidth < 20"><div class="text-ellipsis" ng-style="{ 'max-width' : vm.notificationWidth }">{{notification.title}} &nbsp;</div></td>
+                                <td ng-hide="vm.notificationWidth < 20"><span> - {{notification.type}} &nbsp;</span></td>
                             </tr>
                         </table>
                     </md-button>
