@@ -671,9 +671,13 @@
 
             commonBusiness.onMsg('EPH-Upload', $scope, function() {
                 toast.simpleToast("Please choose file!");
-                $timeout(function () {
+                if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        uploadExcel();
+                    }, 1000);
+                } else {
                     uploadExcel();
-                }, 1000);
+                }
                 
             });
 
