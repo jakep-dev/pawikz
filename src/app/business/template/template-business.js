@@ -9,7 +9,7 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, $window, $sce, $mdToast,
+    function templateBusiness($rootScope, $interval, $filter, $window, $sce, $mdToast, $injector,
         Papa, dialog, store, deviceDetector, toast,
         clientConfig, commonBusiness, stepsBusiness, notificationBusiness, overviewBusiness,
         templateService, stockService, financialChartService
@@ -88,7 +88,8 @@
             getCompInitialLoadCount: getCompInitialLoadCount,
             updateProgramTableMnemonics: updateProgramTableMnemonics,
             getNewsHeader: getNewsHeader,
-            updateTableLayoutMnemonics: updateTableLayoutMnemonics
+            updateTableLayoutMnemonics: updateTableLayoutMnemonics,
+            componentExcelDownload: componentExcelDownload
         };
 
         return business;
@@ -1801,6 +1802,219 @@
                 }
             }
             return label;
+        }
+
+        function componentExcelDownload(scope) {
+            var linkElement = $('#link-component-download');
+            var dataInfo = buildExcelData(scope.excelComponents);
+            var data = unParseJsonToCsv(dataInfo);
+            var BOM = String.fromCharCode(0xFEFF);  //fix for euro symbol
+            var blob = new Blob([BOM + data], {
+                "type": "text/csv;charset=utf8;"
+            });     
+
+            if (deviceDetector.browser === 'ie')
+            { 
+                var fileName = scope.excelFilename + '.csv';
+                window.navigator.msSaveOrOpenBlob(blob, fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+            } else if(data && linkElement && linkElement.length > 0) {
+                var fileName = scope.excelFilename + '.csv';
+                linkElement[0].setAttribute("href", window.URL.createObjectURL(blob));
+                linkElement[0].setAttribute("download", fileName);
+                linkElement[0].click();
+                toast.simpleToast('Finished downloading - ' + fileName);
+            }
+        }
+
+        //build excel data based on nodes under component tag
+        function buildExcelData(tearcontent) {
+            var excelRow = [];
+            var tearsheetItem = [];
+
+            _.each(tearcontent, function(content) {
+                if(content) {
+                    if(_.has(content, 'TearSheetItem')) {
+                        if(_.isArray(content.TearSheetItem)) {
+                            tearsheetItem.push.apply(tearsheetItem, content.TearSheetItem);
+                        } else {
+                            tearsheetItem.push(content.TearSheetItem);
+                        }
+                    } else {
+                        tearsheetItem.push(content);
+                    }
+                }
+            });
+
+            _.each(tearsheetItem, function(tearsheet) {
+                var row = getTearSheetData(tearsheet);
+
+                if(_.isArray(row)) {
+                    excelRow.push.apply(excelRow, row);
+                } else {
+                    excelRow.push([row]);
+                }
+            });
+            
+            return excelRow;
+        }
+
+        //get data per TearSheetItem tag
+        function getTearSheetData(tearsheet) {
+            var tbf = $injector.get('templateBusinessFormat');
+            var value = null;
+            if(tearsheet && tearsheet.id) {
+                switch(tearsheet.id.toLowerCase()) {
+                    case 'linkitem': 
+                    case 'linkitemnoword':
+                    case 'labelitem':
+                        value = (tearsheet.Label && typeof(tearsheet.Label) !== 'object') ? tearsheet.Label : ' ';
+                        break;
+
+                    case 'genericselectitem':
+                        var itemid = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemid, mnemonicId);
+                        break;
+
+                    case 'generictextitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        var formats = tbf.getFormatObject(tearsheet);
+                        value = getMnemonicValue(itemId, mnemonicId, false);
+                        value = tbf.formatData(value, formats);
+                        break;
+
+                    case 'singledropdownitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        break;
+
+                    case 'dateitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        var formats = tbf.getFormatObject(tearsheet);
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        value = tbf.formatData(value, formats);
+                        break;
+
+                    case 'genericradiogroup':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        break;
+
+                    case 'rtftextareaitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        break;
+
+                    case 'generictableitem':
+                        value = buildGenericTableForExcel(tearsheet);
+                        break;
+
+                    case 'tablelayout':
+                        value = buildTableLayoutForExcel(tearsheet);
+                        break;
+
+                    default:
+                        value = ' ';
+                        break;
+                }
+            }
+            
+            return value;
+        }
+
+        //get array data for GenericTableItem
+        function buildGenericTableForExcel(tearsheet) {
+            var excelRow = [];
+            _.each(tearsheet.row, function(row) {
+                if(!row.id || row.id !== 'toolbar_links') {
+                    var columns = null;
+                    
+                    if(!row.col) {
+                        columns = row;
+                    } else if(row.col && row.col.length)  {
+                        columns = row.col;
+                    } else if(row.col) {
+                        columns = [];
+                        columns.push(row.col);
+                    }
+
+                    var excelCell = [];
+                    _.each(columns, function (col) {
+                        var tearSheetItem = col.TearSheetItem;
+                        var value = getTearSheetData(tearSheetItem);
+
+                        value = value || ' ';
+                        excelCell.push(value);
+                    });
+
+                    excelRow.push(excelCell);
+                }
+            });
+            return excelRow;
+        }
+
+        //get array data for TableLayOut
+        function buildTableLayoutForExcel(tearsheet) {
+            var tbf = $injector.get('templateBusinessFormat');
+            var excelRow = [];
+            if(tearsheet && tearsheet.TableRowTemplate && tearsheet.TableRowTemplate.row) {
+                var tableLayoutData = _.find(business.tableLayoutMnemonics, { projectId: commonBusiness.projectId, mnemonic: tearsheet.Mnemonic, itemId: tearsheet.ItemId });
+                
+                if(tableLayoutData && tableLayoutData.data && _.size(tableLayoutData.data) > 0) {
+                    _.each(tableLayoutData.data, function(data) {
+                        _.each(tearsheet.TableRowTemplate.row, function(row) {
+                            if(!row.id || row.id !== 'toolbar_links') {
+                                var columns = null;
+                                
+                                if(!row.col) {
+                                    columns = row;
+                                } else if(row.col && row.col.length)  {
+                                    columns = row.col;
+                                } else if(row.col) {
+                                    columns = [];
+                                    columns.push(row.col);
+                                }
+                                
+                                var excelCell = [];
+                                _.each(columns, function (col) {
+                                    var tearSheetItem = col.TearSheetItem;
+                                    var value = null;
+                                    
+                                    if(tearSheetItem && tearSheetItem.id && tearSheetItem.id === 'LabelItem') {
+                                        value = getTearSheetData(tearSheetItem);
+                                    } else {
+                                        if(tearSheetItem && tearSheetItem.Mnemonic){
+                                        
+                                            //formats data
+                                            var formats = tbf.getProgramTableFormatObject(tearSheetItem, _.find(tableLayoutData.type, {mnemonic: tearSheetItem.Mnemonic}));
+
+                                            formats.precision = (''+data[tearSheetItem.Mnemonic].indexOf('.') > -1)? 2 : 0;
+                                            formats.prefix = '';
+
+                                            value = (data[tearSheetItem.Mnemonic])?  tbf.formatData(data[tearSheetItem.Mnemonic], formats) : ' ';
+                                        }
+                                    }
+                                    
+                                    value = value || ' ';
+                                    excelCell.push(value);
+                                });
+
+                                excelRow.push(excelCell);
+                            }
+                        });
+                    });
+                } else {
+                    excelRow.push(['No Data Available']);
+                }
+            }
+
+            return excelRow;
         }
 
         //Cancel the auto-save promise.
