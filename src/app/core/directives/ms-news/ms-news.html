@@ -1,6 +1,6 @@
 <div id="news">
-    <ms-accordion id="SearchResult" is-expandable="true" title="{{vm.title}}" actions="vm.actions">
-        <ms-news-search search-name="{{vm.searchName}}"></ms-news-search>
+    <ms-accordion collapse-search-result="{{vm.collapseEvent}}" expand-search-result="{{vm.expandEvent}}" is-expandable="true" title="{{vm.title}}" actions="vm.actions">
+        <ms-news-search search-name="{{vm.searchName}}" collapse-search="{{vm.collapseEvent}}"></ms-news-search>
     </ms-accordion>
 
     <div class="minPadding"></div>

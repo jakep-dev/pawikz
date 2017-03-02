@@ -22,6 +22,7 @@
         vm.loadData = null;
         vm.loadingValue = null;
         vm.reloadValue = false;
+        vm.collapseSearch = $scope.collapseSearch;
 
         vm.bookmarkNews = bookmarkNews;
         vm.showArticleDetails = showArticleDetails;
@@ -41,9 +42,9 @@
             
         }
 
-        commonBusiness.onMsg('loadDataValue', $scope, function(ev, data) {
+        commonBusiness.onMsg('search-result-expand', $scope, function(ev) {
 
-            vm.loadData = data;
+            vm.loadData = true;
             if(!vm.reloadValue){
                 redrawDataTable();
             }
@@ -58,7 +59,7 @@
             });
 
             commonBusiness.onMsg('-Clear', $scope, function(ev) {
-                clearSelection();
+                clearSelection();   
             });
         // }
 
@@ -96,7 +97,7 @@
         }
 
         function bookmarkNews() {
-            newsBusiness.bookmarkNewsArticle(vm.resultDetails, validate);
+            newsBusiness.bookmarkNewsArticle(vm.resultDetails, validate, vm.collapseSearch);
         }
 
         function actionHtml(data, type, full, meta) {
@@ -180,8 +181,6 @@
         // Server Data callback for pagination
         function serverData(sSource, aoData, fnCallback, oSettings) {
 
-            // $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = false;
-
             var draw = aoData[0].value;
             var columns = aoData[1].value;
             var start = aoData[3].value;
@@ -234,12 +233,7 @@
                             vm.resultDetails !== null ? vm.resultDetails : blankData
                     };
 
-
-                    // $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = true;
-                    
-                    vm.loadingValue = $scope.$parent.$parent.$parent.$parent.isprocesscomplete;
-
-                    commonBusiness.emitWithArgument('loadValue', vm.loadingValue);
+                    commonBusiness.emitMsg('load-search-result');
 
                     fnCallback(records);
                 });
@@ -257,7 +251,8 @@
         return {
             restrict: 'E',
             scope: {
-                searchName: '@'
+                searchName: '@',
+                collapseSearch : '@'
             },
             controller: 'msNewsSearchController',
             controllerAs: 'vm',

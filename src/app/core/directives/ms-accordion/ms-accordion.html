@@ -9,15 +9,15 @@
                 <md-icon md-menu-align-target md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
                 <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
             </md-button>
-            <md-button class="md-icon-button" aria-label="expand/collapse" ng-click="vm.collapse()" ng-if="isExpandable">
+            <md-button class="md-icon-button" aria-label="expand/collapse" ng-click="vm.loadSearchResult()" ng-if="isExpandable">
                 <md-tooltip md-direction="top"> {{(vm.collapsed)? 'Expand' : 'Collapse'}}</md-tooltip>
-                <md-icon md-font-icon="icon-backburger" ng-class="vm.collapsed ? 'ms-collapse' : 'ms-expand'"></md-icon>
+                <md-icon md-font-icon="icon-backburger" ng-class="vm.iscollapsed  ? 'ms-collapse' : 'ms-expand'"></md-icon>
             </md-button>
         </div>
     </div>
 </div>
 <md-divider></md-divider>
-<md-progress-linear class="md-warn" ng-show="vm.searchResult" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
-<md-content id="ms-accordion-content" class="md-whiteframe-1dp" ng-transclude ng-show="!vm.collapsed" layout-padding>
+<md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
+<md-content id="ms-accordion-content" class="md-whiteframe-1dp" ng-transclude ng-show="!vm.iscollapsed " layout-padding>
 
 </md-content>

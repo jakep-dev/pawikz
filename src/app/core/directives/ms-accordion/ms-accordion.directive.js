@@ -12,62 +12,63 @@
 
     function MsAccordionController($scope, $attrs, commonBusiness) {
         var vm = this;
-        var loadCount = 1;
 
-        vm.collapsed = $scope.initialCollapsed;
+        vm.iscollapsed = $scope.initialCollapsed;
         vm.isExpandable = $scope.isExpandable;
         vm.actions = $scope.actions;
         vm.titleClass = $scope.titlebg || 'md-amber-A200-bg';
-        vm.loadData = null;
-        vm.isProcessComplete = false;
-        vm.searchResult = false;
-
-        vm.collapse = collapse;
+        vm.isProcessComplete = true;
         vm.applyClickEvent = applyClickEvent;
+        vm.loadSearchResult = loadSearchResult;
 
         init();
 
-        commonBusiness.onMsg('collapsed', $scope, function(ev) {
-           if ($attrs.id === 'SearchResult') {
-                collapse();
-            }
+        if($scope.collapseSearchResult != null){
+            
+            commonBusiness.onMsg($scope.collapseSearchResult, $scope, function(ev) {
+                toggleCollapse();
+            });
+        }
+
+        commonBusiness.onMsg('load-search-result', $scope, function(ev) {
+           vm.isProcessComplete = true;
         });
 
         //Toggle the collapse
-        function collapse() {
+        function loadSearchResult() {
 
-            vm.collapsed = !vm.collapsed;
+            vm.iscollapsed  = !vm.iscollapsed ;
 
-            vm.isProcessComplete = true;
-            
-            if(!vm.collapsed){
-
-                vm.loadData = !vm.collapsed;
-
-                (loadCount <= 1 ) ? (vm.isProcessComplete = false) : (vm.isProcessComplete = true);
+            if(!vm.iscollapsed  && $scope.expandSearchResult != null){
                 
-                 commonBusiness.emitWithArgument('loadDataValue', vm.loadData);
-                 
-                 commonBusiness.onMsg('loadValue', $scope, function(data) {
-        
-                    vm.isProcessComplete = true;
-
-                     loadCount += 1;
-                });
+                vm.isProcessComplete = false;
+                commonBusiness.emitMsg('search-result-expand');
             }
+
+            doExpandOrCollapse();
         }
+
+        function toggleCollapse(){
+            vm.iscollapsed  = !vm.iscollapsed;
+        }
+
+        function doExpandOrCollapse(){
+            $scope.expandSearchResult = null;
+        }
+
 
         function init() {
             if (!vm.isExpandable) {
-                vm.collapse = false;
+                vm.iscollapsed  = false;
             }
 
-            if ($attrs.id === 'SearchResult') {
-                
-                vm.searchResult = true;
-                collapse();
+            if ($scope.collapseSearchResult != null) {   
+                vm.isProcessComplete = true;
+                toggleCollapse();
             }
         }
+
+
 
         function applyClickEvent(action, $mdOpenMenu, ev) {
             if (action) {
@@ -93,7 +94,9 @@
                 initialCollapsed: '=?collapsed',
                 titlebg: '@',
                 isExpandable: '=?',
-                actions: '='
+                actions: '=',
+                collapseSearchResult: '@',
+                expandSearchResult: '@'
             },
             controller: 'MsAccordionController',
             controllerAs: 'vm',
