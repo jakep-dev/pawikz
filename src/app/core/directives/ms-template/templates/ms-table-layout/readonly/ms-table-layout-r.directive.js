@@ -151,7 +151,7 @@
             var html = '';
             var columns = '';
 
-            angular.forEach(column, function(col)
+            _.each(column, function(col)
             {
                 if(col.TearSheetItem &&
                     col.TearSheetItem.Mnemonic)

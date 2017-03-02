@@ -15,6 +15,8 @@
 			if ($location.port != 80) {
 				socketCORSPath += ':' + $location.port();
 			}
+            console.log('socketCORSPath');
+            console.log(socketCORSPath);
 			clientConfig.socketInfo.socket = io.connect(socketCORSPath);
 		}
 
