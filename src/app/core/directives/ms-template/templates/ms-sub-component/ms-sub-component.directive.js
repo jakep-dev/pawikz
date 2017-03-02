@@ -30,8 +30,8 @@
         });
 
         commonBusiness.onMsg('IsPrintable', $scope, function() {
-            if (vm.isAvailableForPrint != null && commonBusiness.isPrintableAll !== vm.isAvailableForPrint) {
-                vm.printer(commonBusiness.isPrintableAll);
+            if (vm.isAvailableForPrint != null && commonBusiness.isPrintableAll === vm.isAvailableForPrint) {
+                vm.printer();
             }
         });
 
@@ -52,10 +52,11 @@
             }
         }
 
-        function printer(printableValue)
+        function printer()
         {
-            // vm.isAvailableForPrint = !vm.isAvailableForPrint;
-            vm.isAvailableForPrint = printableValue;
+
+            vm.isAvailableForPrint = !vm.isAvailableForPrint;
+            
             if(vm.isAvailableForPrint)
             {
                 toast.simpleToast('Section will show on pdf download');
