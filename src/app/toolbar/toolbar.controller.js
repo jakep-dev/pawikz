@@ -19,6 +19,7 @@
         vm.menuName = '';
         vm.companyId = null;
         vm.companyName = null;
+        vm.menuMode = '';
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
@@ -33,64 +34,39 @@
             promiseSetupListener = $interval(setupListeners, 1000);
         }
 
-        commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
-            vm.userName = data;
-        });
-
-        commonBusiness.onMsg('InjectMainMenu', $scope, function(ev, data) {
+        commonBusiness.onMsg('inject-main-menu', $scope, function(ev, data) {
             vm.menuIcon = data.menuIcon;
             vm.menuName = data.menuName;
+            vm.menuMode = data.menuMode;
             vm.companyId = data.companyId || null;
             vm.companyName = data.companyName || null;
         });
 
-        vm.selectedLanguage = {
-            'title'      : 'English',
-            'translation': 'TOOLBAR.ENGLISH',
-            'code'       : 'en',
-            'flag'       : 'gb'
-        };
 
-        // Data
-        $rootScope.global = {
-            search: ''
-        };
-
-        vm.languages = [
-            {
-                'title'      : 'English',
-                'translation': 'TOOLBAR.ENGLISH',
-                'code'       : 'en',
-                'flag'       : 'gb'
-            },
-            {
-                'title'      : 'Spanish',
-                'translation': 'TOOLBAR.SPANISH',
-                'code'       : 'es',
-                'flag'       : 'es'
-            }
-        ];
 
 
         // Methods
         vm.toggleSidenav = toggleSidenav;
         vm.toggleNavigationSidenavFold = toggleNavigationSidenavFold;
-        vm.logout = logout;
-        vm.setUserStatus = setUserStatus;
-        vm.changeLanguage = changeLanguage;
-        vm.executeMenuAction = executeMenuAction;
-        vm.checkForParentFunction = checkForParentFunction;
+        vm.dashboardReload = dashboardReload;
+        vm.saveAllProjectOverview = saveAllProjectOverview;
+        vm.flipProjectOverView = flipProjectOverView;
+        vm.toggleExpandProjectOverview = toggleExpandProjectOverview;
+        vm.flipSelectionOverview = flipSelectionOverview;
+        vm.pdfDownload = pdfDownload;
+        vm.renew = renew;
 
-        function checkForParentFunction(){
-            console.log('Hey toolbar controller');
-        }
+        vm.previousStep = previousStep;
+        vm.nextStep = nextStep;
+        vm.stepSaveAll = stepSaveAll;
+        vm.printableAll = printableAll;
+        vm.stepToggleExpand = stepToggleExpand;
 
         function setupListeners() {
             var userDetails = store.get('user-info');
 
             if (userDetails) {
                 vm.userName = userDetails.fullName;
-                console.log('[setupListeners]Start background listeners with userDetails.userId. [' + userDetails.userId + ']');
                 notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
                 notificationBusiness.listenToWorkUpStatus(userDetails.userId);
                 notificationBusiness.listenToRenewStatus(userDetails.userId);
@@ -100,8 +76,63 @@
             }
         }
 
-        function executeMenuAction(name, data){
-            commonBusiness.emitWithArgument(name, data);
+        vm.isPrintableAll = false;
+        vm.isStepExpanded = false;
+        function stepToggleExpand(){
+            vm.isStepExpanded = !vm.isStepExpanded;
+            commonBusiness.emitMsg('step-toogle-expand');
+        }
+
+        function printableAll(){
+            vm.isPrintableAll = !vm.isPrintableAll;
+            commonBusiness.emitMsg('step-print-all');
+        }
+
+        function stepSaveAll(){
+            commonBusiness.emitMsg('step-save-all');
+        }
+
+        function previousStep(){
+            commonBusiness.emitMsg('prev-step');
+        }
+
+        function nextStep(){
+            commonBusiness.emitMsg('next-step');
+        }
+
+        function dashboardReload(){
+            commonBusiness.emitMsg('dashboard-reload');
+        }
+
+        vm.isStepTabletMode = false;
+        vm.isProjectOverviewExpanded = false;
+        vm.isProjectOverviewAllSelected = false;
+        function saveAllProjectOverview(){
+            commonBusiness.emitMsg('project-overview-save-all');
+        }
+
+        function flipProjectOverView(){
+            vm.isStepTabletMode = !vm.isStepTabletMode;
+            commonBusiness.emitMsg('project-overview-flip');
+        }
+
+        function toggleExpandProjectOverview(){
+            vm.isProjectOverviewExpanded = !vm.isProjectOverviewExpanded;
+            commonBusiness.emitMsg('project-overview-toggle-expand');
+        }
+
+        function flipSelectionOverview(){
+            vm.isProjectOverviewAllSelected = !vm.isProjectOverviewAllSelected;
+            commonBusiness.emitMsg('project-overview-flip-selection');
+        }
+
+        function pdfDownload(){
+            console.log('emit pdf download')
+            commonBusiness.emitMsg('pdf-download');
+        }
+
+        function renew(){
+            commonBusiness.emitMsg('project-renew');
         }
 
         /**
@@ -122,35 +153,6 @@
             event.preventDefault();
 
             msNavFoldService.toggleFold();
-        }
-
-        /**
-         * Sets User Status
-         * @param status
-         */
-        function setUserStatus(status)
-        {
-            vm.userStatus = status;
-        }
-
-        /**
-         * Logout Function
-         * Remove the stored token and navigate to login page
-         */
-        function logout()
-        {
-            authBusiness.logOut();
-        }
-
-        /**
-         * Change Language
-         */
-        function changeLanguage(lang)
-        {
-            vm.selectedLanguage = lang;
-            //Change the language
-            $translate.use(lang.code);
-            toast.simpleToast('Language changed to ' + lang.title + '!');
         }
     }
 

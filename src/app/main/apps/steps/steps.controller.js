@@ -40,11 +40,10 @@
         defineMenuActions();
 
         function defineMenuActions(){
-            console.log(commonBusiness.companyId);
-            console.log(commonBusiness.companyName);
-            commonBusiness.emitWithArgument("InjectMainMenu", {
+            commonBusiness.emitWithArgument("inject-main-menu", {
                 menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
                 menuIcon: 'icon-view-module',
+                menuMode: 'Steps',
                 companyId: commonBusiness.companyId,
                 companyName: commonBusiness.companyName
             });
@@ -98,7 +97,7 @@
             {
                 if(response)
                 {
-                    angular.forEach(response, function(data)
+                    _.each(response, function(data)
                     {
                        if(data.list)
                        {
@@ -111,7 +110,7 @@
                            commonBusiness.companyName = data.templateOverview.companyName;
                            commonBusiness.projectName = data.templateOverview.projectName;
                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
-                           angular.forEach(data.templateOverview.steps, function(step)
+                           _.each(data.templateOverview.steps, function(step)
                            {
                                navConfig.sideNavItems.push({
                                    stepName: step.stepName,

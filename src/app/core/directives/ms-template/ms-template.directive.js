@@ -21,6 +21,38 @@
         vm.previousStep = previousStep;
         vm.nextStep = nextStep;
 
+        defineMenuActions();
+
+        function defineMenuActions(){
+            commonBusiness.onMsg("step-save-all", $scope, function(){
+                saveAll();
+            });
+
+            commonBusiness.onMsg("prev-step", $scope, function(){
+                previousStep();
+            });
+
+            commonBusiness.onMsg("next-step", $scope, function(){
+                nextStep();
+            });
+
+            commonBusiness.onMsg("step-print-all", $scope, function(){
+                printableAll();
+            });
+
+            commonBusiness.onMsg("step-toogle-expand", $scope, function(){
+                toggleExpand();
+            });
+
+            commonBusiness.onMsg("project-renew", $scope, function(){
+                renew();
+            });
+
+            commonBusiness.onMsg("pdf-download", $scope, function(){
+                pdfDownload();
+            });
+        }
+
         //Move to the previous step
         function previousStep() {
             if (overviewBusiness.templateOverview &&

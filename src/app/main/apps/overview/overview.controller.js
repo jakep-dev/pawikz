@@ -67,9 +67,35 @@
         }
 
         function defineMenuActions(){
-            commonBusiness.emitWithArgument("InjectMainMenu", {
+            commonBusiness.emitWithArgument("inject-main-menu", {
                 menuName: 'Work-up Overview',
-                menuIcon: 'icon-view-agenda'
+                menuIcon: 'icon-view-agenda',
+                menuMode: 'ProjectOverview'
+            });
+
+
+            commonBusiness.onMsg("project-overview-save-all", $scope, function(){
+                saveAll();
+            });
+
+            commonBusiness.onMsg("project-overview-flip", $scope, function(){
+                    flipStepView();
+            });
+
+            commonBusiness.onMsg("project-overview-toggle-expand", $scope, function(){
+                    toggleExpand();
+            });
+
+            commonBusiness.onMsg("project-overview-flip-selection", $scope, function(){
+                    flipSelectionView();
+            });
+
+            commonBusiness.onMsg("pdf-download", $scope, function(){
+                    pdfDownload();
+            });
+
+            commonBusiness.onMsg("project-renew", $scope, function(){
+                renew(vm.projectId);
             });
         }
 

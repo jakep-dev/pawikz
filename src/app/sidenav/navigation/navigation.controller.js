@@ -7,12 +7,12 @@
         .controller('NavigationController', NavigationController);
 
     /** @ngInject */
-    function NavigationController(navConfig)
+    function NavigationController($scope, navConfig, commonBusiness)
     {
         var vm = this;
 
         navConfig.sideNavItems = [];
-
+        vm.userName = '';
         vm.sideNavItems = navConfig.sideNavItems;
 
         // Data
@@ -20,6 +20,9 @@
             suppressScrollX: true
         };
 
+        commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
+            vm.userName = data;
+        });
 
     }
 
