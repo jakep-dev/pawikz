@@ -13,9 +13,14 @@
     <div flex layout="row" layout-align="space-between center" style="padding-left: 5px;">
        <div layout="row" layout-align="space-around center">
            <i class="{{vm.menuIcon}}"></i>
-           <div  class="ms-menu-label" show-xs hide-gt-xs style="width: 9em; padding-left: 5px">{{vm.menuName}}</div>
-           <div hide-xs show-gt-xs style="padding-left: 5px">{{vm.menuName}}</div>
+           <div  class="ms-menu-label" hide-gt-xs style="width: 9em; padding-left: 5px">{{vm.menuName}}</div>
+           <div hide-xs  style="padding-left: 5px">{{vm.menuName}}</div>
        </div>
+        <div ng-if="vm.companyId !== null" hide-xs layout="row" layout-align="start center" style="font-size: 0.6em; padding-left: 5px;">
+            <div style="padding-right: 5px">Company Id: {{ " " + vm.companyId}}</div>
+            <div>|</div>
+            <div style="padding-left: 5px">Company Name: {{" " + vm.companyName }}</div>
+        </div>
         <div>
             <md-menu ng-if="vm.menuMode === 'Dashboard'" md-position-mode="target-right target">
                 <md-button aria-label="more" class="md-icon-button"

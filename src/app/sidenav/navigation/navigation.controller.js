@@ -7,7 +7,7 @@
         .controller('NavigationController', NavigationController);
 
     /** @ngInject */
-    function NavigationController($scope, navConfig, commonBusiness)
+    function NavigationController($scope, store, navConfig, commonBusiness)
     {
         var vm = this;
 
@@ -20,9 +20,11 @@
             suppressScrollX: true
         };
 
-        commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
-            vm.userName = data;
-        });
+        var userDetails = store.get('user-info');
+
+        if(userDetails){
+            vm.userName = userDetails.fullName;
+        }
 
     }
 

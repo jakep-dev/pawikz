@@ -37,8 +37,6 @@
         commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
-        defineMenuActions();
-
         function defineMenuActions(){
             commonBusiness.emitWithArgument("inject-main-menu", {
                 menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
@@ -119,7 +117,7 @@
                                });
                            });
 
-                           defineBottomSheet();
+                           defineMenuActions();
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
