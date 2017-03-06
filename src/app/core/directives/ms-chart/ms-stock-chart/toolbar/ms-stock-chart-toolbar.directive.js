@@ -377,6 +377,7 @@
                         vm.filterState.selectedIndices.push(value);
                     } else if (item.type === 'Peer') {
                         vm.filterState.selectedPeers.push(value);
+                        vm.filterState.selectedPeerNames.push(item.display);
                     }
                 }
 
@@ -398,6 +399,7 @@
         function clear() {
             vm.filterState.selectedIndices = [];
             vm.filterState.selectedPeers = [];
+            vm.filterState.selectedPeerNames = [];
             vm.filterState.selectedCompetitors = [];
 
             vm.selectedPeerIndustries = [];
