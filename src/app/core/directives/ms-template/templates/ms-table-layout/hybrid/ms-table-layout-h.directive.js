@@ -871,7 +871,10 @@
 
         function defineHybridLink(scope, el, attrs)
         {
-            var dataTableId = scope.itemid;
+			//disable excel download in ms-componenet
+        	scope.$parent.$parent.vm.isExcelDownloadable = false;
+            
+			var dataTableId = scope.itemid;
             /*if(scope.tearsheet.columns.length > 0)
             {*/
                 scope.$parent.$parent.isprocesscomplete = false;

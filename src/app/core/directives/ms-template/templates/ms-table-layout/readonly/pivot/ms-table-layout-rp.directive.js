@@ -46,6 +46,8 @@
                         }
                         else {
                             $scope.subMnemonics = templateBusiness.getTableLayoutSubMnemonics($scope.itemid, $scope.mnemonicid);
+                            templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, $scope.mnemonicid, $scope.itemid, data, $scope.subMnemonics);
+                            
                             _.each(data, function(dataRow)
                             {
                                 html += getBodyDetails($scope.tearsheet.columns, dataRow, $scope);
