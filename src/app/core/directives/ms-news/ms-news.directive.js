@@ -12,6 +12,8 @@
         vm.actions = [];
         vm.title = $scope.title;
         vm.searchName = $scope.searchName;
+        vm.expandEvent = "expand";
+        vm.collapseEvent = "collapse";
 
         defineAction();
 

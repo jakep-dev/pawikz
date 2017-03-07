@@ -10,29 +10,65 @@
         .directive('msAccordion', msAccordionDirective)
 
 
-    function MsAccordionController($scope, commonBusiness) {
+    function MsAccordionController($scope, $attrs, commonBusiness) {
         var vm = this;
 
-        vm.collapsed = $scope.initialCollapsed;
+        vm.iscollapsed = $scope.initialCollapsed;
         vm.isExpandable = $scope.isExpandable;
         vm.actions = $scope.actions;
         vm.titleClass = $scope.titlebg || 'md-amber-A200-bg';
-
-        vm.collapse = collapse;
+        vm.isProcessComplete = true;
         vm.applyClickEvent = applyClickEvent;
+        vm.loadSearchResult = loadSearchResult;
 
         init();
 
-        //Toggle the collapse
-        function collapse() {
-            vm.collapsed = !vm.collapsed;
+        if($scope.collapseSearchResult != null){
+            
+            commonBusiness.onMsg($scope.collapseSearchResult, $scope, function(ev) {
+                toggleCollapse();
+            });
         }
+
+        commonBusiness.onMsg('load-search-result', $scope, function(ev) {
+           vm.isProcessComplete = true;
+        });
+
+        //Toggle the collapse
+        function loadSearchResult() {
+
+            vm.iscollapsed  = !vm.iscollapsed ;
+
+            if(!vm.iscollapsed  && $scope.expandSearchResult != null){
+                
+                vm.isProcessComplete = false;
+                commonBusiness.emitMsg('search-result-expand');
+            }
+
+            doExpandOrCollapse();
+        }
+
+        function toggleCollapse(){
+            vm.iscollapsed  = !vm.iscollapsed;
+        }
+
+        function doExpandOrCollapse(){
+            $scope.expandSearchResult = null;
+        }
+
 
         function init() {
             if (!vm.isExpandable) {
-                vm.collapse = false;
+                vm.iscollapsed  = false;
+            }
+
+            if ($scope.collapseSearchResult != null) {   
+                vm.isProcessComplete = true;
+                toggleCollapse();
             }
         }
+
+
 
         function applyClickEvent(action, $mdOpenMenu, ev) {
             if (action) {
@@ -58,7 +94,9 @@
                 initialCollapsed: '=?collapsed',
                 titlebg: '@',
                 isExpandable: '=?',
-                actions: '='
+                actions: '=',
+                collapseSearchResult: '@',
+                expandSearchResult: '@'
             },
             controller: 'MsAccordionController',
             controllerAs: 'vm',

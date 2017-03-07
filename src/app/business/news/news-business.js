@@ -45,23 +45,22 @@
                     null, {
                         ok: {
                             name: 'ok',
-                            callBack: function() {}
+                            callBack: function() {
+                                dialog.close();
+                            }
                         }
                     }, '', null, null);
-                dialog.close();
             }
         }
 
-        function bookmarkNewsArticle(scope, validation) {
+        function bookmarkNewsArticle(scope, validation, collapseSearch) {
             if (validation) {
                 dialog.confirm('Bookmark News', 'Are you sure you want to include the full text of the checked article(s) in your work-up?', null, {
                     ok: {
                         name: 'yes',
                         callBack: function() {
 
-                            // toggleCollapse();
-
-                            // commonBusiness.emitMsg('-Collapsed');
+                            commonBusiness.emitMsg(collapseSearch);
 
                             var selectAttachment = [];
                             _.each(scope, function(article) {

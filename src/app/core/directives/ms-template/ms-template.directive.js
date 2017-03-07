@@ -248,9 +248,10 @@
 
                                 case 'AdvisenNewsSearch':
                                     var newScope = scope.$new();
-                                    var html = '<div layout-padding>';
+                                    newScope.isprocesscomplete = true;
+                                    var html = '';
                                     var searchName = renderContent.SearchName || '';
-                                    html += '<ms-news title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '"></ms-news>';
+                                    html += '<ms-news title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '" isprocesscomplete="isprocesscomplete"></ms-news>';
                                     html += '</div>';
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
