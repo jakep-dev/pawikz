@@ -351,6 +351,7 @@
                                         filterState.dividends = false;
                                         filterState.selectedIndices = [];
                                         filterState.selectedPeers = [];
+                                        filterState.selectedPeerNames = [];
                                         filterState.selectedCompetitors = [];
                                     };
 
@@ -378,6 +379,7 @@
                                                 selectedChart.filterState.dividends = matchingChart.filterState.dividends;
                                                 selectedChart.filterState.selectedIndices = angular.copy(matchingChart.filterState.selectedIndices);
                                                 selectedChart.filterState.selectedPeers = angular.copy(matchingChart.filterState.selectedPeers);
+                                                selectedChart.filterState.selectedPeerNames = angular.copy(matchingChart.filterState.selectedPeerNames);
                                                 selectedChart.filterState.selectedCompetitors = angular.copy(matchingChart.filterState.selectedCompetitors);
                                                 selectedChart.title = matchingChart.title;
                                                 selectedChart.tableInfo = angular.copy(matchingChart.tableInfo);
