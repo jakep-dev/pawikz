@@ -25,6 +25,7 @@
             isExpandAll: false,
             componentStatus: [],
             components: [],
+            summationMnemonics: [],
             remainingComponentCount: 0,
             save: save,
             saveTable: saveTable,
@@ -89,7 +90,9 @@
             updateProgramTableMnemonics: updateProgramTableMnemonics,
             getNewsHeader: getNewsHeader,
             updateTableLayoutMnemonics: updateTableLayoutMnemonics,
-            componentExcelDownload: componentExcelDownload
+            componentExcelDownload: componentExcelDownload,
+            updateSummationMnemonics: updateSummationMnemonics,
+            summation: summation
         };
 
         return business;
@@ -2015,6 +2018,48 @@
             }
 
             return excelRow;
+        }
+
+        //maintain a business variable for all fields that has fieldId for summation
+        //including its fieldId for total field (outputFieldId)
+        function updateSummationMnemonics(fieldId, itemId, value, outputFieldId)
+        {
+            if((fieldId !== 'undefined') && (itemId !== 'undefined')) 
+            {
+                var mnemonic = _.find(business.summationMnemonics, {fieldId: fieldId, itemId: itemId});
+
+                if(angular.isUndefined(mnemonic))
+                {
+                    business.summationMnemonics.push({
+                        fieldId: fieldId,
+                        itemId: itemId,
+                        value: value,                        
+                        outputFieldId: outputFieldId
+                    }); 
+                } else {
+                    mnemonic.value = value;
+                }
+            }
+        }
+
+        //sum all fieldId
+        //update total field using emit
+        function summation(fieldId, itemId){
+            var summationValue = 0;
+            var mnemonic = _.find(business.summationMnemonics, {fieldId: fieldId, itemId: itemId});
+
+            if(mnemonic && mnemonic.outputFieldId)
+            {
+                angular.forEach(business.summationMnemonics, function(each) {
+                    if(each.fieldId === fieldId && each.value)
+                    {
+                        summationValue += parseInt(each.value);
+                    }
+                });
+
+                commonBusiness.emitWithArgument('fieldId_' + mnemonic.outputFieldId, summationValue);    
+            }
+            
         }
 
         //Cancel the auto-save promise.
