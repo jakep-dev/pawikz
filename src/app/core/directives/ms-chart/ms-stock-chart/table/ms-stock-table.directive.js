@@ -151,7 +151,7 @@
                             .withOption('info', true)
                             .withOption('responsive', true)
                             .withPaginationType('full')
-                            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
             var sortedColumn = 0;
             switch($scope.table.source.value)

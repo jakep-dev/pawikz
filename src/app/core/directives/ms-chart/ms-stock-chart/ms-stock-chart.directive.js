@@ -6,12 +6,11 @@
            .directive('msStockChart', msStockChartDirective);
 
 
-    function msStockChartController($scope,stockService, commonBusiness, templateBusinessFormat, store) {
+    function msStockChartController($scope, stockService, commonBusiness, templateBusinessFormat) {
         var vm = this;
         vm.selectedIndex ="";
         vm.searchVal = '';
         vm.searchedStocks = [];
-        vm.selectedStockCount = 1;
         vm.companyId = commonBusiness.companyId;
 
         //for stock table variables
@@ -21,12 +20,8 @@
 
         vm.onFilterStateUpdate = function() {
             loadChartData();
+            vm.onChartSave();
         };
-
-        $scope.$on('filterSateUpdate', function(event) {
-            $scope.$broadcast('resetEvents');
-            loadChartData();
-        });
 
         $scope.$watch('vm.selectedSources + vm.selectedRange + vm.selectedDate', function (newValue, oldValue) {
             if(newValue !== oldValue){
@@ -80,28 +75,331 @@
             vm.fetchChartData(stockString, periodValue, splitsValue, earningsValue, dividendsValue, start_date, end_date, vm.companyId);
         }
 
+        function groupChartData(data) {
+            var value;
+            var datasets = new Array();
+            var seriesSet = new Array();
+            var i;
+            var n;
+            var primaryChartDataItem;
+            var stockNames = new Array();
+            var stockNameArr = new Array();
+            var currentObj;
+            var dateValue;
+            var dateList = new Array();
+            var dateArr = new Array();
+            var currentList;
+            var valueObject;
+            var peerDataItem;
+            var mainTicker;
+            var volumeArr = new Array();
+            var volumeSetArr = new Array();
+            var dividendsList = new Array();
+            var earningsList = new Array();
+            var splitsList = new Array();
+
+            var datasetArr = [];
+            var outArr = [];
+            var firstChartTitle;
+
+            if (data) {
+                if (data.stockChartPrimaryData && Array.isArray(data.stockChartPrimaryData)) {
+                    n = data.stockChartPrimaryData.length;
+                    if (n > 0) {
+                        for (i = 0; i < n; i++) {
+                            primaryChartDataItem = data.stockChartPrimaryData[i];
+                            if (primaryChartDataItem) {
+                                if (primaryChartDataItem.ticker) {
+                                    if (!stockNames[primaryChartDataItem.ticker]) {
+                                        currentObj = new Object();
+                                        currentObj._count = 1;
+                                        currentObj.data = new Array();
+                                        stockNames[primaryChartDataItem.ticker] = currentObj;
+                                        mainTicker = primaryChartDataItem.ticker;
+                                        stockNameArr.push(primaryChartDataItem.ticker);
+                                    } else {
+                                        currentObj = stockNames[primaryChartDataItem.ticker];
+                                        currentObj._count = currentObj._count + 1;
+                                    }
+                                }
+                                if (primaryChartDataItem.dataDate) {
+                                    dateValue = primaryChartDataItem.dataDate.substring(0, 10);
+                                    valueObject = new Object();
+                                    valueObject.priceClose = parseFloat(primaryChartDataItem.priceClose);
+                                    valueObject.percentChange = parseFloat(primaryChartDataItem.percentChange);
+                                    valueObject.securityCode = primaryChartDataItem.securityCode;
+                                    valueObject.priceOpen = parseFloat(primaryChartDataItem.priceOpen);
+                                    valueObject.priceHigh = parseFloat(primaryChartDataItem.priceHigh);
+                                    valueObject.priceLow = parseFloat(primaryChartDataItem.priceLow);
+                                    valueObject.volume = parseFloat(primaryChartDataItem.volume);
+                                    valueObject.currency = primaryChartDataItem.currency;
+
+                                    if (!dateList[dateValue]) {
+                                        dateArr.push(dateValue);
+                                        currentList = new Array();
+                                        currentList[primaryChartDataItem.ticker] = valueObject;
+                                        dateList[dateValue] = currentList;
+                                    } else {
+                                        currentList = dateList[dateValue];
+                                        if (primaryChartDataItem.ticker) {
+                                            if (!currentList[primaryChartDataItem.ticker]) {
+                                                currentList[primaryChartDataItem.ticker] = valueObject;
+                                            } else {
+                                                console.log('Duplicate chart value for the same ticker and dataDate.[' + dateValue + ',' + primaryChartDataItem.ticker + ']');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (data.stockChartPeerData && Array.isArray(data.stockChartPeerData)) {
+                    n = data.stockChartPeerData.length;
+                    if (n > 0) {
+                        for (i = 0; i < n; i++) {
+                            peerDataItem = data.stockChartPeerData[i];
+                            if (peerDataItem) {
+                                if (peerDataItem.ticker) {
+                                    if (!stockNames[peerDataItem.ticker]) {
+                                        currentObj = new Object();
+                                        currentObj._count = 1;
+                                        currentObj.data = new Array();
+                                        stockNames[peerDataItem.ticker] = currentObj;
+                                        stockNameArr.push(peerDataItem.ticker);
+                                    } else {
+                                        currentObj = stockNames[peerDataItem.ticker];
+                                        currentObj._count = currentObj._count + 1;
+                                    }
+                                }
+                                if (peerDataItem.dataDate) {
+                                    dateValue = peerDataItem.dataDate.substring(0, 10);
+                                    valueObject = new Object();
+                                    valueObject.priceClose = parseFloat(peerDataItem.priceClose);
+                                    valueObject.percentChange = parseFloat(peerDataItem.percentChange);
+
+                                    if (!dateList[dateValue]) {
+                                        dateArr.push(dateValue);
+                                        currentList = new Array();
+                                        currentList[peerDataItem.ticker] = valueObject;
+                                        dateList[dateValue] = currentList;
+                                    } else {
+                                        currentList = dateList[dateValue];
+                                        if (peerDataItem.ticker) {
+                                            if (!currentList[peerDataItem.ticker]) {
+                                                currentList[peerDataItem.ticker] = valueObject;
+                                            } else {
+                                                console.log('Duplicate chart value for the same ticker and dataDate.[' + dateValue + ',' + peerDataItem.ticker + ']');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (data.dividends && Array.isArray(data.dividends)) {
+                    n = data.dividends.length;
+                    for (i = 0; i < n; i++) {
+                        if (data.dividends[i] && data.dividends[i].dataDate) {
+                            dateValue = data.dividends[i].dataDate.substring(0, 10);
+                            dividendsList[dateValue] = {
+                                value: data.dividends[i].value,
+                                valueInUsd: data.dividends[i].valueInUsd
+                            };
+                            if (!dateList[dateValue]) {
+                                console.log('Can\'t find data point for dividend that happen on ' + dateValue + ' with value = ' + dividendsList[dateValue].value);
+                            }
+                        }
+                    }
+                }
+                if (data.earnings && Array.isArray(data.earnings)) {
+                    n = data.earnings.length;
+                    for (i = 0; i < n; i++) {
+                        if (data.earnings[i] && data.earnings[i].dataDate) {
+                            dateValue = data.earnings[i].dataDate.substring(0, 10);
+                            earningsList[dateValue] = {
+                                value: data.earnings[i].value,
+                                valueInUsd: data.earnings[i].valueInUsd
+                            };
+                            if (!dateList[dateValue]) {
+                                console.log('Can\'t find data point for earnings that happen on ' + dateValue + ' with value = ' + earningsList[dateValue].value);
+                            }
+                        }
+                    }
+                }
+                if (data.splits && Array.isArray(data.splits)) {
+                    n = data.splits.length;
+                    for (i = 0; i < n; i++) {
+                        if (data.splits[i] && data.splits[i].dataDate) {
+                            dateValue = data.splits[i].dataDate.substring(0, 10);
+                            splitsList[dateValue] = {
+                                value: data.splits[i].value,
+                                valueInUsd: data.splits[i].valueInUsd
+                            };
+                            if (!dateList[dateValue]) {
+                                console.log('Can\'t find data point for split that happen on ' + dateValue + ' with value = ' + splitsList[dateValue].value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (data && data.stockChartPrimaryData && Array.isArray(data.stockChartPrimaryData) && (data.stockChartPrimaryData.length > 0)) {
+                dateArr.sort();
+                dateArr.forEach(function (dataDate) {
+                    currentList = dateList[dataDate];
+                    stockNameArr.forEach(function (ticker) {
+                        currentObj = stockNames[ticker];
+                        valueObject = currentList[ticker];
+                        if (valueObject) {
+                            if (stockNameArr.length > 1) {
+                                value = valueObject.percentChange
+                            } else {
+                                value = valueObject.priceClose
+                            }
+                            if (ticker === mainTicker) {
+                                volumeArr.push(valueObject.volume);
+                                if (dividendsList[dataDate]) {
+                                    currentObj.data.push({
+                                        y: value,
+                                        marker: {
+                                            enabled: true,
+                                            symbol: 'url(../assets/icons/images/Stock_Dividend.jpg)'
+                                        }
+                                    });
+                                } else if (earningsList[dataDate]) {
+                                    currentObj.data.push({
+                                        y: value,
+                                        marker: {
+                                            enabled: true,
+                                            symbol: 'url(../assets/icons/images/Stock_Earnings.jpg)'
+                                        }
+                                    });
+                                } else if (splitsList[dataDate]) {
+                                    currentObj.data.push({
+                                        y: value,
+                                        marker: {
+                                            enabled: true,
+                                            symbol: 'url(../assets/icons/images/Stock_Split.jpg)'
+                                        }
+                                    });
+                                } else {
+                                    currentObj.data.push(value);
+                                }
+                            } else {
+                                currentObj.data.push(value);
+                            }
+                        } else {
+                            console.log('Missing ' + ticker + ' value for datadate ' + dataDate);
+                            currentObj.data.push(null);
+                            if (ticker === mainTicker) {
+                                volumeArr.push(null);
+                            }
+                        }
+                    });
+                });
+
+                stockNameArr.forEach(function (ticker) {
+                    currentObj = stockNames[ticker];
+                    datasets.push({
+                        name: ticker,
+                        data: currentObj.data,
+                        type: "spline",
+                        valueDecimals: 1
+                    });
+                    seriesSet.push({
+                        data: currentObj.data,
+                        connectNulls: true,
+                        name: ticker
+                    });
+                });
+
+                if (stockNameArr.length > 1) {
+                    firstChartTitle = 'Percent Change';
+                } else {
+                    firstChartTitle = 'Price';
+                }
+
+                datasetArr[datasetArr.length] = {
+                    name: "",
+                    type: "spline",
+                    series: seriesSet,
+                    data: datasets,
+                    xaxisTitle: "",
+                    yaxisTitle: firstChartTitle,
+                    showlegend: true,
+                    showxaxisLabel: false,
+                    showtooltip: true,
+                    spacingTop: 30,
+                    valueDecimals: 1
+                };
+
+                volumeSetArr[volumeSetArr.length] = {
+                    data: volumeArr
+                };
+
+                datasetArr[datasetArr.length] = {
+                    name: '',
+                    type: 'column',
+                    series: volumeSetArr,
+                    data: volumeArr,
+                    xaxisTitle: '',
+                    yaxisTitle: 'Volume (Millions)',
+                    showlegend: false,
+                    showxaxisLabel: true,
+                    showtooltip: false,
+                    spacingTop: 7,
+                    valueDecimals: 0
+                };
+            } else {
+                datasetArr[datasetArr.length] = {
+                    "name": "",
+                    "type": "spline",
+                    "series": [],
+                    "data": [],
+                    "xaxisTitle": "",
+                    "yaxisTitle": "",
+                    "showlegend": false,
+                    "showxaxisLabel": false,
+                    "showtooltip": false,
+                    "spacingTop": 30,
+                    "xAxis": {
+                        labels: {
+                            step: 3
+                        }
+                    },
+                    "valueDecimals": 1
+                };
+            }
+
+            outArr[outArr.length] = {
+                xData: dateArr,
+                datasets: datasetArr
+            };
+
+            return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
+        }
+
         function convServiceResptoChartFormat(data) {
+            var xdataArr = [];
+            var datasetArr = [];
+            var outArr = [];
+
             var results = data;
-            if (results && results.stockChartPrimaryData) {
-                var outArr = [];
-                var xdataArr = [];
-                var datasetArr = [];
+            if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0) {
                 var firstDatasetArr = [];
                 var secondDatasetArr = [];
-                var firstchartSerArr = [];
                 var seriesByVolumes = {};
                 var seriesByTickers = {};
                 var secondchartSerArr = [];
-                var primarTickerName = '';
                 var firstChartTitle = 'Price';
                 var peerData = null;
                 var lengthDiff = false;
 
-                if (results && results.stockChartPrimaryData && results.stockChartPrimaryData.length > 0) {
-                    primarTickerName = results.stockChartPrimaryData[0].ticker;
-                }
+                var primarTickerName = results.stockChartPrimaryData[0].ticker;
 
-                if (results.stockChartPeerData && results.stockChartPeerData.length) {
+                if (results.stockChartPeerData && results.stockChartPeerData.length > 0) {
                     peerData = results.stockChartPeerData;
                     if (results.stockChartPeerData.length > 0) {
                         lengthDiff = true;
@@ -118,7 +416,7 @@
                     var applyEarning = false;
                     var applySplit = false;
 
-                    xdataArr[xdataArr.length] = stock.dataDate.substring(0, 10);
+                    xdataArr[xdataArr.length] = Date.parse(stock.dataDate.substring(0, 10));
                     firstDatasetArr[firstDatasetArr.length] = parseFloat((peerData && lengthDiff) ? stock.percentChange : stock.priceClose);
                     secondDatasetArr[secondDatasetArr.length] = parseFloat(stock.volume);
 
@@ -229,12 +527,11 @@
 
                 datasetArr[datasetArr.length] = {
                     "name": "",
-                    "yaxisTitle": firstChartTitle,
-                    "xaxisTitle": "",
+                    "type": "spline",
                     "series": seriesSet,
                     "data": dataSet,
-                    "type": "spline",
-                    "valueDecimals": 1,
+                    "xaxisTitle": "",
+                    "yaxisTitle": firstChartTitle,
                     "showlegend": true,
                     "showxaxisLabel": false,
                     "showtooltip": true,
@@ -243,7 +540,8 @@
                         labels: {
                             step:3
                         }
-                    }
+                    },
+                    "valueDecimals": 1
                 };
 
                 secondchartSerArr[secondchartSerArr.length] = {
@@ -255,83 +553,104 @@
 
                 datasetArr[datasetArr.length] = {
                     "name": "",
-                    "yaxisTitle": "Volume (Millions)",
-                    "xaxisTitle": "",
+                    "type": "column",
                     "series": secondchartSerArr,
                     "data": secondDatasetArr,
-                    "type": "column",
-                    "valueDecimals": 0,
+                    "xaxisTitle": "",
+                    "yaxisTitle": "Volume (Millions)",
                     "showlegend": false,
                     "showxaxisLabel": true,
                     "showtooltip": false,
-                    "spacingTop": 7
+                    "spacingTop": 7,
+                    "valueDecimals": 0
                 };
-
-                outArr[outArr.length] = {
-                    "xData": xdataArr,
-                    "datasets": datasetArr
+            } else {
+                datasetArr[datasetArr.length] = {
+                    "name": "",
+                    "type": "spline",
+                    "series": [],
+                    "data": [],
+                    "xaxisTitle": "",
+                    "yaxisTitle": "",
+                    "showlegend": false,
+                    "showxaxisLabel": false,
+                    "showtooltip": false,
+                    "spacingTop": 30,
+                    "xAxis": {
+                        labels: {
+                            step:3
+                        }
+                    },
+                    "valueDecimals": 1
                 };
-
-                return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
             }
+
+            outArr[outArr.length] = {
+                "xData": xdataArr,
+                "datasets": datasetArr
+            };
+
+            return JSON.stringify(outArr).slice(1, -1) + '|' + JSON.stringify(data);
         }
 
         vm.fetchChartData = function(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId) {
-            stockService
-            .stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId, store.inMemoryCache['user-info'].token)
+            stockService.stockData(stockString, selectedPeriod, splits, earnings, dividends, start_date, end_date, companyId)
             .then(function(data) {
-                //@todo call logic for remove legend item on empty series data
-                $scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
-                vm.stockDataSet = convServiceResptoChartFormat(data);
-                if (data.stockChartPeerData && data.stockChartPeerData.length) {
-                    vm.selectedStockCount = data.stockChartPeerData.length / data.stockChartPrimaryData.length;
+                if (data && data.stockChartPrimaryData && data.stockChartPrimaryData.length > 0) {
+                    //@todo call logic for remove legend item on empty series data
+                    $scope.$emit('ticker', { 'ticker': data.stockChartPrimaryData[0].ticker });
                 }
+                vm.stockDataSet = groupChartData(data);
+                //vm.stockDataSet = convServiceResptoChartFormat(data);
             });
         };
 
         loadChartData();   
 
         vm.onPeerRemove = function(peer) {
-            var index;
-            vm.filterState.selectedIndices.some(function(ind, i) {
+            var indicesNdx;
+            vm.filterState.selectedIndices.some(function(ind, ndx) {
                 if (ind.indexOf(peer) === 0) {
-                    index = i;
+                    indicesNdx = ndx;
                     return true;
                 }
             });
 
-            if (index >= 0) {
+            if (indicesNdx >= 0) {
                 var selectedIndices = vm.filterState.selectedIndices;
-                selectedIndices.splice(index, 1);
+                selectedIndices.splice(indicesNdx, 1);
                 vm.filterState.selectedIndices = selectedIndices;
+                $scope.$broadcast('reloadIndices');
             }
 
-            var indexCom;
-            vm.filterState.selectedCompetitors.some(function(competitor, i) {
+            var competitorNdx;
+            vm.filterState.selectedCompetitors.some(function(competitor, ndx) {
                 if (competitor.indexOf(peer) === 0) {
-                    indexCom = i;
+                    competitorNdx = ndx;
                     return true;
                 }
             });
-            if (indexCom >= 0) {
-                var selected = vm.filterState.selectedCompetitors;
-                selected.splice(indexCom, 1);
-                vm.filterState.selectedCompetitors = selected;
+            if (competitorNdx >= 0) {
+                var selectedCompetitors = vm.filterState.selectedCompetitors;
+                selectedCompetitors.splice(competitorNdx, 1);
+                vm.filterState.selectedCompetitors = selectedCompetitors;
+                $scope.$broadcast('reloadCompetitors');
             }
 
             var peerIndex;
-            vm.filterState.selectedPeers.some(function(eachpeer, i) {
+            vm.filterState.selectedPeers.some(function(eachpeer, ndx) {
                 if (eachpeer.indexOf(peer) === 0) {
-                    peerIndex = i;
+                    peerIndex = ndx;
                     return true;
                 }
             });
 
             if (peerIndex >= 0) {
                 vm.filterState.selectedPeers.splice(peerIndex, 1);
+                $scope.$broadcast('reloadPeers');
             }
 
-            loadChartData();
+            vm.onFilterStateUpdate();
         };
 
         function defineTableInfo()
@@ -451,7 +770,8 @@
                 mnemonicId: '=',
                 itemId: '=',
                 chartId: '=',
-                hideFilters : '=',
+                hideFilters: '=',
+                onChartSave: '=',
                 tableInfo: '='  
             },
             templateUrl: 'app/core/directives/ms-chart/ms-stock-chart/ms-stock-chart.html',

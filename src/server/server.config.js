@@ -11,8 +11,8 @@ exports.webservice = {
 
 exports.client = {
     protocol: 'http',
-    domain: 'localhost',
-    port: '3000',
+    domain: 'devcrm.advisen.com',
+    port: '80',
     loglevel: 1,
     transports: ['polling']
 };
@@ -23,8 +23,7 @@ var moment = require('moment');
 exports.restcall = {
     client: new Client(),
     url: exports.webservice.protocol.concat('://', exports.webservice.url, ':', exports.webservice.port, '/', exports.webservice.service),
-    service: [
-        {
+    service: [{
             name: 'templateManager',
             methods: {
                 auth:'authenticate',
@@ -43,7 +42,8 @@ exports.restcall = {
                 createTemplatePDFRequest: 'createTemplatePDFRequest',
                 setSVGFileStatus: 'setSVGFileStatus',
                 getTemplatePDFStatus: 'getTemplatePDFStatus',
-                downloadTemplatePDF: 'downloadTemplatePDF'
+                downloadTemplatePDF: 'downloadTemplatePDF',
+                deleteWorkup: 'deleteWorkup'
             }
         },
         {
@@ -74,6 +74,7 @@ exports.restcall = {
                 getSavedFinancialChartData: 'getSavedIFChartSettings',
                 getFinancialChartRatioTypes: 'getRatiosType',
                 saveFinancialChartSettings: 'saveIFChartSettings',
+                getAllSavedIFChartSettings: 'getAllSavedIFChartSettings',
                 getFinancialChartPeerAndIndustries: 'getPeerAndIndustries',
                 getSignificantDevelopmentList: 'getSignificantDevelopmentList',
                 getSignificantDevelopmentDetail: 'getSignificantDevelopmentDetail',
@@ -87,10 +88,22 @@ exports.restcall = {
             exportOptions: {
                 phatomjsURL: 'http://localhost:8888',
                 pdfRequestDir: '/data/tmp/htmlRequest/',
-                stockChartWidth: 800,
+                financialChartWidth: 1100,
+                financialChartHeight: 600,
+                stockChartWidth: 1100,
                 stockChartHeight: 375,
-                volumeChartWidth:  800,
-                volumeChartHeight: 225
+                volumeChartWidth: 1100,
+                volumeChartHeight: 225,
+                pdfRequestTimeout: 120
+            }
+        },
+        {
+            name: 'news',
+            methods: {
+                search: 'newsSearch',
+                attachNewsArticles: 'attachNewsArticles',
+                getAttachedArticles: 'getAttachedArticles',
+                showArticleContent: 'getArticle'
             }
         }
     ]

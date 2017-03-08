@@ -21,6 +21,13 @@
          * Disable md-ink-ripple effects on mobile
          * if 'disableMdInkRippleOnMobile' config enabled
          */
+        if(fuseConfig.getConfig('disableMdInkRippleOnIE') &&
+           fuseHelper.isIE())
+        {
+            var body = angular.element(document.body);
+            body.attr('md-no-ink', true);
+        }
+
         if ( fuseConfig.getConfig('disableMdInkRippleOnMobile') && fuseHelper.isMobile() )
         {
             var body = angular.element(document.body);

@@ -13,12 +13,14 @@
 
         $urlRouterProvider.otherwise('/pages/auth/login');
 
+        var isIe = ((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ));
+
         $stateProvider
             .state('app', {
                 abstract: true,
                 views   : {
                     'main@'         : {
-                        templateUrl: 'app/core/layouts/default.html'
+                        templateUrl: isIe ?  'app/core/layouts/default-no-animation.html' : 'app/core/layouts/default.html'
                     },
                     'toolbar@app': {
                         templateUrl: 'app/toolbar/toolbar.html',
@@ -39,5 +41,4 @@
                 }
             });
     }
-
 })();

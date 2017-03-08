@@ -1,0 +1,20 @@
+div#news {
+    >ms-accordion {
+        >div#ms-accordion {
+            padding: 0;
+            min-height: 60px;
+            >div {
+                padding-left: 1%;
+                min-height: 60px;
+            }
+        }
+    }
+}
+
+button.md-button {
+    min-width: 15px;
+}
+
+.minPadding {
+    padding-top: 20px;
+}

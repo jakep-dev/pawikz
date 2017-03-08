@@ -33,7 +33,8 @@
                 console.log('Generic Table Item Scope');
                 console.log(scope);
 
-                html += '<table id="generic-table" cellspacing="0" cellpadding="0" width="100%">';
+                html += '<table id="generic-table" ' +
+                    'cellspacing="0" cellpadding="0" width="100%">';
 
                 //Creating Rows for Generic-Table
                 _.each(scope.tearsheet.rows, function(row)
@@ -61,7 +62,11 @@
 
                             var tearSheetItem = col.TearSheetItem,
                                 colspan = col.colspan || 0;
-                            html += '<td style="padding-left: 3px" colspan="'+ colspan +'">';
+                            var columnWidth = '';
+
+                            columnWidth = templateBusinessFormat.getAlignmentWidthColumForTableLayout(col, columnWidth);
+
+                            html += '<td style="padding-left: 3px" width="'+columnWidth+'" colspan="'+ colspan +'">';
 
 
                             if (tearSheetItem &&
@@ -76,7 +81,7 @@
                                         var values = [];
                                         var selectedValue = '';
 
-                                        angular.forEach(tearSheetItem.param, function(each)
+                                        _.each(tearSheetItem.param, function(each)
                                         {
                                             
                                             if(each.checked === 'yes')
@@ -264,7 +269,7 @@
                                         }
 
                                         html += '<ms-rich-text-editor itemid="'+itemId+'" ' +
-                                            'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + _.escape(value) + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
+                                            'mnemonicid="' + mnemonicId + '" prompt="' + prompt + '" value="' + value + '" isdisabled="false" answer="' + answer + '"></ms-rich-text-editor>';
 
                                         break;
                                     case 'GenericTableItem':

@@ -7,17 +7,25 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $scope, $mdSidenav, msNavFoldService, $location,
-                               $translate, store, authService, commonBusiness, authBusiness, toast, Idle)
+    function ToolbarController($rootScope, $scope, $mdSidenav, $stateParams, $location, $translate, $interval,
+                               store, toast, Idle,
+                               msNavFoldService, authService, commonBusiness, authBusiness, notificationBusiness)
     {
         var vm = this;
         vm.userName = '';
 
         var userDetails = store.get('user-info');
+        var promiseSetupListener = null;
 
         if(userDetails)
         {
             vm.userName = userDetails.fullName;
+            console.log('Start background listeners with userDetails.userId. [' + userDetails.userId + ']');
+            notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
+            notificationBusiness.listenToWorkUpStatus(userDetails.userId);
+            notificationBusiness.listenToRenewStatus(userDetails.userId);
+        } else {
+            promiseSetupListener = $interval(setupListeners, 1000);
         }
 
         commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
@@ -61,6 +69,21 @@
         vm.changeLanguage = changeLanguage;
 
         //////////
+
+        function setupListeners() {
+            var userDetails = store.get('user-info');
+
+            if (userDetails) {
+                vm.userName = userDetails.fullName;
+                console.log('[setupListeners]Start background listeners with userDetails.userId. [' + userDetails.userId + ']');
+                notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
+                notificationBusiness.listenToWorkUpStatus(userDetails.userId);
+                notificationBusiness.listenToRenewStatus(userDetails.userId);
+                $interval.cancel(promiseSetupListener);
+            } else {
+                console.log('[setupListeners]userId not available.');
+            }
+        }
 
         /**
          * Toggle sidenav

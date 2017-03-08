@@ -1,5 +1,4 @@
-(function ()
-{
+(function() {
     'use strict';
 
     angular
@@ -8,28 +7,25 @@
         .directive('msTemplate', msTemplateDirective);
 
     function msTemplateController($rootScope, $scope, $mdMenu, $window,
-                                  templateBusiness, commonBusiness, workupBusiness)
-    {
+        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
+    ) {
         var vm = this;
 
         vm.isExpandAll = true;
-		vm.isPrintableAll = commonBusiness.isPrintableAll;
+        vm.isPrintableAll = commonBusiness.isPrintableAll;
         templateBusiness.isTemplateExpandAll = vm.isExpandAll;
         vm.saveAll = saveAll;
         vm.toggleExpand = toggleExpand;
-		vm.printableAll = printableAll;
+        vm.printableAll = printableAll;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
 
         //Save the entire template data.
-        function saveAll()
-        {
+        function saveAll() {
             //Changed Date: 28/4/2016 as per Bug - Chart title not saving
             commonBusiness.emitMsg('saveAllChart');
-            templateBusiness.save();
-            templateBusiness.saveTable();
+            templateBusinessSave.save();
             $mdMenu.hide();
-            templateBusiness.cancelPromise();
         }
 
         function pdfDownload() {
@@ -37,42 +33,24 @@
             templateBusiness.requestPdfDownload();
         }
 
-        function exportCharts1()
-        {
-            $rootScope.$broadcast('exportAllCharts');
-        }
-
-        function renew()
-        {
-            templateBusiness.initializeMessages($scope);
-            workupBusiness.renew(commonBusiness.userId, commonBusiness.projectId, commonBusiness.projectName, 'reload-steps');
-            commonBusiness.onMsg('reload-steps', $scope, function(ev, data)
-            {
-                templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal',
-                    parseInt(data.projectId), data.project_name);
-            });
-
-            //commonBusiness.onMsg('reload-steps', $scope, function()
-            //{
-            //    //$scope.refreshstep();
-            //
-            //});
+        function renew() {
+            notificationBusiness.initializeMessages($scope);
+            workupBusiness.renew(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
         }
 
 
         //Toggle expand or collapse
-        function toggleExpand()
-        {
+        function toggleExpand() {
             vm.isExpandAll = !vm.isExpandAll;
             commonBusiness.isTemplateExpandAll = vm.isExpandAll;
             $mdMenu.hide();
         }
-		
-		function printableAll(){
-			vm.isPrintableAll = !vm.isPrintableAll;
-			commonBusiness.isPrintableAll = vm.isPrintableAll;
+
+        function printableAll() {
+            vm.isPrintableAll = !vm.isPrintableAll;
+            commonBusiness.isPrintableAll = vm.isPrintableAll;
             $mdMenu.hide();
-		}
+        }
 
         commonBusiness.onMsg('step-load-more', $scope, function() {
             $scope.loadMore();
@@ -81,119 +59,102 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, $rootScope, templateBusiness, $mdDialog, dialog,
-                                 commonBusiness, $interval, clientConfig)
-    {
+    function msTemplateDirective($compile, $templateRequest, $templateCache,
+        $interval, templateBusiness,
+        commonBusiness, clientConfig) {
         return {
             restrict: 'E',
-            scope   : {
+            scope: {
                 components: '=',
                 refreshstep: '='
             },
             controller: 'msTemplateController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-template/ms-template.html',
-            link:function(scope, el, attrs)
-            {
+            link: function(scope, el, attrs) {
                 //Storing the components for future load.
                 templateBusiness.components = scope.components;
-
+                scope.showLoadingBar = true;
                 scope.isLoadMoreDisabled = false;
+                scope.isCompLoaded = false;
 
                 console.log('Template component creation initiated - ');
                 console.log(scope);
 
-                scope.loadMore = function()
-                {
-
-                    if(!scope.isLoadMoreDisabled) {
-
-
-                        $mdDialog.show(
-                            $mdDialog.alert({
-                                clickOutsideToClose: true,
-                                templateUrl: 'app/core/directives/ms-template/dialog/ms-template.dialog.html'
-                            })
-                        );
-
-                       var comPromise = $interval(function(){//using $interval seems to work fine
+                scope.loadMore = function() {
+                    if (!scope.isLoadMoreDisabled) {
+                        var comPromise = $interval(function() { //using $interval seems to work fine
                             var loadedIndex = parseInt(el.find('#btnLoadMore').attr('loadedIndex')),
                                 components = [],
-                                loadSize = clientConfig.appSettings.componentInitialLoad,
+                                loadSize = templateBusiness.getCompInitialLoadCount(),
                                 compSize = 0;
 
                             components.push.apply(components, templateBusiness.components.content);
                             components = components.splice(loadedIndex, _.size(components));
+                            compSize = getNumberOfComp(components);
 
-                            compSize = _.size(components);
-
-                            if(compSize < clientConfig.appSettings.componentInitialLoad)
-                            {
+                            if (compSize < templateBusiness.getCompInitialLoadCount()) {
                                 loadSize = compSize
                             }
-                            var actualCompCount  = bindComponent(scope, el, components, loadSize);
 
+                            var actualCompCount = bindComponent(scope, el, components, loadSize);
                             var newLoadedIndex = loadedIndex + actualCompCount;
 
-                            if(_.size(templateBusiness.components.content) === newLoadedIndex)
-                            {
+                            if (_.size(templateBusiness.components.content) === newLoadedIndex) {
                                 scope.isLoadMoreDisabled = true;
                             }
 
                             el.find('#btnLoadMore').attr('loadedIndex', newLoadedIndex);
-                           $interval.cancel(comPromise);
+                            $interval.cancel(comPromise);
                         }.bind(this), 10);
-
-
                     }
-
-
                 };
 
                 bindHeader(scope);
-                var compCount = clientConfig.appSettings.componentInitialLoad,
-                    compSize = _.size(scope.components.content);
-
-                if(compSize < compCount)
-                {
-                    compCount = compSize;
-                    scope.isLoadMoreDisabled = true;
-                }
-
-                var actualCompCount = bindComponent(scope, el, scope.components.content, compCount);
-
+                var actualCompCount = bindComponent(scope, el, scope.components.content, actualCount(scope));
                 el.find('#btnLoadMore').attr('loadedIndex', actualCompCount);
 
-                commonBusiness.onMsg('reached-page-bottom', scope, function(){
+                commonBusiness.onMsg('reached-page-bottom', scope, function() {
                     scope.loadMore();
                 });
             }
         };
 
+        //Get the actual count details
+        function actualCount(scope) {
+            var compCount = templateBusiness.getCompInitialLoadCount(),
+                compSize = getNumberOfComp(scope.components.content);
+
+            if (compSize < compCount) {
+                compCount = compSize;
+                scope.isLoadMoreDisabled = true;
+            }
+            return compCount;
+        }
+
         ///Bind header details for the component
         ///Header & Sub-Header
-        function bindHeader(scope)
-        {
+        function bindHeader(scope) {
             var header = templateBusiness.getComponentHeader();
 
-            if(header){
+            if (header) {
                 scope.stepName = header.name;
                 scope.stepSubHeader = header.subHeader;
             }
         }
 
         //Bind components
-        function bindComponent(scope, el, contents, componentLoadCount)
-        {
-            if(contents) {
-                var totalComponent = componentLoadCount;
-                var currentComponent = 0;
-                var isSkip = false;
+        function bindComponent(scope, el, contents, componentLoadCount) {
+            if (contents) {
+                var totalComponent = componentLoadCount,
+                    currentComponent = 0,
+                    isSkip = false,
+                    count = 0,
+                    bindHtml = [];
 
-                _.each(contents, function (renderContent) {
-
-                    if(!isSkip)
-                    {
+                _.each(contents, function(renderContent) {
+                    if (!isSkip) {
+                        count++;
                         if (renderContent.header &&
                             renderContent.sections &&
                             renderContent.sections.length > 0) {
@@ -201,28 +162,24 @@
                             newScope.tearheader = renderContent.header;
                             newScope.tearcontent = [];
                             newScope.subtype = null;
-                            _.each(renderContent.sections, function (section) {
+                            _.each(renderContent.sections, function(section) {
                                 newScope.isnoneditable = (section.type === 'nonEditableUnmark');
 
-                                if(!newScope.subtype) {
+                                if (!newScope.subtype) {
                                     newScope.subtype = section.subtype || renderContent.header.subtype || '';
                                 }
 
                                 if (section.TearSheetItem &&
                                     section.TearSheetItem.length) {
-                                    //newScope.tearcontent.push.apply(newScope.tearcontent, section.TearSheetItem);
                                     newScope.tearcontent.push(section);
-                                }
-                                else if (section.TearSheetItem) {
-                                    if(newScope.subtype === 'SubComponent' && section.subtype) {
+                                } else if (section.TearSheetItem) {
+                                    if (newScope.subtype === 'SubComponent' && section.subtype) {
                                         section.TearSheetItem.subtype = section.subtype;
                                     }
                                     newScope.tearcontent.push(section);
-                                }
-                                else if (section.Label) {
+                                } else if (section.Label) {
                                     newScope.tearcontent.push(section);
-                                }
-                                else if (section.row || section.ItemId) {
+                                } else if (section.row || section.ItemId) {
                                     newScope.tearcontent.push(section);
                                 }
                             });
@@ -233,8 +190,8 @@
                                 var isChartComp = false;
 
                                 //Check for chart component
-                               _.each(newScope.tearcontent, function (each) {
-                                   var tearSheet = each.TearSheetItem;
+                                _.each(newScope.tearcontent, function(each) {
+                                    var tearSheet = each.TearSheetItem;
                                     if (tearSheet &&
                                         tearSheet.id === 'ScrapedItem' &&
                                         tearSheet.Mnemonic.indexOf('WU_STOCK_CHART') !== -1) {
@@ -254,12 +211,13 @@
                                         'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component>';
                                 }
 
-
-                                el.find('#template-content').append($compile(html)(newScope));
+                                bindHtml.push({
+                                    content: $compile(html)(newScope)
+                                });
+                                currentComponent++;
                             }
-                        }
-                        else {
-                            switch (renderContent.id) {
+                        } else {
+                            switch (renderContent.subtype || renderContent.id) {
                                 case 'WU_RATIOS_CHART':
                                     var newScope = scope.$new();
                                     newScope.iscollapsible = true;
@@ -270,43 +228,63 @@
                                     newScope.tearcontent.push(renderContent.row.col[1].TearSheetItem);
                                     var html = '<ms-chart-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
                                         'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete"></ms-chart-component>';
-                                    el.find('#template-content').append($compile(html)(newScope));
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
                                     break;
-                                
+
                                 case 'LinkItem':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
-                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="'+ renderContent.GoBack +'"></ms-link>';
+
+                                    html += '<ms-link value="' + renderContent.Label + '" href="' + renderContent.url + '" gotostep="' + renderContent.GoBack + '"></ms-link>';
                                     html += '</div>';
-                                    el.find('#template-content').append($compile(html)(newScope));
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
+                                    break;
+
+                                case 'AdvisenNewsSearch':
+                                    var newScope = scope.$new();
+                                    var html = '<div layout-padding>';
+                                    html += '<ms-news title="' + renderContent.Label + '"></ms-news>';
+                                    html += '</div>';
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
                                     break;
                             }
                         }
-
-                        currentComponent++;
-
-                        if(currentComponent >= totalComponent)
-                        {
+                        if (currentComponent >= totalComponent) {
                             isSkip = true;
-                            commonBusiness.emitMsg('step-load-completed');
                         }
                     }
                 });
 
-                return currentComponent;
+                if (bindHtml && bindHtml.length > 0) {
+                    var divElem = angular.element('<div></div>');
+                    _.each(bindHtml, function(html) {
+                        divElem.append(html.content);
+                    });
+                    scope.isCompLoaded = true;
+                    var bindCompProm = $interval(function() {
+                        var element = el.find('#template-content');
+                        element.append(divElem);
+                        $interval.cancel(bindCompProm);
+                    }, 1);
+                }
+
+                return count;
             }
         }
 
-        function getNumberOfComp(contents)
-        {
+        function getNumberOfComp(contents) {
             var totalComp = 0;
 
-            _.each(contents, function(content)
-            {
+            _.each(contents, function(content) {
                 if (content.header &&
                     content.sections &&
-                    content.sections.length > 0)
-                {
+                    content.sections.length > 0) {
                     totalComp++;
                 }
             });

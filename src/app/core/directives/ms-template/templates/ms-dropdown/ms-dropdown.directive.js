@@ -8,28 +8,29 @@
         .directive('msDropdown', msDropDownDirective);
 
     /** @ngInject */
-    function MsDropdownController($scope, templateBusiness)
+    function MsDropdownController($scope, templateBusinessSave, clientConfig)
     {
         $scope.$watch(
             "tearsheetobj.selectedValue",
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue)
                 {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );
     }
 
     /** @ngInject */
-    function msDropDownDirective()
+    function msDropDownDirective(fuseHelper)
     {
         return {
             restrict: 'E',
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
-                tearsheet: '@'
+                tearsheet: '@',
+                isIE: '=?'
             },
             controller: 'MsDropdownController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-dropdown/ms-dropdown.html',
@@ -37,16 +38,7 @@
             {
                 return function($scope)
                 {
-                    //$scope.$watch(
-                    //    "tearsheet",
-                    //    function tearSheetObj(newValue, oldValue) {
-                    //        if(newValue !== oldValue)
-                    //        {
-                    //            $scope.tearsheetobj = angular.fromJson($scope.tearsheet);
-                    //        }
-                    //    }
-                    //);
-
+                    $scope.isIE = fuseHelper.isIE() || fuseHelper.isIECheck();
                     $scope.tearsheetobj = angular.fromJson(_.unescape($scope.tearsheet));
                 };
             }

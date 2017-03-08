@@ -46,7 +46,7 @@
                         .withOption('sorting', [])
                         .withOption('responsive', true)
                         .withPaginationType('full')
-                        .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                        .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
                     html += '<table id="'+ scope.itemid +'" dt-options="dtOptions" ' +
                         'class="row-border hover" datatable="" width="100%" cellpadding="4" cellspacing="0">';
@@ -107,6 +107,19 @@
                                 classValue = templateBusinessFormat.getAlignmentForTableLayoutR(col, classValue);
 
                                 if (value) {
+
+                                    var mnemonicVal = _.find(scope.subMnemonics, function(mnemonic) {
+                                        if (mnemonic.dataType === 'DATE') {
+                                            return mnemonic.dataType;
+                                        }
+                                    });
+
+                                    if (mnemonicVal &&
+                                        mnemonicVal.dataType === 'DATE') {
+
+                                        html += '<span style="display:none">' + templateBusinessFormat.formatDate(templateBusinessFormat.parseDate(value, "DD-MMM-YY"), "YYYY-MM-DD") + '</span>'; // for easy sorting order
+                                    }
+
                                     if(mnemonic == 'URL' && classValue === 'align-right-tablelayout-r') {
                                         html += '<span class="'+ classValue +'" style="font-weight: normal"><ms-link value="URL" href="http://' + value + '"></ms-link></span>';
                                     }else if(classValue === 'align-right-tablelayout-r'){
@@ -205,6 +218,8 @@
 		{
 			return templateBusiness.formatData(value, _.find(subMnemonics, {mnemonic: subMnemonic}));
 		}
+
+        
 
         return {
             restrict: 'E',

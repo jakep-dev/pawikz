@@ -15,7 +15,7 @@
 
     /** @ngInject */
     function msExpiringDirective($compile, $filter, $window, commonBusiness, deviceDetector,
-                                     templateBusiness, DTOptionsBuilder, toast)
+                                     templateBusiness, templateBusinessFormat, DTOptionsBuilder, toast)
     {
         return {
             restrict: 'E',
@@ -37,7 +37,7 @@
         {
             if($scope.copyproposed)
             {
-                $scope.$parent.$parent.actions.push({
+                /*$scope.$parent.$parent.actions.push({
                     id: 1,
                     callback: "ExpiringProgram",
                     icon: 'icon-content-copy',
@@ -53,7 +53,7 @@
                     isclicked: null,
                     tooltip: 'Upload From Spreadsheet',
                     type: 'button'
-                });
+                });*/
 
                 $scope.$parent.$parent.actions.push({
                     id: 3,
@@ -64,14 +64,14 @@
                     type: 'button'
                 });
 
-                $scope.$parent.$parent.actions.push({
+                /*$scope.$parent.$parent.actions.push({
                     id: 4,
                     callback: "EP-Eraser",
                     icon: 'icon-eraser',
                     isclicked: null,
                     tooltip: 'Clear data',
                     type: 'button'
-                });
+                });*/
 
 
             }
@@ -89,12 +89,13 @@
                 .withOption('autoWidth', true)
                 .withOption('info', false)
                 .withOption('ordering', false)
-                .withOption('responsive', false);
+                .withOption('responsive', false)
+                .withDOM('<"top padding-10" <"left"<"length"l>>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
             //Header Details
             html += '<thead>';
             html += '<tr class="row">';
-            angular.forEach($scope.tearsheet.row[0].col, function(eachCol)
+            _.each($scope.tearsheet.row[0].col, function(eachCol)
             {
                 var tearSheetItem = eachCol.TearSheetItem;
                 html += '<th style="width: 10%;">';
@@ -253,7 +254,7 @@
 
             html += '<tbody>';
             html += '<tr ng-repeat="row in rows">';
-            angular.forEach($scope.tearsheet.row[1].col, function(eachCol)
+            _.each($scope.tearsheet.row[1].col, function(eachCol)
             {
                 var tearSheetItem = eachCol.TearSheetItem;
                 var itemId = tearSheetItem.ItemId;
@@ -266,19 +267,15 @@
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
-                        html += '<ms-program-text columnname="'+ newItemId +'" rowid="{{row.rowid}}" ' +
-                            'row="row.'+ newItemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
-                            'itemid="{{row.'+ newItemId +'.itemid}}" ' +
-                            'mnemonicid="{{row.'+ newItemId +'.mnemonicid}}" ' +
-                            'value="{{row.'+ newItemId +'.value}}" isdisabled="{{row.'+ newItemId +'.isdisabled}}"></ms-program-text>';
+                        var classValue = "align-left-non-editable-table";
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(eachCol, classValue);
+                        html += '<ms-label class="'+ classValue +'" classtype="'+ classValue +'" style="font-weight: normal" value="{{row.'+ newItemId +'.value}}"></ms-label>';
                         break;
 
                     case 'SingleDropDownItem':
-                        html += '<ms-program-dropdown tearsheet="{{row.'+ newItemId +'.tearsheet}}" ' +
-                            'mnemonicid="{{row.' + newItemId + '.mnemonicid}}" ' +
-                            'rowid="{{row.rowid}}" ' +
-                            'compute="updateDropdown(value, \'' + newItemId + '\', rowId)" ' +
-                            'itemid="{{row.' + newItemId + '.itemid}}"></ms-program-dropdown>';
+                        var classValue = "align-left-non-editable-table";
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutNonEditable(eachCol, classValue);
+                        html += '<ms-label class="'+ classValue +'" classtype="'+ classValue +'" style="font-weight: normal" value="{{row.'+ newItemId +'.value}}"></ms-label>';
                         break;
 
                     default:break;
@@ -294,7 +291,7 @@
 
             var rowCount = 0;
             var makeColDef = '';
-            angular.forEach($scope.tearsheet.row, function(eachRow)
+            _.each($scope.tearsheet.row, function(eachRow)
             {
                 if(rowCount !== 0 && eachRow.col &&
                     eachRow.col.length)
@@ -304,7 +301,7 @@
                     var colCount = 1;
                     var totalCount = eachRow.col.length;
                     var isRowComputed = false;
-                    angular.forEach(eachRow.col, function(eachCol)
+                    _.each(eachRow.col, function(eachCol)
                     {
 
                         var tearSheetItem = eachCol.TearSheetItem;
@@ -387,7 +384,7 @@
                         {
                             var values = [];
                             var selectedValue = '';
-                            angular.forEach(tearSheetItem.param, function(each)
+                            _.each(tearSheetItem.param, function(each)
                             {
                                 if(each.checked === 'yes')
                                 {
@@ -580,12 +577,12 @@
             var dataInfo = [];
             var data = null;
 
-            angular.forEach($scope.rows, function(row)
+            _.each($scope.rows, function(row)
             {
                 var data = '';
                 data += '{';
                 var colCount = 1;
-               angular.forEach($scope.headerItems, function(header)
+               _.each($scope.headerItems, function(header)
                {
                    var value = getValueById(row, header.name, header.type);
                    var headerName = header.name;
@@ -669,7 +666,7 @@
         {
             for(var count = 0; count < $scope.rows.length; count++)
             {
-                angular.forEach($scope.headerItems, function(header) {
+                _.each($scope.headerItems, function(header) {
 
                     var exp = '$scope.rows[count].' + header.name + '.id';
                     var id = eval(exp);
@@ -697,7 +694,7 @@
 
             for(var count = 0; count < $scope.rows.length; count++)
             {
-                angular.forEach($scope.headerItems, function(header) {
+                _.each($scope.headerItems, function(header) {
 
                     var exp = '$scope.rows[count].' + header.name + '.copyitemid';
                     var copyItemId =  eval(exp);
@@ -796,7 +793,7 @@
                 var headerStatus = [];
                 var rowIndex = 0;
 
-                angular.forEach($scope.headerItems, function(eachHeader)
+                _.each($scope.headerItems, function(eachHeader)
                 {
                     var headerName = eachHeader.name;
 
@@ -844,7 +841,7 @@
 
                     clearProgram($scope, null);
 
-                    angular.forEach(data.data, function(content)
+                    _.each(data.data, function(content)
                     {
                         if(rowCount === $scope.rows.length + 1)
                         {
@@ -855,7 +852,7 @@
                         if(rowCount !== 0)
                         {
                             $scope.rows[rowCount - 1].iscompute = true;
-                            angular.forEach($scope.headerItems, function(header)
+                            _.each($scope.headerItems, function(header)
                             {
                                var findHeader = _.find(headerStatus, function(head)
                                {

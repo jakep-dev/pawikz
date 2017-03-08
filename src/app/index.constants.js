@@ -1,77 +1,103 @@
-(function ()
-{
+(function() {
     'use strict';
 
     angular
         .module('advisen')
-        .constant('clientConfig',{
-            nodeJS:
-            {
-                protocol:'http:',
+        .constant('clientConfig', {
+            nodeJS: {
+                protocol: 'http:',
                 ipAddress: 'localhost',
-                port:'4000'
+                port: '4000'
             },
-            endpoints:
-            {
-                dashboardEndPoint:{
+            endpoints: {
+                dashboardEndPoint: {
                     get: '/api/dashboard',
                     getUsers: '/api/users/',
-                    getCompanies: '/api/companies/'
+                    getCompanies: '/api/companies/',
+                    processRemoveWorkUp: '/api/processRemoveWorkUp/'
                 },
-                overViewEndPoint:{
+                overViewEndPoint: {
                     get: '/api/overview/',
                     save: '/api/saveOverview',
                     getDefer: '/api/overview/defer'
                 },
-                chartEndPoint:{
+                chartEndPoint: {
                     get: ''
                 },
-                authEndPoint:
-                {
-                    auth:'/api/authenticate/',
+                authEndPoint: {
+                    auth: '/api/authenticate/',
                     logout: '/api/logout',
                     getUser: '/api/userInfo'
                 },
-                templateEndPoint:
-                {
+                templateEndPoint: {
                     schema: '/api/schema',
                     mnemonics: '/api/mnemonics',
                     save: '/api/saveTemplate',
+                    saveAll: '/api/saveAll',
                     dynamic: '/api/dynamicTable',
                     saveDynamic: '/api/saveDynamicTable',
                     addDynamic: '/api/addDynamicTable',
                     deleteDynamic: '/api/deleteDynamicTable',
                     getScrapedHTML: '/api/getScrapedHTML'
                 },
-                loggerEndPoint:
-                {
+                loggerEndPoint: {
                     error: '/api/errorLog',
                     debug: '/api/debugLog'
                 },
-                workUpEndPoint:
-                {
+                workUpEndPoint: {
                     create: '/api/workup/create',
                     renew: '/api/workup/renew',
                     status: '/api/workup/status',
                     lock: '/api/workup/lock',
-                    unlock: '/api/workup/unlock'
+                    unlock: '/api/workup/unlock',
+                    delete: '/api/workup/delete'
+                },
+                newsEndPoint: {
+                    search: '/api/news/search',
+                    attachNewsArticles: '/api/news/attachNewsArticles',
+                    getAttachedArticles: '/api/news/getAttachedArticles',
+                    showArticleContent: '/api/news/showArticleContent'
                 }
             },
-            appSettings:
-            {
+            appSettings: {
                 autoSaveTimeOut: 10000,
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
-                componentInitialLoad:  4
+                compInitialLoadForDesktop: 3,
+                compInitialLoadForDesktopIE: 30,
+                compInitialLoadForMobile: 1,
+                compInitialLoadForTablet: 3
             },
             socketInfo: {
                 socket: undefined
             },
-            activity:{
+            activity: {
                 //In Seconds
-                idle: 600,
+                idle: 14400,
                 timeout: 120,
                 interval: 1200,
-                dialogtimeout: 60
+                renewWorkupTimeout: 30,
+                createWorkupTimeout: 30,
+                pdfDownloadTimeout: 30
+            },
+            uiType: {
+                general: 'general',
+                tableLayout: 'table-layout',
+                hybridLayout: 'hybrid-layout',
+                interactiveStockChart: 'interactive-stock-chart',
+                significantDevelopmentItems: 'significant-development-items',
+                interactiveFinancialChart: 'interactive-financial-chart'
+            },
+            messages: {
+                dashboardDelete: {
+                    title: 'Would you like to delete?',
+                    content: ' will be deleted. Please confirm.'
+                },
+                programTableHybrid: {
+                    invalidInput: 'Invalid entry. Input numbers with k, m or b for thousand, million or billion respectively.',
+                    maxRow: 'Reached max rows. Available row(s) to add is',
+                    deleteRow: 'Check row(s) to delete.',
+                    copyProgram: 'program copied!'
+                }
             }
         });
 })();

@@ -9,146 +9,443 @@
         .service('stockChartBusiness', stockChartBusiness);
 
     /* @ngInject */
-    function stockChartBusiness(commonBusiness, stockService) {
+    function stockChartBusiness(commonBusiness) {
 
-        var splits = false;
-        var earnings = false;
-        var dividends = false;
-        var interval = '3Y';
-        var mainStock = 'TSLA';
-        var selectedIndices = [];
-        var selectedPeers = [];
-        var startDate;
-        var endDate;
+        var sigDevSourcesMap = null;
+        var indices = [];
+        var indicesMap = null;
+        var competitors = [];
+        var competitorMap = null;
+        var updateChartIdCallback = null;
+
+        function toDateString(dateObj, format) {
+            if (!format) {
+                format = 'MM/DD/YYYY';
+            }
+            var m = moment(dateObj.toISOString().substring(0, 10), 'YYYY-MM-DD');
+            return m.format(format);
+        }
+
         var business = {
             sigDevSources: [],
-            getSourceByValue: getSourceByValue
+            getSignificantDevelopmentSourceLabel: getSignificantDevelopmentSourceLabel,
+            getSaveChartInputObject: getSaveChartInputObject,
+            getSaveStockChartInputObject: getSaveStockChartInputObject,
+            getSaveSigDevInputObject: getSaveSigDevInputObject,
+            getSaveStockSigDevInputObject: getSaveStockSigDevInputObject
+        }
+
+        Object.defineProperty(business, 'significantDevelopmentSources', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return business.sigDevSources;
+            },
+            set: function (value) {
+                business.sigDevSources = value;
+                sigDevSourcesMap = [];
+                business.sigDevSources.forEach(function (item) {
+                    if (item.value) {
+                        if (!sigDevSourcesMap[item.value]) {
+                            sigDevSourcesMap[item.value] = item.label;
+                        }
+                    }
+                });
+            }
+        });
+
+        Object.defineProperty(business, 'indices', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return indices;
+            },
+            set: function (value) {
+                indices = value;
+                indicesMap = [];
+                indices.forEach(function (indicesItem) {
+                    if (indicesItem.value) {
+                        if (!indicesMap[indicesItem.value]) {
+                            indicesMap[indicesItem.value] = indicesItem.description;
+                        }
+                    }
+                });
+            }
+        });
+
+        Object.defineProperty(business, 'competitors', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return competitors;
+            },
+            set: function (value) {
+                competitors = value;
+                competitorMap = [];
+                competitors.forEach(function (competitorItem) {
+                    if (competitorItem.ticker) {
+                        if (!competitorMap[competitorItem.ticker]) {
+                            competitorMap[competitorItem.ticker] = competitorItem.companyName;
+                        }
+                    }
+                });
+            }
+        });
+
+        Object.defineProperty(business, 'updateChartIdCallback', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return updateChartIdCallback;
+            },
+            set: function (value) {
+                updateChartIdCallback = value;
+            }
+        });
+
+        function getSignificantDevelopmentSourceLabel(significantDevelopmentSourceValue) {
+            if (sigDevSourcesMap) {
+                return sigDevSourcesMap[significantDevelopmentSourceValue];
+            } else {
+                return null;
+            }
+        }
+
+        function getSaveStockChartInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
+            /** INPUT
+            {
+                projectId: projectId,
+                stepId: stepId,
+                companyId: companyId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: { 
+                    newCharts: jsCharts,
+                    oldCharts: oldCharts
+                }
+            }
+            */
+            /** OUTPUT
+                data: {
+                    //Changing keynames as per jake plaras email on 26/5/2016
+                    company_id: companyId,
+                    step_id: stepId,
+                    project_id: projectId,
+                    //ssnid: ssnid,
+                    chartSettings: chartSettings
+                }
+            */
+            var saveObject = new Object;
+            //Changing keynames as per jake plaras email on 26/5/2016
+            saveObject.company_id = companyId;
+            saveObject.step_id = stepId;
+            saveObject.project_id = projectId;
+            saveObject.chartSettings = new Array();
+
+            if (value.newCharts != null) {
+                value.newCharts.forEach(function (chart) {
+                    var stockString = '';
+                    var jsChart = chart.filterState;
+                    var tearsheet = chart.tearsheet;
+                    // if (!tearsheet.isMainChart) {
+                    if (jsChart.selectedPeers) {
+                        jsChart.selectedPeers.forEach(function (stock) {
+                            stockString = stockString + stock + ',';
+                        });
+                    }
+                    if (jsChart.selectedIndices) {
+                        jsChart.selectedIndices.forEach(function (indics) {
+                            stockString = stockString + '^' + indics + ',';
+                        });
+                    }
+                    if (jsChart.selectedCompetitors) {
+                        jsChart.selectedCompetitors.forEach(function (competitors) {
+                            stockString = stockString + '@' + competitors + ',';
+                        });
+                    }
+                    if (stockString && stockString !== '') {
+                        stockString = stockString.slice(0, -1);
+                    }
+
+                    jsChart.chartType = chart.chartType;
+                    var obj = {
+                        chart_title: jsChart.title ? jsChart.title : null,
+                        peers: stockString,
+                        period: jsChart.interval ? jsChart.interval : null,
+                        date_start: toDateString(jsChart.startDate, 'YYYY-MM-DD'),
+                        date_end: toDateString(jsChart.endDate, 'YYYY-MM-DD'),
+                        dividends: jsChart.dividends ? "Y" : "N",
+                        earnings: jsChart.earnings ? "Y" : "N",
+                        splits: jsChart.splits ? "Y" : "N",
+                        chartType: jsChart.chartType ? jsChart.chartType : 'JSCHART',
+                        mnemonic: jsChart.mnemonic,
+                        item_id: jsChart.item_id,
+                        isDefault: jsChart.isDefault
+                    };
+                    saveObject.chartSettings.push(obj);
+                });
+            }
+
+            if (value.oldCharts != null) {
+                value.oldCharts.forEach(function (chart) {
+                    var obj = {
+                        chart_title: chart.title ? chart.title : null,
+                        peers: chart.stockString ? chart.stockString : null,
+                        period: chart.interval ? chart.interval : null,
+                        date_start: chart.date_start ? chart.date_start : "",
+                        date_end: chart.date_end ? chart.date_end : "",
+                        chartType: chart.chartType,
+                        dividends: chart.dividends ? "Y" : "N",
+                        earnings: chart.earnings ? "Y" : "N",
+                        splits: chart.splits ? "Y" : "N",
+                        project_image_code: chart.tearsheet.project_image_code,
+                        url: chart.tearsheet.url
+                    };
+                    saveObject.chartSettings.push(obj);
+                });
+            }
+            return saveObject;
+        }
+
+        function getSaveChartInputObject(mnemonicItem) {
+            /** INPUT
+            {
+                companyId: companyId,
+                projectId: projectId,
+                stepId: stepId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: { 
+                    newCharts: jsCharts,
+                    oldCharts: oldCharts
+                }
+            }
+            */
+            /** OUTPUT
+                data: {
+                    //Changing keynames as per jake plaras email on 26/5/2016
+                    company_id: companyId,
+                    step_id: stepId,
+                    project_id: projectId,
+                    //ssnid: ssnid,
+                    chartSettings: chartSettings
+                }
+            */
+            var saveObject = new Object;
+            //Changing keynames as per jake plaras email on 26/5/2016
+            saveObject.company_id = mnemonicItem.companyId;
+            saveObject.step_id = mnemonicItem.stepId;
+            saveObject.project_id = mnemonicItem.projectId;
+            saveObject.chartSettings = new Array();
+
+            if (mnemonicItem.value.newCharts != null) {
+                mnemonicItem.value.newCharts.forEach(function (chart) {
+                    var stockString = '';
+                    var jsChart = chart.filterState;
+                    var tearsheet = chart.tearsheet;
+                    // if (!tearsheet.isMainChart) {
+                    if (jsChart.selectedPeers) {
+                        jsChart.selectedPeers.forEach(function (stock) {
+                            stockString = stockString + stock + ',';
+                        });
+                    }
+                    if (jsChart.selectedIndices) {
+                        jsChart.selectedIndices.forEach(function (indics) {
+                            stockString = stockString + '^' + indics + ',';
+                        });
+                    }
+                    if (jsChart.selectedCompetitors) {
+                        jsChart.selectedCompetitors.forEach(function (competitors) {
+                            stockString = stockString + '@' + competitors + ',';
+                        });
+                    }
+                    if (stockString && stockString !== '') {
+                        stockString = stockString.slice(0, -1);
+                    }
+
+                    jsChart.chartType = chart.chartType;
+                    var obj = {
+                        chart_title: jsChart.title ? jsChart.title : null,
+                        peers: stockString,
+                        period: jsChart.interval ? jsChart.interval : null,
+                        date_start: toDateString(jsChart.startDate, 'YYYY-MM-DD'),
+                        date_end: toDateString(jsChart.endDate, 'YYYY-MM-DD'),
+                        dividends: jsChart.dividends ? "Y" : "N",
+                        earnings: jsChart.earnings ? "Y" : "N",
+                        splits: jsChart.splits ? "Y" : "N",
+                        chartType: jsChart.chartType ? jsChart.chartType : 'JSCHART',
+                        mnemonic: jsChart.mnemonic,
+                        item_id: jsChart.item_id,
+                        isDefault: jsChart.isDefault
+                    };
+                    saveObject.chartSettings.push(obj);
+                });
+            }
+
+            if (mnemonicItem.value.oldCharts != null) {
+                mnemonicItem.value.oldCharts.forEach(function (chart) {
+                    var obj = {
+                        chart_title: chart.title ? chart.title : null,
+                        peers: chart.stockString ? chart.stockString : null,
+                        period: chart.interval ? chart.interval : null,
+                        date_start: chart.date_start ? chart.date_start : "",
+                        date_end: chart.date_end ? chart.date_end : "",
+                        chartType: chart.chartType,
+                        dividends: chart.dividends ? "Y" : "N",
+                        earnings: chart.earnings ? "Y" : "N",
+                        splits: chart.splits ? "Y" : "N",
+                        project_image_code: chart.tearsheet.project_image_code,
+                        url: chart.tearsheet.url
+                    };
+                    saveObject.chartSettings.push(obj);
+                });
+            }
+            return saveObject;
+        }
+
+        function getSaveStockSigDevInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
+            /** INPUT
+            {
+                companyId: companyId,
+                projectId: projectId,
+                stepId: stepId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: jsCharts
+            }
+            */
+            /** OUTPUT
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    items: sigDevItems
+                }
+            */
+            var saveObject = new Object;
+            saveObject.project_id = projectId;
+            saveObject.step_id = stepId;
+            saveObject.mnemonic = mnemonicId;
+            saveObject.item_id = itemId;
+            saveObject.items = new Array();
+
+            if (value != null) {
+                value.forEach(function (chart) {
+                    var jsChart = chart.filterState;
+                    if (jsChart.isDefault === 'N') {
+                        var perChart = {
+                            sigdevId: [],
+                            mascadId: [],
+                        };
+                        angular.forEach(chart.tableInfo, function (table) {
+
+                            switch (table.source.value) {
+                                case 'SIGDEV':
+                                    if (table.rows && table.rows.length > 0) {
+                                        perChart.sigdevId = _.map(table.rows, function (row) {
+                                            return row.sigDevId;
+                                        });
+                                    }
+                                    break;
+                                case 'MASCAD':
+                                    if (table.rows && table.rows.length > 0) {
+                                        perChart.mascadId = _.map(table.rows, function (row) {
+                                            return row.mascadId;
+                                        });
+                                    }
+                                    break;
+                            }
+
+                        });
+
+                        //As per WS team, add null if empty
+                        if (perChart.sigdevId.length === 0) {
+                            perChart.sigdevId.push(null);
+                        }
+                        if (perChart.mascadId.length === 0) {
+                            perChart.mascadId.push(null);
+                        }
+
+                        saveObject.items.push(perChart);
+                    }
+                });
+            }
+            return saveObject;
+        }
+
+        function getSaveSigDevInputObject(mnemonicItem) {
+            /** INPUT
+            {
+                companyId: companyId,
+                projectId: projectId,
+                stepId: stepId,
+                mnemonicId: mnemonicId,
+                itemId: itemId,
+                value: jsCharts
+            }
+            */
+            /** OUTPUT
+                data: {
+                    project_id: projectId,
+                    step_id: stepId,
+                    mnemonic: mnemonic,
+                    item_id: itemId,
+                    items: sigDevItems
+                }
+            */
+            var saveObject = new Object;
+            saveObject.project_id = mnemonicItem.projectId;
+            saveObject.step_id = mnemonicItem.stepId;
+            saveObject.mnemonic = mnemonicItem.mnemonicId;
+            saveObject.item_id = mnemonicItem.itemId;
+            saveObject.items = new Array();
+
+            if (mnemonicItem.value != null) {
+                mnemonicItem.value.forEach(function (chart) {
+                    var jsChart = chart.filterState;
+                    if (jsChart.isDefault === 'N') {
+                        var perChart = {
+                            sigdevId: [],
+                            mascadId: [],
+                        };
+                        angular.forEach(chart.tableInfo, function (table) {
+
+                            switch (table.source.value) {
+                                case 'SIGDEV':
+                                    if (table.rows && table.rows.length > 0) {
+                                        perChart.sigdevId = _.map(table.rows, function (row) {
+                                            return row.sigDevId;
+                                        });
+                                    }
+                                    break;
+                                case 'MASCAD':
+                                    if (table.rows && table.rows.length > 0) {
+                                        perChart.mascadId = _.map(table.rows, function (row) {
+                                            return row.mascadId;
+                                        });
+                                    }
+                                    break;
+                            }
+
+                        });
+
+                        //As per WS team, add null if empty
+                        if (perChart.sigdevId.length === 0) {
+                            perChart.sigdevId.push(null);
+                        }
+                        if (perChart.mascadId.length === 0) {
+                            perChart.mascadId.push(null);
+                        }
+
+                        saveObject.items.push(perChart);
+                    }
+                });
+            }
+            return saveObject;
         }
 
         return business;
-
-        function getSourceByValue(value)
-        {
-            var source = _.find(business.sigDevSources, function(source)
-            {
-                if(source.value === value){
-                    return source;
-                }
-            });
-
-            return source;
-        }
-
-        Object.defineProperty(this, 'mainStock', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return mainStock;
-            },
-            set: function(mainStock) {
-                mainStock = mainStock;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'selectedIndices', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return selectedIndices;
-            },
-            set: function(value) {
-                selectedIndices = value;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'selectedPeers', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return selectedPeers;
-            },
-            set: function(value) {
-                selectedPeers = value;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'splits', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return splits;
-            },
-            set: function(value) {
-                splits = value;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'earnings', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return earnings;
-            },
-            set: function(value) {
-                earnings = value;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'dividends', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return dividends;
-            },
-            set: function(value) {
-                dividends = value;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'interval', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return interval;
-            },
-            set: function(value) {
-                interval = value;
-                commonBusiness.emitMsg('chartDataChanged');
-            }
-        });
-
-        Object.defineProperty(this, 'startDate', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return startDate;
-            },
-            set: function(value) {
-                startDate = value;
-                if(this.interval ==='CUSTOM'){
-                    //commonBusiness.emitMsg('chartDataChanged');
-                }
-            }
-        });
-        Object.defineProperty(this, 'endDate', {
-            enumerable: true,
-            configurable: false,
-            get: function() {
-                return endDate;
-            },
-            set: function(value) {
-                endDate = value;
-                if(this.interval ==='CUSTOM'){
-                    //commonBusiness.emitMsg('chartDataChanged');
-                }
-            }
-        });
     }
 
 })();

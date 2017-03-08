@@ -1,8 +1,15 @@
+<md-select  ng-if="!isIE"  ng-disabled="tearsheetobj.isdisabled" aria-label="Select Field" style="margin: 0px"
+           ng-model="tearsheetobj.selectedValue" class="md-accent">
+    <md-option layout-padding ng-repeat="value in tearsheetobj.values" value="{{value.value}}">
+        <span class="ms-dropdown-font-size">{{value.name}}</span>
+    </md-option>
+</md-select>
 
 
-    <md-select ng-disabled="tearsheetobj.isdisabled" aria-label="Select Field" style="margin: 0px"
-               ng-model="tearsheetobj.selectedValue" class="md-accent">
-        <md-option layout-padding ng-repeat="value in tearsheetobj.values" value="{{value.value}}">
-            <span class="ms-dropdown-font-size">{{value.name}}</span>
-        </md-option>
-    </md-select>
+<div style="margin: 8px" ng-if="isIE">
+    <select ng-model="tearsheetobj.selectedValue" >
+        <option ng-repeat="value in tearsheetobj.values " value="{{value.value}}">{{value.name}}</option>
+    </select>
+</div>
+
+

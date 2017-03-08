@@ -11,7 +11,8 @@
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder,
                                      DTColumnDefBuilder, toast,
-                                     templateBusinessFormat)
+                                     templateBusinessFormat, 
+                                     clientConfig, templateBusinessSave)
     {
         return {
             restrict: 'E',
@@ -43,7 +44,7 @@
                 .withOption('sorting', [])
                 .withOption('responsive', true)
                 .withPaginationType('full')
-                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
 
             $scope.dtColumnDefs = [
@@ -325,6 +326,8 @@
 		function saveRow($scope, row)
 		{
 			var save = {
+                action: 'updated',
+                sequence: parseInt(row.SEQUENCE),
 				row: [],
 				condition: []
 			};
@@ -343,12 +346,7 @@
 				value: $scope.itemid
 			});
 			
-			autoSave($scope, save, 'updated', parseInt(row.SEQUENCE));
-		}
-
-		function autoSave($scope, rowObject, action, sequence)
-		{
-			templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
+			templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, save, clientConfig.uiType.tableLayout);
 		}
 
         function defineFilterLink(scope, el, attrs)

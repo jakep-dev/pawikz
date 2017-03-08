@@ -28,7 +28,7 @@
         };
 
         console.log('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
-        client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args,function(data, response)
+        client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args,function(data, response)
         {
 
         });
@@ -57,12 +57,12 @@
             }
         };
 
-        console.log('Unlock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
-        client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data, response)
+        client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data, response)
         {
 
         });
     };
+
 
     //Get the service details
     function getServiceDetails(serviceName) {

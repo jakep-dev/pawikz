@@ -9,7 +9,8 @@
         .factory('workupBusiness', workupBusiness);
 
     /* @ngInject */
-    function workupBusiness(workupService, authService, toast,  store, dialog, clientConfig, commonBusiness) {
+    function workupBusiness($location, navConfig, workupService, authService, toast, store, dialog,
+                            clientConfig, notificationBusiness, commonBusiness) {
 
         var business = {
                 initialize: initialize,
@@ -31,16 +32,10 @@
             });
         }
 
-        function NotifyNotificationCenter(notification, message)
-        {
-            commonBusiness.emitWithArgument(message, notification);
-        }
-
+        //Renew the workup details from dashboard.
         function renewFromDashboard(userId, projectId, projectName)
         {
-            workupService.renew(userId, projectId);
-            toast.simpleToast(projectName + ' getting ready for renewal');
-            NotifyNotificationCenter({
+            notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
                 type: 'Renewal',
@@ -53,16 +48,19 @@
                 istrackable: false,
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
+            workupService.renew(userId, projectId, 'fromDashboard');
+            dialog.notify('Renewing Workup', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null, null, null, false);
         }
 
+        //Add create workup details to notification center and show dialog box to user.
         function createWorkUp(userId, companyId, templateId)
         {
             workupService.create(userId, companyId, templateId).then(function(response)
             {
-                console.log('CreateWorkUp-');
-                console.log(response);
                 if(response) {
-                    NotifyNotificationCenter({
+                    notificationBusiness.notifyNotificationCenter({
                         id: response.projectId,
                         title: response.project_name || ('Project - ' + response.projectId),
                         type: 'Create-WorkUp',
@@ -77,12 +75,24 @@
                     }, 'notify-create-workup-notification-center');
                 }
             });
+            var token =  store.get('x-session-token');
+            $location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
+            dialog.notify('Creating Workup', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null,
+                {
+                    ok: {
+                        callBack: function() {
+                            dialog.close();
+                        }
+                    }
+                }, null, false);
         }
 
+        //Add renew workup details to notification center and show dialog box to user.
         function renew(userId, projectId, projectName, reloadEvent)
         {
-            renewComplete(reloadEvent);
-            NotifyNotificationCenter({
+            notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
                 type: 'Renewal',
@@ -95,20 +105,19 @@
                 istrackable: false,
                 url: projectId
             }, 'notify-renewal-workup-notification-center');
-            workupService.renew(userId, projectId);
-            dialog.status('app/main/components/workup/dialog/workup.dialog.html', false, false);
-        }
+            workupService.renew(userId, projectId, reloadEvent);
 
-        function renewComplete(reloadEvent)
-        {
-            clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
-            {
-                dialog.close();
-                if(reloadEvent !== '')
+            dialog.notify('Renewing Workup', 'Go to Notification Center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null,
                 {
-                    commonBusiness.emitWithArgument(reloadEvent, data);
-                }
-            });
+                    ok: {
+                        callBack: function() {
+                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+                            $location.url('/dashboard/'+ commonBusiness.userId );
+                        }
+                    }
+                }, null, false);
         }
     }
 })();

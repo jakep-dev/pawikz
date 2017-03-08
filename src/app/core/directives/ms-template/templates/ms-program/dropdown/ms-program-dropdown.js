@@ -8,7 +8,7 @@
         .directive('msProgramDropdown', msProgramDropdownDirective);
 
     /** @ngInject */
-    function MsProgramDropdownController($scope, templateBusiness)
+    function MsProgramDropdownController($scope)
     {
         $scope.$watch(
             "tearsheetobj.selectedValue",
@@ -19,8 +19,6 @@
                         value: newValue,
                         rowId: $scope.rowid
                     });
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
-                    templateBusiness.updateMnemonicValue($scope.itemid, $scope.mnemonicid, newValue);
                 }
             }
         );
@@ -29,7 +27,7 @@
     }
 
     /** @ngInject */
-    function msProgramDropdownDirective()
+    function msProgramDropdownDirective(fuseHelper)
     {
         return {
             restrict: 'E',
@@ -39,6 +37,7 @@
                 tearsheet: '@',
                 compute: '&',
                 rowid: '@',
+                isIE: '=?'
             },
             controller: 'MsProgramDropdownController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-program/dropdown/ms-program-dropdown.html',
@@ -46,6 +45,7 @@
             {
                 return function($scope)
                 {
+                    $scope.isIE = fuseHelper.isIE() || fuseHelper.isIECheck();
                     $scope.$watch(
                         "tearsheet",
                         function handleAutoSave(newValue, oldValue) {

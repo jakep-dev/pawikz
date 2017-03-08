@@ -7,13 +7,15 @@
         .factory('fuseHelper', fuseHelperService);
 
     /** @ngInject */
-    function fuseHelperService()
+    function fuseHelperService(deviceDetector)
     {
         // Private variables
         var mobileDetect = new MobileDetect(window.navigator.userAgent);
 
         var service = {
-            isMobile: isMobile
+            isMobile: isMobile,
+            isIE: isIE,
+            isIECheck: isIECheck
         };
 
         return service;
@@ -27,6 +29,17 @@
         function isMobile()
         {
             return mobileDetect.mobile();
+        }
+
+        function isIE()
+        {
+            return (deviceDetector.browser &&
+            (deviceDetector.browser.toLowerCase() === 'ie') );
+        }
+
+        function isIECheck(){
+            var isIe = ((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ));
+            return isIe;
         }
     }
 }());

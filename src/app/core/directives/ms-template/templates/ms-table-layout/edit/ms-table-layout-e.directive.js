@@ -146,7 +146,7 @@
                 .withOption('responsive', false)
                 .withOption('sorting', [])
                 .withPaginationType('full')
-                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
 
         function dtDefineColumn(scope)

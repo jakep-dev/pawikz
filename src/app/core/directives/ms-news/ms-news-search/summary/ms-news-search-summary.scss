@@ -1,0 +1,12 @@
+div#msNewsSearchSummary {
+    >ms-accordion {
+        >div#ms-accordion {
+            padding: 0;
+            min-height: 50px;
+            >div {
+                padding: 1%;
+                min-height: 50px;
+            }
+        }
+    }
+}

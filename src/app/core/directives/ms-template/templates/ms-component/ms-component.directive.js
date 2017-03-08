@@ -1,5 +1,4 @@
-(function ()
-{
+(function() {
     'use strict';
 
     angular
@@ -8,8 +7,7 @@
         .directive('msComponent', msComponentDirective);
 
     function msComponentController($scope, commonBusiness,
-                                   templateBusiness, overviewBusiness, toast)
-    {
+        templateBusiness, overviewBusiness, toast) {
         var vm = this;
         vm.isNonEditable = $scope.isnoneditable;
         vm.iscollapsible = $scope.iscollapsible;
@@ -37,24 +35,21 @@
                 toggleCollapse();
             }
         });
-		
-		commonBusiness.onMsg('IsPrintable', $scope, function() {
+
+        commonBusiness.onMsg('IsPrintable', $scope, function() {
             if (vm.isAvailableForPrint != null && commonBusiness.isPrintableAll === vm.isAvailableForPrint) {
                 vm.printer();
-            }            
+            }
         });
 
 
         initialize();
 
-        function initialize()
-        {
-            if($scope.tearheader &&
-                $scope.tearheader.mnemonicid)
-            {
+        function initialize() {
+            if ($scope.tearheader &&
+                $scope.tearheader.mnemonicid) {
                 vm.showPrintIcon = templateBusiness.showPrintIcon($scope.tearheader.mnemonicid);
-                if(vm.showPrintIcon)
-                {
+                if (vm.showPrintIcon) {
                     vm.sectionId = $scope.tearheader.itemid;
                     vm.isAvailableForPrint = templateBusiness.getPrintableValue($scope.tearheader.itemid);
                     vm.collapsed = !vm.isAvailableForPrint;
@@ -62,72 +57,60 @@
             }
         }
 
-        function printer()
-        {
+        function printer() {
             vm.isAvailableForPrint = !vm.isAvailableForPrint;
-            if(vm.isAvailableForPrint)
-            {
+            if (vm.isAvailableForPrint) {
                 toast.simpleToast('Section will show on pdf download');
-            }
-            else {
+            } else {
                 toast.simpleToast('Section will not show on pdf download');
             }
 
-            if(vm.sectionId)
-            {
+            if (vm.sectionId) {
                 overviewBusiness.templateOverview.isChanged = true;
                 overviewBusiness.updateTemplateOverview(vm.sectionId, vm.isAvailableForPrint);
                 overviewBusiness.getReadyForAutoSave();
             }
         }
 
-        function toggleCollapse()
-        {
+        function toggleCollapse() {
             vm.collapsed = !vm.collapsed;
         }
 
-        function applyClickEvent(action, $mdOpenMenu, ev)
-        {
-            if(action)
-            {
-                if(action.type === 'button' && action.callback)
-                {
+        function applyClickEvent(action, $mdOpenMenu, ev) {
+            if (action) {
+                if (action.type === 'button' && action.callback) {
                     commonBusiness.emitMsg(action.callback);
-                }
-                else if(action.type === 'menu') {
+                } else if (action.type === 'menu') {
                     $mdOpenMenu(ev);
                 }
 
-                if(action.isclicked !== null)
-                {
+                if (action.isclicked !== null) {
                     action.isclicked = !action.isclicked;
                 }
             }
         }
 
-        function applyMenuEvent(menu, action)
-        {
-            if(menu && action)
-            {
-                if(action.type === 'menu' && menu.callback)
-                {
-                    commonBusiness.emitMsg(menu.callback);
+        function applyMenuEvent(menu, action) {
+            if (menu && action) {
+                if (action.type === 'menu' && menu.callback) {
+                    if (menu.callbackParam) {
+                        commonBusiness.emitWithArgument(menu.callback, menu.callbackParam);
+                    } else {
+                        commonBusiness.emitMsg(menu.callback);
+                    }
                 }
             }
         }
 
         //Build the component actions if provided.
-        function buildActions()
-        {
+        function buildActions() {
             $scope.$watchCollection(
                 "actions",
                 function handleBuildActions(newValue, oldValue) {
-                    if(newValue &&
-                        newValue.length >= 1)
-                    {
+                    if (newValue &&
+                        newValue.length >= 1) {
                         vm.actions = [];
-                        _.each(newValue, function(eachVal)
-                        {
+                        _.each(newValue, function(eachVal) {
                             vm.actions.push(eachVal);
                         });
                     }
@@ -139,11 +122,10 @@
     }
 
     /** @ngInject */
-    function msComponentDirective($compile, templateBusiness, commonBusiness)
-    {
+    function msComponentDirective($compile, templateBusiness, commonBusiness) {
         return {
             restrict: 'E',
-            scope   : {
+            scope: {
                 tearheader: '=',
                 tearcontent: '=',
                 iscollapsible: '=?',
@@ -157,10 +139,8 @@
             controller: 'msComponentController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-template/templates/ms-component/ms-component.html',
-            compile: function(el, attrs)
-            {
-                return function($scope)
-                {
+            compile: function(el, attrs) {
+                return function($scope) {
                     $scope.title = $scope.tearheader.label || $scope.tearheader.Label;
                     $scope.preLabel = $scope.tearheader.prelabel || '';
                     $scope.actions = null;
@@ -170,12 +150,12 @@
                         scope: null
                     };
 
-                    if($scope.subtype !== '')
-                    {
-                        switch($scope.subtype)
-                        {
-                            case 'Expiring':
-                            case 'Proposed':
+                    if ($scope.subtype !== '') {
+                        switch ($scope.subtype.toLocaleLowerCase()) {
+                            case 'expiring':
+                            case 'proposed':
+                            case 'expiringhybrid':
+                            case 'proposedhybrid':
 
                                 var tearSheets = templateBusiness.getTearSheetItems($scope.tearcontent);
 
@@ -187,99 +167,94 @@
                                 });
                                 break;
 
-                            case 'TableLayOut1':
-                            case 'TableLayOut2':
-                            case 'TableLayOut3':
-                            case 'TableLayOut5':
-                                comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
-                                if(comp && comp.html !== '')
-                                {
+                            case 'tablelayout1':
+                            case 'tablelayout2':
+                            case 'tablelayout3':
+                            case 'tablelayout5':
+                                comp = templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
+                                if (comp && comp.html !== '') {
                                     el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                 }
                                 break;
 
-                            case 'TableLayOut4':
-                                comp =  templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
-                                if(comp && comp.html !== '')
-                                {
+                            case 'tablelayout4':
+                                comp = templateBusiness.determineTableLayout($scope, $scope.tearcontent, $scope.subtype);
+                                if (comp && comp.html !== '') {
                                     el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
                                 }
                                 bindTableLayout4Components($scope, el, $scope.tearcontent);
                                 break;
-
-                            case 'SubComponent':
+                            case 'subcomponent':
                                 var subComponents = templateBusiness.getSubComponents($scope.tearcontent);
-                                if(subComponents)
-                                {
-                                    _.each(subComponents, function(component)
-                                    {
-                                        if(!component.header) {
-                                            comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
-                                            if(comp && comp.html !== '') {
-                                                comp.html += '<div style="height:5px"></div>'
+                                if (subComponents) {
+                                    var msCompElem = el.find('#ms-accordion-content');
+                                    if (msCompElem) {
+                                        _.each(subComponents, function(component) {
+                                            if (!component.header) {
+                                                comp = templateBusiness.buildComponents($scope, component.section, component.section.id);
+                                                if (comp && comp.html !== '') {
+                                                    comp.html += '<div style="height:5px"></div>';
+                                                }
+                                            } else {
+                                                comp = templateBusiness.buildSubComponent($scope, component);
                                             }
-                                        }
-                                        else {
-                                            comp = templateBusiness.buildSubComponent($scope, component);
-                                        }
 
-                                        if(comp && comp.html !== '')
-                                        {
-                                            el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                                        }
-                                    });
+                                            if (comp && comp.html !== '') {
+                                                msCompElem.append($compile(comp.html)(comp.scope));
+                                            }
+                                        });
+                                    }
                                 }
                                 break;
                         }
-                    }
-                    else {
+                    } else {
                         bindComponents($scope, el, $scope.tearcontent);
                     }
 
-                    if($scope.islastcomponent)
-                    {
+                    if ($scope.islastcomponent) {
                         commonBusiness.emitMsg('step-load-completed');
                     }
                 };
             }
         };
 
-        function bindTableLayout4Components(scope, el, tearcontent)
-        {
+        function bindTableLayout4Components(scope, el, tearcontent) {
             var comp = {
                 html: '',
                 scope: null
             };
 
-            _.each(tearcontent, function(content)
-            {
-               if(content.id !== 'TableLayOut')
-               {
-                   comp = templateBusiness.buildComponents(scope, content, scope.subtype);
-                   if(comp && comp.html !== '')
-                   {
-                       el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                   }
-               }
-            });
+            var msCompElem = el.find('#ms-accordion-content');
+
+            if (msCompElem) {
+                _.each(tearcontent, function(content) {
+                    if (content.id !== 'TableLayOut') {
+                        comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+                        if (comp && comp.html !== '') {
+                            msCompElem.append($compile(comp.html)(comp.scope));
+                        }
+                    }
+                });
+            }
         }
 
-        function bindComponents(scope, el, tearcontent)
-        {
+        function bindComponents(scope, el, tearcontent) {
             var comp = {
-                html: '',
-                scope: null
-            },
-            tearSheets = templateBusiness.getTearSheetItems(tearcontent);
+                    html: '',
+                    scope: null
+                },
+                tearSheets = templateBusiness.getTearSheetItems(tearcontent);
 
-            _.each(tearSheets, function(content) {
-                comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+            var msCompElem = el.find('#ms-accordion-content');
 
-                if(comp && comp.html !== '')
-                {
-                    el.find('#ms-accordion-content').append($compile(comp.html)(comp.scope));
-                }
-            });
+            if (msCompElem) {
+                _.each(tearSheets, function(content) {
+                    comp = templateBusiness.buildComponents(scope, content, scope.subtype);
+                    if (comp && comp.html !== '') {
+                        msCompElem.append($compile(comp.html)(comp.scope));
+                    }
+                });
+            }
         }
     }
 

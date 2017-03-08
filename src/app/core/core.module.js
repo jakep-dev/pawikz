@@ -11,7 +11,6 @@
                 'ngMessages',
                 'ngResource',
                 'ngSanitize',
-                'ngTouch',
                 'ngMaterial',
                 'angular-loading-bar',
                 'datatables',

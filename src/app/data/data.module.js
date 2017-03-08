@@ -14,6 +14,7 @@
                 'app.dashboard.service',
                 'app.overview.service',
                 'app.template.service',
-                'app.workup.service'
+                'app.workup.service',
+                'app.news.service'
             ]);
 })();

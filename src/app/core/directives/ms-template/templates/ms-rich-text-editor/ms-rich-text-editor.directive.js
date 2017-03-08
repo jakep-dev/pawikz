@@ -10,7 +10,7 @@
 
 
     /** @ngInject */
-    function MsRichTextEditorDialogController($scope, templateBusiness, clientConfig, commonBusiness, dialog)
+    function MsRichTextEditorDialogController($scope, templateBusinessSave, clientConfig, commonBusiness, dialog)
     {
         var vm = this;
         vm.close = close;
@@ -57,7 +57,7 @@
             function handleAutoSave(newValue, oldValue) {
                 if(newValue !== oldValue) {
                     commonBusiness.emitWithArgument('RichTextEditor_' + $scope.itemid, newValue);
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue);
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );
@@ -69,7 +69,7 @@
     }
 
     /** @ngInject */
-    function MsRichTextEditorController($scope, templateBusiness, clientConfig, $mdDialog, commonBusiness)
+    function MsRichTextEditorController($scope, templateBusinessSave, clientConfig, $mdDialog, commonBusiness)
     {
         $scope.newScope = $scope.$new();
         $scope.newScope.itemid = $scope.itemid;
@@ -159,9 +159,8 @@
         $scope.$watch(
             "value",
             function handleAutoSave(newValue, oldValue) {
-                if(newValue !== oldValue)
-                {
-                    templateBusiness.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, (newValue));
+                if(newValue !== oldValue) {
+                    templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );

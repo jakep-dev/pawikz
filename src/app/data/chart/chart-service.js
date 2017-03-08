@@ -8,27 +8,28 @@
            .factory('stockService', stockService);
 
     /* @ngInject */
-    function stockService($http, $q, logger) {
+    function stockService($http, $q, logger, commonBusiness, stockChartBusiness) {
         /*
          * Added Variables to implement reset functionality 5/11/2016
          * */
         var initalStateData = {};
-        var manualSaveData = {};
+        var sigDevSources = null;
+        var indices = null;
+        var currentCompanyId = null;
+        var competitors = null;
+
         var service = {
             stockData: stockData,
             getSavedChartData: getSavedChartData,
             findTickers: findTickers,
             getIndices: getIndices,
             getCompetitors: getCompetitors,
+            getCurrentCompanyId: getCurrentCompanyId,
             saveChartSettings: saveChartSettings,
             saveChartAllSettings: saveChartAllSettings,
-            AddInitalStateData: addInitialStateData, //Added for reset functionality
-            GetInitialStateData: getInitialStateData,
-            AddManualSaveData: addmanualSaveData,
-            GetManualSaveData: getmanualSaveData,    //End of reset functionality options
-            EmptyManualSaveData: emptyManualSaveData,
+            setInitialStateData: setInitialStateData,
+            getInitialStateData: getInitialStateData,
             DeleteSpecificChart: deleteSpecificChart,
-            createTemplatePDFRequest:createTemplatePDFRequest,
             getSavedChartDefer: getSavedChartDefer,
             getSavedChartDataDefer: getSavedChartDataDefer,
             getSavedChartTableDefer: getSavedChartTableDefer,
@@ -40,52 +41,19 @@
             saveSigDevItems: saveSigDevItems
         };
 
-        function createTemplatePDFRequest(project_id, user_id, stepId, file_name, company_name, user_name, chart_name, chart_data, ssnid) {
-            return $http({
-                method: "POST",
-                url: "/api/createTemplatePDFRequest",
-                data: {
-                    project_id: project_id,
-                    user_id: user_id,
-                    step_ids: stepId,
-                    file_name: file_name,
-                    company_name: company_name,
-                    user_name: user_name,
-                    chart_name: chart_name,
-                    chart_data: chart_data,
-                    ssnid: ssnid
-                }
-            }).then(function(data, status, headers, config) {
-                return data.data;
-            }).catch(function(error) {
-                logger.error(JSON.stringify(error));
-            });
-        }
-
         return service;
 
-        function saveChartAllSettings(companyId, stepId, projectId, ssnid, chartSettings) {
-            var tmpdata =  {
-                //Changing keynames as per jake plaras email on 26/5/2016
-                company_id: companyId,
-                step_id: stepId,
-                project_id: projectId,
-                ssnid: ssnid,
-                data: chartSettings
-            };
+        function saveChartAllSettings(mnemonicItem) {
+
+            var input = stockChartBusiness.getSaveChartInputObject(mnemonicItem);
+
             return $http({
                 method: "POST",
                 url: "/api/saveChartAllSettings",
                 //url: "/chart/saveChartAllSettings_v2",
-                data: {
-                    //Changing keynames as per jake plaras email on 26/5/2016
-                    company_id: companyId,
-                    step_id: stepId,
-                    project_id: projectId,
-                    ssnid: ssnid,
-                    chartSettings: chartSettings
-                }
-            }).then(function(data, status, headers, config) {
+                data: input
+            }).then(function (data, status, headers, config) {
+                commonBusiness.emitWithArgument('updateInteractiveStockChartIds', data);
                 return data.data;
             }).catch(function(error) {
                 logger.error(JSON.stringify(error));
@@ -114,7 +82,7 @@
             });
         }
 
-        function stockData(tickers, timeFrame, splits, earnings, dividends, start_date, end_date, companyId, ssnid) {
+        function stockData(tickers, timeFrame, splits, earnings, dividends, start_date, end_date, companyId) {
             return $http({
                 method: "POST",
                 url: "/api/getChartData",
@@ -126,8 +94,7 @@
                     earnings: earnings,
                     start_date: start_date,
                     end_date: end_date,
-                    companyId: companyId,
-                    ssnid: ssnid
+                    companyId: companyId
                 }
             }).then(function(data, status, headers, config) {
                 return data.data;
@@ -148,9 +115,6 @@
                     ssnid: ssnid
                 }
             }).then(function(data, status, headers, config) {
-                angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
-                    $cookies.putObject('tempChartData', data.data);
-                }]);
                 return data.data;
             }).catch(function(error) {
                 logger.error(JSON.stringify(error));
@@ -171,53 +135,55 @@
             });
         }
 
-        function getIndices(keyword) {
-            return $http({
-                method: "POST",
-                url: "/api/getIndices",
-                data: {}
-            }).then(function(data, status, headers, config) {
-                return data.data;
-            }).catch(function(error) {
-                logger.error(JSON.stringify(error));
-            });
+        function getIndices() {
+            if (indices) {
+                return indices;
+            } else {
+                return $http({
+                    method: "POST",
+                    url: "/api/getIndices",
+                    data: {}
+                }).then(function (data, status, headers, config) {
+                    indices = data.data.indicesResp;
+                    return data.data.indicesResp;
+                }).catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+            }
+        }
+
+        function getCurrentCompanyId() {
+            return currentCompanyId;
         }
 
         function getCompetitors(companyId) {
-            return $http({
-                method: "POST",
-                url: "/api/getCompetitors",
-                data: {
-                    companyId: companyId
-                }
-            }).then(function(data, status, headers, config) {
-                return data.data;
-            }).catch(function(error) {
-                logger.error(JSON.stringify(error));
-            });
+            if ((currentCompanyId === companyId) && (competitors)) {
+                return competitors;
+            } else { 
+                return $http({
+                    method: "POST",
+                    url: "/api/getCompetitors",
+                    data: {
+                        companyId: companyId
+                    }
+                }).then(function(data, status, headers, config) {
+                    currentCompanyId = companyId;
+                    competitors = data.data.competitors;
+                    return data.data.competitors;
+                }).catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+            }
         }
 
-        function addInitialStateData(array) {
-            // initalStateData.newCharts = [];
-            initalStateData.newCharts = array.slice();
+        function setInitialStateData(array) {
+            initalStateData.newStockCharts = array;
         }
 
         function getInitialStateData() {
-            return initalStateData;
+            return initalStateData.newStockCharts;
         }
 
-        function addmanualSaveData(array) {
-            manualSaveData.newCharts = [];
-            manualSaveData.newCharts.push(array);
-        }
-
-        function getmanualSaveData() {
-            return manualSaveData;
-        }
-
-        function emptyManualSaveData() {
-            manualSaveData = {};
-        }
 
         function deleteSpecificChart(projectId, stepId, mnemonic, itemId, project_image_code, chartId, ssnId) {
             return $http({
@@ -233,28 +199,20 @@
                     ssnid: ssnId
                 }
             }).then(function(data, status, headers, config) {
-                //saveChartAllSettings();
-                angular.injector(['ngCookies']).invoke(['$cookies', function($cookies) {
-                    debugger;
-                    $cookies.putObject('tempChartData', data.data);
-                }]);
                 return data.data;
             }).catch(function(error) {
                 logger.error(JSON.stringify(error));
             });
         }
 
-        function saveSigDevItems(projectId, stepId, mnemonic, itemId, sigDevItems) {
+        function saveSigDevItems(mnemonicItem) {
+
+            var input = stockChartBusiness.getSaveSigDevInputObject(mnemonicItem);
+
             return $http({
                 method: "POST",
                 url: "/api/saveSigDevItems",
-                data: {
-                    project_id: projectId,
-                    step_id: stepId,
-                    mnemonic: mnemonic,
-                    item_id: itemId,
-                    items: sigDevItems
-                }
+                data: input
             }).then(function(data, status, headers, config) {
                 return data.data;
             }).catch(function(error) {
@@ -262,18 +220,17 @@
             });
         }
 
-        function getSavedChartDefer(projectId, stepId, mnemonic, itemId, ssnid)
+        function getSavedChartDefer(projectId, stepId, mnemonic, itemId)
         {
-             var all = $q.all([getSavedChartDataDefer(projectId, stepId, mnemonic, itemId, ssnid).promise,
-                                getSavedChartTableDefer(projectId, stepId, mnemonic, itemId, ssnid).promise,
-                                getSigDevSource().promise]);
+             var all = $q.all([getSavedChartDataDefer(projectId, stepId, mnemonic, itemId).promise,
+                                getSavedChartTableDefer(projectId, stepId, mnemonic, itemId).promise]);
 
             return all;
         }
 
-        function getSavedChartDataDefer(projectId, stepId, mnemonic, itemId, ssnid)
+        function getSavedChartDataDefer(projectId, stepId, mnemonic, itemId)
         {
-            var deffered = $q.defer();
+            var deferred = $q.defer();
             
             $http({
                 method: "POST",
@@ -282,25 +239,21 @@
                     project_id: projectId,
                     step_id: stepId,
                     mnemonic: mnemonic,
-                    item_id: itemId,
-                    ssnid: ssnid
+                    item_id: itemId
                 }
             }).then(function(data, status, headers, config) {
-                angular.injector(['ngCookies']).invoke(['$cookies', function ($cookies) {
-                    $cookies.putObject('tempChartData', data.data);
-                }]);
-                deffered.resolve(data.data);
+                deferred.resolve(data.data);
             }).catch(function(error) {
-                deffered.reject();
+                deferred.reject();
                 logger.error(JSON.stringify(error));
             });
 
-            return deffered;
+            return deferred;
         }
 
-        function getSavedChartTableDefer(projectId, stepId, mnemonic, itemId, ssnid)
+        function getSavedChartTableDefer(projectId, stepId, mnemonic, itemId)
         {
-            var deffered = $q.defer();
+            var deferred = $q.defer();
             
             $http({
                 method: "POST",
@@ -309,17 +262,16 @@
                     project_id: projectId,
                     step_id: stepId,
                     mnemonic: mnemonic,
-                    item_id: itemId,
-                    ssnid: ssnid
+                    item_id: itemId
                 }
             }).then(function(data, status, headers, config) {
-                deffered.resolve(data.data);
+                deferred.resolve(data.data);
             }).catch(function(error) {
-                deffered.reject();
+                deferred.reject();
                 logger.error(JSON.stringify(error));
             });
 
-            return deffered;
+            return deferred;
         }
 
         function getSignificantDevelopmentList(companyId, startDate, endDate) {
@@ -387,21 +339,21 @@
         }
 
         function getSigDevSource() {
-
-            var deffered = $q.defer();
-                
-            $http({
-                method: "POST",
-                url : "/api/getSigDevSource",
-                data: {}
-            }).then(function (data, status, headers, config) {
-                deffered.resolve(data.data);
-            }).catch(function(error) {
-                deffered.reject();
-                logger.error(JSON.stringify(error));
-            });
-
-            return deffered;
+            if (sigDevSources) {
+                return sigDevSources;
+            } else {
+                return $http({
+                    method: "POST",
+                    url: "/api/getSigDevSource",
+                    data: {}
+                }).then(function (data, status, headers, config) {
+                    sigDevSources = data.data.source;
+                    return data.data.source;
+                }).catch(function (error) {
+                    logger.error(JSON.stringify(error));
+                });
+            }
         }
+
     }
 })();

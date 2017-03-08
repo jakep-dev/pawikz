@@ -9,16 +9,19 @@
 
 })();
 /** @ngInject */
-function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
-                             DTColumnDefBuilder, DTColumnBuilder,
-                             DTOptionsBuilder, dashboardService,
-                             authService, authBusiness, commonBusiness,
-                             breadcrumbBusiness, dashboardBusiness, workupBusiness, store, toast,
-                             $mdToast, clientConfig, templateBusiness, $location, $interval)
+function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams, 
+                             $compile, $location, $interval, $mdToast,
+                             DTColumnDefBuilder, DTColumnBuilder, DTOptionsBuilder, 
+                             store, toast, dialog, clientConfig,
+                             authBusiness, commonBusiness, notificationBusiness, templateBusiness, 
+                             breadcrumbBusiness, dashboardBusiness, workupBusiness,
+                             dashboardService, workupService, authService)
 {
     var vm = this;
     vm.companyId = 0;
     vm.userId = 0;
+    vm.isRedrawFromDelete = false;
+    vm.selectedProjectId = null;
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -51,8 +54,37 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     });
 
     commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
-        templateBusiness.pushNotification(data);
+        notificationBusiness.pushNotification(data);
     });
+
+    function deleteWorkup(projectId, projectName)
+    {
+        dialog.confirm(clientConfig.messages.dashboardDelete.title,
+            projectName + clientConfig.messages.dashboardDelete.content,
+            null, {
+                ok: {
+                    callBack: function () {
+                        vm.selectedProjectId = projectId;
+                        toggleRedraw();
+                        redrawDataTable();
+                    }
+                },
+                cancel:{
+                    callBack:function(){
+                        return false;
+                    }
+                }
+            }, null, false);
+    }
+
+    function toggleRedraw()
+    {
+        vm.isRedrawFromDelete = !vm.isRedrawFromDelete;
+    }    
+
+    function recompileHtml(row, data, dataIndex) {
+        $compile(angular.element(row).contents())($scope);
+    }
 
     function renewTemplate()
     {
@@ -83,6 +115,19 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 $location.url('/overview/' + projectId);
             }
         });
+
+        $('.deleteWorkupStyle').unbind('click');
+        $('.deleteWorkupStyle').click(function(event)
+        {
+            var obj = $(this);
+            var row = obj.closest('tr');
+
+            if(!row.hasClass('not-active') && obj) {
+                var projectId = obj[0].attributes['projectId'].value;
+                var projectName = obj[0].attributes['projectName'].value;
+                deleteWorkup(projectId, projectName);
+            }
+        }); 
 
 
         if($('#dashBoardDetails tbody tr:first td').length > 0) {
@@ -132,6 +177,26 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                     }
                 }, 100);
 
+                var deletePromise = $interval(function()
+               {
+                   if($('.deleteWorkupStyle').length > 0)
+                   {
+                       $('.deleteWorkupStyle').unbind('click');
+                       $('.deleteWorkupStyle').click(function()
+                       {
+                           var obj = $(this);
+                           var row = obj.closest('tr');
+
+                           if(!row.hasClass('not-active') && obj) {
+                                var projectId = obj[0].attributes['projectId'].value;
+                                var projectName = obj[0].attributes['projectName'].value;
+                                deleteWorkup(projectId, projectName);
+                           }
+                       });
+                       $interval.cancel(deletePromise);
+                   }
+               }, 100);
+
             });
         }
 
@@ -156,17 +221,6 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         $mdMenu.hide()
     }
 
-    // Action Html
-    function actionHtml(data, type, full, meta)
-    {
-        return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
-    }
-
-    function renewHtml(data, type, full, meta)
-    {
-        return '<a href="#" class="renewStyle" renew="true" type="button" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'">Renew</a>';
-    }
-
     // Clear search
     function reload() {
         vm.companyId = 0;
@@ -180,7 +234,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function redrawDataTable()
     {
         var oTable = $('#dashBoardDetails').dataTable();
-        oTable.fnClearTable();
+        //oTable.fnClearTable();
         oTable.fnDraw();
     }
 
@@ -211,37 +265,87 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         var length = aoData[4].value;
         var searchFilter = aoData[5].value.value;
 
-        dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
-            start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
+        if(!vm.isRedrawFromDelete)
         {
+            dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
+                start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
+            {
 
-            var blankData = {
-                companyName: '',
-                projectName: '',
-                status: '',
-                createdBy: '',
-                lastUpdateDate: ''
+                var blankData = {
+                    companyName: '',
+                    projectName: '',
+                    status: '',
+                    createdBy: '',
+                    lastUpdateDate: ''
+                };
+
+                var records = {
+                    draw: draw,
+                    recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults : 0,
+                    recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults   : 0,
+                    data: angular.isDefined(data) && angular.isDefined(data.projects)
+                    && data.projects !== null ? data.projects : blankData
+                };
+
+                fnCallback(records);
+            });
+        }
+        else {
+
+            //Get projectId, filterParam (which is basically dashboard)
+            //Call Dashboard processRemoveWorkUp
+            //Result from processRemoveWorkup will have filterDashboard result
+            //Call fnCallback(records);
+            var filterParam = {
+                userId: $stateParams.userId,
+                searchUserId: vm.userId,
+                searchCompanyId: vm.companyId, 
+                rowNum: start, 
+                perPage: length, 
+                sortOrder: sortOrder,
+                sortFilter: sortFilter, 
+                searchFilter: searchFilter, 
+                projectId: $rootScope.projectId
             };
 
-            var records = {
-                draw: draw,
-                recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
-                (data.paging !== null) ? data.paging.totalResults : 0,
-                recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
-                (data.paging !== null) ? data.paging.totalResults   : 0,
-                data: angular.isDefined(data) && angular.isDefined(data.projects)
-                && data.projects !== null ? data.projects : blankData
-            };
+            dashboardService.processRemoveWorkUp(vm.selectedProjectId, filterParam).then(function(results)
+            {
+                vm.selectedProjectId = null;
+                
+                var data = results.dashboard;
+                var deleted = results.delete;
+                var blankData = {
+                    companyName: '',
+                    projectName: '',
+                    status: '',
+                    createdBy: '',
+                    lastUpdateDate: ''
+                };
 
-            fnCallback(records);
-        });
+                var records = {
+                    draw: draw,
+                    recordsTotal: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults : 0,
+                    recordsFiltered: angular.isDefined(data) && angular.isDefined(data.paging) &&
+                    (data.paging !== null) ? data.paging.totalResults   : 0,
+                    data: angular.isDefined(data) && angular.isDefined(data.projects)
+                    && data.projects !== null ? data.projects : blankData
+                };
+
+                toggleRedraw();
+                fnCallback(records);
+            });
+        }
+
     }
 
 
     // Initialize
     function initialize(isNav, token)
     {
-        templateBusiness.initializeMessages($scope);
+        notificationBusiness.initializeMessages($scope);
         if(isNav)
         {
             store.set('x-session-token', token);
@@ -266,8 +370,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     {
         //Defining column definitions
         vm.dtColumnDefs = [
-            DTColumnDefBuilder.newColumnDef(1).renderWith(actionHtml),
-            DTColumnDefBuilder.newColumnDef(5).renderWith(renewHtml)
+            DTColumnDefBuilder.newColumnDef(1).renderWith(dashboardBusiness.getWorkupHtml),
+            DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
 
         //Dashboard DataTable Configuration
@@ -279,13 +383,14 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('serverSide', true)
             .withOption('initComplete', initComplete)
             .withOption('drawCallback', renewTemplate)
+            .withOption('createdRow', recompileHtml)
             .withOption('paging', true)
             .withOption('autoWidth', true)
             .withOption('responsive', true)
             .withOption('stateSave', true)
             .withOption('order',[4, 'desc'])
             .withPaginationType('full')
-            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+            .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
         //Defining columns for dashboard
         vm.dtColumns = [
@@ -294,15 +399,14 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnBuilder.newColumn('status', 'Status'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
-            DTColumnBuilder.newColumn('renew', 'Renew')
+            DTColumnBuilder.newColumn('action', 'Action')
         ];
     }
 
-    clientConfig.socketInfo.socket.on('notify-renew-workup-status', function(data)
-    {
+    function dashboardRenewalUpdate(data) {
         $rootScope.toastTitle = 'WorkUp Renewal Completed!';
         $rootScope.toastProjectId = data.projectId;
-        var obj = $('.renewStyle[projectId="'+ data.projectId +'"]');
+        var obj = $('.renewStyle[projectId="' + data.projectId + '"]');
         var row = obj.closest('tr');
         row.removeClass('not-active');
         $mdToast.show({
@@ -314,8 +418,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
         console.log('Renewal WorkUp');
         console.log(data);
-        templateBusiness.updateNotification(parseInt(data.old_project_id), 'complete', 'Renewal', parseInt(data.projectId), data.project_name);
-    });
+    }
+    notificationBusiness.setDashboardCallback(dashboardRenewalUpdate);
 
     ///Work-Up Status
     function workUpStatus(data)
@@ -341,6 +445,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 switch (workUp.status)
                 {
                     case 'in-process':
+                    case 'delete':
                     case 'renewal':
                         row.removeClass('not-active');
                         row.addClass('not-active');
@@ -366,4 +471,5 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             }
         }
     });
+
 }

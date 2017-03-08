@@ -6,11 +6,13 @@
         .service('templateBusinessFormat', templateBusinessFormat);
 
     /* @ngInject */
-    function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness) {
+    function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness, clientConfig) {
         var business = {
             getFormatObject: getFormatObject,
+			getProgramTableFormatObject: getProgramTableFormatObject,
             removeFixes: removeFixes,
             formatData: formatData,
+			formatProgramTableData: formatProgramTableData,
 
     		getMnemonicAlignment: getMnemonicAlignment,
     		getMnemonicDataType: getMnemonicDataType,
@@ -25,6 +27,7 @@
             getAlignmentForTableLayoutGenericTextItem: getAlignmentForTableLayoutGenericTextItem,
             getAlignmentForTableLayoutR : getAlignmentForTableLayoutR,
             getAlignmentForTableLayoutNonEditable : getAlignmentForTableLayoutNonEditable,
+            getAlignmentWidthColumForTableLayout : getAlignmentWidthColumForTableLayout,
             formatDate: formatDate,
             parseDate: parseDate
 
@@ -61,13 +64,50 @@
     	    formatObject.isNumeric = templateBusiness.isMnemonicNumberType(tearsheet.Mnemonic);
     	    return formatObject;
     	}
+
+		function getProgramTableFormatObject(tearsheet, mnemonicType) {
+			var formatObject = getFormatObject(tearsheet);
+			
+			if(formatObject) {	
+				formatObject.dataType = mnemonicType.dataType;
+    	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
+				formatObject.precision = 2;
+				formatObject.invalidMessage = clientConfig.messages.programTableHybrid.invalidInput;
+			}
+
+			return formatObject;
+		}
+
+		function formatProgramTableData(scope) {
+			var formatted = scope.value;
+
+            /*
+                force to zero if columnName === RETAIN and if 1st row
+            */
+            if(scope.rowid === '0' && scope.columnname === 'RETAIN' && formatted === '') {
+                formatted = '0.00';
+            }
+
+             /*
+                * formats input except
+                * 1) if 1st row and
+                * 2) columnName === 'ROL'
+            */ 
+            if(scope.rowid !== 0 && scope.columnname !== 'ROL') {
+                formatted = formatData(formatted, scope.formatObj);
+            }
+
+            return formatted;
+		}
         
     	function removeFixes(value, formatObj) {
 
     	    var formatted;
 
     	    formatted = preFormatData(value, formatObj);
-    	    if (formatObj.postProcessingNeeded) {
+    	    if(formatted === formatObj.defaultValue) {
+                formatted = '';
+            } else if (formatObj.postProcessingNeeded) {
     	        formatObj.postProcessingNeeded = undefined;
     	        if (formatObj.isNegative) {
     	            formatted = '-' + formatObj.numericValue.toString();
@@ -181,13 +221,28 @@
     	                    formatted = formatted.substr(1);
     	                    isNegative = true;
     	                }
-    	                numericValue = Number(removeNonNumericCharacters(formatted));
+    	                numericValue = Number(removeNonNumericCharacters(formatted, formatObj.invalidMessage));
     	                formatObj.postProcessingNeeded = true;
     	                formatObj.isNegative = isNegative;
     	                formatObj.numericValue = numericValue;
     	                break;
     	            case 'DATE':
-    	                formatted = templateBusiness.formatDate(formatted, 'MM/DD/YYYY');
+    	                var dateObject = null;
+
+                        //parsed date & check if valid date for DD-MMM-YY format
+                        dateObject = parseDate(formatted, 'DD-MMM-YY');
+                        if(angular.isDate(dateObject)) {
+                            formatted = formatDate(dateObject, 'MM/DD/YYYY');
+                            break;
+                        }
+
+                        //parsed date & check if valid date for MM/DD/YYYY format
+                        dateObject = parseDate(formatted, 'MM/DD/YYYY');
+                        if(angular.isDate(dateObject)) {
+                            formatted = formatDate(dateObject, 'MM/DD/YYYY');
+                            break;
+                        }
+                        
     	                break;
     	            default:
     	                break;
@@ -205,7 +260,7 @@
     	    var expr = /[0-9]+\.?[0-9]*/;
 
     	    formatted = preFormatData(value, formatObj);
-    	    if (formatObj.postProcessingNeeded) {
+    	    if (formatObj.postProcessingNeeded && formatted !== formatObj.defaultValue) {
     	        formatObj.postProcessingNeeded = undefined;
     	        if (formatObj.isNegative) {
     	            if (formatObj.dataSubtype === 'CURRENCY') {
@@ -304,9 +359,10 @@
     		return 'NUMBER';
     	}
 
-    	function removeNonNumericCharacters(value)
+    	function removeNonNumericCharacters(value, msg)
     	{
     		var inputVal = $.trim(value);
+			var msg = (msg) ? msg : 'Your input is not a valid number.';
 
             /*
                 TODO change to consider negative values for numeric
@@ -315,7 +371,7 @@
 
             //allow only numberic for number datatype
 			if(regEx.test(inputVal)){
-				toast.simpleToast('Your input is not a valid number.');
+				toast.simpleToast(msg);
 				inputVal = inputVal.replace(regEx,''); 
 			}
 
@@ -419,11 +475,11 @@
 
     	function getMnemonicDefaultValue(tearSheet)
     	{
-    	    if (tearSheet instanceof Object) {
+    	    if (tearSheet instanceof Object && tearSheet.answer) {
+                return tearSheet.answer;
+            } else {
                 return '';
-    	    } else {
-    	        return tearSheet.answer;
-    	    }
+            }
     	}
 
     	function getMnemonicPrecision(tearSheet)
@@ -518,6 +574,25 @@
             }
 
             return classVal;
+        }
+
+        function getAlignmentWidthColumForTableLayout(col, colWidth){ // use
+            
+            var columnWidth = colWidth;
+
+            if(!angular.isUndefined(col) && typeof(col.css) != 'object'){
+                if((col.css && col.css.indexOf('tableWidth40') > -1)){
+                    columnWidth = '20%';
+                }else if((col.css && col.css.indexOf('tableWidth30') > -1)){
+                    columnWidth = '15%';
+                }else if((col.css && col.css.indexOf('tableWidth') > -1)){
+                    columnWidth = '10%';
+                }else{
+                    columnWidth = '2%';
+                }
+            }
+
+            return columnWidth;
         }
         
         function parseDate(str, format)
