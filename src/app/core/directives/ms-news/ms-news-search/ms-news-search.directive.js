@@ -30,14 +30,12 @@
         vm.newsSelection = newsSelection;
         vm.initialize = initialize;
 
-        // dataTableConfiguration();
-        // initializeActionButtons();
-
         //Make initial call
         initialize();
 
         function initialize()
         {
+            disabledBookmarkIcon();
             dataTableConfiguration();
             
         }
@@ -53,15 +51,21 @@
             
         });
 
-        // function initializeActionButtons() {
-            commonBusiness.onMsg('-Bookmark', $scope, function(ev) {
-                (validate) ? bookmarkNews(): confirmationMessage();
-            });
+        commonBusiness.onMsg('-Bookmark', $scope, function(ev) {
+            bookmarkNews();
+        });
 
-            commonBusiness.onMsg('-Clear', $scope, function(ev) {
-                clearSelection();   
+        commonBusiness.onMsg('-Clear', $scope, function(ev) {
+            clearSelection();   
+        });
+
+        function disabledBookmarkIcon(){
+            angular.forEach($scope.$parent.$parent.actions, function(action){
+                if(action.id == 2){ 
+                    action.disabled = true;
+                }
             });
-        // }
+        }
 
         function toggleCollapse() {
             vm.collapsed = !vm.collapsed;
@@ -71,19 +75,22 @@
             _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
                     item.isSelected = false;
-                    validate = item.isSelected;
+                    disabledBookmarkIcon();
                 }
             });
         }
 
         function newsSelection() {
-            // function newsSelection() {
-            validate = false;
+            
+            disabledBookmarkIcon();
             
             _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
-                    validate = item.isSelected;
-                    vm.reloadValue = validate;
+                    angular.forEach($scope.$parent.$parent.actions, function(action){
+                        if(action.id == 2){ 
+                            action.disabled = false;
+                        }
+                    });
                 }
             });
         }
@@ -92,12 +99,8 @@
             $mdDialog.hide();
         };
 
-        function confirmationMessage() {
-            newsBusiness.alertMessage(vm.resultDetails);
-        }
-
         function bookmarkNews() {
-            newsBusiness.bookmarkNewsArticle(vm.resultDetails, validate, vm.collapseSearch);
+            newsBusiness.bookmarkNewsArticle(vm.resultDetails, vm.collapseSearch);
         }
 
         function actionHtml(data, type, full, meta) {

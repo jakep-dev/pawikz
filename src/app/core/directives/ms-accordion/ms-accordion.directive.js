@@ -10,7 +10,7 @@
         .directive('msAccordion', msAccordionDirective)
 
 
-    function MsAccordionController($scope, $attrs, commonBusiness) {
+    function MsAccordionController($scope, $attrs, commonBusiness, newsBusiness) {
         var vm = this;
 
         vm.iscollapsed = $scope.initialCollapsed;
@@ -18,8 +18,14 @@
         vm.actions = $scope.actions;
         vm.titleClass = $scope.titlebg || 'md-amber-A200-bg';
         vm.isProcessComplete = true;
+        vm.showRadioButtonForBookmark = false;
+        vm.isselectBookmark= false;
+        vm.removeAttachment = [];
+
         vm.applyClickEvent = applyClickEvent;
         vm.loadSearchResult = loadSearchResult;
+        vm.selectBookmarkToRemove = selectBookmarkToRemove;
+        vm.removeSelectedBookmarkChk = removeSelectedBookmarkChk;
 
         init();
 
@@ -29,6 +35,10 @@
                 toggleCollapse();
             });
         }
+
+        commonBusiness.onMsg('remove-bookmark', $scope, function() {
+            removeSelectedBookmarkChk();
+        });
 
         commonBusiness.onMsg('load-search-result', $scope, function(ev) {
            vm.isProcessComplete = true;
@@ -66,6 +76,57 @@
                 vm.isProcessComplete = true;
                 toggleCollapse();
             }
+
+            if ($scope.removeBookmarkEvent != null) {
+                vm.showRadioButtonForBookmark = !vm.showRadioButtonForBookmark;
+            } 
+        }
+
+        function removeSelectedBookmarkChk(){
+            if(vm.isselectBookmark){
+                _.each(newsBusiness.removeselectedNews, function(item) {
+
+                    if ($scope.index === item.rowId && item.isSelected === vm.isselectBookmark) {
+                        item.isSelected = false;
+                        vm.articleIndex = $scope.index;
+                        vm.removeAttachment[vm.articleIndex] = true;
+                        disabledDeleteIcon();
+                        commonBusiness.emitMsg('news-bookmark');
+                    }
+                });
+            }
+        }
+
+        function selectBookmarkToRemove(){
+            
+            vm.isselectBookmark = !vm.isselectBookmark;
+
+            disabledDeleteIcon();
+
+                _.each(newsBusiness.selectedNews, function(item) {
+                    
+                    if ($scope.index === item.rowId) {
+                        item.isSelected = vm.isselectBookmark;
+                    }
+
+                    if(item.isSelected){
+                       var actions = $scope.$parent.$parent.$parent.$parent.$parent.actions;
+                        angular.forEach(actions, function(action){
+                            action.disabled = false;
+                        });
+                    }
+                });
+
+                vm.selectBookmark = newsBusiness.selectedNews;
+                newsBusiness.removeselectedNews.push.apply(newsBusiness.removeselectedNews, newsBusiness.selectedNews);
+        }
+
+        function disabledDeleteIcon(){
+
+            var actions = $scope.$parent.$parent.$parent.$parent.$parent.actions;
+            angular.forEach(actions, function(action){
+                action.disabled = true;
+            });
         }
 
 
@@ -95,6 +156,9 @@
                 titlebg: '@',
                 isExpandable: '=?',
                 actions: '=',
+                index: '=',
+                row: '=',
+                removeBookmarkEvent: '@',
                 collapseSearchResult: '@',
                 expandSearchResult: '@'
             },

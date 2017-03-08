@@ -12,17 +12,31 @@
 
         vm.bookmarkedItems = [];
         vm.showArticleContent = showArticleContent;
+        vm.attachmentNews = "attachment";
 
+    
         loadAttachments();
+        initializeActionButtons();
 
         commonBusiness.onMsg('news-bookmark', $scope, function() {
             vm.bookmarkedItems = newsBusiness.selectedNews;
             loadAttachments();
         });
 
+        function initializeActionButtons() {
+            commonBusiness.onMsg('-Remove', $scope, function(ev) {
+                
+                forRemoveBookmark();
+            });
+        }
+
+        function forRemoveBookmark(){
+            newsBusiness.removeBookmark(newsBusiness.removeselectedNews);
+        }
+
+
         function showArticleContent(article) {
             newsService.showArticleContent(article.externalUrl).then(function(response) {
-                // article.htmlArticle = response.htmlContent;
                 article.htmlArticle = $sce.trustAsHtml(response.htmlContent);
                 article.isLoaded = true;
             });
@@ -41,7 +55,10 @@
                             resourceId: details.resourceId,
                             externalUrl: details.externalUrl,
                             htmlArticle: '', //showArticleContent(details.externalUrl),
-                            isLoaded: false
+                            isLoaded: false,
+                            bookmarkId: details.bookmarkId,
+                            stepId: details.stepId,
+                            isSelected : false
                         }
                         article.htmlArticle = showArticleContent(article)
                         vm.bookmarkedItems.push(article);

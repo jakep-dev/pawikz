@@ -54,7 +54,8 @@
             app.post('/api/news/search', search),
             app.post('/api/news/attachNewsArticles', attachNewsArticles),
             app.post('/api/news/getAttachedArticles', getAttachedArticles),
-            app.post('/api/news/showArticleContent', showArticleContent)
+            app.post('/api/news/showArticleContent', showArticleContent),
+            app.post('/api/news/deleteAttachedArticles', deleteAttachedArticles)
         ]);
 
         function getServiceDetails(serviceName) {
@@ -157,6 +158,32 @@
             client.get(config.restcall.url + '/' + service.name + '/' + methodName, args, function(data, response) {
                 res.status(response.statusCode).send(data);
             });
+        }
+
+        function deleteAttachedArticles(req, res, next) {
+
+            var service = getServiceDetails('news');
+
+            var methodName = '';
+
+            if (!_.isUndefined(service) && !_.isNull(service)) {
+                methodName = service.methods.deleteAttachedArticles;
+            }
+
+            var args = {
+                data: {
+                    project_id: req.body.project_id,
+                    user_id: req.body.user_id,
+                    ssnid: req.headers['x-session-token'],
+                    bookmarks: req.body.bookmarks
+                },
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
+                function(data, response) {
+                    res.send(data);
+                });
         }
     };
 

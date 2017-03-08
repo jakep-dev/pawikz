@@ -103,7 +103,8 @@ exports.restcall = {
                 search: 'newsSearch',
                 attachNewsArticles: 'attachNewsArticles',
                 getAttachedArticles: 'getAttachedArticles',
-                showArticleContent: 'getArticle'
+                showArticleContent: 'getArticle',
+                deleteAttachedArticles: 'deleteAttachedArticles'
             }
         }
     ]
