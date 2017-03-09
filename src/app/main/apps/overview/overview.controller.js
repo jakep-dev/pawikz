@@ -139,7 +139,7 @@
                     vm.templateOverview = data.templateOverview;
                     commonBusiness.companyId = vm.templateOverview.companyId;
                     commonBusiness.projectName = vm.templateOverview.projectName;
-                    commonBusiness.companyName = vm.templateOverview.companyName + " (" + vm.templateOverview.ticker + ")" ;
+                    commonBusiness.companyName = vm.templateOverview.companyName;
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
 
                     overviewBusiness.templateOverview = vm.templateOverview;
