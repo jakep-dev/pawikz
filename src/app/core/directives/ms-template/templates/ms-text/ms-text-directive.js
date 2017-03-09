@@ -9,24 +9,37 @@
 
     /** @ngInject */
     function MsTextController($scope, templateBusiness, clientConfig,
-                              templateBusinessFormat, templateBusinessSave)
+                              templateBusinessFormat, templateBusinessSave, commonBusiness)
     {
         $scope.disabled = ($scope.isdisabled === 'true');
         $scope.formatObj = angular.fromJson(_.unescape($scope.formats));
         $scope.formattedValue = templateBusinessFormat.formatData($scope.value, $scope.formatObj);
         $scope.iskmb = $scope.formatObj.isKMB;
 
+        if($scope.fieldid)
+        {
+            commonBusiness.onMsg('fieldId_' + $scope.fieldid, $scope, function(ev, value) {
+                $scope.value = value + '';
+                $scope.formattedValue = templateBusinessFormat.formatData($scope.value, $scope.formatObj);
+            });
+        }
+
 		//blur function add prefix, postfix and parenthesis for negatives
         $scope.textChange = function()
         {
             $scope.value = templateBusinessFormat.removeFixes($scope.formattedValue, $scope.formatObj);
             $scope.formattedValue = templateBusinessFormat.formatData($scope.value, $scope.formatObj);
+
+            if($scope.fieldid)
+            {
+                templateBusiness.updateSummationMnemonics($scope.fieldid, $scope.itemid, $scope.value);
+                templateBusiness.summation($scope.fieldid, $scope.itemid);
+            }
         };
 		
 		//focus function remove prefix, postfix and parenthesis for negatives
 		$scope.removeFixes = function() 
 		{
-			//$scope.value = removeFixes($scope.value);
             $scope.formattedValue = $scope.value;
 		};
 
@@ -52,6 +65,7 @@
             scope   : {
                 itemid: '@',
                 mnemonicid: '@',
+                fieldid: '@',
                 value: '@',
                 formats: '@',
 				prefix: '@',
@@ -66,7 +80,6 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-text/ms-text.html',
             link: function(scope, el)
             {
-                // $('.md-errors-spacer').remove();
                 el.find('.md-errors-spacer').remove();
             }
         };

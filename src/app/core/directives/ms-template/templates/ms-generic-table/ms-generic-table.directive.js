@@ -142,6 +142,9 @@
                                         var classValue;
                                         var itemId = tearSheetItem.ItemId;
                                         var mnemonicId = tearSheetItem.Mnemonic;
+                                        var fieldId = tearSheetItem.FieldId || '';
+                                        var onKeyUp = tearSheetItem.onkeyup;
+                                        
                                         //raw value from database
                                         var value = templateBusiness.getMnemonicValue(itemId, mnemonicId, false);
                                         var formats = templateBusinessFormat.getFormatObject(tearSheetItem);
@@ -159,9 +162,26 @@
                                             value = templateBusinessFormat.removeFixes(value, formats);
                                             classValue = templateBusinessFormat.getAlignmentForGenericTableItem(col, classValue);
 
+                                            var computationSearchStr = 'computeFields(';
+                                            var computation = '';
+                                            var addtemId = '';
+                                            var totalItemId = '';
+
+                                            if(onKeyUp && onKeyUp.indexOf(computationSearchStr) > -1)
+                                            {
+                                                computation = onKeyUp.substring(onKeyUp.indexOf(computationSearchStr) + computationSearchStr.length);
+                                                computation = computation.substring(0, computation.indexOf(')'));
+                                                var tempArr = computation.split(',');
+                                                addtemId = tempArr[0].replace(/'/g,"").trim() || '';
+                                                totalItemId = tempArr[1].replace(/'/g,"").trim() || '';
+
+                                                templateBusiness.updateSummationMnemonics(fieldId, itemId, value, totalItemId);
+                                            }
+
                                             html += '<ms-text ' +
                                             'itemid="'+ itemId +'" ' +
                                             'mnemonicid="'+ mnemonicId +'"  ' +
+                                            'fieldid="'+ fieldId +'" '+
                                             'isdisabled="'+ scope.isnoneditable +'" ' +
                                             'classtype="' + classValue + '" ' +
                                             'value="' + value + '"' +
