@@ -14,7 +14,8 @@
             attachNewsArticles: attachNewsArticles,
             getAttachedArticles: getAttachedArticles,
             showArticleContent: showArticleContent,
-            downloadNews: downloadNews
+            downloadNews: downloadNews,
+            deleteAttachedArticles: deleteAttachedArticles
         };
 
         return service;
@@ -128,6 +129,28 @@
 
             return $http({
                     url: clientConfig.endpoints.newsEndPoint.getAttachedArticles,
+                    method: "POST",
+                    data: input,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function deleteAttachedArticles(projectId, userId, bookmarks) {
+            var input = {
+                project_id: parseInt(projectId),
+                user_id: userId,
+                bookmarks: bookmarks
+            };
+
+            return $http({
+                    url: clientConfig.endpoints.newsEndPoint.deleteAttachedArticles,
                     method: "POST",
                     data: input,
                     contentType: "application/json; charset=utf-8",

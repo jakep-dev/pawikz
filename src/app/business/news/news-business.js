@@ -9,13 +9,14 @@
         .factory('newsBusiness', newsBusiness);
 
     /* @ngInject */
-    function newsBusiness(newsService, dialog, commonBusiness) {
+    function newsBusiness(newsService, dialog, commonBusiness, clientConfig) {
 
         var business = {
             selectedNews: [],
+            removeselectedNews: [],
             showArticleContent: showArticleContent,
             bookmarkNewsArticle: bookmarkNewsArticle,
-            alertMessage: alertMessage
+            removeBookmark: removeBookmark
         };
 
         return business;
@@ -30,32 +31,10 @@
             });
         }
 
-
-        function alertMessage(scope) {
-            var val = false;
-
-            _.filter(scope, function(article) {
-                if (article.isSelected) {
-                    val = article.isSelected;
-                }
-            });
-
-            if (!val) {
-                dialog.alert("Bookmark News", "Please select news item(s)",
-                    null, {
-                        ok: {
-                            name: 'ok',
-                            callBack: function() {
-                                dialog.close();
-                            }
-                        }
-                    }, '', null, null);
-            }
-        }
-
-        function bookmarkNewsArticle(scope, validation, collapseSearch) {
-            if (validation) {
-                dialog.confirm('Bookmark News', 'Are you sure you want to include the full text of the checked article(s) in your work-up?', null, {
+        function bookmarkNewsArticle(scope, collapseSearch) {
+            
+                dialog.confirm(clientConfig.messages.newsArticle.bookmarkNewsItem.title, 
+                                clientConfig.messages.newsArticle.bookmarkNewsItem.content , null, {
                     ok: {
                         name: 'yes',
                         callBack: function() {
@@ -97,9 +76,51 @@
                         }
                     }
                 });
-            } else {
-                alertMessage(scope);
-            }
+        }
+
+         function removeBookmark(scope) {
+
+            dialog.confirm(clientConfig.messages.newsArticle.deleteNewsItem.title, 
+                           clientConfig.messages.newsArticle.deleteNewsItem.content, null, {
+                ok: {
+                    name: 'yes',
+                    callBack: function() {
+
+                        var removeAttachment = [];
+
+                        _.each(scope, function(details) {
+
+                            if(details.isSelected){
+                                removeAttachment.push({
+                                    bookmarkId: details.bookmarkId,
+                                    resourceId: details.resourceId,
+                                    stepId: details.stepId
+                                });
+                            }
+
+                            
+                        });
+
+                        console.log(removeAttachment);
+
+                        newsService.deleteAttachedArticles(commonBusiness.projectId, commonBusiness.userId, removeAttachment).then(
+                            function(response) {
+                                console.log(response);
+                                 commonBusiness.emitMsg('remove-bookmark');
+                            }
+                        );
+
+                        dialog.close();
+
+                    }
+                },
+                cancel: {
+                    name: 'no',
+                    callBack: function() {
+                        return false;
+                    }
+                }
+            });
         }
     }
 })();
