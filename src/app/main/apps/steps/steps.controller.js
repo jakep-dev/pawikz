@@ -20,7 +20,7 @@
         var stepName = $stateParams.stepName;
         $scope.stepId = stepId;
         $rootScope.isBottomSheet = true;
-        bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
+        bottomSheetConfig.url = 'app/main/apps/steps/sheet/steps-sheet.html';
         bottomSheetConfig.controller = $scope;
 
         vm.refreshstep = refreshStep;
@@ -81,11 +81,13 @@
         //Get Schema
         function getSchemaAndData()
         {
-            stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
+            stepsBusiness.get(projectId, stepId, commonBusiness.userId, (overviewBusiness.templateOverview === null)).then(function(response)
             {
+                console.log('GetSchemaAndData');
+                console.log(response);
                 if(response)
                 {
-                    angular.forEach(response, function(data)
+                    _.each(response, function(data)
                     {
                        if(data.list)
                        {
@@ -98,7 +100,7 @@
                            commonBusiness.companyName = data.templateOverview.companyName;
                            commonBusiness.projectName = data.templateOverview.projectName;
                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
-                           angular.forEach(data.templateOverview.steps, function(step)
+                           _.each(data.templateOverview.steps, function(step)
                            {
                                navConfig.sideNavItems.push({
                                    stepName: step.stepName,
@@ -107,12 +109,12 @@
                                });
                            });
 
-                           defineBottomSheet();
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
+                    defineBottomSheet();
                 }
             });
         }

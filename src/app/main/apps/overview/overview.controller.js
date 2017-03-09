@@ -17,10 +17,14 @@
                                 navConfig, breadcrumbBusiness, workupBusiness, commonBusiness, notificationBusiness,
                                 overviewBusiness, templateBusiness, store, toast)
     {
+        var isCompleteLoadRequired = (commonBusiness.projectId !== $stateParams.projectId);
+        console.log('isCompleteLoadRequired');
+        console.log('commonBusiness.projectId - ' + commonBusiness.projectId);
+        console.log('$stateParams.projectId - ' + $stateParams.projectId);
+
         commonBusiness.projectId = $stateParams.projectId;
             $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
-
 
         defineBottomSheet();
 
@@ -119,8 +123,17 @@
         //Load data for project-section and step-section
         function loadData()
         {
+            if(overviewBusiness.templateOverview !== null && !isCompleteLoadRequired){
+                console.log('Inside return of templateOverview');
+                vm.templateOverview = overviewBusiness.templateOverview;
+                vm.isOverviewLoaded = true;
+                return;
+            }
+
             overviewService.get($stateParams.projectId, $rootScope.passedUserId, commonBusiness.prevProjectId).then(function(data)
             {
+                console.log('TemplateOverview Data-');
+                console.log(data);
                 if(data.templateOverview)
                 {
                     vm.templateOverview = data.templateOverview;

@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app.core')
-            .directive('msWindowExit', function($window, $state, authBusiness, overviewBusiness, templateBusiness, clientConfig, store) {
+            .directive('msWindowExit', function($window, $state, overviewBusiness, templateBusinessSave, clientConfig) {
                 return {
                     restrict: 'AE',
                     link: function(element, attrs){
