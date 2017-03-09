@@ -61,6 +61,12 @@
         vm.stepSaveAll = stepSaveAll;
         vm.printableAll = printableAll;
         vm.stepToggleExpand = stepToggleExpand;
+        vm.loadMore = loadMore;
+
+
+        function loadMore(){
+            commonBusiness.emitMsg('step-load-more');
+        }
 
         function setupListeners() {
             var userDetails = store.get('user-info');
@@ -78,6 +84,8 @@
 
         vm.isPrintableAll = false;
         vm.isStepExpanded = false;
+        vm.isPrevDisabled = false;
+        vm.isNextDisabled = false;
         function stepToggleExpand(){
             vm.isStepExpanded = !vm.isStepExpanded;
             commonBusiness.emitMsg('step-toogle-expand');

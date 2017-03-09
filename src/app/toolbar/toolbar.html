@@ -119,12 +119,12 @@
 
             <div ng-if="vm.menuMode === 'Steps'" layout="row" layout-align="center center">
                 <div hide-xs>
-                    <md-button class="md-icon-button md-primary" aria-label="Previous" ng-click="vm.previousStep()">
+                    <md-button class="md-icon-button md-primary" aria-label="Previous" ng-disabled="vm.isPrevDisabled" ng-click="vm.previousStep()">
                         <md-icon md-font-icon="icon-chevron-left" class="icon"></md-icon>
                     </md-button>
                 </div>
                 <div hide-xs>
-                    <md-button class="md-icon-button md-primary" aria-label="Next"  ng-click="vm.nextStep()">
+                    <md-button class="md-icon-button md-primary" aria-label="Next" ng-disabled="vm.isNextDisabled"  ng-click="vm.nextStep()">
                         <md-icon md-font-icon="icon-chevron-right" class="icon"></md-icon>
                     </md-button>
                 </div>
@@ -180,6 +180,15 @@
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-rotate-3d"></md-icon>
                                                         <span>Renew</span>
+                                                  </span>
+                                </md-button>
+                            </md-menu-item>
+
+                            <md-menu-item>
+                                <md-button  aria-label="next" ng-click="vm.loadMore()">
+                                                  <span layout="row" layout-align="start center">
+                                                        <md-icon md-font-icon="icon-reload"></md-icon>
+                                                        <span>Load More</span>
                                                   </span>
                                 </md-button>
                             </md-menu-item>

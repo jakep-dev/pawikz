@@ -1,17 +1,18 @@
 /**
  * Created by sherindharmarajan on 11/13/15.
  */
+
 exports.webservice = {
-    protocol: 'http',
-    url: 'dev-vm-websvc.advisen.com',
-    port: 8080,
+    protocol: 'https',
+    url: 'wsint.advisen.com',
+    port: '',
     service:'advwebservice'
 };
 
 exports.client = {
     protocol: 'http',
     domain: 'localhost',
-    port: '3000',
+    port: '4000',
     loglevel: 1,
     transports: ['polling']
 };
