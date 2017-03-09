@@ -247,7 +247,8 @@
                                 case 'AdvisenNewsSearch':
                                     var newScope = scope.$new();
                                     var html = '<div layout-padding>';
-                                    html += '<ms-news title="' + renderContent.Label + '"></ms-news>';
+                                    var searchName = renderContent.SearchName || '';
+                                    html += '<ms-news title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '"></ms-news>';
                                     html += '</div>';
                                     bindHtml.push({
                                         content: $compile(html)(newScope)

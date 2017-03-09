@@ -7,7 +7,7 @@
         .directive('msProposedH', msProposedDirectiveH);
 
     /** @ngInject */
-    function msProposedDirectiveH($compile, $filter, $window, 
+    function msProposedDirectiveH($compile, $filter, $timeout,
                                     commonBusiness, templateBusiness, 
                                     templateBusinessFormat, templateBusinessSave,
                                     toast, deviceDetector, clientConfig,
@@ -681,7 +681,9 @@
             });
 
             commonBusiness.onMsg('PPH-Add', $scope, function (ev, data) {
-                addRow($scope, data);
+                $timeout(function(){
+                    addRow($scope, data);
+                }, 0);
             });
 
 

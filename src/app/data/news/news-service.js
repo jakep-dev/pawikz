@@ -76,14 +76,15 @@
                 });
         }
 
-        function search(companyId, userId, pageNo, sortBy, searchWithin, numPerPage) {
+        function search(companyId, userId, pageNo, sortBy, searchWithin, numPerPage, searchName) {
             var input = {
                 companyId: companyId,
                 userId: userId,
                 pageNo: pageNo,
                 sortBy: sortBy,
                 searchWithin: searchWithin,
-                numPerPage: numPerPage
+                numPerPage: numPerPage,
+                searchName: searchName
             };
 
             return $http({
