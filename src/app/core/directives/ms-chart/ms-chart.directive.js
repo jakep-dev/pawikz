@@ -2,8 +2,8 @@
     'use strict';
 
     angular.module('app.core')
-        .controller('msChartController', msChartController)
-        .directive('msChart', msChartDirective);
+           .controller('msChartController', msChartController)
+           .directive('msChart', msChartDirective);
 
     /** @ngInject */
     function msChartController($scope) {
@@ -15,7 +15,7 @@
                               toast, store,
                               clientConfig, commonBusiness, templateBusiness, templateBusinessFormat, templateBusinessSave, overviewBusiness,
                               stockChartBusiness, stockService, financialChartBusiness, financialChartService
-    ) {
+                             ) {
         return {
             restrict: 'E',
             scope : {
@@ -43,16 +43,16 @@
                     switch (angular.lowercase(scope.type)) {
                         case 'stock':
 
-                        function getStockChartTitle() {
-                            var ticker = getDefaultTicker();
-                            var title;
-                            if (ticker != commonBusiness.companyName) {
-                                title = commonBusiness.companyName + '(' + ticker + ')';
-                            } else {
-                                title = commonBusiness.companyName;
+                            function getStockChartTitle() {
+                                var ticker = getDefaultTicker();
+                                var title;
+                                if (ticker != commonBusiness.companyName) {
+                                    title = commonBusiness.companyName + '(' + ticker + ')';
+                                } else {
+                                    title = commonBusiness.companyName;
+                                }
+                                return title;
                             }
-                            return title;
-                        }
 
                             var competitors;
                             if (stockService.getCurrentCompanyId() === commonBusiness.companyId) {
@@ -62,42 +62,42 @@
                             }
                             if (competitors.length == 0) {
                                 stockService.getCompetitors(commonBusiness.companyId)
-                                    .then(function (data) {
-                                        stockChartBusiness.competitors = data;
-                                        processIndices();
-                                    });
+                                .then(function (data) {
+                                    stockChartBusiness.competitors = data;
+                                    processIndices();
+                                });
                             } else {
                                 processIndices();
                             }
 
-                        function processIndices() {
-                            var indices = stockChartBusiness.indices;
-                            if (indices.length == 0) {
-                                stockService.getIndices()
+                            function processIndices() {
+                                var indices = stockChartBusiness.indices;
+                                if (indices.length == 0) {
+                                    stockService.getIndices()
                                     .then(function (data) {
                                         stockChartBusiness.indices = data;
                                         processSignificantDevelopmentSources();
                                     });
-                            } else {
-                                processSignificantDevelopmentSources();
+                                } else {
+                                    processSignificantDevelopmentSources();
+                                }
                             }
-                        }
 
-                        function processSignificantDevelopmentSources() {
-                            var significantDevelopmentSources = stockChartBusiness.significantDevelopmentSources;
-                            if (significantDevelopmentSources.length == 0) {
-                                stockService.getSigDevSource()
+                            function processSignificantDevelopmentSources() {
+                                var significantDevelopmentSources = stockChartBusiness.significantDevelopmentSources;
+                                if (significantDevelopmentSources.length == 0) {
+                                    stockService.getSigDevSource()
                                     .then(function (data) {
                                         stockChartBusiness.significantDevelopmentSources = data;
                                         getSavedStockChart();
                                     });
-                            } else {
-                                getSavedStockChart();
-                            }
-                        };
+                                } else {
+                                    getSavedStockChart();
+                                }
+                            };
 
-                        function getSavedStockChart() {
-                            stockService.getSavedChartDefer(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid)
+                            function getSavedStockChart() {
+                                stockService.getSavedChartDefer(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid)
                                 .then(function (defferedData) {
                                     var data = defferedData[0];
                                     var sigDevTable = defferedData[1].item;
@@ -117,8 +117,8 @@
                                             if(savedTable.sigdev && savedTable.sigdev.length > 0) {
                                                 tableInfo.push({
                                                     source: {
-                                                        value: 'SIGDEV',
-                                                        label: stockChartBusiness.getSignificantDevelopmentSourceLabel('SIGDEV')
+                                                            value: 'SIGDEV',
+                                                            label: stockChartBusiness.getSignificantDevelopmentSourceLabel('SIGDEV')
                                                     },
                                                     rows: savedTable.sigdev,
                                                     isDefaultChart: false
@@ -409,7 +409,7 @@
 
                                     commonBusiness.onMsg('saveAllChart', scope,
                                         function () {
-                                            var newList;
+                                           var newList;
                                             var i;
                                             var n;
 
@@ -433,24 +433,24 @@
                                     }
 
                                 });
-                        }
+                            }
                             break;
                         case 'financial':
 
-                        function getFinancialChartTitle(ratioLabel) {
-                            var ticker = getDefaultTicker();
-                            var title;
-                            if (ticker != commonBusiness.companyName) {
-                                title = commonBusiness.companyName + '(' + ticker + ')';
-                            } else {
-                                title = commonBusiness.companyName;
+                            function getFinancialChartTitle(ratioLabel) {
+                                var ticker = getDefaultTicker();
+                                var title;
+                                if (ticker != commonBusiness.companyName) {
+                                    title = commonBusiness.companyName + '(' + ticker + ')';
+                                } else {
+                                    title = commonBusiness.companyName;
+                                }
+                                title += ' - ' + ratioLabel;
+                                return title;
                             }
-                            title += ' - ' + ratioLabel;
-                            return title;
-                        }
 
-                        function getSavedFinancialChart() {
-                            financialChartService.getSavedFinancialChart(financialChartBusiness.getSavedChartSettingsInputObject(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid))
+                            function getSavedFinancialChart() {
+                                financialChartService.getSavedFinancialChart(financialChartBusiness.getSavedChartSettingsInputObject(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid))
                                 .then(function (data) {
                                     //console.log(data);
                                     scope.jsCharts = [];
@@ -766,7 +766,7 @@
                                         }
                                     };
                                 });
-                        };
+                            };
 
                             var peerIndustries;
                             if (financialChartService.getCurrentCompanyId() === commonBusiness.companyId) {
@@ -776,26 +776,26 @@
                             }
                             if (peerIndustries.length == 0) {
                                 financialChartService.getFinancialChartPeerAndIndustries(commonBusiness.companyId)
-                                    .then(function (data) {
-                                        financialChartBusiness.peerIndustries = data;
-                                        processRatioTypes();
-                                    });
+                                .then(function (data) {
+                                    financialChartBusiness.peerIndustries = data;
+                                    processRatioTypes();
+                                });
                             } else {
                                 processRatioTypes();
                             }
 
-                        function processRatioTypes() {
-                            var ratioTypes = financialChartBusiness.ratioTypes;
-                            if (ratioTypes.length == 0) {
-                                financialChartService.getFinancialChartRatioTypes()
+                            function processRatioTypes() {
+                                var ratioTypes = financialChartBusiness.ratioTypes;
+                                if (ratioTypes.length == 0) {
+                                    financialChartService.getFinancialChartRatioTypes()
                                     .then(function (data) {
                                         financialChartBusiness.ratioTypes = data;
                                         getSavedFinancialChart();
                                     });
-                            } else {
-                                getSavedFinancialChart();
+                                } else {
+                                    getSavedFinancialChart();
+                                }
                             }
-                        }
                             break;
                         case 'bar':
                             break;

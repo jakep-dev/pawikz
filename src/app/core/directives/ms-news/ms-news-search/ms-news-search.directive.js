@@ -103,7 +103,6 @@
 
         function dataTableConfiguration() {
             //Defining column definitions
-            console.log("checking table");
             vm.dtColumnDefs = [
                 DTColumnDefBuilder.newColumnDef(0).renderWith(actionHtml).withClass('checkbox-column').notSortable(),
                 DTColumnDefBuilder.newColumnDef(1).renderWith(detailHtml).notSortable(),
@@ -164,7 +163,7 @@
             var searchFilter = aoData[5].value.value;
             var pageNo = (start / length) + 1;
 
-            newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length).then(function(response) {
+            newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
 
                 var blankData = {
                     rowId: '',
@@ -225,7 +224,9 @@
     function msNewsSearchDirective($compile) {
         return {
             restrict: 'E',
-            scope: {},
+            scope: {
+                searchName: '@'
+            },
             controller: 'msNewsSearchController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html'

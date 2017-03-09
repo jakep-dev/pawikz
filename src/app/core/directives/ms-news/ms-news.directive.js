@@ -8,8 +8,11 @@
 
     function msNewsController($scope) {
         var vm = this;
+
         vm.actions = [];
         vm.title = $scope.title;
+        vm.searchName = $scope.searchName;
+
         defineAction();
 
         function defineAction() {
@@ -41,7 +44,8 @@
             scope: {
                 name: '@',
                 action: '@',
-                title: '@'
+                title: '@',
+                searchName: '@'
             },
             controller: 'msNewsController',
             controllerAs: 'vm',
