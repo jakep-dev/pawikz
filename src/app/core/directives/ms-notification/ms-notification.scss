@@ -79,3 +79,7 @@ $toolbarHeight: 64px;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
+
+.menu-item-tooltip{
+  pointer-events: auto;
+}
