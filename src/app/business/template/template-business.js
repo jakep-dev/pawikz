@@ -85,7 +85,8 @@
             isMnemonicNumberType: isMnemonicNumberType,
             getTearSheetItems: getTearSheetItems,
             getCompInitialLoadCount: getCompInitialLoadCount,
-            updateProgramTableMnemonics: updateProgramTableMnemonics
+            updateProgramTableMnemonics: updateProgramTableMnemonics,
+            getNewsHeader: getNewsHeader
         };
 
         return business;
@@ -1734,6 +1735,33 @@
             } else {
                 tableMnemonic.rows = rows;
             }
+        }
+
+        function getNewsHeader(tearsheet) {
+            var label = '';
+            if(tearsheet && tearsheet.id) {
+                switch(tearsheet.id){
+                    case 'LinkItem':
+                        label = (tearsheet && tearsheet.Label)? tearsheet.Label : '' ;
+                        break;
+                    case 'GenericTableItem':
+
+                        if(tearsheet && tearsheet.row && tearsheet.row.col && _.isArray(tearsheet.row.col)) {
+                            var labelItem = _.find(tearsheet.row.col, function(column){
+                                if(column && column.TearSheetItem && column.TearSheetItem.id && column.TearSheetItem.id === 'LabelItem' ) {
+                                    return column;
+                                }
+                            });
+
+                            label = (labelItem && labelItem.TearSheetItem && labelItem.TearSheetItem.Label) ? labelItem.TearSheetItem.Label : '';
+                        }
+                        
+                        break;
+                    default:
+                        label = '';
+                }
+            }
+            return label;
         }
 
         //Cancel the auto-save promise.
