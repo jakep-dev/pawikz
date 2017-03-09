@@ -123,7 +123,7 @@
                                     }
                                 }
                                 if (primaryChartDataItem.dataDate) {
-                                    dateValue = primaryChartDataItem.dataDate.substring(0, 10);
+                                    primaryChartDataItem.dataDate = dateValue = primaryChartDataItem.dataDate.substring(0, 10);
                                     valueObject = new Object();
                                     valueObject.priceClose = parseFloat(primaryChartDataItem.priceClose);
                                     valueObject.percentChange = parseFloat(primaryChartDataItem.percentChange);

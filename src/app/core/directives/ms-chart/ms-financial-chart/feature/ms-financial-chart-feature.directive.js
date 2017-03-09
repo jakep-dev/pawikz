@@ -58,7 +58,7 @@
                                         break;
                                     }
                                 }
-
+                                
                                 if (context.lastPoint && context.lastPoint.plotY) {
                                     context.x = targetChart.chartWidth - targetChart.marginRight + 5;
                                     context.y = context.lastPoint.plotY + targetChart.plotTop - 40;
@@ -254,7 +254,7 @@
                                     } else {
                                         context.nextDispDate = context.nextDispDate.add(context.duration);
                                     }
-
+                                    
                                 }
                                 if (!context.xAxisLabels[context.i].textContent) {
                                     context.blankCount++;
@@ -275,7 +275,7 @@
                             if (context.blankCount == 0) {
                                 context.labelsChanged = true;
                                 if (context.targetLabels.length > 0) {
-                                    //we need to show the first label so we don't count the first label to skip
+                                    //we need to show the first label so we don't count the first label to skip 
                                     context.targetLabels[0].skipCount--;
                                     context.totalSkip--;
                                     //console.log(JSON.stringify(context.targetLabels));
@@ -401,7 +401,7 @@
                         //console.log('[setupXAxisLabels]Rewriting xAxisLabels end');
                         return context.labelsChanged;
                     }
-
+ 
                     //$('<div style="min-height: 270px;">')
                     $('<div id="container" style="min-height: 550px;">')
                         .appendTo(elem)
@@ -419,7 +419,7 @@
                                         }
                                         addSeriesLabels(currentChart);
                                         //setupXAxisLabels();
-                                    },
+                                    }, 
 
                                     // side labels tooltip and legends to show the stock & peer name ticker in sorted order with custom dates
                                     load: function() {
@@ -530,7 +530,7 @@
                                                     legendItems = legend.allItems,
                                                     legendItem,
                                                     tspan,
-                                                //pointIndex = this.index,
+                                                    //pointIndex = this.index,
                                                     yValue,
                                                     value;
                                                 var xIndex = this.category;
@@ -620,26 +620,26 @@
 
                     resizeSensor = new ResizeSensor(elem.find('#container')[0], function () {
 
-                        var context = new Object();
-                        context.chart = activity.chartElement.highcharts();
-                        activity.currentSize = context.chart.chartWidth;
-                        //console.log('[1]Chart ' + activity.name + ':' + activity.currentSize);
+                            var context = new Object();
+                            context.chart = activity.chartElement.highcharts();
+                            activity.currentSize = context.chart.chartWidth;
+                            //console.log('[1]Chart ' + activity.name + ':' + activity.currentSize);
 
-                        if (context.chart.xAxis != null && context.chart.xAxis.length > 0) {
-                            context.chart.xAxis[0].setCategories(activity.xData);
-                        }
-                        $timeout(function (params) {
-                            params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
-
-                            //console.log('[3]Chart ' + params.name + ':Labels Changed:' + params.labelsChanged + ':width:' + params.chart.chartWidth);
-                            if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
-                                params.chart.xAxis[0].labelRotation = 0;
-                                params.chart.isDirty = true;
-                                params.chart.redraw();
+                            if (context.chart.xAxis != null && context.chart.xAxis.length > 0) {
+                                context.chart.xAxis[0].setCategories(activity.xData);
                             }
-                        }, 500, false, { chart: context.chart, name: activity.name });
-                        //console.log('[2]Calling reflow for ' + activity.name);
-                        context.chart.reflow();
+                            $timeout(function (params) {
+                                params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
+
+                                //console.log('[3]Chart ' + params.name + ':Labels Changed:' + params.labelsChanged + ':width:' + params.chart.chartWidth);
+                                if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
+                                    params.chart.xAxis[0].labelRotation = 0;
+                                    params.chart.isDirty = true;
+                                    params.chart.redraw();
+                                }
+                            }, 500, false, { chart: context.chart, name: activity.name });
+                            //console.log('[2]Calling reflow for ' + activity.name);
+                            context.chart.reflow();
 
                     });
 
