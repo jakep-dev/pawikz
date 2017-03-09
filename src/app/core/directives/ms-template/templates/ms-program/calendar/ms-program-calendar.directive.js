@@ -15,11 +15,23 @@
         $scope.dateChange = function() 
         {
             $scope.value = templateBusinessFormat.formatDate($scope.formatDate, 'DD-MMM-YY');
-            $scope.compute({
-                currentRow: $scope.row, value: $scope.value,
-                rowId: $scope.rowid, columnName: $scope.columnname
-            });
         }
+
+        $scope.$watch(
+            "value",
+            function handleAutoSave(newValue, oldValue) {
+                if(newValue !== oldValue)
+                {
+                    $scope.formatDate = templateBusinessFormat.parseDate(newValue, 'DD-MMM-YY');
+                    newValue = templateBusinessFormat.formatDate($scope.formatDate, 'DD-MMM-YY');
+                    
+                    $scope.compute({
+                        currentRow: $scope.row, value: newValue,
+                        rowId: $scope.rowid, columnName: $scope.columnname
+                    });
+                }
+            }
+        );
     }
 
     /** @ngInject */
@@ -28,7 +40,7 @@
         return {
             restrict: 'E',
             scope   : {
-                value: '@',
+                value: '=',
                 compute: '&',
                 rowid: '@',
                 columnname: '@'

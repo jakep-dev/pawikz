@@ -50,7 +50,9 @@
                         $scope.$parent.$parent.isprocesscomplete = true;
 
                         $scope.rows = [];
-                        _.each(response.dynamicTableDataResp, function(row, index){
+
+                        var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                        _.each(data, function(row, index){
                             $scope.rows.push(buildRow($scope, row, index == 0));
                         });
 
@@ -90,6 +92,7 @@
                     $scope.rows[rowNumber][column].value = value;
                     
                     saveRow($scope, $scope.rows[rowNumber]);
+                    templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                 }
             };
 
@@ -382,7 +385,7 @@
                     case 'DateItem':
                             html += '<ms-program-calendar row="row" rowid="{{$index}}" ' +
                             'compute="updateDate(value, \'' + itemId + '\', rowId)" ' +
-                            'value="{{row.'+ itemId +'.value}}" ' + 
+                            'value="row.'+ itemId +'.value" ' + 
                             'columnname="'+itemId+'"></ms-program-calendar>';
                         break;
 
@@ -891,7 +894,9 @@
                         $scope.mnemonic, $scope.copyexpiring, columns).then(function(response) {
                             
                             removeAllRows($scope);
-                            _.each(response.dynamicTableDataResp, function(row, index){
+
+                            var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                            _.each(data, function(row, index){
                                 
                                 //sets sequence to its previous max sequence so that no conflict on delete condition  
                                 row.SEQUENCE = maxSequence + index + 1;

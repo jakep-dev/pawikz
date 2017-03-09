@@ -915,7 +915,7 @@
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                     scope.mnemonicid, scope.itemid, columns).then(function(response) {
 
-                    var data = response.dynamicTableDataResp;
+                    var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
 					
 					defineLayout(scope, el);
 					defineActions(scope);
