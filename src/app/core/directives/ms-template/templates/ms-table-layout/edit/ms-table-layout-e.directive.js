@@ -58,8 +58,8 @@
                     var data = response.dynamicTableDataResp;
                     if(!data)
                     {
-                        html += '<div flex>';
-                        html += '<ms-message message="No data available"></ms-message>';
+                        html += '<div layout="row" layout-align="center center" layout-padding>';
+                        html += '<span>No data available</span>';
                         html += '</div>';
                     }
                     else {
