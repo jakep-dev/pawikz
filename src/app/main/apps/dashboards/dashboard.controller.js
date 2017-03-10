@@ -422,6 +422,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         //Defining column definitions
         vm.dtColumnDefs = [
             DTColumnDefBuilder.newColumnDef(1).renderWith(dashboardBusiness.getWorkupHtml),
+            DTColumnDefBuilder.newColumnDef(4).renderWith(dashboardBusiness.getPlatformHtml),
             DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
 
@@ -444,7 +445,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('autoWidth', true)
             .withOption('responsive', responsive)
             .withOption('stateSave', true)
-            .withOption('order',[4, 'desc'])
+            .withOption('order',[3, 'desc'])
             .withPaginationType('full')
             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
@@ -452,9 +453,9 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         vm.dtColumns = [
             DTColumnBuilder.newColumn('companyName', 'Company Name'),
             DTColumnBuilder.newColumn('projectName', 'Work-up Name'),
-            DTColumnBuilder.newColumn('status', 'Status'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
+            DTColumnBuilder.newColumn('platform', 'Platform'),
             DTColumnBuilder.newColumn('action', 'Action')
         ];
     }
