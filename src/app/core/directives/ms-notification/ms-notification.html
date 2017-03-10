@@ -1,7 +1,10 @@
 <ms-nav-item class="notify-parent" ng-class="vm.navClass">
     <a ms-nav-button md-ink-ripple ng-click="vm.showNotifications()">
         <div flex layout="row" layout-align="space-between center">
-            <span class="fa fa-bell s16"></span>
+            <notification-icon animation="grow"  count="vm.notifications.length">
+                <span class="fa fa-bell s16"></span>
+            </notification-icon>
+
             <span class="ms-nav-label">Notification Center</span>
             <span ng-if="!vm.isNotification" class="fa fa-chevron-down s16 ms-nav-label"></span>
             <span ng-if="vm.isNotification" class="fa fa-chevron-up s16 ms-nav-label"></span>
@@ -10,7 +13,7 @@
 </ms-nav-item>
 <ms-nav-item class="notify-child" ng-if="vm.isNotification && vm.notifications.length > 0" ng-repeat="notification in vm.notifications">
     <a ms-nav-button ui-sref="#" ng-click="vm.processNotification(notification)" ui-sref-active="active md-accent-bg" md-ink-ripple>
-        <div layout="row" layout-align="space-between center">
+        <div layout="row" layout-align="space-around center">
             <div ng-if="notification.progress === 100">
                 <i ng-if="notification.status === 'complete'" class="fa fa-check s16"></i>
                 <i ng-if="notification.status === 'error'" class="fa fa-exclamation-circle s16"></i>
@@ -21,6 +24,11 @@
             <i ng-if="notification.type === 'PDF-Download' && notification.progress < 100" class="fa fa-file-pdf-o s16"></i>
             <md-tooltip md-direction="right">{{notification.type}}</md-tooltip>
             <span class="ms-nav-label">{{notification.title }}</span>
+            <div style="padding-left: 2px" ng-activity-indicator="CircledDark" skip-ng-show="yes" ng-if="notification.progress < 100 && !notification.istrackable"></div>
+            <div style="padding-left: 2px" ng-if="notification.progress < 100 && notification.istrackable">
+                {{notification.progress + "%"}}
+            </div>
+
         </div>
     </a>
 </ms-nav-item>
@@ -29,6 +37,7 @@
     <a ms-nav-button  md-ink-ripple>
         <div flex layout="row" layout-align="center center">
             <span class="ms-nav-label">No data available</span>
+
         </div>
     </a>
 </ms-nav-item>

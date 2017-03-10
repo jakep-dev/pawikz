@@ -327,6 +327,11 @@ $navigationFoldedWidth: 64px;
                                         opacity: 0;
                                         visibility: hidden;
                                     }
+
+                                    > .ms-nav-hide{
+                                        opacity: 0;
+                                        visibility: hidden;
+                                    }
                                 }
                             }
                         }

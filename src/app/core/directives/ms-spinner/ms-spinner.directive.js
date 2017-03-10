@@ -7,11 +7,12 @@
         .directive('msSpinner', msSpinnerDirective);
 
     /** @ngInject */
-    function msSpinnerDirective()
+    function msSpinnerDirective(toast)
     {
         return {
             restrict: 'E',
-            scope   : {
+            scope:{
+
             },
             templateUrl: 'app/core/directives/ms-spinner/ms-spinner.html'
         };

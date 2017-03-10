@@ -11,7 +11,7 @@ exports.webservice = {
 
 exports.client = {
     protocol: 'http',
-    domain: 'localhost',
+    domain: '192.168.1.216',
     port: '4000',
     loglevel: 1,
     transports: ['polling']
@@ -35,7 +35,7 @@ exports.restcall = {
                 deleteDynamicTableData: 'deleteTemplateTableLayOut',
                 saveMnemonics: 'updateTemplateMnemonics',
                 createWorkUp: 'createNewTemplateProject',
-                renewWorkUp: 'renewTemplateProject',
+                renewWorkUp: 'reNODEnewTemplateProject',
                 lockWorkUp: 'lockWorkUp',
                 unlockWorkUp:'unLockWorkUp',
                 createWorkUpStatus: 'getTemplateProjectStatus',
