@@ -51,7 +51,13 @@
 
                         $scope.rows = [];
 
-                        var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                        var data = null; 
+                        if(response.dynamicTableDataResp) {
+                            data =  _.sortBy(response.dynamicTableDataResp, function(row){
+                                return (row.SEQUENCE && parseInt(row.SEQUENCE) ) ? parseInt(row.SEQUENCE) : 0; 
+                            });
+                        }
+
                         _.each(data, function(row, index){
                             $scope.rows.push(buildRow($scope, row, index == 0));
                         });
@@ -896,7 +902,13 @@
                            
                             removeAllRows($scope);
 
-                            var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                            var data = null; 
+                            if(response.dynamicTableDataResp) {
+                                data =  _.sortBy(response.dynamicTableDataResp, function(row){
+                                    return (row.SEQUENCE && parseInt(row.SEQUENCE) ) ? parseInt(row.SEQUENCE) : 0; 
+                                });
+                            }
+
                             _.each(data, function(row, index){
                                 
                                 //sets sequence to its previous max sequence so that no conflict on delete condition  

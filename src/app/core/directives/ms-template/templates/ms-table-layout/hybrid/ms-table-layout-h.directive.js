@@ -915,7 +915,12 @@
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                     scope.mnemonicid, scope.itemid, columns).then(function(response) {
 
-                    var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                    var data = null; 
+					if(response.dynamicTableDataResp) {
+						data =  _.sortBy(response.dynamicTableDataResp, function(row){
+							return (row.SEQUENCE && parseInt(row.SEQUENCE) ) ? parseInt(row.SEQUENCE) : 0; 
+						});
+					}
 					
 					defineLayout(scope, el);
 					defineActions(scope);
