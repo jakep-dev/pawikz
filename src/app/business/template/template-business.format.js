@@ -272,7 +272,7 @@
     	            formatted = formatted.substr(0, formatObj.prefix.length) + '(' + formatted.substr(expr.exec(formatted).index);
     	        } else {
     	            if (formatObj.dataSubtype === 'CURRENCY') {
-						if(formatted == 0){
+						if(formatted === '0'){
 							formatObj.precision = '';
 							formatted = $filter('currency')(formatObj.numericValue, formatObj.prefix, formatObj.precision);
 						}else{
