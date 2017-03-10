@@ -19,6 +19,7 @@
         vm.menuName = '';
         vm.companyId = null;
         vm.companyName = null;
+        vm.workupName = null;
         vm.menuMode = '';
 
         var userDetails = store.get('user-info');
@@ -40,6 +41,7 @@
             vm.menuMode = data.menuMode;
             vm.companyId = data.companyId || null;
             vm.companyName = data.companyName || null;
+            vm.workupName = data.workupName || null;
         });
 
 
