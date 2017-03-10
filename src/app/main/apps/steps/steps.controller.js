@@ -43,7 +43,8 @@
                 menuIcon: 'icon-view-module',
                 menuMode: 'Steps',
                 companyId: commonBusiness.companyId,
-                companyName: commonBusiness.companyName
+                companyName: commonBusiness.companyName,
+                workupName: commonBusiness.projectName
             });
         }
 
