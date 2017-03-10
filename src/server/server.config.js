@@ -11,8 +11,8 @@ exports.webservice = {
 
 exports.client = {
     protocol: 'http',
-    domain: 'devcrm.advisen.com',
-    port: '80',
+    domain: 'localhost',
+    port: '4000',
     loglevel: 1,
     transports: ['polling']
 };
