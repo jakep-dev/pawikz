@@ -31,7 +31,7 @@
             $scope.isTableShow = true;
             $scope.IsAllChecked = false;
             var html = '<table id="tablelayout-filter" ng-show="isTableShow" width="100%" dt-instance="dtInstance" dt-options="dtOptions" ' +
-                'class="row-border hover highlight cell-border" dt-column-defs="dtColumnDefs" datatable="ng" cellpadding="1" cellspacing="0">';
+                'class="row-border hover highlight" dt-column-defs="dtColumnDefs" datatable="ng" cellpadding="1" cellspacing="0">';
 
             $scope.dtOptions = DTOptionsBuilder
                 .newOptions()

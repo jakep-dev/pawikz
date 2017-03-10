@@ -7,8 +7,7 @@
         .directive('msTemplate', msTemplateDirective);
 
     function msTemplateController($rootScope, $scope, $mdMenu, $window,
-        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
-    ) {
+        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness, overviewBusiness, stepsBusiness) {
         var vm = this;
 
         vm.isExpandAll = true;
@@ -19,6 +18,57 @@
         vm.printableAll = printableAll;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.previousStep = previousStep;
+        vm.nextStep = nextStep;
+
+        defineMenuActions();
+
+        function defineMenuActions(){
+            commonBusiness.onMsg("step-save-all", $scope, function(){
+                saveAll();
+            });
+
+            commonBusiness.onMsg("prev-step", $scope, function(){
+                previousStep();
+            });
+
+            commonBusiness.onMsg("next-step", $scope, function(){
+                nextStep();
+            });
+
+            commonBusiness.onMsg("step-print-all", $scope, function(){
+                printableAll();
+            });
+
+            commonBusiness.onMsg("step-toogle-expand", $scope, function(){
+                toggleExpand();
+            });
+
+            commonBusiness.onMsg("project-renew", $scope, function(){
+                renew();
+            });
+
+            commonBusiness.onMsg("pdf-download", $scope, function(){
+                pdfDownload();
+            });
+        }
+
+        //Move to the previous step
+        function previousStep() {
+            if (overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps) {
+                stepsBusiness.getPrevStep($scope.stepId, overviewBusiness.templateOverview.steps);
+            }
+        }
+
+        //Move to the next step
+        function nextStep() {
+            if (overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps) {
+                stepsBusiness.getNextStep($scope.stepId, overviewBusiness.templateOverview.steps);
+            }
+        }
+
 
         //Save the entire template data.
         function saveAll() {
@@ -66,7 +116,8 @@
             restrict: 'E',
             scope: {
                 components: '=',
-                refreshstep: '='
+                refreshstep: '=',
+                stepId: '='
             },
             controller: 'msTemplateController',
             controllerAs: 'vm',

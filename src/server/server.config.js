@@ -3,9 +3,9 @@
  */
 
 exports.webservice = {
-    protocol: 'http',
-    url: 'dev-vm-websvc.advisen.com',
-    port: 8080,
+    protocol: 'https',
+    url: 'wsint.advisen.com',
+    port: '',
     service:'advwebservice'
 };
 
@@ -35,7 +35,7 @@ exports.restcall = {
                 deleteDynamicTableData: 'deleteTemplateTableLayOut',
                 saveMnemonics: 'updateTemplateMnemonics',
                 createWorkUp: 'createNewTemplateProject',
-                renewWorkUp: 'renewTemplateProject',
+                renewWorkUp: 'reNODEnewTemplateProject',
                 lockWorkUp: 'lockWorkUp',
                 unlockWorkUp:'unLockWorkUp',
                 createWorkUpStatus: 'getTemplateProjectStatus',

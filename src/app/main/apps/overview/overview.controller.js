@@ -21,9 +21,7 @@
             $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
 
-
-        defineBottomSheet();
-
+        defineMenuActions();
         var userDetails = store.get('user-info');
 
         if(userDetails)
@@ -68,11 +66,37 @@
            templateBusiness.requestPdfDownload();
         }
 
-        function defineBottomSheet()
-        {
-            $scope.saveAll = saveAll;
-            $scope.goTop = goTop;
-            commonBusiness.defineBottomSheet('app/main/apps/overview/sheet/overview-sheet.html', $scope, true);
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("inject-main-menu", {
+                menuName: 'Work-up Overview',
+                menuIcon: 'icon-view-agenda',
+                menuMode: 'ProjectOverview'
+            });
+
+
+            commonBusiness.onMsg("project-overview-save-all", $scope, function(){
+                saveAll();
+            });
+
+            commonBusiness.onMsg("project-overview-flip", $scope, function(){
+                    flipStepView();
+            });
+
+            commonBusiness.onMsg("project-overview-toggle-expand", $scope, function(){
+                    toggleExpand();
+            });
+
+            commonBusiness.onMsg("project-overview-flip-selection", $scope, function(){
+                    flipSelectionView();
+            });
+
+            commonBusiness.onMsg("pdf-download", $scope, function(){
+                    pdfDownload();
+            });
+
+            commonBusiness.onMsg("project-renew", $scope, function(){
+                renew(vm.projectId);
+            });
         }
 
         function showOverviewDetails(step)

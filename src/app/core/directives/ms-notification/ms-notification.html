@@ -1,83 +1,44 @@
-<md-menu id="notification-menu" md-offset="0 72" md-position-mode="target-right target" style="overflow: hidden">
+<ms-nav-item class="notify-parent" ng-class="vm.navClass">
+    <a ms-nav-button md-ink-ripple ng-click="vm.showNotifications()">
+        <div flex layout="row" layout-align="space-between center">
+            <notification-icon animation="grow"  count="vm.notifications.length">
+                <span class="fa fa-bell s16"></span>
+            </notification-icon>
 
+            <span class="ms-nav-label">Notification Center</span>
+            <span ng-if="!vm.isNotification" class="fa fa-chevron-down s16 ms-nav-label"></span>
+            <span ng-if="vm.isNotification" class="fa fa-chevron-up s16 ms-nav-label"></span>
+        </div>
+    </a>
+</ms-nav-item>
+<ms-nav-item class="notify-child" ng-if="vm.isNotification && vm.notifications.length > 0" ng-repeat="notification in vm.notifications">
+    <a ms-nav-button ui-sref="#" ng-click="vm.processNotification(notification)" ui-sref-active="active md-accent-bg" md-ink-ripple>
+        <div layout="row" layout-align="space-around center">
+            <div ng-if="notification.progress === 100">
+                <i ng-if="notification.status === 'complete'" class="fa fa-check s16"></i>
+                <i ng-if="notification.status === 'error'" class="fa fa-exclamation-circle s16"></i>
+                <i ng-if="notification.status === 'close'" class="fa fa-close s16" ng-click="vm.close(notification)"></i>
+            </div>
+            <i ng-if="notification.type === 'Renewal' && notification.progress < 100" class="fa fa-refresh s16"></i>
+            <i ng-if="notification.type === 'Create-WorkUp' && notification.progress < 100" class="fa fa-plus s16"></i>
+            <i ng-if="notification.type === 'PDF-Download' && notification.progress < 100" class="fa fa-file-pdf-o s16"></i>
+            <md-tooltip md-direction="right">{{notification.title + "-" + notification.type}}</md-tooltip>
+            <span class="ms-nav-label">{{notification.title }}</span>
+            <div style="padding-left: 2px" ng-activity-indicator="CircledDark" skip-ng-show="yes" ng-if="notification.progress < 100 && !notification.istrackable"></div>
+            <div style="padding-left: 2px" ng-if="notification.progress < 100 && notification.istrackable">
+                {{notification.progress + "%"}}
+            </div>
 
-    <md-button class="notification-button" ng-click="$mdOpenMenu()"
-               aria-label="Notification" md-menu-origin md-menu-align-target>
-        <notification-icon animation="grow"  count="vm.notifications.length">
-            <md-icon md-font-icon="icon-bell"></md-icon>
-        </notification-icon>
-    </md-button>
+        </div>
+    </a>
+</ms-nav-item>
 
-    <md-menu-content width="2" id="notification-menu-content">
-        <md-menu-item ng-repeat="notification in vm.notifications"  ng-if="vm.notifications.length > 0">
-            <span layout="column">
-                <span class="menu-item-tooltip" layout-wrap layout="row" layout-fill layout-align="space-between center">
-                    <md-tooltip md-direction="bottom" 
-                        ng-style="{ 'max-width' : vm.notificationWidth + 200, 'font-size' : '12px', 'height' : 'auto', 'word-break' : 'break-all', 'white-space': 'normal'}"> 
-                            {{notification.title}}
-                    </md-tooltip>
-                    <md-button layout="row" ng-disabled="notification.disabled" ng-click="vm.processNotification(notification)" layout-align="start center">
-                        <table>
-                            <tr>
-                                <td><md-icon md-font-icon="{{notification.icon}}"></md-icon> &nbsp;</td>
-                                <td ng-hide="vm.notificationWidth < 20"><div class="text-ellipsis" ng-style="{ 'max-width' : vm.notificationWidth }">{{notification.title}} &nbsp;</div></td>
-                                <td ng-hide="vm.notificationWidth < 20"><span> - {{notification.type}} &nbsp;</span></td>
-                            </tr>
-                        </table>
-                    </md-button>
+<ms-nav-item class="notify-child" ng-if="vm.isNotification && vm.notifications.length === 0">
+    <a ms-nav-button  md-ink-ripple>
+        <div flex layout="row" layout-align="center center">
+            <span class="ms-nav-label">No data available</span>
+        </div>
+    </a>
+</ms-nav-item>
 
-                    <div class="progress-wrapper"
-                         ng-if="notification.progress < 100 && notification.istrackable">
-                        <round-progress max="100"
-                                        current="notification.progress"
-                                        color="#45ccce"
-                                        bgcolor="#eaeaea"
-                                        radius="20"
-                                        stroke="10"
-                                        semi="false"
-                                        rounded="false"
-                                        clockwise="true"
-                                        responsive="false"
-                                        duration="800"
-                                        animation="easeInOutQuart"
-                                        animation-delay="0">
-                        </round-progress>
-                        <div class="progress-value">{{notification.progress}}</div>
-                    </div>
-
-                    <div ng-activity-indicator="CircledDark" skip-ng-show="yes"
-                         ng-if="notification.progress < 100 && !notification.istrackable"></div>
-
-                    <div class="progress-wrapper" ng-if="notification.progress === 100">
-                        <md-icon md-font-icon="icon-check-circle" ng-if="notification.status === 'complete'"
-                                 style="color:rgba(106, 255, 145, 0.88); font-weight: bolder"></md-icon>
-
-                        <md-icon md-font-icon="icon-alert-circle" ng-if="notification.status === 'error'"
-                                 style="color:rgba(255, 77, 43, 0.88); font-weight: bolder"></md-icon>
-
-                        <md-button class="md-icon-button" ng-click="vm.close(notification)" ng-if="notification.status === 'close'"
-                                   style="padding-bottom: 10px">
-                            <md-icon md-font-icon="icon-close-circle-outline" style="font-weight: bolder"></md-icon>
-                        </md-button>
-
-                    </div>
-                </span>
-                <md-divider></md-divider>
-            </span>
-
-        </md-menu-item>
-
-        <md-menu-item ng-if="vm.notifications.length == 0">
-            <md-button  aria-label="No Notifications">
-                    <span layout="row" layout-align="start center">
-                        <span style="font-size: small">No notification available</span>
-                    </span>
-            </md-button>
-        </md-menu-item>
-
-
-    </md-menu-content>
-
-
-</md-menu>
 <a id="backgroundLink" ng-hide="true" target="_blank"></a>

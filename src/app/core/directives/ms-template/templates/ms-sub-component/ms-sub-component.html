@@ -1,5 +1,5 @@
 <div>
-    <div class="md-whiteframe-1dp" id="step-main">
+    <div id="step-main">
         <div id="ms-accordion" style="min-height: 50px" class="md-amber-A200-bg"
              layout="row" layout-align="space-between center">
             <div style="padding-left: 10px; font-size: 18px">
@@ -23,11 +23,11 @@
                 </div>
             </div>
         </div>
-        <md-content id="ms-accordion-sub-content" ng-show="!vm.collapsed" style="padding: .5%">
-
-        </md-content>
     </div>
-    <div style="min-height: 5px">
+    <md-content id="ms-accordion-sub-content" ng-show="!vm.collapsed">
 
-    </div>
+    </md-content>
+</div>
+<div style="min-height: 5px">
+
 </div>

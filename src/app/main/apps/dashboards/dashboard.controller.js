@@ -22,6 +22,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.userId = 0;
     vm.isRedrawFromDelete = false;
     vm.selectedProjectId = null;
+    vm.searches = [];
+
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -35,6 +37,50 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.initialize = initialize;
     vm.renewTemplate = renewTemplate;
     vm.toggleSidenav = toggleSidenav;
+    vm.filterAgain = filterAgain;
+    defineMenuActions();
+
+    function defineMenuActions(){
+        "use strict";
+        commonBusiness.emitWithArgument("inject-main-menu", {
+            menuName: 'My Work-ups',
+            menuIcon: 'fa fa-folder-open-o s16',
+            menuMode: 'Dashboard'
+        });
+
+        commonBusiness.onMsg("dashboard-reload", $scope, function(){
+           reload();
+        });
+    }
+
+
+
+    function filterAgain(name){
+        if(vm.searches.length === 0){
+            vm.companyId = 0;
+            vm.userId = 0;
+            commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
+
+        }
+        else{
+            var combinedStr = '';
+            _.each(vm.searches, function(search){
+                combinedStr += search;
+            });
+
+            if(!combinedStr.includes('Company')){
+                vm.companyId = 0;
+                commonBusiness.emitWithArgument("ClearFilter", {type: 'Company'});
+            }
+
+            if(!combinedStr.includes('User')){
+                vm.userId = 0;
+                commonBusiness.emitWithArgument("ClearFilter", {type: 'User'});
+            }
+        }
+
+        redrawDataTable();
+    }
 
 
 
@@ -45,6 +91,14 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         if(data) {
             vm.companyId = data.companyId;
             vm.userId = data.userId;
+            vm.searches = [];
+            if(parseInt(vm.companyId) !== 0){
+                vm.searches.push("Company: " + data.companyName);
+            }
+
+            if(parseInt(vm.userId) !== 0){
+                vm.searches.push("User: " + data.userName);
+            }
             redrawDataTable();
         }
     });
@@ -221,7 +275,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function reload() {
         vm.companyId = 0;
         vm.userId = 0;
-        commonBusiness.emitMsg("ClearFilter");
+        vm.searches = [];
+        commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
         redrawDataTable();
         $mdMenu.hide();
     }

@@ -18,6 +18,7 @@
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+        vm.stepId = stepId;
         $scope.stepId = stepId;
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
@@ -36,9 +37,18 @@
         commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
-        vm.TearSheetStep = null;
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("inject-main-menu", {
+                menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
+                menuIcon: 'icon-view-module',
+                menuMode: 'Steps',
+                companyId: commonBusiness.companyId,
+                companyName: commonBusiness.companyName
+            });
+        }
 
-        breadcrumbBusiness.title = unescape(stepName);
+
+        vm.TearSheetStep = null;
 
         var userDetails = store.get('user-info');
 
@@ -85,7 +95,7 @@
             {
                 if(response)
                 {
-                    angular.forEach(response, function(data)
+                    _.each(response, function(data)
                     {
                        if(data.list)
                        {
@@ -98,7 +108,7 @@
                            commonBusiness.companyName = data.templateOverview.companyName;
                            commonBusiness.projectName = data.templateOverview.projectName;
                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
-                           angular.forEach(data.templateOverview.steps, function(step)
+                           _.each(data.templateOverview.steps, function(step)
                            {
                                navConfig.sideNavItems.push({
                                    stepName: step.stepName,
@@ -107,7 +117,7 @@
                                });
                            });
 
-                           defineBottomSheet();
+                           defineMenuActions();
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;

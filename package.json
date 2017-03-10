@@ -2,12 +2,14 @@
   "name": "advisen",
   "version": "1.1.0",
   "dependencies": {
+    "async": "^2.0.1",
     "body-parser": "^1.14.1",
     "compression": "^1.6.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.7.1",
     "csurf": "^1.9.0",
     "express": "^4.13.3",
+    "highcharts": "^4.2.6",
     "minilog": "^3.0.0",
     "moment": "^2.11.2",
     "morgan": "^1.6.1",
@@ -15,12 +17,10 @@
     "phantomjs": "^2.1.7",
     "serve-favicon": "^2.3.0",
     "soap": "^0.11.0",
+    "socket.io": "^1.7.3",
     "stacktrace-js": "^1.0.2",
     "underscore": "^1.8.3",
-    "xmltojson": "^1.1.0",
-    "socket.io": "^1.4.6",
-    "async": "^2.0.1",
-    "highcharts": "^4.2.6"
+    "xmltojson": "^1.1.0"
   },
   "devDependencies": {
     "browser-sync": "~2.7.12",

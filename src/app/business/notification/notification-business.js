@@ -12,7 +12,6 @@
         var business = {
             notifications: [],
             initializeMessages: initializeMessages,
-            //addNotification: addNotification,
             listenToPDFDownloadStatus: listenToPDFDownloadStatus,
             listenToWorkUpStatus: listenToWorkUpStatus,
             pushNotification: pushNotification,
@@ -38,27 +37,6 @@
                 business.pushNotification(data);
             });
         }
-
-        ///Id - Needs to be unique.
-        ///title - Which displays on the notification center
-        ///type - PDF-Download, Renew, CreateWorkUp - will expand in future
-        ///icon - To display for actions icon-file-pdf-box (PDF Download), icon-rotate-3d (Renew)
-        ///progress - To show the progress of actions initiated
-        //function addNotification(id, title, type, icon, progress, disabled, tooltip, status, userId, istrackable, requestId) {
-        //    return {
-        //        id: id,
-        //        title: title,
-        //        type: type,
-        //        icon: icon,
-        //        progress: progress,
-        //        disabled: disabled,
-        //        tooltip: tooltip,
-        //        status: status,
-        //        userId: userId,
-        //        istrackable: istrackable,
-        //        requestId: requestId
-        //    };
-        //}
 
         function clearNotifications() {
             business.notifications.length = 0;
@@ -109,7 +87,7 @@
                             id: response.projectId,
                             title: decodeURIComponent(response.project_name),
                             type: 'PDF-Download',
-                            icon: 'icon-file-pdf-box',
+                            icon: 'file-pdf-o',
                             progress: response.progress,
                             disabled: true,
                             tooltip: 'PDF Generation still in-progress',
@@ -156,7 +134,7 @@
                             id: response.projectId,
                             title: decodeURIComponent(response.project_name) || ('Project - ' + response.projectId),
                             type: 'Create-WorkUp',
-                            icon: 'icon-library-plus',
+                            icon: 'plus',
                             progress: response.progress,
                             disabled: true,
                             tooltip: 'Create work-up still in-progress',
@@ -207,7 +185,7 @@
                             id: parseInt(response.old_project_id),
                             title: decodeURIComponent(response.project_name),
                             type: 'Renewal',
-                            icon: 'icon-rotate-3d',
+                            icon: 'refresh',
                             progress: 100,
                             disabled: false,
                             tooltip: 'Renewal work-up still in-progress',

@@ -300,7 +300,7 @@
             var isLastComponent = false;
             newScope.itemid = component.section.ItemId || component.header.itemid;
 
-            comp.html = '<div><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+            comp.html = '<div style="padding: 3px;"><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
                 'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
                 'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component> <div style="min-height: 5px"></div> </div>';
             comp.scope = newScope;

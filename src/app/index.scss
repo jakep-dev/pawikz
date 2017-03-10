@@ -102,6 +102,99 @@ md-select-menu.md-advisen-theme md-content
   padding: 0px;
 }
 
+.div-content{
+  height: 100%;
+  border: 1px solid lightgrey;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  overflow: hidden;
+}
+
+.div-header{
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border: 1px solid lightgrey;
+}
+
+.div-main-content{
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+}
+
+.ai-dark-spin {
+  border-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.5) #ffffff #ffffff;
+}
+
+
+@media screen
+and (min-device-width: 1200px) {
+  .menu-action{
+    position:fixed;
+    left:96%;
+    top:15px;
+    z-index: 99;
+  }
+  .step-menu-action{
+    position:fixed;
+    left:90%;
+    top:15px;
+    z-index: 99;
+  }
+}
+
+
+@media screen and (max-width: 1199px)  {
+  .menu-action{
+    position:fixed;
+    left:94%;
+    top:15px;
+    z-index: 99;
+  }
+  .step-menu-action{
+    position:fixed;
+    left:84%;
+    top:15px;
+    z-index: 99;
+  }
+}
+
+@media screen  and (max-width: 979px)  {
+  .menu-action{
+    position:fixed;
+    left:93%;
+    top:15px;
+    z-index: 99;
+  }
+
+  .step-menu-action{
+    position:fixed;
+    left:78%;
+    top:15px;
+    z-index: 99;
+  }
+}
+
+
+@media screen and (max-width: 500px) {
+  .menu-action{
+    position:fixed;
+    left:86%;
+    top:15px;
+    z-index: 99;
+  }
+
+  .step-menu-action{
+    position:fixed;
+    left:78%;
+    top:15px;
+    z-index: 99;
+  }
+}
+
+md-input-container.md-advisen-theme .md-input {
+  color: rgba(0,0,0,0.87);
+  border-color: #b5b5b5;
+}
 
 /*
  ******************************************

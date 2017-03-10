@@ -9,7 +9,6 @@ $toolbarHeight: 64px;
     height: $toolbarHeight;
     margin: 0;
     padding: 0 16px;
-    border-right: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 0;
 
     .iso {
@@ -74,12 +73,44 @@ $toolbarHeight: 64px;
   font-weight: 600;
 }
 
-.text-ellipsis{
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+.nav-active{
+  border-left: 3px solid #b1d23b;
 }
 
-.menu-item-tooltip{
-  pointer-events: auto;
+.notify-parent{
+  background-color:#4f4f4f;
+}
+
+.notify-child{
+  background-color:#575757
+}
+
+.bg-notify-animation{
+  background: linear-gradient(273deg, rgba(32, 167, 15, 0.33), rgba(32, 231, 106, 0));
+  background-size: 400% 400%;
+
+  -webkit-animation: AnimationName 10s ease infinite;
+  -moz-animation: AnimationName 0s ease infinite;
+  animation: AnimationName 10s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+  0%{background-position:0% 58%}
+  50%{background-position:100% 43%}
+  100%{background-position:0% 58%}
+}
+@-moz-keyframes AnimationName {
+  0%{background-position:0% 58%}
+  50%{background-position:100% 43%}
+  100%{background-position:0% 58%}
+}
+@keyframes AnimationName {
+  0%{background-position:0% 58%}
+  50%{background-position:100% 43%}
+  100%{background-position:0% 58%}
+}
+
+.ai-circled{
+  height: 16px;
+  width: 16px;
 }

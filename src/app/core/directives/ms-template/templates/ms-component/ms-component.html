@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 <div class="md-whiteframe-1dp" id="step-main">
     <a ng-if="vm.isExcelDownloadable" id="link-component-download"></a>
+=======
+<div id="step-main">
+>>>>>>> feature/new-layout
     <div id="ms-accordion" style="min-height: 50px" class="md-amber-A200-bg"
           layout="row" layout-align="space-between center">
         <div style="padding-left: 10px; font-size: 18px">
@@ -42,7 +46,6 @@
                     </md-menu-content>
                 </md-menu>
 
-
                 <md-button class="md-icon-button" aria-label="show in printer"
                            style="margin-right: -20px"
                            ng-if="vm.showPrintIcon"
@@ -62,7 +65,7 @@
         </div>
     </div>
     <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
-    <md-content id="ms-accordion-content" ng-show="!vm.collapsed" style="padding: .5%">
+    <md-content class="div-content" id="ms-accordion-content" ng-show="!vm.collapsed">
 
     </md-content>
 </div>
