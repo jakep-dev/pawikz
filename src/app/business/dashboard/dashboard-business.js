@@ -9,7 +9,7 @@
         .service('dashboardBusiness', dashboardBusiness);
 
     /* @ngInject */
-    function dashboardBusiness(commonBusiness) {
+    function dashboardBusiness(commonBusiness, $compile, $rootScope) {
         this.searchCompanyId = 0;
         this.searchUserId = 0;
 
@@ -18,7 +18,8 @@
         
         var business = {
             getActionButtonsHtml: getActionButtonsHtml,
-            getWorkupHtml: getWorkupHtml
+            getWorkupHtml: getWorkupHtml,
+            renderHtml : renderHtml
         }
 
         Object.defineProperty(this, 'isFilterDasboard', {
@@ -48,13 +49,13 @@
         //get action buttons html in dashboard
         function getActionButtonsHtml(data, type, full, meta)
         {
-            return '<div layout="row" layout-align="center center"> ' +
-                    '<div flex> ' +
+            return '<div layout="row" layout-align="left center"> ' +
+                    '<div> ' +
                         '<md-icon md-font-icon="icon-rotate-3d"  class="renewStyle" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'"> ' +
                             '<md-tooltip md-direction="top">Renew</md-tooltip> ' +
                         '</md-icon> ' +
                     '</div> ' + 
-                    '<div flex> ' +
+                    '<div> ' +
                         '<md-icon md-font-icon="icon-delete" class="deleteWorkupStyle" projectId="'+ full.projectId +'" projectName="'+ full.projectName +'"> ' +
                             '<md-tooltip md-direction="top">Delete</md-tooltip> ' +
                         '</md-icon> ' + 
@@ -66,6 +67,43 @@
         function getWorkupHtml(data, type, full, meta)
         {
             return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
+        }
+
+        function renderHtml(api, rowIdx, columns) {
+        var data = api.cells( rowIdx, ':hidden' ).eq(0).map( function ( cell ) {
+				var header = $( api.column( cell.column ).header() );
+				var idx = api.cell( cell ).index();
+
+				if ( header.hasClass( 'control' ) || header.hasClass( 'never' ) ) {
+					return '';
+				}
+				
+				var dtPrivate = api.settings()[0];
+				var cellData = dtPrivate.oApi._fnGetCellData(
+					dtPrivate, idx.row, idx.column, 'display'
+				);
+				var title = header.text();
+				if ( title ) {
+					title = title + ':';
+				}
+
+				return '<li data-dtr-index="'+idx.column+'">'+
+                            '<span class="dtr-title">'+
+                                title+
+                            '</span> '+
+                        '</li>' +
+                        '<li data-dtr-index="'+idx.column+'">'+
+                            '<span class="dtr-data">'+
+                                cellData+
+                            '</span>'+
+					    '</li>';
+			} ).toArray().join('');
+
+            var row = $('<ul id="dashBoardDetailsExtension" data-dtr-index="'+rowIdx+'"/>').append(data);
+            
+            $compile(row.contents())($rootScope);
+            
+            return row;
         }
 
         return business;

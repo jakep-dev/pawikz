@@ -370,6 +370,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
 
+        // render data for browser resizing
+        var responsive = {details : 
+                { renderer : dashboardBusiness.renderHtml }
+            };
+
         //Dashboard DataTable Configuration
         vm.dtOptions = DTOptionsBuilder
             .newOptions()
@@ -382,7 +387,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('createdRow', recompileHtml)
             .withOption('paging', true)
             .withOption('autoWidth', true)
-            .withOption('responsive', true)
+            .withOption('responsive', responsive)
             .withOption('stateSave', true)
             .withOption('order',[4, 'desc'])
             .withPaginationType('full')
