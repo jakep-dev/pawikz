@@ -1,0 +1,25 @@
+<div id="history-main">
+    <div id="history-header" class="md-amber-A200-bg"
+         md-swipe-up="expandCollapseToggle()" layout="row" layout-align="space-between center">
+        <div class="header">
+            History Details
+        </div>
+        <div>
+            <div layout="row" layout-align="end center">
+                <md-button class="md-icon-button" aria-label="Filter widget">
+                  <span layout="row" layout-align="start center">
+                        <md-icon md-font-icon="icon-filter" class="icon"></md-icon>
+                  </span>
+                </md-button>
+            </div>
+        </div>
+    </div>
+    <md-content class="div-content">
+        <table class="row-border cell-border table-bordered" ms-export width="100%"
+               id="projectHistoryDetails" layout-padding datatable="" dt-options="vm.dtOptions"
+               dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">
+        </table>
+    </md-content>
+</div>
+
+

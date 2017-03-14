@@ -3,8 +3,12 @@
  */
 
 exports.webservice = {
-    protocol: 'https',
-    url: 'wsint.advisen.com',
+    //protocol: 'https',
+    //url: 'wsint.advisen.com',
+    //port: '',
+    //service:'advwebservice'
+    protocol: 'http',
+    url: 'phldev.advisen.com',
     port: '',
     service:'advwebservice'
 };
@@ -59,7 +63,8 @@ exports.restcall = {
                 dynamicTableData: 'getDynamicTableData',
                 getCompetitors:'getCompetitors',
                 saveChartSvgInFile: 'saveChartSvgInFile',
-                getScrapedHTML: 'getScrapedHTML'
+                getScrapedHTML: 'getScrapedHTML',
+                getProjectHistory: 'getProjectHistory'
             }
         },
         {

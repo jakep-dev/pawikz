@@ -63,7 +63,7 @@
             {
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -101,7 +101,7 @@
                 var totalCount = _.size(steps);
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -138,7 +138,7 @@
             {
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -167,7 +167,7 @@
                 var totalCount = _.size(steps);
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)

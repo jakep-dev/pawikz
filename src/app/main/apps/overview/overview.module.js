@@ -16,8 +16,8 @@
     {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
         {
-            overviewBusiness.save();
-            overviewBusiness.cancelPromise();
+            //overviewBusiness.save();
+            //overviewBusiness.cancelPromise();
         });
     }
 

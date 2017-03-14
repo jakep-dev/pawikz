@@ -12,25 +12,48 @@
 
         config.parallel([app.post('/api/overview', getOverview),
             app.post('/api/overview/defer', getOverview),
-            app.post('/api/saveOverview', saveOverview)]);
+            app.post('/api/saveOverview', saveOverview),
+            app.post('/api/getProjectHistory', getProjectHistory)]);
+
+        //Get project history details
+        function getProjectHistory(req, res, next){
+            "use strict";
+            var args;
+            var service = getServiceDetails('templateSearch');
+            var methodName = '';
+
+            if(service) {
+                methodName = service.methods.getProjectHistory;
+            }
+
+            args = {
+                parameters: {
+                    project_id: req.body.projectId,
+                    user_id: req.body.userId,
+                    row_start: req.body.rowStart,
+                    row_end: req.body.rowEnd,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response) {
+                res.status(response.statusCode).send(data);
+            });
+        }
 
         //Get Dashboard data
         function getOverviewDefer(req, res, next) {
 
+            var args;
             var service = getServiceDetails('templateSearch');
-            console.log(req.headers);
 
             var methodName = '';
 
-            if(!_.isUndefined(service) && !_.isNull(service))
-            {
-                console.log(service.name);
+            if(!_.isUndefined(service) && !_.isNull(service)) {
                 methodName = service.methods.overView;
             }
 
-            console.log(methodName);
-
-            var args =
+            args =
             {
                 parameters: {
                     project_id: req.body.projectId,
@@ -47,20 +70,13 @@
         //Get Dashboard data
         function getOverview(req, res, next) {
 
+            var args;
             var service = getServiceDetails('templateSearch');
-            console.log(req.headers);
-
             var methodName = '';
-
-            if(!_.isUndefined(service) && !_.isNull(service))
-            {
-                console.log(service.name);
+            if(!_.isUndefined(service) && !_.isNull(service)) {
                 methodName = service.methods.overView;
             }
-
-            console.log(methodName);
-
-            var args =
+            args =
             {
                 parameters: {
                     project_id: req.body.projectId,

@@ -57,6 +57,7 @@
         vm.flipSelectionOverview = flipSelectionOverview;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.projectHistory = projectHistory;
 
         vm.previousStep = previousStep;
         vm.nextStep = nextStep;
@@ -137,12 +138,15 @@
         }
 
         function pdfDownload(){
-            console.log('emit pdf download')
             commonBusiness.emitMsg('pdf-download');
         }
 
         function renew(){
             commonBusiness.emitMsg('project-renew');
+        }
+
+        function projectHistory(){
+            commonBusiness.emitMsg('project-history');
         }
 
         /**

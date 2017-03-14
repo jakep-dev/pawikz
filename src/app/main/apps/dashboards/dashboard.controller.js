@@ -321,6 +321,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
                 start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
             {
+                console.log('Dashboard');
+                console.log(data);
 
                 var blankData = {
                     companyName: '',

@@ -58,9 +58,14 @@
         vm.showOverviewDetails =showOverviewDetails;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.projectHistory = projectHistory;
 
         //Data
         loadData();
+
+        function projectHistory(){
+
+        }
 
         function pdfDownload() {
            templateBusiness.requestPdfDownload();
@@ -97,10 +102,17 @@
             commonBusiness.onMsg("project-renew", $scope, function(){
                 renew(vm.projectId);
             });
+
+            commonBusiness.onMsg("project-history", $scope, function(){
+                goToProjectHistory(vm.projectId, commonBusiness.userId);
+            });
         }
 
-        function showOverviewDetails(step)
-        {
+        function goToProjectHistory(projectId, userId){
+            overviewBusiness.goToProjectHistory(projectId, userId);
+        }
+
+        function showOverviewDetails(step) {
 
         }
 
