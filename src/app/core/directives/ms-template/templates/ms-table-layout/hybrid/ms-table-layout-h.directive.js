@@ -390,8 +390,15 @@
             });	
 
             commonBusiness.onMsg($scope.itemid + '-Upload', $scope, function() {
-
-                excelUpload($scope);
+				toast.simpleToast("Please choose file!");
+				if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        excelUpload($scope);
+                    }, 1000);
+                } else {
+                    excelUpload($scope);
+                }
+                
             });
 
             commonBusiness.onMsg($scope.itemid + '-Delete', $scope, function() {
@@ -631,23 +638,21 @@
 		
 		function excelUpload($scope)
 		{
-			toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#hybrid-upload');
+            var uploadElement = angular.element('#hybrid-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-				setTimeout(function () {
+				$timeout(function(){
+					uploadElement.off('change');
 					uploadElement.change(function()
 					{
-						setTimeout(function () {
-							$(this).off('change');
+						$timeout(function(){
 							angular.element('#btn-hybrid-upload').trigger('click');
-							//$('#btn-hybrid-upload').click();
-						}, 500);
+						}, 0);
 					});
+
 					uploadElement.click();
-				}, 500);
+				}, 0);
             }
 		}
 		
@@ -866,7 +871,10 @@
 
         function defineHybridLink(scope, el, attrs)
         {
-            var dataTableId = scope.itemid;
+			//disable excel download in ms-componenet
+        	scope.$parent.$parent.vm.isExcelDownloadable = false;
+            
+			var dataTableId = scope.itemid;
             /*if(scope.tearsheet.columns.length > 0)
             {*/
                 scope.$parent.$parent.isprocesscomplete = false;
@@ -907,7 +915,7 @@
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                     scope.mnemonicid, scope.itemid, columns).then(function(response) {
 
-                    var data = response.dynamicTableDataResp;
+                    var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
 					
 					defineLayout(scope, el);
 					defineActions(scope);

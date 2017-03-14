@@ -28,10 +28,8 @@
         {
             if(business.templateOverview)
             {
-                var specificStep = _.find(business.templateOverview.steps, function(step)
-                {
-                    if(parseInt(step.stepId) === parseInt(commonBusiness.stepId))
-                    {
+                var specificStep = _.find(business.templateOverview.steps, function(step) {
+                    if (parseInt(step.stepId) === parseInt(commonBusiness.stepId)) {
                         return step;
                     }
                 });
@@ -91,14 +89,14 @@
             {
                 projectName = business.templateOverview.projectName;
                 steps = [];
-                angular.forEach(business.templateOverview.steps, function(step)
+                _.each(business.templateOverview.steps, function(step)
                 {
                     var stepId = step.stepId;
                     var stepName = step.stepName;
                     var sections = [];
                     if(step.sections)
                     {
-                        angular.forEach(step.sections, function(section)
+                        _.each(step.sections, function(section)
                         {
                             sections.push({
                                 mnemonic: section.mnemonic,
@@ -121,7 +119,7 @@
                 overviewService.save(userId, projectId, projectName, steps)
                                .then(function(data)
                 {
-                    toast.simpleToast('Project Overview changes saved successfully');
+
                 });
             }
         }

@@ -12,12 +12,12 @@
             endpoints: {
                 dashboardEndPoint: {
                     get: '/api/dashboard',
-                    getUsers: '/api/users/',
-                    getCompanies: '/api/companies/',
+                    getUsers: '/api/users',
+                    getCompanies: '/api/companies',
                     processRemoveWorkUp: '/api/processRemoveWorkUp/'
                 },
                 overViewEndPoint: {
-                    get: '/api/overview/',
+                    get: '/api/overview',
                     save: '/api/saveOverview',
                     getDefer: '/api/overview/defer'
                 },
@@ -56,11 +56,12 @@
                     search: '/api/news/search',
                     attachNewsArticles: '/api/news/attachNewsArticles',
                     getAttachedArticles: '/api/news/getAttachedArticles',
-                    showArticleContent: '/api/news/showArticleContent'
+                    showArticleContent: '/api/news/showArticleContent',
+                    deleteAttachedArticles: '/api/news/deleteAttachedArticles'
                 }
             },
             appSettings: {
-                autoSaveTimeOut: 10000,
+                autoSaveTimeOut: 600000,
                 textEditorApiKey: 'VqsaF-10kwI2A-21yhvsdlH3gjk==',
                 compInitialLoadForDesktop: 3,
                 compInitialLoadForDesktopIE: 30,
@@ -97,6 +98,16 @@
                     maxRow: 'Reached max rows. Available row(s) to add is',
                     deleteRow: 'Check row(s) to delete.',
                     copyProgram: 'program copied!'
+                },
+                newsArticle : {
+                    bookmarkNewsItem : {
+                        title : 'Bookmark News',
+                        content: 'Are you sure you want to include the full text of the checked article(s) in your work-up?'
+                    },
+                    deleteNewsItem :{
+                        title : 'Would you like to delete?',
+                        content: 'Selected News Aricles(s) will be deleted. Please Confirm.'
+                    } 
                 }
             }
         });

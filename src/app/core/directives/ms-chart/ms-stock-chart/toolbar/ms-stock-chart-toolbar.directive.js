@@ -5,71 +5,127 @@
            .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($rootScope, $scope, $log, $mdMenu, $mdSelect, $timeout,
-                                           dialog, toast, commonBusiness, stockChartBusiness, stockService) {
+    function msStockChartToolBarController($scope, 
+                                           dialog,
+                                           commonBusiness, stockChartBusiness, stockService) {
         var vm = this;
         vm.splits = vm.filterState.splits;
         vm.earnings = vm.filterState.earnings;
         vm.dividends = vm.filterState.dividends;
         vm.selectedPeriod = vm.filterState.interval;
-        vm.customDateChange = customDateChange;
 
-        /* Indices Logic Start */
-        vm.indices = [];
-        vm.peers = [];
-        vm.competitors = [];
-        vm.savedChartData = $rootScope.savedChartData;
+        vm.peerIndustryList = new Array();
+        vm.peerIndustryMap = new Array();
+        vm.selectedPeerIndustries = [];
 
-        /* Peers Logic Start*/
-        vm.queryPeerSearch = queryPeerSearch;
-        vm.selectedItemChange = selectedItemChange;
-        vm.indicesOrCompetitorDropDownChange = indicesOrCompetitorDropDownChange;
-        vm.addIndices = addIndices;
-        vm.selectedPeerChange = selectedPeerChange;
-        vm.selectedCompetitorChange = selectedCompetitorChange;
-        vm.addCompetitor = addCompetitor;
-        vm.changedSplitsEvents = changedSplitsEvents;
-        vm.changedEarningsEvents = changedEarningsEvents;
-        vm.changedDividendsEvents = changedDividendsEvents;
-        vm.changedPeriod = changedPeriod;
-        vm.loadPeers = loadPeers;
-        vm.loadIndices = loadIndices;
-        vm.loadCompetitors = loadCompetitors;
-        vm.add = add;
-        vm.clear = clear;
-        vm.presetComparisonMenu = presetComparisonMenu;
-
-        vm.maxDate = new Date();
-        setStartEndDate(vm.selectedPeriod);
-
-        //Loads Indices.
         function loadIndices() {
-            var chartCount = vm.chartId.split('-');
-            chartCount = parseInt(chartCount[1]);
-            var savedIndicesList = [];
-
-            if (chartCount >= 0) {
-                if (vm.savedChartData && _.size(vm.savedChartData) > 0) {
-                    savedIndicesList = vm.savedChartData[chartCount].filterState.selectedIndices;
-                }
-
-                vm.indices = [];
-                indicesList = [];
-                angular.forEach(stockService.getIndices(), function (ind) {
-                    var indicesItem = new Object();
-                    indicesItem.value = ind.value;
-                    indicesItem.display = ind.description;
-                    indicesItem.selectedIndicecheck = false;
-                    if (savedIndicesList && savedIndicesList.indexOf(indicesItem.value) > -1) {
-                        indicesItem.selectedIndicecheck = true;
-                        indicesList.push(indicesItem);
-                    }
-                    vm.indices.push(indicesItem);
+            var indices = stockChartBusiness.indices;
+            if (indices.length == 0) {
+                stockService.getIndices()
+                .then(function (data) {
+                    stockChartBusiness.indices = data;
+                    postProcessIndices(data);
                 });
+            } else {
+                postProcessIndices(indices);
             }
         }
 
+        function postProcessIndices(indices) {
+            var i;
+            var n;
+            var peerIndustryItem;
+            var value;
+            var values;
+            var peerName;
+
+            if (Array.isArray(vm.filterState.selectedPeers)) {
+                n = vm.filterState.selectedPeers.length;
+                if (n > 0) {
+                    //Add 'Custom Added Peers' sub-heading if there are custom peers
+                    peerIndustryItem = new Object();
+                    peerIndustryItem.value = null;
+                    peerIndustryItem.display = 'Custom Added Peers';
+                    peerIndustryItem.selectedPeerIndustryCheck = false;
+                    vm.peerIndustryList.push(peerIndustryItem);
+                    for (i = 0; i < n; i++) {
+                        value = vm.filterState.selectedPeers[i];
+                        peerName = vm.filterState.selectedPeerNames[i];
+                        if (value) {
+                            values = value.split('#');
+                            if ((values.length != 2) || !values[0] || (values[0] === 'null') || !values[1] || (values[1] === 'null')) {
+                                console.log('Unexpected null Peer value.');
+                            } else if (!peerName) {
+                                console.log('Unexpected null Peer Name value.');
+                            } else {
+                                peerIndustryItem = new Object();
+                                peerIndustryItem.value = value;
+                                peerIndustryItem.display = _.unescape(peerName);
+                                peerIndustryItem.type = 'Peer';
+                                peerIndustryItem.selectedPeerIndustryCheck = true;
+                                vm.selectedPeerIndustries.push(peerIndustryItem.value);
+                                vm.peerIndustryList.push(peerIndustryItem);
+                                vm.peerIndustryMap[peerIndustryItem.value]= peerIndustryItem;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (Array.isArray(indices)) {
+                n = indices.length;
+                if (n > 0) {
+                    //Add 'Industries' sub-heading
+                    peerIndustryItem = new Object();
+                    peerIndustryItem.value = null;
+                    peerIndustryItem.display = 'Industries';
+                    peerIndustryItem.selectedPeerIndustryCheck = false;
+                    vm.peerIndustryList.push(peerIndustryItem);
+                    for (i = 0; i < n; i++) {
+                        peerIndustryItem = new Object();
+                        peerIndustryItem.value = indices[i].value;
+                        peerIndustryItem.display = _.unescape(indices[i].description);
+                        peerIndustryItem.type = 'Industry';
+                        peerIndustryItem.selectedPeerIndustryCheck = false;
+                        vm.peerIndustryList.push(peerIndustryItem);
+                        vm.peerIndustryMap[peerIndustryItem.value] = peerIndustryItem;
+                    }
+                }
+            }
+
+            n = vm.filterState.selectedIndices.length;
+            for (i = 0; i < n; i++) {
+                value = vm.filterState.selectedIndices[i];
+                peerIndustryItem = vm.peerIndustryMap[value];
+                if (peerIndustryItem) {
+                    peerIndustryItem.selectedPeerIndustryCheck = true;
+                    vm.selectedPeerIndustries.push(peerIndustryItem.value);
+                } else {
+                    console.log('Selected index value ' + value + ' is not found in the indices list.');
+                }
+            }
+        }
+
+        function updatePeerIds(checkedItem) {
+            vm.selectedPeerIndustries = [];
+
+            vm.peerIndustryList.forEach(function (item) {
+                if (item.selectedPeerIndustryCheck) {
+                    vm.selectedPeerIndustries.push(item.value);
+                }
+            });
+        }
+        vm.updatePeerIds = updatePeerIds;
+        loadIndices();
+
+        vm.peers = [];
+        vm.maxDate = new Date();
         setStartEndDate(vm.selectedPeriod);
+        setStartEndDate(vm.selectedPeriod);
+
+        vm.competitorList = new Array();
+        vm.competitorMap = new Array();
+        vm.selectedCompetitors = [];
 
         function loadCompetitors() {
             var competitors;
@@ -90,43 +146,69 @@
         }
 
         function loadCompetitorsPostProcess(competitors) {
-            var chartCount = vm.chartId.split('-');
-            chartCount = parseInt(chartCount[1]);
-            var savedCompetitorsList = [];
-            competitorList = [];
-            if (chartCount >= 0) {
-                if (vm.savedChartData && _.size(vm.savedChartData) > 0) {
-                    savedCompetitorsList = vm.savedChartData[chartCount].filterState.selectedCompetitors;
-                }
 
-                angular.forEach(competitors, function (comp) {
-                    var competitorItem = new Object();
-                    competitorItem.value = comp.ticker;
-                    competitorItem.display = comp.companyName;
-                    competitorItem.selectedCompetitorcheck = false;
-                    if (savedCompetitorsList &&
-                        savedCompetitorsList.indexOf(competitorItem.value) > -1) {
-                        competitorItem.selectedCompetitorcheck = true;
-                        competitorList.push(competitorItem);
+            var n;
+            var i;
+            var competitorItem;
+            var value;
+
+            if (Array.isArray(competitors)) {
+                n = competitors.length;
+                if (n > 0) {
+                    for (i = 0; i < n; i++) {
+                        competitorItem = new Object();
+                        competitorItem.value = competitors[i].ticker;
+                        competitorItem.display = _.unescape(competitors[i].companyName);
+                        competitorItem.type = 'Competitor';
+                        competitorItem.selectedCompetitorCheck = false;
+                        vm.competitorList.push(competitorItem);
+                        vm.competitorMap[competitorItem.value] = competitorItem;
                     }
-                    vm.competitors.push(competitorItem);
-                });
+                }
+            }
+            n = vm.filterState.selectedCompetitors.length;
+            for (i = 0; i < n; i++) {
+                value = vm.filterState.selectedCompetitors[i];
+                competitorItem = vm.competitorMap[value];
+                if (competitorItem) {
+                    competitorItem.selectedCompetitorCheck = true;
+                    vm.selectedCompetitors.push(competitorItem.value);
+                } else {
+                    console.log('Selected index value ' + value + ' is not found in the competitors list.');
+                }
             }
         }
+
+        function updateCompetitorIds(checkedItem) {
+            vm.selectedCompetitors = [];
+
+            vm.competitorList.forEach(function (item) {
+                if (item.selectedCompetitorCheck) {
+                    vm.selectedCompetitors.push(item.value);
+                }
+            });
+        }
+        vm.updateCompetitorIds = updateCompetitorIds;
+        loadCompetitors();
+
+        vm.selectedPeerItem = null;
+        vm.searchPeerText = "";
 
         setStartEndDate(vm.selectedPeriod);
 
         function loadPeers(keyword) {
             return stockService
-            .findTickers(keyword)
-            .then(function (data) {
-                if (data.tickerResp) {
-                    vm.peers = [];
-                    angular.forEach(data.tickerResp, function (ticker) {
-                        vm.peers.push({
-                            value: ticker.ticker,
-                            display: ticker.companyName
-                        });
+                .findTickers(keyword)
+                .then(function (data) {
+                    if (data.tickerResp) {
+                        vm.peers = [];
+                        angular.forEach(data.tickerResp, function (ticker) {
+                            if (ticker.companyId && (ticker.companyId != commonBusiness.companyId)) {
+                            vm.peers.push({
+                                value: ticker.ticker,
+                                display: ticker.companyName
+                            });
+                        }
                     });
                     return vm.peers;
                 }
@@ -134,40 +216,56 @@
         }
 
         function customDateChange() {
-            $timeout(function() {
-                if (vm.startDate > vm.endDate) {
-                    vm.endDate = vm.filterState.endDate;
-                    dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, {
-                        ok: {
-                            name: 'ok', callBack: function () {
-                            }
+            if (vm.startDate > vm.endDate) {
+                vm.startDate = vm.filterState.startDate;
+                vm.endDate = vm.filterState.endDate;
+                dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, null, {
+                    ok: {
+                        name: 'ok', callBack: function () {
                         }
-                    });
-                } else {
-                    if (vm.startDate && vm.endDate) {
+                    }
+                });
+            } else {
+                if (vm.startDate && vm.endDate) {
+                    var duration;
+                    duration = moment.duration(moment(vm.endDate).diff(moment(vm.startDate)));
+                    if (duration.asYears() >= 10.0) {
+                        vm.startDate = vm.filterState.startDate;
+                        vm.endDate = vm.filterState.endDate;
+                        dialog.alert('Warning!', "Custom date range cannot exceed 10 years. Please adjust the date range.", null, null, {
+                            ok: {
+                                name: 'ok', callBack: function () {
+                                }
+                            }
+                        });
+                    } else {
                         vm.filterState.startDate = vm.startDate;
                         vm.filterState.endDate = vm.endDate;
                         vm.changedPeriod('CUSTOM');
                         vm.onFilterStateUpdate();
                     }
                 }
-            }, 1000);
+            }
         }
+        vm.customDateChange = customDateChange;
 
         function changedSplitsEvents() {
             vm.filterState.splits = vm.splits;
             vm.onFilterStateUpdate();
         }
+        vm.changedSplitsEvents = changedSplitsEvents;
 
         function changedEarningsEvents() {
             vm.filterState.earnings = vm.earnings;
             vm.onFilterStateUpdate();
         }
+        vm.changedEarningsEvents = changedEarningsEvents;
 
         function changedDividendsEvents() {
             vm.filterState.dividends = vm.dividends;
             vm.onFilterStateUpdate();
         }
+        vm.changedDividendsEvents = changedDividendsEvents;
 
         function changedPeriod(periodVal) {
             vm.filterState.startDate = vm.startDate;
@@ -176,6 +274,7 @@
             setStartEndDate(periodVal);
             vm.onFilterStateUpdate();
         }
+        vm.changedPeriod = changedPeriod;
 
         function setStartEndDate(periodVal) {
             if (periodVal !== 'CUSTOM') {
@@ -211,261 +310,113 @@
 
         function queryPeerSearch(query) {
             if (query) {
-                return vm.loadPeers(query);
+                return loadPeers(query);
             } else {
                 vm.peers = [];
                 return vm.peers;
             }
-            // return vm.peers;
         }
-
-        var indicesList = [];
-        function addIndices() {
-            vm.filterState.selectedIndices = [];
-            indicesList.forEach(function (item, key) {
-                    if (item && item.value) {
-                        vm.filterState.selectedIndices.push(item.value);
-                    }
-            })
-
-            $mdSelect.hide();
-            $mdMenu.hide();
-
-            vm.selectedIndice = null;
-        }
-
-        function indicesOrCompetitorDropDownChange(itemType, item) {
-            if (itemType == 'INDICE') {
-                if (item.selectedIndicecheck && indicesList.indexOf(item) == -1) {
-                    indicesList.push(item);
-                    if (!validateSelectedCount()) {
-                        for (var itemCount = 0; itemCount < indicesList.length; itemCount++) {
-                            if (item.value == indicesList[itemCount].value) {
-                                indicesList.splice(itemCount, 1);
-                                break;
-                            }
-                        }
-                        for (var i = 0; i < vm.indices.length; i++) {
-                            if (vm.indices[i].value == item.value) {
-                                vm.indices[i].selectedIndicecheck = false;
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    for (var itemCount = 0; itemCount < indicesList.length; itemCount++) {
-                        if (item.value == indicesList[itemCount].value) {
-                            indicesList.splice(itemCount, 1);
-                        }
-                    }
-                }
-            } else {
-                if (item.selectedCompetitorcheck && competitorList.indexOf(item) == -1) {
-                    competitorList.push(item);
-                    if (!validateSelectedCount()) {
-                        for (var itemCount = 0; itemCount < competitorList.length; itemCount++) {
-                            if (item.value == competitorList[itemCount].value) {
-                                competitorList.splice(itemCount, 1);
-                                break;
-                            }
-                        }
-                        for (var i = 0; i < vm.competitors.length; i++) {
-                            if (vm.competitors[i].value == item.value) {
-                                vm.competitors[i].selectedCompetitorcheck = false;
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    for (var itemCount = 0; itemCount < competitorList.length; itemCount++) {
-                        if (item.value == competitorList[itemCount].value) {
-                            competitorList.splice(itemCount, 1);
-                        }
-                    }
-                }
-            }
-
-            vm.selectedItem = null;
-            vm.searchIndText = "";
-        }
-
-        function selectedItemChange(item) {
-            indicesList.push(item);
-            vm.selectedItem = null;
-            vm.searchIndText = "";
-            //$mdMenu.hide();
-        }
-
-        function reloadIndices() {
-            indicesList = [];
-            vm.indices.forEach(function(index) {
-                index.selectedIndicecheck = false;
-            });
-
-            vm.filterState.selectedIndices.forEach(function(selectedIndex) {
-                for (var i = 0; i < vm.indices.length; i++) {
-                    if (vm.indices[i].value == selectedIndex) {
-                        vm.indices[i].selectedIndicecheck = true;
-                        indicesList.push(vm.indices[i]);
-                        break;
-                    }
-                }
-            }); 
-        }
-
-        var peerList = [];
-        function addPeer() {
-            vm.filterState.selectedPeers = [];
-            peerList.forEach(function (item, key) {
-                if (item && item.value) {
-                    vm.filterState.selectedPeers.push(item.value);
-                }
-            })
-            vm.selectedPeerItem = null;
-            vm.searchPeerText = "";
-            $mdMenu.hide();
-        }
-
-        function reloadPeers() {
-            peerList = [];
-            vm.filterState.selectedPeers.forEach(function (item, key) {
-                if (item && item.value) {
-                    peerList.push(item);
-                }
-            })
-        }
+        vm.queryPeerSearch = queryPeerSearch;
 
         function selectedPeerChange(item) {
-            if (item && item.value && peerList.indexOf(item) == -1) {
-                peerList.push(item);
-                if (!validateSelectedCount()) {
-                    for (var peerNdx = 0; peerNdx < peerList.length; peerNdx++) {
-                        if (item.value == peerList[peerNdx].value) {
-                            peerList.splice(peerNdx, 1);
-                            break;
-                        }
+            var peerIndustryItem;
+            if (item) {
+                var value = String(item.value);
+                if (!vm.peerIndustryMap[value]) {
+                    //Add 'Custom Added Peers' sub-heading if there are no previous custom peers added before adding this current peer
+                    if (vm.peerIndustryList[0].display != 'Custom Added Peers') {
+                        peerIndustryItem = new Object();
+                        peerIndustryItem.value = null;
+                        peerIndustryItem.display = 'Custom Added Peers';
+                        peerIndustryItem.selectedPeerIndustryCheck = false;
+                        vm.peerIndustryList.splice(0, 0, peerIndustryItem);
                     }
-                    vm.selectedPeerItem = null;
-                    vm.searchPeerText = "";
-                }
-            }
-        }
-
-        function add() {
-            addCompetitor();
-            addIndices();
-            addPeer();
-            vm.onFilterStateUpdate();
-        }
-
-        function clear() {
-            vm.filterState.selectedIndices = [];
-            vm.filterState.selectedPeers = [];
-            vm.filterState.selectedCompetitors = [];
-            indicesList = [];
-            competitorList = [];
-            peerList=[];
-            vm.selectedPeerItem = null;
-            vm.searchPeerText = "";
-            vm.onFilterStateUpdate();
-        }
-
-        var competitorList = [];
-        function addCompetitor() {
-            vm.filterState.selectedCompetitors = [];
-            competitorList.forEach(function (item, key) {
-                if (item && item.value) {
-                    vm.filterState.selectedCompetitors.push(item.value);
-                }
-                $mdSelect.hide();
-                $mdMenu.hide();
-                vm.selectedCompetitor = null;
-            })
-        }
-
-        function selectedCompetitorChange(item) {
-            competitorList.push(item);
-            vm.selectedItem = null;
-            vm.searchIndText = "";
-            // $mdMenu.hide();
-        }
-
-        function reloadCompetitors() {
-            competitorList = [];
-            vm.competitors.forEach(function(competitor) {
-                competitor.selectedCompetitorcheck = false;
-            });
-
-            vm.filterState.selectedCompetitors.forEach(function(selCompetitor) {
-                for (var i = 0; i < vm.competitors.length; i++) {
-                    if (vm.competitors[i].value == selCompetitor) {
-                        vm.competitors[i].selectedCompetitorcheck = true;
-                        competitorList.push(vm.competitors[i]);
-                        break;
+                    peerIndustryItem = new Object();
+                    peerIndustryItem.value = value;
+                    peerIndustryItem.display = item.display;
+                    peerIndustryItem.type = 'Peer';
+                    peerIndustryItem.selectedPeerIndustryCheck = true;
+                    vm.peerIndustryList.splice(1, 0, peerIndustryItem);
+                    vm.peerIndustryMap[value] = peerIndustryItem;
+                    updatePeerIds(peerIndustryItem);
+                } else {
+                    peerIndustryItem = vm.peerIndustryMap[value];
+                    if (!peerIndustryItem.selectedPeerIndustryCheck) {
+                        peerIndustryItem.selectedPeerIndustryCheck = true;
+                        updatePeerIds(peerIndustryItem);
                     }
                 }
-            }); 
+            }
         }
+        vm.selectedPeerChange = selectedPeerChange;
 
-        function presetComparisonMenu() {
-            vm.selectedPeerItem = null;
-            vm.searchPeerText = "";
-
-            if (_.size(vm.indices) === 0 && _.size(vm.competitors === 0)) {
-                toast.simpleToast("Getting Competitors and Indices!");
-            }
-
-            if (_.size(vm.indices) === 0) {
-                vm.loadIndices();
-            }
-
-            if (_.size(vm.competitors) === 0) {
-                vm.loadCompetitors();
-            }
-        };
-
-        function createFilterFor(query) {
-            var lowercaseQuery = angular.lowercase(query);
-            return function filterFn(peer) {
-                return (peer.display.indexOf(lowercaseQuery) === 0);
-            };
-        }
-
-        function validateSelectedCount() {
-            var isValid = (1 + indicesList.length + peerList.length + competitorList.length) <= 5;
-            if (!isValid) {
-                dialog.alert('Error', "Max of 5 Stocks allowed to compare!", null, {
+        function commitChanges() {
+            var count = vm.selectedPeerIndustries.length + vm.selectedCompetitors.length;
+            if (count > 4) {
+                //show pop up
+                dialog.alert('Error', "Maximum of 4 competitors allowed for chart comparison!", null, {
                     ok: {
-                        name: 'ok', callBack: function () {
+                            name: 'ok', callBack: function () {
                         }
                     }
                 });
             }
-            return isValid;
+            else {
+                var n;
+                var i;
+                var item;
+                var value;
+
+                vm.filterState.selectedIndices = [];
+                vm.filterState.selectedPeers = [];
+                n = vm.selectedPeerIndustries.length;
+                for (i = 0; i < n; i++) {
+                    value = vm.selectedPeerIndustries[i];
+                    item = vm.peerIndustryMap[value];
+                    if (item.type === 'Industry') {
+                        vm.filterState.selectedIndices.push(value);
+                    } else if (item.type === 'Peer') {
+                        vm.filterState.selectedPeers.push(value);
+                        vm.filterState.selectedPeerNames.push(item.display);
+                    }
+                }
+
+                vm.filterState.selectedCompetitors = [];
+                n = vm.selectedCompetitors.length;
+                for (i = 0; i < n; i++) {
+                    value = vm.selectedCompetitors[i];
+                    item = vm.competitorMap[value];
+                    if (item.type === 'Competitor') {
+                        vm.filterState.selectedCompetitors.push(item.value);
+                    }
+                }
+
+                vm.onFilterStateUpdate();
+            }
         }
+        vm.commitChanges = commitChanges;
 
-        $scope.$on('resetEvents', function (event) {
-            vm.splits = false;
-            vm.earnings = false;
-            vm.dividends = false;
-        });
+        function clear() {
+            vm.filterState.selectedIndices = [];
+            vm.filterState.selectedPeers = [];
+            vm.filterState.selectedPeerNames = [];
+            vm.filterState.selectedCompetitors = [];
 
-        $scope.$on('reloadIndices', function (event) {
-            reloadIndices();
+            vm.selectedPeerIndustries = [];
+            vm.peerIndustryList.forEach(function (item) {
+                item.selectedPeerIndustryCheck = false;
+            });
+
+            vm.selectedCompetitors = [];
+            vm.competitorList.forEach(function (item) {
+                item.selectedCompetitorCheck = false;
+            });
+
+            vm.selectedPeerItem = null;
+            vm.searchPeerText = "";
             vm.onFilterStateUpdate();
-        });
-
-        $scope.$on('reloadPeers', function (event) {
-            reloadPeers();
-            vm.onFilterStateUpdate();
-        });
-
-        $scope.$on('reloadCompetitors', function (event) {
-            reloadCompetitors();
-            vm.onFilterStateUpdate();
-        });
-
-        /* Peers Logic End*/
+        }
+        vm.clear = clear;
     }
 
     /** @ngInject */

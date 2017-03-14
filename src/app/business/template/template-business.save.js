@@ -30,9 +30,6 @@
                     userId: commonBusiness.userId,
                     data: business.saveMnemonics
                 };
-                console.log('SaveMenmonics - ');
-                console.log(business.saveMnemonics);
-
                 templateService.saveAll(input).then(function(response)
                 {
                     if (response && response.data) {
@@ -61,9 +58,6 @@
                 });
 
                 business.saveMnemonics = [];
-            } else {
-                console.log('No changes to save');
-                toast.simpleToast('Saved sucessfully');
             }
         }
 

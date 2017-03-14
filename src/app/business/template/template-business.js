@@ -9,7 +9,7 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, $window, $sce, $mdToast,
+    function templateBusiness($rootScope, $interval, $filter, $window, $sce, $mdToast, $injector,
         Papa, dialog, store, deviceDetector, toast,
         clientConfig, commonBusiness, stepsBusiness, notificationBusiness, overviewBusiness,
         templateService, stockService, financialChartService
@@ -20,10 +20,12 @@
             saveTableMnemonics: [],
             saveHybridTableMnemonics: [],
             programTableMnemonics: [],
+            tableLayoutMnemonics:[],
             autoSavePromise: [],
             isExpandAll: false,
             componentStatus: [],
             components: [],
+            summationMnemonics: [],
             remainingComponentCount: 0,
             save: save,
             saveTable: saveTable,
@@ -86,7 +88,11 @@
             getTearSheetItems: getTearSheetItems,
             getCompInitialLoadCount: getCompInitialLoadCount,
             updateProgramTableMnemonics: updateProgramTableMnemonics,
-            getNewsHeader: getNewsHeader
+            getNewsHeader: getNewsHeader,
+            updateTableLayoutMnemonics: updateTableLayoutMnemonics,
+            componentExcelDownload: componentExcelDownload,
+            updateSummationMnemonics: updateSummationMnemonics,
+            summation: summation
         };
 
         return business;
@@ -204,8 +210,19 @@
                     notification.status = 'in-process';
                     notification.requestId = 0;
                 } else {
-                    notificationBusiness.notifications.push(notificationBusiness.addNotification(commonBusiness.projectId, commonBusiness.projectName, 'PDF-Download',
-                        'icon-file-pdf-box', 0, true, '', 'in-process', userId.toString(), true, 0));
+                    notificationBusiness.pushNotification({
+                        id: commonBusiness.projectId,
+                        title: commonBusiness.projectName,
+                        type: 'PDF-Download',
+                        icon: 'icon-file-pdf-box',
+                        progress: 0,
+                        disabled: true,
+                        tooltip: 'PDF Generation still in-progress',
+                        status: 'in-process',
+                        userId: userId,
+                        istrackable: true,
+                        requestId: 0
+                    });
                 }
 
                 templateService.createTemplatePdfRequest(commonBusiness.projectId, userId,
@@ -222,6 +239,7 @@
 
                         if (!data) {
                             if (notification) {
+                                notification.requestId = data.requestId;
                                 notification.status = 'error';
                                 notification.progress = 100;
                                 notification.disabled = false;
@@ -230,6 +248,7 @@
                         } else if (data && data.errorMessages &&
                             data.errorMessages.length > 0) {
                             if (notification) {
+                                notification.requestId = data.requestId;
                                 notification.status = 'error';
                                 notification.progress = 100;
                                 notification.disabled = false;
@@ -281,7 +300,7 @@
             var isLastComponent = false;
             newScope.itemid = component.section.ItemId || component.header.itemid;
 
-            comp.html = '<div><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
+            comp.html = '<div style="padding: 3px;"><ms-component tearheader="tearheader" tearcontent="tearcontent" iscollapsible="iscollapsible" ' +
                 'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
                 'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component> <div style="min-height: 5px"></div> </div>';
             comp.scope = newScope;
@@ -305,6 +324,11 @@
                     tearSheet = content.TearSheetItem;
                 } else {
                     tearSheet = content;
+                }
+
+                //add attribute for excel download
+                if(content && content.excelDownLoadForCom) {
+                    tearSheet.excelDownLoadForCom = content.excelDownLoadForCom;
                 }
 
                 if (tearSheet.id === 'LabelItem') {
@@ -1737,6 +1761,25 @@
             }
         }
 
+        //maintain business variable for excel download tablelayout mnemonics
+        //saves the data so that no WS call
+        //add data type for formatting data
+        function updateTableLayoutMnemonics(projectId, mnemonic, itemId, data, dataType) {
+            var tableMnemonic = _.find(business.tableLayoutMnemonics, { projectId: projectId, mnemonic: mnemonic, itemId: itemId });
+            
+            if (angular.isUndefined(tableMnemonic)) {
+                business.tableLayoutMnemonics.push({
+                    projectId: projectId,
+                    mnemonic: mnemonic,
+                    itemId: itemId,
+                    data: data,
+                    type: dataType
+                });
+            } else {
+                tableMnemonic.data = data;
+            }
+        }
+
         function getNewsHeader(tearsheet) {
             var label = '';
             if(tearsheet && tearsheet.id) {
@@ -1762,6 +1805,261 @@
                 }
             }
             return label;
+        }
+
+        function componentExcelDownload(scope) {
+            var linkElement = $('#link-component-download');
+            var dataInfo = buildExcelData(scope.excelComponents);
+            var data = unParseJsonToCsv(dataInfo);
+            var BOM = String.fromCharCode(0xFEFF);  //fix for euro symbol
+            var blob = new Blob([BOM + data], {
+                "type": "text/csv;charset=utf8;"
+            });     
+
+            if (deviceDetector.browser === 'ie')
+            { 
+                var fileName = scope.excelFilename + '.csv';
+                window.navigator.msSaveOrOpenBlob(blob, fileName);
+                toast.simpleToast('Finished downloading - ' + fileName); 
+            } else if(data && linkElement && linkElement.length > 0) {
+                var fileName = scope.excelFilename + '.csv';
+                linkElement[0].setAttribute("href", window.URL.createObjectURL(blob));
+                linkElement[0].setAttribute("download", fileName);
+                linkElement[0].click();
+                toast.simpleToast('Finished downloading - ' + fileName);
+            }
+        }
+
+        //build excel data based on nodes under component tag
+        function buildExcelData(tearcontent) {
+            var excelRow = [];
+            var tearsheetItem = [];
+
+            _.each(tearcontent, function(content) {
+                if(content) {
+                    if(_.has(content, 'TearSheetItem')) {
+                        if(_.isArray(content.TearSheetItem)) {
+                            tearsheetItem.push.apply(tearsheetItem, content.TearSheetItem);
+                        } else {
+                            tearsheetItem.push(content.TearSheetItem);
+                        }
+                    } else {
+                        tearsheetItem.push(content);
+                    }
+                }
+            });
+
+            _.each(tearsheetItem, function(tearsheet) {
+                var row = getTearSheetData(tearsheet);
+
+                if(_.isArray(row)) {
+                    excelRow.push.apply(excelRow, row);
+                } else {
+                    excelRow.push([row]);
+                }
+            });
+            
+            return excelRow;
+        }
+
+        //get data per TearSheetItem tag
+        function getTearSheetData(tearsheet) {
+            var tbf = $injector.get('templateBusinessFormat');
+            var value = null;
+            if(tearsheet && tearsheet.id) {
+                switch(tearsheet.id.toLowerCase()) {
+                    case 'linkitem': 
+                    case 'linkitemnoword':
+                    case 'labelitem':
+                        value = (tearsheet.Label && typeof(tearsheet.Label) !== 'object') ? tearsheet.Label : ' ';
+                        break;
+
+                    case 'genericselectitem':
+                        var itemid = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemid, mnemonicId);
+                        break;
+
+                    case 'generictextitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        var formats = tbf.getFormatObject(tearsheet);
+                        value = getMnemonicValue(itemId, mnemonicId, false);
+                        value = tbf.formatData(value, formats);
+                        break;
+
+                    case 'singledropdownitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        break;
+
+                    case 'dateitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        var formats = tbf.getFormatObject(tearsheet);
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        value = tbf.formatData(value, formats);
+                        break;
+
+                    case 'genericradiogroup':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        break;
+
+                    case 'rtftextareaitem':
+                        var itemId = tearsheet.ItemId;
+                        var mnemonicId = tearsheet.Mnemonic;
+                        value = getMnemonicValue(itemId, mnemonicId);
+                        break;
+
+                    case 'generictableitem':
+                        value = buildGenericTableForExcel(tearsheet);
+                        break;
+
+                    case 'tablelayout':
+                        value = buildTableLayoutForExcel(tearsheet);
+                        break;
+
+                    default:
+                        value = ' ';
+                        break;
+                }
+            }
+            
+            return value;
+        }
+
+        //get array data for GenericTableItem
+        function buildGenericTableForExcel(tearsheet) {
+            var excelRow = [];
+            _.each(tearsheet.row, function(row) {
+                if(!row.id || row.id !== 'toolbar_links') {
+                    var columns = null;
+                    
+                    if(!row.col) {
+                        columns = row;
+                    } else if(row.col && row.col.length)  {
+                        columns = row.col;
+                    } else if(row.col) {
+                        columns = [];
+                        columns.push(row.col);
+                    }
+
+                    var excelCell = [];
+                    _.each(columns, function (col) {
+                        var tearSheetItem = col.TearSheetItem;
+                        var value = getTearSheetData(tearSheetItem);
+
+                        value = value || ' ';
+                        excelCell.push(value);
+                    });
+
+                    excelRow.push(excelCell);
+                }
+            });
+            return excelRow;
+        }
+
+        //get array data for TableLayOut
+        function buildTableLayoutForExcel(tearsheet) {
+            var tbf = $injector.get('templateBusinessFormat');
+            var excelRow = [];
+            if(tearsheet && tearsheet.TableRowTemplate && tearsheet.TableRowTemplate.row) {
+                var tableLayoutData = _.find(business.tableLayoutMnemonics, { projectId: commonBusiness.projectId, mnemonic: tearsheet.Mnemonic, itemId: tearsheet.ItemId });
+                
+                if(tableLayoutData && tableLayoutData.data && _.size(tableLayoutData.data) > 0) {
+                    _.each(tableLayoutData.data, function(data) {
+                        _.each(tearsheet.TableRowTemplate.row, function(row) {
+                            if(!row.id || row.id !== 'toolbar_links') {
+                                var columns = null;
+                                
+                                if(!row.col) {
+                                    columns = row;
+                                } else if(row.col && row.col.length)  {
+                                    columns = row.col;
+                                } else if(row.col) {
+                                    columns = [];
+                                    columns.push(row.col);
+                                }
+                                
+                                var excelCell = [];
+                                _.each(columns, function (col) {
+                                    var tearSheetItem = col.TearSheetItem;
+                                    var value = null;
+                                    
+                                    if(tearSheetItem && tearSheetItem.id && tearSheetItem.id === 'LabelItem') {
+                                        value = getTearSheetData(tearSheetItem);
+                                    } else {
+                                        if(tearSheetItem && tearSheetItem.Mnemonic){
+                                        
+                                            //formats data
+                                            var formats = tbf.getProgramTableFormatObject(tearSheetItem, _.find(tableLayoutData.type, {mnemonic: tearSheetItem.Mnemonic}));
+
+                                            formats.precision = (''+data[tearSheetItem.Mnemonic].indexOf('.') > -1)? 2 : 0;
+                                            formats.prefix = '';
+
+                                            value = (data[tearSheetItem.Mnemonic])?  tbf.formatData(data[tearSheetItem.Mnemonic], formats) : ' ';
+                                        }
+                                    }
+                                    
+                                    value = value || ' ';
+                                    excelCell.push(value);
+                                });
+
+                                excelRow.push(excelCell);
+                            }
+                        });
+                    });
+                } else {
+                    excelRow.push(['No Data Available']);
+                }
+            }
+
+            return excelRow;
+        }
+
+        //maintain a business variable for all fields that has fieldId for summation
+        //including its fieldId for total field (outputFieldId)
+        function updateSummationMnemonics(fieldId, itemId, value, outputFieldId)
+        {
+            if((fieldId !== 'undefined') && (itemId !== 'undefined')) 
+            {
+                var mnemonic = _.find(business.summationMnemonics, {fieldId: fieldId, itemId: itemId});
+
+                if(angular.isUndefined(mnemonic))
+                {
+                    business.summationMnemonics.push({
+                        fieldId: fieldId,
+                        itemId: itemId,
+                        value: value,                        
+                        outputFieldId: outputFieldId
+                    }); 
+                } else {
+                    mnemonic.value = value;
+                }
+            }
+        }
+
+        //sum all fieldId
+        //update total field using emit
+        function summation(fieldId, itemId){
+            var summationValue = 0;
+            var mnemonic = _.find(business.summationMnemonics, {fieldId: fieldId, itemId: itemId});
+
+            if(mnemonic && mnemonic.outputFieldId)
+            {
+                angular.forEach(business.summationMnemonics, function(each) {
+                    if(each.fieldId === fieldId && each.value)
+                    {
+                        summationValue += parseInt(each.value);
+                    }
+                });
+
+                commonBusiness.emitWithArgument('fieldId_' + mnemonic.outputFieldId, summationValue);    
+            }
+            
         }
 
         //Cancel the auto-save promise.

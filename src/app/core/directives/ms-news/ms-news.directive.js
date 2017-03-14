@@ -10,10 +10,14 @@
         var vm = this;
 
         vm.actions = [];
+        vm.deleteActionbtn = [];
         vm.title = $scope.title;
         vm.searchName = $scope.searchName;
+        vm.expandEvent = "expand";
+        vm.collapseEvent = "collapse";
 
         defineAction();
+        deleteAction();
 
         function defineAction() {
 
@@ -23,6 +27,7 @@
                 icon: 'icon-eraser',
                 isclicked: null,
                 tooltip: 'Clear Selected Article',
+                disabled: false,
                 type: 'button'
             });
 
@@ -31,7 +36,21 @@
                 callback: '-Bookmark',
                 icon: 'icon-bookmark',
                 isclicked: null,
+                disabled: true,
                 tooltip: 'Attach Checked Article',
+                type: 'button'
+            });
+        }
+
+        function deleteAction() {
+
+            vm.deleteActionbtn.push({
+                id: 1,
+                callback: '-Remove',
+                icon: 'icon-delete',
+                isclicked: null,
+                disabled: true,
+                tooltip: 'Remove Bookmark',
                 type: 'button'
             });
         }

@@ -1,121 +1,13 @@
-<div id="overview" class="page-layout simple fullwidth white-bg" layout="row" ng-cloak>
-    <div class="center" flex ng-if="vm.isOverviewLoaded">
-
-        <div class="widget-group" layout="row" flex layout-wrap>
-
-            <!-- WIDGET 10 -->
-            <ms-widget  layout="column" flex>
-
-                <!-- Front -->
-                <ms-widget-front class="white-bg">
-                    <div class="simple-table-container">
-                        <div>
-                            <div class="table-title"  layout="row" layout-align="space-between center">
-                              <div>
-                                  <md-icon md-font-icon="icon-view-agenda"></md-icon>
-                                  Overview
-                              </div>
-                              <div>
-                                  <md-menu id="overview-menu" md-position-mode="target-right target">
-                                      <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)" aria-label="more">
-                                          <md-icon md-font-icon="icon-dots-vertical"></md-icon>
-                                      </md-button>
-
-                                      <md-menu-content flex center>
-                                          <md-menu-item>
-                                              <md-button  aria-label="save all" ng-click="vm.saveAll()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-content-save-all"></md-icon>
-                                                        <span>Save All</span>
-                                                  </span>
-                                              </md-button>
-                                          </md-menu-item>
-
-                                          <md-menu-item>
-                                              <md-button  aria-label="mode widget" ng-click="vm.flipStepView()">
-                                                  <span layout="row" layout-align="start center" ng-if="!vm.isStepTabletMode">
-                                                    <md-icon md-font-icon="icon-tablet-ipad" ></md-icon>
-                                                    <span>Tablet Mode</span>
-                                                  </span>
-
-                                                  <span layout="row" layout-align="start center" ng-if="vm.isStepTabletMode">
-                                                     <md-icon md-font-icon="icon-desktop-mac"></md-icon>
-                                                    <span>Desktop Mode</span>
-                                                  </span>
-
-                                              </md-button>
-                                          </md-menu-item>
-
-                                          <md-menu-item>
-                                              <md-button  aria-label="expand all" ng-click="vm.toggleExpand()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-backburger" ng-class="vm.isExpanded ? 'ms-expand' : 'ms-collapse'"></md-icon>
-                                                        <span ng-if="vm.isExpanded">Collapse All</span>
-														<span ng-if="!vm.isExpanded">Expand All</span>
-                                                  </span>
-                                              </md-button>
-                                          </md-menu-item>
-
-                                          <md-menu-item>
-                                              <md-button  aria-label="select all" ng-click="vm.flipSelectionView()">
-
-                                                  <span layout="row" layout-align="start center" >
-                                                      <div ng-if="vm.isAllSelected">
-                                                          <md-icon md-font-icon="icon-select"></md-icon>
-                                                          <span>UnSelect All</span>
-                                                      </div>
-                                                      <div ng-if="!vm.isAllSelected">
-                                                          <md-icon md-font-icon="icon-select-inverse"></md-icon>
-                                                          <span>Select All</span>
-                                                      </div>
-
-                                                  </span>
-                                              </md-button>
-                                          </md-menu-item>
-
-                                          <md-menu-item>
-                                              <md-button aria-label="save all" ng-click="vm.pdfDownload()">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-file-pdf-box"></md-icon>
-                                                        <span>PDF Download</span>
-                                                  </span>
-                                              </md-button>
-                                          </md-menu-item>
-
-                                          <md-menu-item>
-                                              <md-button  aria-label="save all" ng-click="vm.renew(vm.projectId)">
-                                                  <span layout="row" layout-align="start center">
-                                                        <md-icon md-font-icon="icon-rotate-3d"></md-icon>
-                                                        <span>Renew</span>
-                                                  </span>
-                                              </md-button>
-                                          </md-menu-item>
-                                      </md-menu-content>
-                                  </md-menu>
-                              </div>
-                            </div>
-
-                            <md-divider></md-divider>
-
-                            <div>
-                                <div layout="column">
-                                    <div ng-include="'app/main/apps/overview/sections/project/project-section.html'">
-                                    </div>
-                                    <div ng-include="'app/main/apps/overview/sections/steps/steps-section.html'">
-                                    </div>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-                </ms-widget-front>
-                <!-- / Front -->
-
-            </ms-widget>
-            <!-- / WIDGET 10 -->
-
+<div id="overview" class="page-layout simple fullwidth white-bg" layout="row"
+     ng-cloak>
+    <div class="center" flex>
+        <div layout="column">
+            <div ng-include="'app/main/apps/overview/sections/project/project-section.html'">
+            </div>
+            <div ng-include="'app/main/apps/overview/sections/steps/steps-section.html'">
+            </div>
         </div>
+
     </div>
+
 </div>

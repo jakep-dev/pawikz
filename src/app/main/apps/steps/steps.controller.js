@@ -18,9 +18,10 @@
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+        vm.stepId = stepId;
         $scope.stepId = stepId;
         $rootScope.isBottomSheet = true;
-        bottomSheetConfig.url = 'app/main/apps/overview/sheet/overview-sheet.html';
+        bottomSheetConfig.url = 'app/main/apps/steps/sheet/steps-sheet.html';
         bottomSheetConfig.controller = $scope;
 
         vm.refreshstep = refreshStep;
@@ -36,9 +37,19 @@
         commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
-        vm.TearSheetStep = null;
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("inject-main-menu", {
+                menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
+                menuIcon: 'icon-view-module',
+                menuMode: 'Steps',
+                companyId: commonBusiness.companyId,
+                companyName: commonBusiness.companyName,
+                workupName: commonBusiness.projectName
+            });
+        }
 
-        breadcrumbBusiness.title = unescape(stepName);
+
+        vm.TearSheetStep = null;
 
         var userDetails = store.get('user-info');
 
@@ -81,11 +92,13 @@
         //Get Schema
         function getSchemaAndData()
         {
-            stepsBusiness.get(projectId, stepId, commonBusiness.userId).then(function(response)
+            stepsBusiness.get(projectId, stepId, commonBusiness.userId, (overviewBusiness.templateOverview === null)).then(function(response)
             {
+                console.log('GetSchemaAndData');
+                console.log(response);
                 if(response)
                 {
-                    angular.forEach(response, function(data)
+                    _.each(response, function(data)
                     {
                        if(data.list)
                        {
@@ -98,7 +111,7 @@
                            commonBusiness.companyName = data.templateOverview.companyName;
                            commonBusiness.projectName = data.templateOverview.projectName;
                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
-                           angular.forEach(data.templateOverview.steps, function(step)
+                           _.each(data.templateOverview.steps, function(step)
                            {
                                navConfig.sideNavItems.push({
                                    stepName: step.stepName,
@@ -107,12 +120,14 @@
                                });
                            });
 
-                           defineBottomSheet();
+                           defineMenuActions();
+
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
+                    defineBottomSheet();
                 }
             });
         }

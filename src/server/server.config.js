@@ -3,16 +3,16 @@
  */
 
 exports.webservice = {
-    protocol: 'http',
-    url: 'dev-vm-websvc.advisen.com',
-    port: 8080,
+    protocol: 'https',
+    url: 'wsint.advisen.com',
+    port: '',
     service:'advwebservice'
 };
 
 exports.client = {
     protocol: 'http',
-    domain: 'devcrm.advisen.com',
-    port: '80',
+    domain: '192.168.1.216',
+    port: '4000',
     loglevel: 1,
     transports: ['polling']
 };
@@ -35,7 +35,7 @@ exports.restcall = {
                 deleteDynamicTableData: 'deleteTemplateTableLayOut',
                 saveMnemonics: 'updateTemplateMnemonics',
                 createWorkUp: 'createNewTemplateProject',
-                renewWorkUp: 'renewTemplateProject',
+                renewWorkUp: 'reNODEnewTemplateProject',
                 lockWorkUp: 'lockWorkUp',
                 unlockWorkUp:'unLockWorkUp',
                 createWorkUpStatus: 'getTemplateProjectStatus',
@@ -103,7 +103,8 @@ exports.restcall = {
                 search: 'newsSearch',
                 attachNewsArticles: 'attachNewsArticles',
                 getAttachedArticles: 'getAttachedArticles',
-                showArticleContent: 'getArticle'
+                showArticleContent: 'getArticle',
+                deleteAttachedArticles: 'deleteAttachedArticles'
             }
         }
     ]

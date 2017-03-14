@@ -304,25 +304,6 @@
         }
 
         function getSaveStockSigDevInputObject(projectId, stepId, companyId, mnemonicId, itemId, value) {
-            /** INPUT
-            {
-                companyId: companyId,
-                projectId: projectId,
-                stepId: stepId,
-                mnemonicId: mnemonicId,
-                itemId: itemId,
-                value: jsCharts
-            }
-            */
-            /** OUTPUT
-                data: {
-                    project_id: projectId,
-                    step_id: stepId,
-                    mnemonic: mnemonic,
-                    item_id: itemId,
-                    items: sigDevItems
-                }
-            */
             var saveObject = new Object;
             saveObject.project_id = projectId;
             saveObject.step_id = stepId;
@@ -335,23 +316,29 @@
                     var jsChart = chart.filterState;
                     if (jsChart.isDefault === 'N') {
                         var perChart = {
-                            sigdevId: [],
-                            mascadId: [],
+                            sigdevIdItems: [],
+                            mascadItems: []
                         };
                         angular.forEach(chart.tableInfo, function (table) {
 
                             switch (table.source.value) {
                                 case 'SIGDEV':
                                     if (table.rows && table.rows.length > 0) {
-                                        perChart.sigdevId = _.map(table.rows, function (row) {
-                                            return row.sigDevId;
+                                        perChart.sigdevIdItems = _.map(table.rows, function (row) {
+                                            return {
+                                                sigdevId: row.sigDevId,
+                                                tl_status: row.tl_status || 'N'
+                                            };
                                         });
                                     }
                                     break;
                                 case 'MASCAD':
                                     if (table.rows && table.rows.length > 0) {
-                                        perChart.mascadId = _.map(table.rows, function (row) {
-                                            return row.mascadId;
+                                        perChart.mascadItems = _.map(table.rows, function (row) {
+                                            return {
+                                                mascadId: row.mascadId,
+                                                tl_status: row.tl_status || 'N'
+                                            };
                                         });
                                     }
                                     break;
@@ -360,11 +347,11 @@
                         });
 
                         //As per WS team, add null if empty
-                        if (perChart.sigdevId.length === 0) {
-                            perChart.sigdevId.push(null);
+                        if (perChart.sigdevIdItems.length === 0) {
+                            perChart.sigdevIdItems.push(null);
                         }
-                        if (perChart.mascadId.length === 0) {
-                            perChart.mascadId.push(null);
+                        if (perChart.mascadItems.length === 0) {
+                            perChart.mascadItems.push(null);
                         }
 
                         saveObject.items.push(perChart);

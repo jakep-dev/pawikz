@@ -16,10 +16,10 @@
                     templateUrl: 'app/main/apps/dashboards/dashboard.html',
                     controller : 'DashboardController as vm'
                 },
-              'search-engine@app': {
-                templateUrl: 'app/main/apps/dashboards/search/search.html',
-                controller : 'DashboardSearchController as vm'
-              }
+                  'search-engine@app': {
+                    templateUrl: 'app/main/apps/dashboards/search/search.html',
+                    controller : 'DashboardSearchController as vm'
+                }
             }
         });
 

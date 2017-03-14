@@ -25,20 +25,72 @@
         vm.toggleSidenav = toggleSidenav;
 
 
-        commonBusiness.onMsg('ClearFilterDashboard', $scope, function() {
-            dashboardBusiness.searchCompanyId = 0;
-            dashboardBusiness.searchUserId = 0;
-            vm.companyId = 0;
-            vm.userId = 0;
+        commonBusiness.onMsg('ClearFilter', $scope, function(ev, data) {
+            console.log('Clear Filter');
+            console.log(data);
+            if(data && data.type){
+                switch (data.type){
+                    case 'All':
+                        vm.companyId = 0;
+                        vm.userId = 0;
+                        break;
+
+                    case 'Company':
+                        vm.companyId = 0;
+                        break;
+
+                    case 'User':
+                        vm.userId = 0;
+                        break;
+                }
+            }
         });
 
 
         //Filter Dashboard
         function filterDashboard() {
             toggleSidenav('quick-panel');
-            dashboardBusiness.searchCompanyId = vm.companyId;
-            dashboardBusiness.searchUserId = vm.userId;
-            dashboardBusiness.isFilterDasboard = true;
+            var companyName = getCompanyName(vm.companyId);
+            var userName = getUserName(vm.userId);
+
+            commonBusiness.emitWithArgument('FilterMyWorkUp',{
+                companyId: vm.companyId,
+                userId: vm.userId,
+                userName: userName,
+                companyName: companyName
+            });
+        }
+
+        //Get company Name details
+        function getCompanyName(companyId){
+            var selectedCompany = _.find(vm.companyNames, function(company){
+                if(parseInt(company.id) === parseInt(companyId)){
+                    return company;
+                }
+            });
+
+            if(!selectedCompany){
+                return null;
+            }
+
+            return selectedCompany.name;
+        }
+
+        //Get UserName
+        function getUserName(userId){
+            var selectedUser = _.find(vm.users, function(user){
+                if(parseInt(user.id) === parseInt(userId)){
+                    return user;
+                }
+            });
+
+
+
+            if(!selectedUser){
+                return null;
+            }
+
+            return selectedUser.name;
         }
 
         //Toggle Sidenav
@@ -50,9 +102,11 @@
         function searchClear() {
             vm.companyId = 0;
             vm.userId = 0;
-            dashboardBusiness.searchCompanyId = vm.companyId;
-            dashboardBusiness.searchUserId = vm.userId;
-            dashboardBusiness.isFilterDasboard = false;
+            toggleSidenav('quick-panel');
+            commonBusiness.emitWithArgument('FilterMyWorkUp',{
+                companyId: 0,
+                userId: 0
+            });
         }
 
         // Load User Names
@@ -61,11 +115,10 @@
                 vm.isSearching = true;
                 dashboardService.getUsers(commonBusiness.userId).then(function(data)
                 {
-                    if(angular.isDefined(data))
+                    if(data)
                     {
                         var result = data.list;
-
-                        angular.forEach(result, function(row)
+                        _.each(result, function(row)
                         {
                             vm.users.push(row);
                         });
@@ -81,11 +134,10 @@
                 vm.isSearching = true;
                 dashboardService.getCompanies(commonBusiness.userId).then(function(data)
                 {
-                    if(angular.isDefined(data))
+                    if(data)
                     {
                         var result = data.list;
-
-                        angular.forEach(result, function(row)
+                        _.each(result, function(row)
                         {
                             vm.companyNames.push(row);
                         });

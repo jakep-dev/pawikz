@@ -31,7 +31,7 @@
             $scope.isTableShow = true;
             $scope.IsAllChecked = false;
             var html = '<table id="tablelayout-filter" ng-show="isTableShow" width="100%" dt-instance="dtInstance" dt-options="dtOptions" ' +
-                'class="row-border hover highlight cell-border" dt-column-defs="dtColumnDefs" datatable="ng" cellpadding="1" cellspacing="0">';
+                'class="row-border hover highlight" dt-column-defs="dtColumnDefs" datatable="ng" cellpadding="1" cellspacing="0">';
 
             $scope.dtOptions = DTOptionsBuilder
                 .newOptions()
@@ -40,10 +40,14 @@
                 .withOption('filter', true)
                 .withOption('autoWidth', true)
                 .withOption('info', true)
-                //.withOption('ordering', true)
                 .withOption('sorting', [])
                 .withOption('responsive', true)
                 .withPaginationType('full')
+                .withOption('drawCallback', function(){
+                    $timeout(function(){
+                        expandedDescription($scope, $scope.dtInstance.DataTable, el);
+                    }, 1000);
+                })
                 .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
 
@@ -59,15 +63,55 @@
             el.find('#ms-table-layout').append($compile(html)($scope));
         }
 
+        function expandedDescription($scope, table, element) {
+            if(table) {
+                var tableRows = element.find('tbody').find('tr');
+                _.each(tableRows, function(row){
+                    var rowSeq = (row && row.attributes && row.attributes['sequence'] && row.attributes['sequence'].value)? row.attributes['sequence'].value : null;
+                    if(rowSeq) {
+                        var newScope = $scope.$new(true);  
+                        var isExpanded = false; 
+
+                        var rowDetail = _.find($scope.data, function(detail)
+                        {
+                            return (detail.ROW_SEQ === parseInt(rowSeq));
+                        });
+
+                        newScope.data = {};
+                        if(rowDetail)
+                        {
+                            isExpanded = rowDetail.IsExpanded;
+                            newScope.data.description  = rowDetail.DESCRIPTION || rowDetail.SIGDEVDESC;
+                        }
+                        else {
+                            newScope.data.description = "No Data Available";
+                        }
+
+                        var tr = table.row(row);
+                        if ((!tr.child.isShown()) && isExpanded) {
+                            tr.child($compile('<ms-tablelayout-f-ci></ms-tablelayout-f-ci>')(newScope)).show();
+                        }
+                    }
+                });
+            }
+        }
+
         function buildRows($scope, data)
         {
             $scope.data = [];
 
-            $scope.fruitNames = ['Apple', 'Banana', 'Orange'];
-
             angular.forEach(data, function(eachData)
             {
-               eachData.IsChecked = (eachData.TL_STATUS === 'N');
+                eachData.IsChecked = false;
+                eachData.IsExpanded = false;
+
+                if(eachData.TL_STATUS === 'N' || eachData.TL_STATUS === 'Y'){
+                    eachData.IsChecked = true;
+                }
+
+                if(eachData.TL_STATUS === 'Y' || eachData.TL_STATUS === 'E'){
+                    eachData.IsExpanded = true;
+                }
             });
 
             $scope.data.push.apply($scope.data, data);
@@ -81,7 +125,7 @@
            $scope.rows = [];
 
            var html = '<tbody>';
-               html += '<tr ng-repeat="row in rows">';
+               html += '<tr ng-repeat="row in rows" sequence={{row.ROW_SEQ}}>';
             if($scope.tearsheet.columns.length > 0)
             {
                 angular.forEach($scope.tearsheet.columns[0].col, function(eachCol)
@@ -188,6 +232,8 @@
             if(rowDetail)
             {
                 newScope.data.description  = rowDetail.DESCRIPTION || rowDetail.SIGDEVDESC;
+                rowDetail.IsExpanded = !rowDetail.IsExpanded;
+                saveRow($scope, rowDetail);
             }
             else {
                 newScope.data.description = "No Data Available";
@@ -334,7 +380,7 @@
 			
 			save.row.push({
 				columnName: 'TL_STATUS',
-				value: (row.IsChecked) ? 'N' : 'Y'
+				value: getTLSTATUS(row)
 			});
 			
 			save.condition.push({
@@ -349,8 +395,26 @@
 			templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, save, clientConfig.uiType.tableLayout);
 		}
 
+        function getTLSTATUS(row) {
+            if(row) {
+                if(row.IsChecked === true && row.IsExpanded === true) {
+                    return 'Y';
+                } else if(row.IsChecked === true && row.IsExpanded === false) {
+                    return 'N';
+                } else if(row.IsChecked === false && row.IsExpanded === true) {
+                    return 'E';
+                } else{
+                    return 'C';
+                }
+            }
+            return 'C';
+        }
+
         function defineFilterLink(scope, el, attrs)
         {
+            //disable excel download in ms-componenet
+            scope.$parent.$parent.vm.isExcelDownloadable = false;
+
             var dataTableId = scope.itemid;
             if(scope.tearsheet.columns.length > 0)
             {
@@ -425,8 +489,8 @@
 
                     if(!data)
                     {
-                        html += '<div flex>';
-                        html += '<ms-message message="No data available"></ms-message>';
+                        html += '<div layout="row" layout-align="center center" layout-padding>';
+                        html += '<span>No data available</span>';
                         html += '</div>';
 
                         el.find('#ms-table-layout').append($compile(html)(scope));

@@ -32,11 +32,13 @@
 
                 if(!data)
                 {
-                    html += '<div flex>';
-                    html += '<ms-message message="No data available"></ms-message>';
+                    html += '<div layout="row" layout-align="center center" layout-padding>';
+                    html += '<span>No data available</span>';
                     html += '</div>';
                 }
                 else {
+                    templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, scope.mnemonicid, scope.itemid, data, scope.subMnemonics);
+
                     scope.dtOptions = DTOptionsBuilder
                         .newOptions()
                         .withOption('processing', true)
@@ -151,7 +153,7 @@
             var html = '';
             var columns = '';
 
-            angular.forEach(column, function(col)
+            _.each(column, function(col)
             {
                 if(col.TearSheetItem &&
                     col.TearSheetItem.Mnemonic)
@@ -172,6 +174,8 @@
                     html += '</div>';
                 }
                 else if(data.length >= 1) {
+                    templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, scope.mnemonicid, scope.itemid, data, scope.subMnemonics);
+                    
                     html += '<table class="tb-v2-layout" width="100%" cellpadding="4" cellspacing="0">';
                     html += '<tbody>';
                     angular.forEach(row, function(eachRow)

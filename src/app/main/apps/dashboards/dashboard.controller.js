@@ -22,6 +22,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.userId = 0;
     vm.isRedrawFromDelete = false;
     vm.selectedProjectId = null;
+    vm.searches = [];
+
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -35,22 +37,70 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.initialize = initialize;
     vm.renewTemplate = renewTemplate;
     vm.toggleSidenav = toggleSidenav;
+    vm.filterAgain = filterAgain;
+    defineMenuActions();
+
+    function defineMenuActions(){
+        "use strict";
+        commonBusiness.emitWithArgument("inject-main-menu", {
+            menuName: 'My Work-ups',
+            menuIcon: 'fa fa-folder-open-o s16',
+            menuMode: 'Dashboard'
+        });
+
+        commonBusiness.onMsg("dashboard-reload", $scope, function(){
+           reload();
+        });
+    }
+
+
+
+    function filterAgain(name){
+        if(vm.searches.length === 0){
+            vm.companyId = 0;
+            vm.userId = 0;
+            commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
+
+        }
+        else{
+            var combinedStr = '';
+            _.each(vm.searches, function(search){
+                combinedStr += search;
+            });
+
+            if(!combinedStr.includes('Company')){
+                vm.companyId = 0;
+                commonBusiness.emitWithArgument("ClearFilter", {type: 'Company'});
+            }
+
+            if(!combinedStr.includes('User')){
+                vm.userId = 0;
+                commonBusiness.emitWithArgument("ClearFilter", {type: 'User'});
+            }
+        }
+
+        redrawDataTable();
+    }
 
 
 
     // Make Initial call
     vm.initialize($stateParams.isNav, $stateParams.token);
 
-    commonBusiness.onMsg('FilterDashboard', $scope, function() {
-        if(dashboardBusiness.isFilterDasboard){
-            vm.companyId = dashboardBusiness.searchCompanyId;
-            vm.userId = dashboardBusiness.searchUserId;
+    commonBusiness.onMsg('FilterMyWorkUp', $scope, function(ev, data) {
+        if(data) {
+            vm.companyId = data.companyId;
+            vm.userId = data.userId;
+            vm.searches = [];
+            if(parseInt(vm.companyId) !== 0){
+                vm.searches.push("Company: " + data.companyName);
+            }
+
+            if(parseInt(vm.userId) !== 0){
+                vm.searches.push("User: " + data.userName);
+            }
+            redrawDataTable();
         }
-        else {
-            vm.companyId = 0;
-            vm.userId = 0;
-        }
-        redrawDataTable();
     });
 
     commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
@@ -218,14 +268,15 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     //Toggle Sidenav
     function toggleSidenav(sidenavId) {
         $mdSidenav(sidenavId).toggle();
-        $mdMenu.hide()
+        $mdMenu.hide();
     }
 
     // Clear search
     function reload() {
         vm.companyId = 0;
         vm.userId = 0;
-        dashboardBusiness.isClearDashboard = true;
+        vm.searches = [];
+        commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
         redrawDataTable();
         $mdMenu.hide();
     }
@@ -374,6 +425,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
 
+        // render data for browser resizing
+        var responsive = {details : 
+                { renderer : dashboardBusiness.renderHtml }
+            };
+
         //Dashboard DataTable Configuration
         vm.dtOptions = DTOptionsBuilder
             .newOptions()
@@ -386,7 +442,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('createdRow', recompileHtml)
             .withOption('paging', true)
             .withOption('autoWidth', true)
-            .withOption('responsive', true)
+            .withOption('responsive', responsive)
             .withOption('stateSave', true)
             .withOption('order',[4, 'desc'])
             .withPaginationType('full')

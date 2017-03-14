@@ -7,8 +7,7 @@
         .directive('msTemplate', msTemplateDirective);
 
     function msTemplateController($rootScope, $scope, $mdMenu, $window,
-        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness
-    ) {
+        commonBusiness, templateBusiness, templateBusinessSave, notificationBusiness, workupBusiness, overviewBusiness, stepsBusiness) {
         var vm = this;
 
         vm.isExpandAll = true;
@@ -19,6 +18,57 @@
         vm.printableAll = printableAll;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.previousStep = previousStep;
+        vm.nextStep = nextStep;
+
+        defineMenuActions();
+
+        function defineMenuActions(){
+            commonBusiness.onMsg("step-save-all", $scope, function(){
+                saveAll();
+            });
+
+            commonBusiness.onMsg("prev-step", $scope, function(){
+                previousStep();
+            });
+
+            commonBusiness.onMsg("next-step", $scope, function(){
+                nextStep();
+            });
+
+            commonBusiness.onMsg("step-print-all", $scope, function(){
+                printableAll();
+            });
+
+            commonBusiness.onMsg("step-toogle-expand", $scope, function(){
+                toggleExpand();
+            });
+
+            commonBusiness.onMsg("project-renew", $scope, function(){
+                renew();
+            });
+
+            commonBusiness.onMsg("pdf-download", $scope, function(){
+                pdfDownload();
+            });
+        }
+
+        //Move to the previous step
+        function previousStep() {
+            if (overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps) {
+                stepsBusiness.getPrevStep($scope.stepId, overviewBusiness.templateOverview.steps);
+            }
+        }
+
+        //Move to the next step
+        function nextStep() {
+            if (overviewBusiness.templateOverview &&
+                overviewBusiness.templateOverview.steps) {
+                stepsBusiness.getNextStep($scope.stepId, overviewBusiness.templateOverview.steps);
+            }
+        }
+
 
         //Save the entire template data.
         function saveAll() {
@@ -59,14 +109,15 @@
 
     /** @ngInject */
 
-    function msTemplateDirective($compile, $templateRequest, $templateCache,
+    function msTemplateDirective($compile, $timeout,
         $interval, templateBusiness,
-        commonBusiness, clientConfig) {
+        commonBusiness) {
         return {
             restrict: 'E',
             scope: {
                 components: '=',
-                refreshstep: '='
+                refreshstep: '=',
+                stepId: '='
             },
             controller: 'msTemplateController',
             controllerAs: 'vm',
@@ -231,6 +282,7 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
 
                                 case 'LinkItem':
@@ -242,37 +294,38 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
 
                                 case 'AdvisenNewsSearch':
                                     var newScope = scope.$new();
-                                    var html = '<div layout-padding>';
+                                    newScope.isprocesscomplete = true;
+                                    var html = '';
                                     var searchName = renderContent.SearchName || '';
-                                    html += '<ms-news title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '"></ms-news>';
+                                    html += '<ms-news title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '" isprocesscomplete="isprocesscomplete"></ms-news>';
                                     html += '</div>';
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
                             }
                         }
-                        if (currentComponent >= totalComponent) {
+                        if (currentComponent > totalComponent) {
                             isSkip = true;
                         }
                     }
                 });
 
                 if (bindHtml && bindHtml.length > 0) {
-                    var divElem = angular.element('<div></div>');
-                    _.each(bindHtml, function(html) {
-                        divElem.append(html.content);
-                    });
-                    scope.isCompLoaded = true;
-                    var bindCompProm = $interval(function() {
+
+                    $timeout(function(){
                         var element = el.find('#template-content');
-                        element.append(divElem);
-                        $interval.cancel(bindCompProm);
-                    }, 1);
+                        _.each(bindHtml, function(html) {
+                            element.append(html.content);
+                        });
+                        scope.isCompLoaded = true;
+                    }, 0);
                 }
 
                 return count;
@@ -286,6 +339,11 @@
                 if (content.header &&
                     content.sections &&
                     content.sections.length > 0) {
+                    //counting standard components with headers and child components
+                    //for example stock charts, all table types, large text boxes
+                    totalComp++;
+                } else if (content.ItemId && content.Mnemonic && (content.subtype || content.id)) {
+                    //counting WU_RATIOS_CHARTS, LinkItem, AdvisenNewsSearch
                     totalComp++;
                 }
             });

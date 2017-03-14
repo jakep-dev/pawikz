@@ -50,7 +50,9 @@
                         $scope.$parent.$parent.isprocesscomplete = true;
 
                         $scope.rows = [];
-                        _.each(response.dynamicTableDataResp, function(row, index){
+
+                        var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                        _.each(data, function(row, index){
                             $scope.rows.push(buildRow($scope, row, index == 0));
                         });
 
@@ -89,6 +91,7 @@
                     $scope.rows[rowNumber][column].value = value;
                     
                     saveRow($scope, $scope.rows[rowNumber]);
+                    templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                 }
             };
 
@@ -383,7 +386,7 @@
                     case 'DateItem':
                             html += '<ms-program-calendar row="row" rowid="{{$index}}" ' +
                             'compute="updateDate(value, \'' + itemId + '\', rowId)" ' +
-                            'value="{{row.'+ itemId +'.value}}" ' + 
+                            'value="row.'+ itemId +'.value" ' + 
                             'columnname="'+itemId+'"></ms-program-calendar>';
                         break;
 
@@ -596,7 +599,7 @@
 
                 if ((currentRow.LIMIT.value != '') && (currentRow.PREMIUM.value != '') && !isNaN(computedAtt) && isFinite(computedAtt))
                 {
-                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 0);
+                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 2);
                 }
                 else
                 {
@@ -670,7 +673,15 @@
             });
 
             commonBusiness.onMsg('EPH-Upload', $scope, function() {
-                uploadExcel();
+                toast.simpleToast("Please choose file!");
+                if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        uploadExcel();
+                    }, 1000);
+                } else {
+                    uploadExcel();
+                }
+                
             });
 
             commonBusiness.onMsg('EPH-Download', $scope, function() {
@@ -884,7 +895,9 @@
                         $scope.mnemonic, $scope.copyproposed, columns).then(function(response) {
                            
                             removeAllRows($scope);
-                            _.each(response.dynamicTableDataResp, function(row, index){
+
+                            var data = (response.dynamicTableDataResp)? _.sortBy(response.dynamicTableDataResp, 'SEQUENCE') : null;
+                            _.each(data, function(row, index){
                                 
                                 //sets sequence to its previous max sequence so that no conflict on delete condition  
                                 row.SEQUENCE = maxSequence + index + 1;
@@ -922,24 +935,21 @@
 
         function uploadExcel()
         {
-            toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#expiring-upload');
+            var uploadElement = angular.element('#expiring-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-                    setTimeout(function () {
-                        uploadElement.change(function(e)
-                        {
-                            setTimeout(function () {
-                                $(this).off('change');
-                                angular.element('#btn-expiring-upload').trigger('click');
-                                // $('#btn-expiring-upload').click();
-                            }, 500);
-                        });
+                $timeout(function(){
+                    uploadElement.off('change');
+                    uploadElement.change(function(e)
+                    {
+                        $timeout(function(){
+                            angular.element('#btn-expiring-upload').trigger('click');
+                        }, 0);
+                    });
 
-                        uploadElement.click();
-                    }, 500);
+                    uploadElement.click();
+                }, 0);
             }
         }
 
@@ -1013,7 +1023,7 @@
                                 if(findHeader)
                                 {
                                     var value = (_.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic}).dataType === 'NUMBER') ? removeCommaValue(content[findHeader.index]): content[findHeader.index]; //;
-                                    if((value || value.length === 0)  && header.HMnemonic === 'RETAIN') {
+                                    if(header.HMnemonic === 'RETAIN' && !value) {
                                         value = '0.00';
                                     }
                                     makeColDef += '"'+header.HMnemonic + '":"' + value + '",';
