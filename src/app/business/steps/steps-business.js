@@ -63,7 +63,7 @@
             {
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -101,7 +101,7 @@
                 var totalCount = _.size(steps);
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -138,7 +138,7 @@
             {
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -167,7 +167,7 @@
                 var totalCount = _.size(steps);
                 var count = -1;
                 var currentIndex = -1;
-                angular.forEach(steps, function(step)
+                _.each(steps, function(step)
                 {
                     count ++;
                     if(step.stepId === stepIdInt)
@@ -188,11 +188,19 @@
         }
 
         //Get the overview, template schema and template data
-        function get(projectId, stepId, userId)
+        function get(projectId, stepId, userId, isAll)
         {
-            var all = $q.all([templateService.getSchemaDefer(projectId, stepId).promise,
-                templateService.getDataDefer(projectId, stepId).promise,
-                overviewService.getOverviewDefer(projectId, userId).promise]);
+            var all = null;
+
+            if(isAll){
+                all = $q.all([templateService.getSchemaDefer(projectId, stepId).promise,
+                    templateService.getDataDefer(projectId, stepId).promise,
+                    overviewService.getOverviewDefer(projectId, userId).promise]);
+            }
+            else{
+                all = $q.all([templateService.getSchemaDefer(projectId, stepId).promise,
+                    templateService.getDataDefer(projectId, stepId).promise]);
+            }
 
             return all;
         }
