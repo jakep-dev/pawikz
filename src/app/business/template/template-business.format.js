@@ -9,7 +9,7 @@
     function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness, clientConfig) {
         var business = {
             getFormatObject: getFormatObject,
-			getProgramTableFormatObject: getProgramTableFormatObject,
+			getHybridTableFormatObject: getHybridTableFormatObject,
             removeFixes: removeFixes,
             formatData: formatData,
 			formatProgramTableData: formatProgramTableData,
@@ -65,14 +65,17 @@
     	    return formatObject;
     	}
 
-		function getProgramTableFormatObject(tearsheet, mnemonicType) {
+		function getHybridTableFormatObject(tearsheet, mnemonicType) {
 			var formatObject = getFormatObject(tearsheet);
 			
 			if(formatObject) {	
 				formatObject.dataType = mnemonicType.dataType;
     	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
-				formatObject.precision = 2;
-				formatObject.invalidMessage = clientConfig.messages.programTableHybrid.invalidInput;
+
+				if(formatObject.dataType && formatObject.dataType === 'NUMBER') {
+					formatObject.precision = 2;
+					formatObject.invalidMessage = clientConfig.messages.programTableHybrid.invalidInput;
+				}
 			}
 
 			return formatObject;

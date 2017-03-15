@@ -1995,7 +1995,7 @@
                                         if(tearSheetItem && tearSheetItem.Mnemonic){
                                         
                                             //formats data
-                                            var formats = tbf.getProgramTableFormatObject(tearSheetItem, _.find(tableLayoutData.type, {mnemonic: tearSheetItem.Mnemonic}));
+                                            var formats = tbf.getHybridTableFormatObject(tearSheetItem, _.find(tableLayoutData.type, {mnemonic: tearSheetItem.Mnemonic}));
 
                                             formats.precision = (''+data[tearSheetItem.Mnemonic].indexOf('.') > -1)? 2 : 0;
                                             formats.prefix = '';

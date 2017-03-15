@@ -366,7 +366,7 @@
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
-                        var formats = templateBusinessFormat.getProgramTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
+                        var formats = templateBusinessFormat.getHybridTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
                         html += '<ms-program-text columnname="'+ itemId +'" rowid="{{$index}}" ' +
                             'row="row.'+ itemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
                             'itemid="{{row.'+ itemId +'.itemid}}" ' +
