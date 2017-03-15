@@ -19,6 +19,7 @@
         var business = {
             getActionButtonsHtml: getActionButtonsHtml,
             getWorkupHtml: getWorkupHtml,
+            getPlatformHtml: getPlatformHtml,
             renderHtml : renderHtml
         }
 
@@ -67,6 +68,13 @@
         function getWorkupHtml(data, type, full, meta)
         {
             return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
+        }
+
+        // get platform image
+        function getPlatformHtml(data, type, full, meta)
+        {
+            var imgSrc = (full.isNewFramework === 'Y')? 'new-platform-logo' : 'advisen-logo';
+            return '<span class="' + imgSrc + '"></span>';
         }
 
         function renderHtml(api, rowIdx, columns) {
