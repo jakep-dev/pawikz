@@ -1,6 +1,6 @@
 <div id="overview" class="page-layout simple fullwidth white-bg" layout="row"
      ng-cloak>
-    <div class="center" flex>
+    <div class="center" flex ng-if="vm.isOverviewLoaded">
         <div layout="column">
             <div ng-include="'app/main/apps/overview/sections/project/project-section.html'">
             </div>
