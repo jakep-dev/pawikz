@@ -10,8 +10,8 @@
     function msTablelayoutHDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder, DTColumnDefBuilder, 
-									 toast, deviceDetector, 
-									 clientConfig, templateBusinessSave)
+									 toast, deviceDetector, clientConfig,
+									 templateBusinessFormat, templateBusinessSave)
     {
         return {
             restrict: 'E',
@@ -64,7 +64,7 @@
 
             angular.forEach(data, function(eachData)
             {
-               eachData.IsChecked = (eachData.TL_STATUS === 'Y');
+               eachData.IsChecked = (eachData.TL_STATUS === 'N');
             });
 
             $scope.data.push.apply($scope.data, data);
@@ -125,8 +125,9 @@
 												'text="'+tearSheetItem.param.content+'" columnname="'+itemId+'"></ms-hybrid-checkbox>';
                                 break;
 							case 'GenericTextItem':
+								var formats = templateBusinessFormat.getHybridTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
 								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
-								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
+								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
 								break;
 							case 'DateItem':
 								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "MM/DD/YYYY")}}</span>'; // remove formats for easy sorting & searching
@@ -210,21 +211,31 @@
 		{
 			var html = '';
 			var label = '';
+			var rows = [];
 			
-			if($scope.tearsheet && $scope.tearsheet.footer && $scope.tearsheet.footer.length > 0)
+			if($scope.tearsheet && $scope.tearsheet.footer)
 			{	
+				if($scope.tearsheet.footer.length) {
+					rows = $scope.tearsheet.footer;
+				}else {
+					rows.push($scope.tearsheet.footer);
+				}
+
 				html += '<tfoot>';
 				
-				angular.forEach($scope.tearsheet.footer, function(row) 
+				angular.forEach(rows, function(row) 
 				{
 					html += '<tr>';
-					var colspan = $scope.columns.length / row.col.length;
 					angular.forEach(row.col, function(eachCol)
 					{
+						var colspan = eachCol.colspan || 1;
 						var tearSheetItem = eachCol.TearSheetItem;
+						var classValue = 'align-left';
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutGenericTextItem(eachCol, classValue);
+						
 						if(tearSheetItem)
 						{
-							html += '<td colspan="' + colspan + '">';
+							html += '<td class="' + classValue + '" colspan="' + colspan + '">';
 							
 							var itemId = tearSheetItem.ItemId;
 							var mnemonicId = tearSheetItem.Mnemonic;
@@ -274,22 +285,43 @@
 				tooltip: 'Add Rows',
 				type: 'menu',
                 scope: $scope,
-                menus:[{
-						type: 'input', 
-						isNumeric: true, 
-						model: $scope.rowNumber,
-						min: 1,
-						max: 100,
-						setValue : function (number) {
-							$scope.rowNumber = number;
-						}
-                    },
-                    {
-                        type: 'button',
-                        icon: null,
-                        name: 'Add',
-                        callback: $scope.itemid + '-Add'
-                    }],
+                menus:[
+					{
+						type: 'button',
+						icon: null,
+						name: '1 row',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 1
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '5 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 5
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '10 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 10
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '15 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 15
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '20 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 20
+					}
+				],
 			});
 			
 			$scope.$parent.$parent.actions.push({
@@ -360,6 +392,15 @@
         function calculateHeaderSelection($scope)
         {
 			$scope.IsAllChecked = _.every($scope.rows, function(row) { return row.IsChecked; });
+
+			//get Header checkbox scope
+			//header scope is recreated when data table is redrawn
+			if($scope.dtInstance.DataTable){
+				var checkbox = angular.element($scope.dtInstance.DataTable.column(0).header()).find('md-checkbox').scope();
+				if(checkbox) {
+					checkbox.IsAllChecked = $scope.IsAllChecked;
+				}
+			}
         }
 
         function initializeMsg($scope)
@@ -406,9 +447,10 @@
                 deleteRows($scope);
             });
 
-            commonBusiness.onMsg($scope.itemid + '-Add', $scope, function() {
-
-                addRows($scope);
+            commonBusiness.onMsg($scope.itemid + '-Add', $scope, function(ev, data) {
+                $timeout(function(){
+                    addRows($scope, data);
+                }, 0);
             });
         }
 
@@ -479,25 +521,18 @@
 		   toast.simpleToast("Cleared filter!");
         }
 		
-		function addRows($scope)
+		function addRows($scope, rowNumber)
 		{
 			var maxSequence = getMaxSequence($scope);
-			if(!angular.isUndefined($scope.rowNumber))
-			{
-				for( var i = 0; i < $scope.rowNumber; i ++){
-					
-					var sequence = (maxSequence + i + 1) + '';
-					var rowObj = {
-						SEQUENCE : sequence,
-						IsChecked: false
-					};
-					
-					insertRow($scope, rowObj, sequence);				
-				}
-			}
-			else
-			{
-				toast.simpleToast("Invalid input");
+			for( var i = 0; i < rowNumber; i ++){
+				
+				var sequence = (maxSequence + i + 1) + '';
+				var rowObj = {
+					SEQUENCE : sequence,
+					IsChecked: true
+				};
+				
+				insertRow($scope, rowObj, sequence);				
 			}
 			
 		}
@@ -614,7 +649,6 @@
 			{
 				computeTotal($scope, mnemonic.summation, mnemonic.itemId);
 			});
-			//templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
 			templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, rowObject, clientConfig.uiType.tableLayout);
 		}
 		
@@ -625,7 +659,7 @@
 			{
 				if(eachRow[summation]) 
 				{
-					totalValue += parseInt(templateBusiness.removeFormatData(eachRow[summation], _.find($scope.subMnemonics, {mnemonic: summation})));
+					totalValue += Number(templateBusiness.removeFormatData(eachRow[summation], _.find($scope.subMnemonics, {mnemonic: summation})));
 				}
 			});
 			
@@ -719,13 +753,14 @@
 
                                 if(findHeader)
                                 {
-                                  var value = content[findHeader.index];
+                                  var value = (_.find($scope.subMnemonics, {mnemonic: header.HMnemonic}).dataType === 'DATE')? templateBusiness.parseDate(content[findHeader.index], 'M/D/YYYY') : content[findHeader.index];
 								  objRow[header.HMnemonic] = value;
                                 }
 
                             });
 							
 							objRow.SEQUENCE = (rowCount + maxSequence) + ''; //add max sequence so it doesn't conflict on delete
+							objRow.IsChecked = true;
 							insertRow($scope, objRow, (rowCount + maxSequence) + '');
                         }
 						
@@ -746,7 +781,7 @@
 		
 		function setTLStatus(row)
 		{
-			row.TL_STATUS = (row.IsChecked && row.IsChecked === true)? 'Y' : 'N';
+			row.TL_STATUS = (row.IsChecked && row.IsChecked === true)? 'N' : 'C';
 		}
 		
 		function removeAllRows($scope){
@@ -792,7 +827,7 @@
 					
 					if(row[header.HMnemonic])
 					{
-						columnValue = row[header.HMnemonic];
+						columnValue = (_.find($scope.subMnemonics, {mnemonic: header.HMnemonic}).dataType === 'DATE')? templateBusiness.formatDate(row[header.HMnemonic], 'M/D/YYYY') : row[header.HMnemonic]; + '"';
 					}
 
 					if(colCount == $scope.header.length)
