@@ -192,7 +192,7 @@
             var pageNo = (start / length) + 1;
 
             if(vm.loadData){
-                newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
+                newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, vm.searchName).then(function(response) {
 
                     var blankData = {
                         rowId: '',
