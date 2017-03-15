@@ -42,6 +42,14 @@
                     </md-menu-content>
                 </md-menu>
 
+                <md-button class="md-icon-button" aria-label="excel download"
+                           style="margin-right: -20px"
+                           ng-if="vm.isExcelDownloadable"
+                           ng-click="vm.downloadExcel()">
+                    <md-icon md-font-icon="icon-download"></md-icon>
+                    <md-tooltip md-direction="top">Download to Spreadsheet</md-tooltip>
+                </md-button>
+                
                 <md-button class="md-icon-button" aria-label="show in printer"
                            style="margin-right: -20px"
                            ng-if="vm.showPrintIcon"
