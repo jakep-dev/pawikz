@@ -35,7 +35,7 @@ exports.restcall = {
                 deleteDynamicTableData: 'deleteTemplateTableLayOut',
                 saveMnemonics: 'updateTemplateMnemonics',
                 createWorkUp: 'createNewTemplateProject',
-                renewWorkUp: 'reNODEnewTemplateProject',
+                renewWorkUp: 'renewTemplateProject',
                 lockWorkUp: 'lockWorkUp',
                 unlockWorkUp:'unLockWorkUp',
                 createWorkUpStatus: 'getTemplateProjectStatus',
