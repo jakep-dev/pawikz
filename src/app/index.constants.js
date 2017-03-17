@@ -60,7 +60,8 @@
                     deleteAttachedArticles: '/api/news/deleteAttachedArticles'
                 },
                 projectHistoryEndPoint: {
-                    get: '/api/getProjectHistory'
+                    get: '/api/getProjectHistory',
+                    getFilters: '/api/getProjectHistoryFilters'
                 }
             },
             appSettings: {

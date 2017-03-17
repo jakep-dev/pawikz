@@ -10,13 +10,22 @@
         .controller('ProjectHistoryController', ProjectHistoryController);
 
     /** @ngInject */
-    function ProjectHistoryController($stateParams, $rootScope, store, DTOptionsBuilder, navConfig, commonBusiness, overviewBusiness, projectHistoryBusiness)
+    function ProjectHistoryController($scope, $stateParams, $rootScope, store, $mdSidenav, navConfig, commonBusiness, overviewBusiness, projectHistoryBusiness)
     {
         var vm = this;
         var projectId = $stateParams.projectId;
         var userDetails = store.get('user-info');
         vm.historyList = null;
         vm.templateOverview = null;
+        vm.searches = [];
+        vm.filterStepId = null;
+        vm.filterFieldName = null;
+        vm.filterModifiedBy = null;
+        vm.filterModifiedDate = null;
+        vm.filterAction = null;
+
+        vm.toggleSidenav = toggleSidenav;
+        vm.removeFilter = removeFilter;
 
         if(userDetails) {
             $rootScope.passedUserId = userDetails.userId;
@@ -53,13 +62,23 @@
             }
 
             console.log('projectId-' + projectId);
-            console.log('userId-' + commonBusiness.userId);
+            console.log('commonBusiness.userId-' + commonBusiness.userId);
             console.log('start-' + start);
             console.log('length-' + length);
+            console.log('filterStepId-' + vm.filterStepId);
+            console.log('filterFieldName-' + vm.filterFieldName);
+            console.log('filterModifiedBy-' + vm.filterModifiedBy);
+            console.log('filterModifiedDate-' + vm.filterModifiedDate);
+            console.log('filterAction-' + vm.filterAction);
 
-            projectHistoryBusiness.get(projectId, commonBusiness.userId, start, length, (overviewBusiness.templateOverview === null)).then(function(response){
+            projectHistoryBusiness.get(projectId, commonBusiness.userId, start, length, vm.filterStepId,
+                                    vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
+                                    (overviewBusiness.templateOverview === null)).then(function(response){
                 var records = {
-
+                    draw: draw,
+                    recordsTotal: 0,
+                    recordsFiltered: 0,
+                    data: projectHistoryBusiness.getDefaultData()
                 };
 
                 console.log('project history');
@@ -68,12 +87,11 @@
                 if(response){
                     _.each(response, function(data){
                         if(data.historyList){
-                            vm.historyList = data.historyList;
                             records = {
                                 draw: draw,
-                                recordsTotal: 100,
-                                recordsFiltered: 0,
-                                data: projectHistoryBusiness.getDefaultData()
+                                recordsTotal: data.paging.totalResults || 0,
+                                recordsFiltered: data.paging.totalResults || 0,
+                                data: data.historyList || projectHistoryBusiness.getDefaultData()
                             };
                         }
                         else if(data.templateOverview){
@@ -99,8 +117,121 @@
             });
         }
 
+        //Define Events
+        function defineEvents(){
+            commonBusiness.onMsg('filter-project-history', $scope, filterProjectHistory);
+            commonBusiness.onMsg('clear-project-history', $scope, clearProjectHistory);
+        }
+
+        //Filter Project History based on
+        //StepId, FieldName, ModifiedBy, ModifiedDate and Action
+        function filterProjectHistory(ev, data){
+            if(data) {
+                vm.searches = [];
+                if(data.stepId){
+                    vm.searches.push("StepName: " + data.stepId);
+                    vm.filterStepId = data.stepId;
+                }
+
+                if(data.fieldName){
+                    vm.searches.push("FieldName: " + data.fieldName);
+                    vm.filterFieldName = data.fieldName;
+                }
+
+                if(data.modifiedBy){
+                    vm.searches.push("ModifiedBy: " + data.modifiedBy);
+                    vm.filterModifiedBy = data.modifiedBy;
+                }
+
+                if(data.modifiedDate){
+                    vm.searches.push("ModifiedDate: " + data.modifiedDate);
+                    vm.filterModifiedDate = data.modifiedDate;
+                }
+
+                if(data.action){
+                    vm.searches.push("Action: " + data.action);
+                    vm.filterAction = data.action;
+                }
+
+                if(_.size(vm.searches) > 0){
+                    redrawDataTable();
+                }
+            }
+        }
+
+        //Clear project history details and reload data
+        function clearProjectHistory(ev, data){
+            vm.filterStepId = null;
+            vm.filterFieldName = null;
+            vm.filterModifiedBy = null;
+            vm.filterModifiedDate = null;
+            vm.filterAction = null;
+            vm.searches = [];
+            redrawDataTable();
+        }
+
+        //Toggle Sidenav
+        function toggleSidenav(sidenavId) {
+            $mdSidenav(sidenavId).toggle();
+        }
+
+        function redrawDataTable()
+        {
+            var oTable = $('#projectHistoryDetails').dataTable();
+            if(oTable){
+                oTable.fnDraw();
+            }
+        }
+
+        //Remove filter based on user selection
+        function removeFilter(actionType){
+            var types;
+            var combinedStr;
+            if(vm.searches.length === 0 || actionType === 'All'){
+                $rootScope.$emit('remove-project-filter', { type: ['All'] });
+                clearProjectHistory(null, null);
+            }
+            else {
+                combinedStr = '';
+                types = [];
+                _.each(vm.searches, function(search){
+                    combinedStr += search;
+                });
+
+                if(!combinedStr.includes('StepName')){
+                    types.push('StepName');
+                    vm.filterStepId = null;
+                }
+
+                if(!combinedStr.includes('FieldName')){
+                    types.push('FieldName');
+                    vm.filterFieldName = null;
+                }
+
+                if(!combinedStr.includes('ModifiedBy')){
+                    types.push('ModifiedBy');
+                    vm.filterModifiedBy = null;
+                }
+
+                if(!combinedStr.includes('ModifiedDate')){
+                    types.push('ModifiedDate');
+                    vm.filterModifiedDate = null;
+                }
+
+                if(!combinedStr.includes('Action')){
+                    types.push('Action');
+                    vm.filterAction = null;
+                }
+
+                if(_.size(types) > 0){
+                    commonBusiness.emitWithArgument("remove-project-filter", { type: types });
+                }
+            }
+        }
+
         dataTableConfiguration();
         defineMainMenu();
+        defineEvents();
     }
 
 })();

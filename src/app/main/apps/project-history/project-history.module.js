@@ -19,6 +19,10 @@
                 'content@app': {
                     templateUrl: 'app/main/apps/project-history/project-history.html',
                     controller : 'ProjectHistoryController as vm'
+                },
+                'search-engine@app': {
+                    templateUrl: 'app/main/apps/project-history/search/search.html',
+                    controller : 'ProjectHistorySearchController as vm'
                 }
             }
         });

@@ -21,14 +21,15 @@
         //Get overview and project history details
         //isAll = true will get all details
         //isAll = false will get only project history details
-        function get(projectId, userId, rowStart, rowEnd, isAll){
+        function get(projectId, userId, rowStart, rowEnd, stepId, fieldName,
+                     modifiedBy, modifiedDate, action, isAll){
             var projectHistoryDetails = null;
             if(isAll){
                 projectHistoryDetails = $q.all([overviewService.getOverviewDefer(projectId, userId).promise,
-                    projectHistoryService.getProjectHistoryDefer(projectId, userId, rowStart, rowEnd).promise]);
+                    projectHistoryService.getProjectHistoryDefer(projectId, userId, rowStart, rowEnd, stepId, fieldName, modifiedBy, modifiedDate, action).promise]);
             }
             else{
-                projectHistoryDetails = $q.all([projectHistoryService.getProjectHistoryDefer(projectId, userId, rowStart, rowEnd).promise]);
+                projectHistoryDetails = $q.all([projectHistoryService.getProjectHistoryDefer(projectId, userId, rowStart, rowEnd, stepId, fieldName, modifiedBy, modifiedDate, action).promise]);
             }
             return projectHistoryDetails;
         }
@@ -55,7 +56,7 @@
         function getDataTableColumns(){
             return [
                 DTColumnBuilder.newColumn('logId', 'Log Id'),
-                DTColumnBuilder.newColumn('step', 'Step'),
+                DTColumnBuilder.newColumn('stepName', 'Step'),
                 DTColumnBuilder.newColumn('fieldName', 'Field Name'),
                 DTColumnBuilder.newColumn('oldValue', 'Old Value'),
                 DTColumnBuilder.newColumn('newValue', 'New Value'),
@@ -78,6 +79,5 @@
                 modifiedDate: ''
             };
         }
-
     }
 })();

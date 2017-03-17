@@ -15,7 +15,7 @@ exports.webservice = {
 
 exports.client = {
     protocol: 'http',
-    domain: 'localhost',
+    domain: '192.168.1.216',
     port: '4000',
     loglevel: 1,
     transports: ['polling']
@@ -64,7 +64,8 @@ exports.restcall = {
                 getCompetitors:'getCompetitors',
                 saveChartSvgInFile: 'saveChartSvgInFile',
                 getScrapedHTML: 'getScrapedHTML',
-                getProjectHistory: 'getProjectHistory'
+                getProjectHistory: 'getProjectHistory',
+                getProjectHistoryFilters: 'getProjectHistoryFilters'
             }
         },
         {
