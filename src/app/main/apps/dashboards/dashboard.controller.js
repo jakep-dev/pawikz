@@ -136,6 +136,13 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         $compile(angular.element(row).contents())($scope);
     }
 
+    function autoResize(){
+        $(window).on("resize", function () {
+            var tableRow = $("#dashBoardDetails").get(0).rows;
+            $compile(angular.element(tableRow).contents())($scope);
+        });
+    }
+
     function renewTemplate()
     {
         $('.renewStyle').click(function()
@@ -263,6 +270,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 workUpStatus(response);
             }
         });
+        autoResize();
     }
 
     //Toggle Sidenav
@@ -409,8 +417,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 commonBusiness.emitWithArgument('UserFullName', response.fullName);
             });
         }
-
         dataTableConfiguration();
+        autoResize();
     }
 
     function initComplete()
@@ -452,7 +460,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
         //Defining columns for dashboard
-        vm.dtColumns = [
+        vm.dtColumns = [    
             DTColumnBuilder.newColumn('companyName', 'Company Name'),
             DTColumnBuilder.newColumn('projectName', 'Work-up Name'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
@@ -460,6 +468,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnBuilder.newColumn('platform', 'Platform'),
             DTColumnBuilder.newColumn('action', 'Action')
         ];
+        autoResize();
     }
 
     function dashboardRenewalUpdate(data) {
