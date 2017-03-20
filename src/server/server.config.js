@@ -2,27 +2,71 @@
  * Created by sherindharmarajan on 11/13/15.
  */
 
-exports.webservice = {
-    //protocol: 'https',
-    //url: 'wsint.advisen.com',
-    //port: '',
-    //service:'advwebservice'
+exports.webservices = new Array();
+exports.webservices['DEV'] = {
     protocol: 'http',
-    url: 'phldev.advisen.com',
-    port: '',
+    url: 'dev-vm-websvc.advisen.com',
+    port: 8080,
     service:'advwebservice'
 };
+exports.webservices['INT'] = {
+    protocol: 'https',
+    url: 'wsint.advisen.com',
+    port: 443,
+    service: 'advwebservice'
+};
+exports.webservices['PROD'] = {
+    protocol: 'https',
+    url: 'ws.advisen.com',
+    port: 443,
+    service: 'advwebservice'
+};
 
-exports.client = {
-    protocol: 'http',
-    domain: '192.168.1.216',
-    port: '4000',
+exports.clients = new Array();
+exports.clients['DEV'] = {
+    protocol: 'https',
+    domain: 'devcrm.advisen.com',
+    port: '443',
     loglevel: 1,
-    transports: ['polling']
+    transports: ['polling'],
+    useCertificate: true
+};
+exports.clients['INT'] = {
+    protocol: 'https',
+    domain: 'workupsint.advisen.com',
+    port: '443',
+    loglevel: 1,
+    transports: ['polling'],
+    useCertificate: false
+};
+exports.clients['PROD'] = {
+    protocol: 'https',
+    domain: 'workups.advisen.com',
+    port: '443',
+    loglevel: 1,
+    transports: ['polling'],
+    useCertificate: false
 };
 
 var Client = require('node-rest-client').Client;
 var moment = require('moment');
+var environment = (process.env.STARTUP_ENV || 'DEV').toUpperCase();
+switch (environment) {
+    case 'PROD':
+    case 'INT':
+    case 'DEV':
+        exports.webservice = exports.webservices[environment];
+        exports.client = exports.clients[environment];
+        break;
+    default:
+        //defaults to DEV environment
+        environment = 'DEV'
+        exports.webservice = exports.webservices['DEV'];
+        exports.client = exports.clients['DEV'];
+        break;
+}
+
+exports.environment = environment;
 
 exports.restcall = {
     client: new Client(),
