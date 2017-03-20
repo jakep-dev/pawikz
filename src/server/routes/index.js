@@ -17,9 +17,7 @@
     var socket = require('./socket/socket');
     var newsRoute = require('./news/news.route');
 
-    var config = require('../server.config');
-
-    routes.init = function(app, server)
+    routes.init = function (app, server, config)
     {
         socket.init(server, config);
         dashboardRoute.init(app, config);

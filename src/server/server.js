@@ -10,9 +10,11 @@ var exception = require('./exception/exception')();
 var favicon = require('serve-favicon');
 var path = require('path')
 var logger = require('morgan');
+var config = require('./server.config');
 var security = require('./server.security');
 var port = process.env.PORT || 4000;
-var environment = process.env.NODE_ENV || 'Dev';
+var environment = (process.env.NODE_ENV || 'DEV').toUpperCase();
+var startupEnvironment = config.environment;
 
 app.use(favicon(path.join(__dirname, '..', 'favicon.ico')));
 app.use(compress());
@@ -28,18 +30,19 @@ app.use(bodyParser.json({ limit: '100mb' }));
 security.setupSecurity(app);
 //false for http
 //true for https
-var server = security.getServer(app, port, false,
+var server = security.getServer(app, port, config.clients[startupEnvironment].useCertificate,
         function () {
             console.log('Express server listening on port ' + port);
-            console.log('env = ' + app.get('env') + '\n__dirname = ' + __dirname + '\nprocess.cwd = ' + process.cwd());
+            console.log('NODE_ENV = ' + app.get('env') + '\nRunning ENV = ' + startupEnvironment + '\n__dirname = ' + __dirname + '\nprocess.cwd = ' + process.cwd());
         }
     );
 
 var routes = require('./routes');
-routes.init(app, server);
+routes.init(app, server, config);
 console.log('About to crank up node');
 console.log('PORT=' + port);
 console.log('NODE_ENV=' + environment);
+console.log('STARTUP_ENV=' + startupEnvironment);
 
 app.get('/ping', function(req, res, next) {
   console.log(req.body);
