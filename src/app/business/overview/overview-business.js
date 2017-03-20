@@ -10,7 +10,7 @@
 
     /* @ngInject */
     function overviewBusiness(overviewService, commonBusiness,
-                              clientConfig, $interval, toast) {
+                              clientConfig,toast, $state, $interval) {
 
         var business = {
             templateOverview: null,
@@ -19,10 +19,16 @@
             get: get,
             getReadyForAutoSave: getReadyForAutoSave,
             updateTemplateOverview: updateTemplateOverview,
-            cancelPromise: cancelPromise
+            cancelPromise: cancelPromise,
+            goToProjectHistory: goToProjectHistory
         };
 
         return business;
+
+        //Navigates to project history details
+        function goToProjectHistory(projectId, userId){
+            $state.go('app.project-history', {projectId: projectId, userId: userId});
+        }
 
         function updateTemplateOverview(sectionId, value)
         {

@@ -1,0 +1,34 @@
+#project-history {
+  transform: translate3d(0, 0, 0);
+
+  .padding-10
+  {
+    padding: 0px;
+  }
+
+  #projectHistoryDetails
+  {
+    thead tr:first-child
+    {
+      background-color: #464646;
+      color: #b1d23b;
+    };
+    tr:hover {
+      background-color: #b3b3b3;
+      color: white;
+    }
+    tr:hover a{
+      color: white;
+    }
+    tr
+    {
+      -webkit-transition: all .2s ease-in-out;
+      -moz-transition: all .2s ease-in-out;
+      -ms-transition: all .2s ease-in-out;
+      transition: all .2s ease-in-out;
+    }
+  }
+}
+
+
+

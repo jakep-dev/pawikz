@@ -6,7 +6,8 @@
         .module('app.apps', [
                 'app.dashboard',
                 'app.overview',
-                'app.steps'
+                'app.steps',
+                'app.project-history'
         ]);
 
 })();

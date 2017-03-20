@@ -2,12 +2,11 @@
      ng-cloak md-swipe-left="vm.toggleSidenav('quick-panel')">
 
     <div class="center" flex layout-padding>
-        <div style="border: 1px solid lightgrey; border-radius: 3px; margin-bottom: 5px" layout-padding
+        <div class="dashboard-filter-summary" layout-padding
              ng-show="vm.searches && vm.searches.length > 0">
             <span>Filter Criteria: </span>
             <md-chips ng-model="vm.searches" ng-click="vm.filterAgain('')" readonly="true" md-removable="true"></md-chips>
         </div>
-
 
         <md-content class="div-content">
                 <table class="row-border cell-border table-bordered" ms-export width="100%"

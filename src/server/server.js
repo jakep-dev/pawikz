@@ -28,7 +28,7 @@ app.use(bodyParser.json({ limit: '100mb' }));
 security.setupSecurity(app);
 //false for http
 //true for https
-var server = security.getServer(app, port, false, 
+var server = security.getServer(app, port, false,
         function () {
             console.log('Express server listening on port ' + port);
             console.log('env = ' + app.get('env') + '\n__dirname = ' + __dirname + '\nprocess.cwd = ' + process.cwd());

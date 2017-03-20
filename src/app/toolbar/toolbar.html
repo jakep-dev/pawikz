@@ -102,7 +102,7 @@
                     </md-menu-item>
 
                     <md-menu-item>
-                        <md-button aria-label="save all" ng-click="vm.pdfDownload()">
+                        <md-button aria-label="pdf download" ng-click="vm.pdfDownload()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-file-pdf-box"></md-icon>
                                                         <span>PDF Download</span>
@@ -111,10 +111,19 @@
                     </md-menu-item>
 
                     <md-menu-item>
-                        <md-button  aria-label="save all" ng-click="vm.renew()">
+                        <md-button  aria-label="renew" ng-click="vm.renew()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-rotate-3d"></md-icon>
                                                         <span>Renew</span>
+                                                  </span>
+                        </md-button>
+                    </md-menu-item>
+
+                    <md-menu-item>
+                        <md-button  aria-label="project history" ng-click="vm.projectHistory()">
+                                                  <span layout="row" layout-align="start center">
+                                                        <md-icon md-font-icon="icon-history"></md-icon>
+                                                        <span>Project History</span>
                                                   </span>
                         </md-button>
                     </md-menu-item>
@@ -153,9 +162,9 @@
                                 <md-button aria-label="expand all" ng-click="vm.stepToggleExpand()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-backburger"
-                                                                 ng-class="vm.isStepExpanded ? 'ms-expand' : 'ms-collapse'"></md-icon>
-                                                        <span ng-if="vm.isStepExpanded">Collapse All</span>
-                                                       <span ng-if="!vm.isStepExpanded">Expand All</span>
+                                                                 ng-class="!vm.isStepExpanded ? 'ms-expand' : 'ms-collapse'"></md-icon>
+                                                        <span ng-if="!vm.isStepExpanded">Collapse All</span>
+                                                       <span ng-if="vm.isStepExpanded">Expand All</span>
                                                   </span>
                                 </md-button>
                             </md-menu-item>
