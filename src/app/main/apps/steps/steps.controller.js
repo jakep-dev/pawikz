@@ -94,8 +94,6 @@
         {
             stepsBusiness.get(projectId, stepId, commonBusiness.userId, (overviewBusiness.templateOverview === null)).then(function(response)
             {
-                console.log('GetSchemaAndData');
-                console.log(response);
                 if(response)
                 {
                     _.each(response, function(data)
@@ -119,15 +117,12 @@
                                    projectId: $stateParams.projectId
                                });
                            });
-
-                           defineMenuActions();
-
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
-                    defineBottomSheet();
+                    defineMenuActions();
                 }
             });
         }
