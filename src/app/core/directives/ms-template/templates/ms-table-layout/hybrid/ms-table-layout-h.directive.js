@@ -130,7 +130,7 @@
 								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
 								break;
 							case 'DateItem':
-								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "MM/DD/YYYY")}}</span>'; // remove formats for easy sorting & searching
+								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "M/D/YYYY")}}</span>'; // remove formats for easy sorting & searching
 								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-calendar>';
 								break;
 							case 'SingleDropDownItem':
@@ -904,6 +904,17 @@
 			return _.findIndex(rows, {SEQUENCE: sequence});
 		}
 
+		function dataTableUpdateData(scope) 
+		{
+			var oTable = scope.dtInstance.dataTable;
+			if(oTable) {
+				var rows = angular.element(oTable).find('tbody').find('td');				
+				_.each(rows, function(row, index){
+					scope.dtInstance.DataTable.cell(row).invalidate().draw();
+				});
+			}
+		}
+
         function defineHybridLink(scope, el, attrs)
         {
 			//disable excel download in ms-componenet
@@ -969,6 +980,9 @@
 
 					scope.saveRow = function(row)
 					{
+						$timeout(function(){
+							dataTableUpdateData(scope);
+						}, 500);
 						setTLStatus(row);
 						saveRow(scope, row);
 					};
