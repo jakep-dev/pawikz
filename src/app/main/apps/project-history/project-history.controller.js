@@ -94,6 +94,20 @@
         function downloadToCsv(){
             var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
             var rows = [];
+            _.each(vm.completeHistoryData, function(history){
+               var historyRow = [];
+                historyRow.push(history.logId);
+                historyRow.push(history.stepName);
+                historyRow.push(history.fieldName);
+                historyRow.push(history.oldValue);
+                historyRow.push(history.newValue);
+                historyRow.push(history.workupUsed);
+                historyRow.push(history.modifiedBy);
+                historyRow.push(history.modifiedDate);
+                historyRow.push(history.action);
+               rows.push(historyRow);
+            });
+
             var linkElem = $('#project-history-download');
             var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
 
@@ -160,12 +174,17 @@
         function redrawDataTable()
         {
             vm.isProcessing = true;
+
             vm.historyList = _.filter(vm.completeHistoryData, function(history){
                 if((vm.filterAction === null || history.action === vm.filterAction) &&
-                   (vm.filterModifiedBy === null || history.modifiedBy === vm.filterModifiedBy)){
+                   (vm.filterModifiedBy === null || history.modifiedBy === vm.filterModifiedBy) &&
+                   (vm.filterModifiedDate === null || history.modifiedDate === vm.filterModifiedDate) &&
+                   (vm.filterStepId === null || history.stepName === vm.filterStepId) &&
+                   (vm.filterFieldName === null || history.fieldName === vm.filterFieldName) ){
                     return history;
                 }
             });
+
             $timeout(function(){
                 vm.isProcessing = false;
             }, 100);
