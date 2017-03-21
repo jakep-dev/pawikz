@@ -431,7 +431,7 @@
             });	
 
             commonBusiness.onMsg($scope.itemid + '-Upload', $scope, function() {
-				toast.simpleToast("Please choose file!");
+				toast.simpleToast("Please choose file!", 300);
 				if (deviceDetector.browser === 'ie') {
                     $timeout(function () {
                         excelUpload($scope);
