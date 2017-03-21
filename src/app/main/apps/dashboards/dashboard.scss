@@ -49,8 +49,7 @@
 
   .new-platform-logo {
     display: block;
-    background: #464646 url("../assets/images/logos/insite.png") center no-repeat;
-    background-size: 70%;
+    background: url("../assets/images/logos/insite-indicator.png") center no-repeat;
     width: 30px;
     height: 20px;
     margin: 0 auto;
@@ -58,18 +57,15 @@
 
   .advisen-logo {
     display: block;
-    background: url("../assets/images/logos/advisen-logo-short.png") no-repeat;
+    background:  url("../assets/images/logos/advisen-indicator.png") center no-repeat;
     background-size: 70%;
     width: 30px;
     height: 20px;
     margin: 0 auto;
   }
-  .dashboard-filter-summary {
-    border: 1px solid lightgrey;
-    border-radius: 3px;
-    border-radius: 3px;
-    margin-bottom: 5px
-  }
 
+  li .new-platform-logo, li .advisen-logo {
+    margin: 0;
+  }
 }
 

@@ -465,7 +465,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             DTColumnBuilder.newColumn('projectName', 'Work-up Name'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
-            DTColumnBuilder.newColumn('platform', 'Platform'),
+            DTColumnBuilder.newColumn('isNewFramework', 'Platform'),
             DTColumnBuilder.newColumn('action', 'Action')
         ];
         autoResize();
