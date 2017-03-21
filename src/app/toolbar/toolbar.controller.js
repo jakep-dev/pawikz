@@ -7,10 +7,8 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $scope, $mdSidenav, $stateParams, $location, $translate, $interval,
-                               store, toast, Idle,
-                               commonBusiness, authBusiness, notificationBusiness,
-                               msNavFoldService, authService)
+    function ToolbarController($scope, $mdSidenav, $interval,
+                               store, commonBusiness, notificationBusiness, msNavFoldService)
     {
         var vm = this;
         vm.userName = '';
@@ -66,6 +64,23 @@
         vm.stepToggleExpand = stepToggleExpand;
         vm.loadMore = loadMore;
 
+        vm.downloadProjectHistory = downloadProjectHistory;
+
+
+        //Download Project History
+        function downloadProjectHistory(type){
+            switch (type){
+                case 'csv':
+                    commonBusiness.emitMsg('project-history-download-csv');
+                    break;
+
+                case 'pdf':
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         function loadMore(){
             commonBusiness.emitMsg('step-load-more');

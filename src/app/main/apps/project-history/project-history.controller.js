@@ -121,6 +121,17 @@
         function defineEvents(){
             commonBusiness.onMsg('filter-project-history', $scope, filterProjectHistory);
             commonBusiness.onMsg('clear-project-history', $scope, clearProjectHistory);
+            commonBusiness.onMsg('project-history-download-csv', $scope, downloadToCsv);
+        }
+
+        //Download project history to Csv file
+        function downloadToCsv(){
+            var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
+            var rows = [];
+            var linkElem = $('#project-history-download');
+            var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
+
+            commonBusiness.explicitDownloadToCsv(headers, rows, linkElem, fileName);
         }
 
         //Filter Project History based on
