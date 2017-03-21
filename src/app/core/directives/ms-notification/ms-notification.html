@@ -22,7 +22,7 @@
             <i ng-if="notification.type === 'Renewal' && notification.progress < 100" class="fa fa-refresh s16"></i>
             <i ng-if="notification.type === 'Create-WorkUp' && notification.progress < 100" class="fa fa-plus s16"></i>
             <i ng-if="notification.type === 'PDF-Download' && notification.progress < 100" class="fa fa-file-pdf-o s16"></i>
-            <md-tooltip md-direction="right">{{notification.type}}</md-tooltip>
+            <md-tooltip md-direction="right" class="tooltipContainer">{{notification.title}}</md-tooltip>
             <span class="ms-nav-label">{{notification.title }}</span>
             <div style="padding-left: 2px" ng-activity-indicator="CircledDark" skip-ng-show="yes" ng-if="notification.progress < 100 && !notification.istrackable"></div>
             <div style="padding-left: 2px" ng-if="notification.progress < 100 && notification.istrackable">

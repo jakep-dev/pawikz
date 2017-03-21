@@ -94,6 +94,13 @@ $toolbarHeight: 64px;
   animation: AnimationName 10s ease infinite;
 }
 
+.tooltipContainer{
+  max-width: 40em;
+  height: auto;
+  word-break: break-all; 
+  white-space: normal;
+}
+
 @-webkit-keyframes AnimationName {
   0%{background-position:0% 58%}
   50%{background-position:100% 43%}
