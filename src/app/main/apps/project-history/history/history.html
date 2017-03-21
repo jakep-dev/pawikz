@@ -24,10 +24,42 @@
             <md-chips ng-model="vm.searches" ng-click="vm.removeFilter('')" readonly="true" md-removable="true"></md-chips>
         </div>
 
-        <table class="row-border cell-border table-bordered" ms-export width="100%"
-               id="projectHistoryDetails" layout-padding datatable="" dt-options="vm.dtOptions"
-               dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">
-        </table>
+        <!--<table class="row-border cell-border table-bordered" ms-export width="100%"-->
+               <!--id="projectHistoryDetails" layout-padding datatable="" dt-options="vm.dtOptions"-->
+               <!--dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">-->
+        <!--</table>-->
+
+        <div ng-hide="vm.isProcessing">
+            <table class="row-border cell-border table-bordered"  width="100%"
+                   id="projectHistoryDetails" layout-padding datatable="ng" dt-options="vm.dtOptions">
+                <thead>
+                <tr>
+                    <th>Log Id</th>
+                    <th>Step</th>
+                    <th>Field Name</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
+                    <th>Work-up Used</th>
+                    <th>Modified By</th>
+                    <th>Modified Date</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="history in vm.historyList">
+                    <td>{{history.logId}}</td>
+                    <td>{{history.stepName}}</td>
+                    <td>{{history.fieldName}}</td>
+                    <td>{{history.oldValue}}</td>
+                    <td>{{history.newValue}}</td>
+                    <td>{{history.workupUsed}}</td>
+                    <td>{{history.modifiedBy}}</td>
+                    <td>{{history.modifiedDate}}</td>
+                    <td>{{history.action}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </md-content>
 </div>
 

@@ -36,13 +36,11 @@
 
 
         //Get data-table options
-        function getDataTableOptions(callBackServerData){
+        function getDataTableOptions(){
             return DTOptionsBuilder
                 .newOptions()
-                .withFnServerData(callBackServerData)
                 .withDataProp('data')
                 .withOption('processing', true)
-                .withOption('serverSide', true)
                 .withOption('paging', true)
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
