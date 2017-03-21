@@ -791,7 +791,9 @@
 
                 templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
             } else {
-                toast.simpleToast(clientConfig.messages.programTableHybrid.deleteRow);
+                if($scope.isExcelUpload === false) {
+                    toast.simpleToast(clientConfig.messages.programTableHybrid.deleteRow);
+                }
             }
 		}
 
@@ -1062,12 +1064,13 @@
 
 		function removeAllRows($scope){
 			
-			//clearFilter($scope);
 			_.each($scope.rows, function(row){
 				row.IsChecked = true;
 			});
 			
+            $scope.isExcelUpload = true;
 			deleteRows($scope);
+            $scope.isExcelUpload = false;
 		}
 
         function resetUploadElement()

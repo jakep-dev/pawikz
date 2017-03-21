@@ -518,7 +518,9 @@
             resetDataCheck($scope);
 			calculateHeaderSelection($scope);
 
-		   toast.simpleToast("Cleared filter!");
+			if($scope.isExcelUpload === false) {
+				toast.simpleToast("Cleared filter!");
+			}
         }
 		
 		function addRows($scope, rowNumber)
@@ -765,14 +767,13 @@
                         }
 						
                         rowCount++;
+                        message = 'Uploaded successfully!';
                     });
 
                     if(message)
                     {
-                        message = 'Uploaded successfully!';
+                    	toast.simpleToast(message);
                     }
-
-                    toast.simpleToast(message);
                 }
             }
 
@@ -786,7 +787,10 @@
 		
 		function removeAllRows($scope){
 			
+			$scope.isExcelUpload = true;
 			clearFilter($scope);
+			$scope.isExcelUpload = false;
+
 			angular.forEach($scope.rows, function(row){
 				row.IsChecked = true;
 			});
