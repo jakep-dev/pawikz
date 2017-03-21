@@ -89,6 +89,7 @@
             getCompInitialLoadCount: getCompInitialLoadCount,
             updateProgramTableMnemonics: updateProgramTableMnemonics,
             getNewsHeader: getNewsHeader,
+            getNewsId: getNewsId,
             updateTableLayoutMnemonics: updateTableLayoutMnemonics,
             componentExcelDownload: componentExcelDownload,
             updateSummationMnemonics: updateSummationMnemonics,
@@ -1807,6 +1808,37 @@
             return label;
         }
 
+        function getNewsId(tearsheet) {
+            var id = null;
+            if (tearsheet && tearsheet.id) {
+                switch (tearsheet.id) {
+                    case 'GenericTableItem':
+                        if (tearsheet && tearsheet.row && tearsheet.row.col && _.isArray(tearsheet.row.col)) {
+                            var scrapedItem = _.find(tearsheet.row.col, function (column) {
+                                if (column && column.TearSheetItem && column.TearSheetItem.id && column.TearSheetItem.id === 'ScrapedItem') {
+                                    return column;
+                                }
+                            });
+                            if (scrapedItem && scrapedItem.TearSheetItem) {
+                                id = {
+                                    itemId: scrapedItem.TearSheetItem.ItemId,
+                                    mnemonic: scrapedItem.TearSheetItem.Mnemonic
+                                };
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (id === null) {
+                id = {
+                    itemId: tearsheet.ItemId,
+                    mnemonic: tearsheet.Mnemonic
+                };
+            }
+            return id;
+        }
         function componentExcelDownload(scope) {
             var linkElement = $('#link-component-download');
             var dataInfo = buildExcelData(scope.excelComponents);

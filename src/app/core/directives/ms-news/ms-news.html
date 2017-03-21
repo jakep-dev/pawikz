@@ -1,13 +1,5 @@
 <div id="news">
-    <ms-accordion collapse-search-result="{{vm.collapseEvent}}" expand-search-result="{{vm.expandEvent}}" is-expandable="true" title="{{vm.title}}" actions="vm.actions">
-        <ms-news-search search-name="{{vm.searchName}}" collapse-search="{{vm.collapseEvent}}"></ms-news-search>
+    <ms-accordion initial-collapsed="false" on-expand="vm.onExpand" register-expand-complete-callback="vm.registerExpandCompleteCallback" register-collapse-accordion-callback="vm.registerCollapseAccordionCallback" is-expandable="true" title="{{vm.title}}" actions="vm.actions">
+        <ms-news-search news-search-table-id="vm.newsSearchTableId" result-details="vm.resultDetails" search-name="{{vm.searchName}}" on-search-complete="vm.onSearchComplete" register-news-search-callback="vm.registerNewsSearchCallback" set-bookmark-button-disable-status="vm.setBookmarkButtonDisableStatus"></ms-news-search>
     </ms-accordion>
-
-    <div class="minPadding"></div>
-
-    <ms-accordion is-expandable="true" title="News Attachments" actions="vm.deleteActionbtn">
-        <ms-news-attachment></ms-news-attachment>
-    </ms-accordion>
-
-    <div class="minPadding"></div>
 </div>

@@ -1,11 +1,25 @@
-div#msNewsAttachment {
+div#attachments {
     >ms-accordion {
         >div#ms-accordion {
             padding: 0;
-            min-height: 50px;
+            min-height: 60px;
             >div {
                 padding-left: 1%;
-                min-height: 50px;
+                min-height: 60px;
+            }
+        }
+        >md-content#ms-accordion-content {
+            >div#ms-news-attachment-content {
+                >ms-accordion { 
+                    >div#ms-accordion {
+                        padding: 0;
+                        min-height: 50px;
+                        >div {
+                            padding-left: 1%;
+                            min-height: 50px;
+                        }
+                    }
+                }
             }
         }
     }

@@ -12,8 +12,8 @@
     function newsBusiness(newsService, dialog, commonBusiness, clientConfig) {
 
         var business = {
-            selectedNews: [],
-            removeselectedNews: [],
+            //selectedNews: [],
+            //removeselectedNews: [],
             showArticleContent: showArticleContent,
             bookmarkNewsArticle: bookmarkNewsArticle,
             removeBookmark: removeBookmark
@@ -31,7 +31,7 @@
             });
         }
 
-        function bookmarkNewsArticle(scope, collapseSearch) {
+        function bookmarkNewsArticle(scope, onBookmarkNewsArticleStart, onBookmarkNewsArticleComplete) {
             
                 dialog.confirm(clientConfig.messages.newsArticle.bookmarkNewsItem.title, 
                                 clientConfig.messages.newsArticle.bookmarkNewsItem.content , null, {
@@ -39,7 +39,9 @@
                         name: 'yes',
                         callBack: function() {
 
-                            commonBusiness.emitMsg(collapseSearch);
+                            if (onBookmarkNewsArticleStart) {
+                                onBookmarkNewsArticleStart();
+                            }
 
                             var selectAttachment = [];
                             _.each(scope, function(article) {
@@ -59,9 +61,10 @@
                             });
 
                             newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
-                                function(response) {
-                                    business.selectedNews.push.apply(business.selectedNews, selectAttachment);
-                                    commonBusiness.emitMsg('news-bookmark');
+                                function (response) {
+                                    onBookmarkNewsArticleComplete(selectAttachment);
+                                    //business.selectedNews.push.apply(business.selectedNews, selectAttachment);
+                                    //commonBusiness.emitMsg('news-bookmark');
                                 }
                             );
 
@@ -78,7 +81,7 @@
                 });
         }
 
-         function removeBookmark(scope) {
+         function removeBookmark(scope, callback) {
 
             dialog.confirm(clientConfig.messages.newsArticle.deleteNewsItem.title, 
                            clientConfig.messages.newsArticle.deleteNewsItem.content, null, {
@@ -106,7 +109,8 @@
                         newsService.deleteAttachedArticles(commonBusiness.projectId, commonBusiness.userId, removeAttachment).then(
                             function(response) {
                                 console.log(response);
-                                 commonBusiness.emitMsg('remove-bookmark');
+                                callback();
+                                //commonBusiness.emitMsg('remove-bookmark');
                             }
                         );
 

@@ -3,16 +3,17 @@
 
     angular
         .module('app.core')
-        .controller('msNewsSearchController', msNewsSearchController)
+        .controller('MsNewsSearchController', MsNewsSearchController)
         .directive('msNewsSearch', msNewsSearchDirective);
 
-    function msNewsSearchController($scope, $attrs, DTColumnDefBuilder, DTColumnBuilder, $stateParams,
-        DTOptionsBuilder, $mdDialog, commonBusiness, newsBusiness, templateService, newsService, dialog, templateBusiness, $http, $element, $compile) {
-
+    /** @ngInject */
+    function MsNewsSearchController($scope, $element, $compile, $mdDialog, $interval,
+                                    DTColumnDefBuilder, DTOptionsBuilder, 
+                                    commonBusiness, newsBusiness, newsService) {
         var vm = this;
         var validate = false;
 
-        vm.resultDetails = [];
+        vm.resultDetails = $scope.resultDetails;
         vm.company = '';
         vm.articlesFound = '';
         vm.articlesShown = '';
@@ -22,86 +23,68 @@
         vm.loadData = null;
         vm.loadingValue = null;
         vm.reloadValue = false;
-        vm.collapseSearch = $scope.collapseSearch;
+        vm.newsSearchTableId = '_' + $scope.newsSearchTableId;
 
-        vm.bookmarkNews = bookmarkNews;
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
         vm.newsSelection = newsSelection;
         vm.initialize = initialize;
+
+        vm.registerNewsSearchCallback = $scope.registerNewsSearchCallback;
+        vm.onSearchComplete = $scope.onSearchComplete;
+        vm.setBookmarkButtonDisableStatus = $scope.setBookmarkButtonDisableStatus;
 
         //Make initial call
         initialize();
 
         function initialize()
         {
-            disabledBookmarkIcon();
+            vm.setBookmarkButtonDisableStatus(true);
             dataTableConfiguration();
-            
         }
 
-        commonBusiness.onMsg('search-result-expand', $scope, function(ev) {
-
+        function startSearch() {
             vm.loadData = true;
-            if(!vm.reloadValue){
+            if (!vm.reloadValue) {
+                vm.reloadValue = true;
                 redrawDataTable();
-            }
-            
-            initialize();  
-            
-        });
-
-        commonBusiness.onMsg('-Bookmark', $scope, function(ev) {
-            bookmarkNews();
-        });
-
-        commonBusiness.onMsg('-Clear', $scope, function(ev) {
-            clearSelection();   
-        });
-
-        function disabledBookmarkIcon(){
-            angular.forEach($scope.$parent.$parent.actions, function(action){
-                if(action.id == 2){ 
-                    action.disabled = true;
+                initialize();
+            } else {
+                if (vm.onSearchComplete) {
+                    vm.onSearchComplete();
                 }
-            });
+            }
+        }
+        vm.startSearch = startSearch;
+        if (vm.registerNewsSearchCallback) {
+            vm.registerNewsSearchCallback(vm.startSearch);
         }
 
         function toggleCollapse() {
             vm.collapsed = !vm.collapsed;
         }
 
-        function clearSelection() {
-            _.each(vm.resultDetails, function(item) {
-                if (item.isSelected) {
-                    item.isSelected = false;
-                    disabledBookmarkIcon();
-                }
-            });
-        }
-
         function newsSelection() {
-            
-            disabledBookmarkIcon();
-            
-            _.each(vm.resultDetails, function(item) {
-                if (item.isSelected) {
-                    angular.forEach($scope.$parent.$parent.actions, function(action){
-                        if(action.id == 2){ 
-                            action.disabled = false;
-                        }
-                    });
+            var i;
+            var n;
+            var selected = false;
+
+            vm.setBookmarkButtonDisableStatus(true);
+            n = vm.resultDetails.length;
+            for (i = 0; i < n; i++) {
+                if (vm.resultDetails[i].isSelected) {
+                    selected = true;
+                    break;
                 }
-            });
+            }
+            if (selected) {
+                vm.setBookmarkButtonDisableStatus(false);
+            }
         }
 
         function closeDialog() {
             $mdDialog.hide();
         };
-
-        function bookmarkNews() {
-            newsBusiness.bookmarkNewsArticle(vm.resultDetails, vm.collapseSearch);
-        }
 
         function actionHtml(data, type, full, meta) {
 
@@ -123,7 +106,7 @@
 
         // Redraw datatable
         function redrawDataTable() {
-            var oTable = $('#newsPageDetails').dataTable();
+            var oTable = $element.find('#' + 'T_' + $scope.newsSearchTableId).dataTable();
             oTable.fnDraw();
         }
 
@@ -153,14 +136,13 @@
                 .withOption('createdRow', recompileHtml)
                 .withOption('initComplete', sort)
                 .withPaginationType('full')
-                .withDOM('<"top padding-10" <"left"<"length"l<"#newsPageDetails_sort">>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top padding-10" <"left"<"length"l<"#' + vm.newsSearchTableId + '_sort">>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
 
         function sort() {
             var html = '<label style="padding-left: 15px;">Sort by:</label>' +
                 '<select data-ng-options="o.name for o in options" ng-model="selectedOption" ng-change="vm.onSortChange(selectedOption)"></select>';
-            $element.find('#newsPageDetails_sort').append($compile(html)($scope));
-
+            $element.find('#' + vm.newsSearchTableId + '_sort').append($compile(html)($scope));
             $scope.options = [{
                     name: "Newest",
                     value: 'D',
@@ -172,7 +154,6 @@
                     id: 2
                 }
             ];
-
             $scope.selectedOption = $scope.options[0];
         }
 
@@ -192,7 +173,7 @@
             var pageNo = (start / length) + 1;
 
             if(vm.loadData){
-                newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, vm.searchName).then(function(response) {
+                newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
 
                     var blankData = {
                         rowId: '',
@@ -211,7 +192,7 @@
                     vm.date = response.summary.dateTime;
                     vm.period = response.summary.searchPeriod;
 
-                    vm.resultDetails = [];
+                    vm.resultDetails.length = 0;
                     angular.forEach(response.results, function(details, index) {
 
                         vm.resultDetails.push({
@@ -235,32 +216,59 @@
                         data: angular.isDefined(response) && angular.isDefined(response.results) &&
                             vm.resultDetails !== null ? vm.resultDetails : blankData
                     };
-
-                    commonBusiness.emitMsg('load-search-result');
-
+                    if (vm.onSearchComplete) {
+                        vm.onSearchComplete();
+                    }
                     fnCallback(records);
                 });
             }
         }
 
         function showArticleDetails(ev, title, exUrl) {
-
             newsBusiness.showArticleContent(title, exUrl);
         }
+
+        function insertTable() {
+            var element = $element.find('#newsPageDetails #ms-accordion-content');
+            if (element[0]) {
+                var html;
+                var id = 'T_' + $scope.newsSearchTableId;
+                html = '<table class="row-border cell-border table-bordered" ms-export width="100%" id="' + id + '" layout-padding datatable="" dt-options="vm.dtOptions" dt-column-defs="vm.dtColumnDefs"></table>';
+                element.append($compile(html)($scope));
+                //var e = $('#' + id);
+                //console.log(e[0]);
+            }
+        }
+
+        var promise = $interval(
+            function () {
+                var element = $element.find('#newsPageDetails #ms-accordion-content');
+                if (element[0]) {
+                    insertTable();
+                    $interval.cancel(promise);
+                } else {
+                    console.log('waiting for new-search-accordian to be created.');
+                }
+            },
+            50
+        );
     }
 
     /** @ngInject */
-    function msNewsSearchDirective($compile) {
+    function msNewsSearchDirective() {
         return {
             restrict: 'E',
             scope: {
-                searchName: '@',
-                collapseSearch : '@'
+                resultDetails: '=',
+                registerNewsSearchCallback: '=',
+                onSearchComplete: '=',
+                setBookmarkButtonDisableStatus: '=',
+                newsSearchTableId: '=',
+                searchName: '@'
             },
-            controller: 'msNewsSearchController',
+            controller: 'MsNewsSearchController',
             controllerAs: 'vm',
-            templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html',
-            bindToController: true 
+            templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html'
         };
     }
 })();

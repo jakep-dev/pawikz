@@ -5,10 +5,11 @@
             <span ng-bind-html="title"></span>
         </div>
         <div layout="row" layout-align="end center">
-            <md-button ng-repeat="action in vm.actions" ng-disabled="action.disabled" style="margin-right: -20px" ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)" aria-label="action buttons" ng-if="!!vm.actions">
+            <md-button ng-repeat="action in actions" ng-disabled="action.disabled" style="margin-right: -20px" ng-click="vm.applyClickEvent(action, $mdOpenMenu, $event)" aria-label="action buttons" ng-if="!!actions">
                 <md-icon md-menu-align-target md-font-icon="{{action.icon}}" class="s20" ng-class="action.isclicked ? 'orange-500-fg' : ''"></md-icon>
                 <md-tooltip md-direction="top" ng-if="(action.tooltip !== null)"> {{action.tooltip}}</md-tooltip>
             </md-button>
+            <!--
             <md-button ng-if="vm.showRadioButtonForBookmark" aria-label="select/unSelect" style="margin-right:-20px" class="md-icon-button no-padding-margin" ng-click="vm.selectBookmarkToRemove()">
                 <div ng-if="!vm.isselectBookmark">
                     <md-tooltip md-direction="top">Select</md-tooltip>
@@ -19,15 +20,16 @@
                     <md-icon md-font-icon="icon-radiobox-marked"></md-icon>
                 </div>
             </md-button>
-            <md-button class="md-icon-button" aria-label="expand/collapse" ng-click="vm.loadSearchResult()" ng-if="isExpandable">
-                <md-tooltip md-direction="top"> {{(vm.collapsed)? 'Expand' : 'Collapse'}}</md-tooltip>
-                <md-icon md-font-icon="icon-backburger" ng-class="vm.iscollapsed  ? 'ms-collapse' : 'ms-expand'"></md-icon>
+            -->
+            <md-button class="md-icon-button" aria-label="expand/collapse" ng-click="vm.onExpandCollapse()" ng-if="isExpandable">
+                <md-tooltip md-direction="top"> {{(vm.isCollapsed)? 'Expand' : 'Collapse'}}</md-tooltip>
+                <md-icon md-font-icon="icon-backburger" ng-class="vm.isCollapsed  ? 'ms-collapse' : 'ms-expand'"></md-icon>
             </md-button>
         </div>
     </div>
 </div>
 <md-divider></md-divider>
 <md-progress-linear class="md-warn" md-mode="indeterminate" ng-if="!vm.isProcessComplete"></md-progress-linear>
-<md-content id="ms-accordion-content" class="md-whiteframe-1dp" ng-transclude ng-show="!vm.iscollapsed " layout-padding>
+<md-content id="ms-accordion-content" class="md-whiteframe-1dp" ng-transclude ng-show="!vm.isCollapsed " layout-padding>
 
 </md-content>
