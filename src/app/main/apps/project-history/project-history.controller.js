@@ -17,7 +17,7 @@
         var userDetails = store.get('user-info');
         vm.historyList = [];
         vm.completeHistoryData = [];
-        vm.templateOverview = null;
+        vm.templateOverview = overviewBusiness.templateOverview;
         vm.searches = [];
         vm.filterStepId = null;
         vm.filterFieldName = null;
@@ -25,6 +25,7 @@
         vm.filterModifiedDate = null;
         vm.filterAction = null;
         vm.isProcessing = false;
+        vm.isInitiallyLoaded = false;
 
         vm.toggleSidenav = toggleSidenav;
         vm.removeFilter = removeFilter;
@@ -36,7 +37,7 @@
 
         function defineMainMenu(){
             commonBusiness.emitWithArgument("inject-main-menu", {
-                menuName: 'Project History',
+                menuName: 'Work-up History',
                 menuIcon: 'icon-history',
                 menuMode: 'ProjectHistory'
             });
@@ -50,12 +51,10 @@
         //Get server call project history details
         function getProjectHistory()
         {
+            console.log('Overview-', overviewBusiness.templateOverview)
             projectHistoryBusiness.get(projectId, commonBusiness.userId, 0, 20000, vm.filterStepId,
                 vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
                 (overviewBusiness.templateOverview === null)).then(function(response){
-                console.log('Project History Response');
-                console.log(response);
-
                 if(response){
                     _.each(response, function(data){
                         if(data.historyList){
@@ -79,6 +78,7 @@
                             });
                         }
                     });
+                    vm.isInitiallyLoaded = true;
                 }
             });
         }
@@ -187,7 +187,7 @@
 
             $timeout(function(){
                 vm.isProcessing = false;
-            }, 100);
+            }, 300);
         }
 
         //Remove filter based on user selection
@@ -233,6 +233,8 @@
                 if(_.size(types) > 0){
                     commonBusiness.emitWithArgument("remove-project-filter", { type: types });
                 }
+
+                redrawDataTable();
             }
         }
 
