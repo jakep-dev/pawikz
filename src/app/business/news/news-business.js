@@ -12,8 +12,6 @@
     function newsBusiness(newsService, dialog, commonBusiness, clientConfig) {
 
         var business = {
-            //selectedNews: [],
-            //removeselectedNews: [],
             showArticleContent: showArticleContent,
             bookmarkNewsArticle: bookmarkNewsArticle,
             removeBookmark: removeBookmark
@@ -110,7 +108,6 @@
                             function(response) {
                                 console.log(response);
                                 callback();
-                                //commonBusiness.emitMsg('remove-bookmark');
                             }
                         );
 

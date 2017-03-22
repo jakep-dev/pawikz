@@ -5,7 +5,7 @@
                 <div ng-show="item.isLoaded" ng-bind-html="item.htmlArticle"></div>
             </ms-accordion>
         </div>
-        <div ng-if="vm.bookmarkedItems.length == 0">
+        <div ng-if="vm.bookmarkedItems.length == 0" id="ms-news-attachment-no-content" layout="row" layout-align="center center" layout-padding>
             <div flex>
                 <ms-message message="No News Articles Attached"></ms-message>
             </div>
