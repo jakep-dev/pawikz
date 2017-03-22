@@ -83,7 +83,7 @@
 		   
            if($scope.columns.length > 0)
            {
-				html += '<td><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();saveRow(row)"></md-checkbox></td>';
+				html += '<td><md-checkbox style="width=1%" class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();saveRow(row)"></md-checkbox></td>';
                 angular.forEach($scope.columns, function(eachCol)
                 {
                     var tearSheetItem = eachCol.TearSheetItem;
@@ -193,7 +193,7 @@
             {
                 html += '<thead>';
                 html += '<tr class="row">';
-                html += '<th><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" ' +
+                html += '<th><md-checkbox style="width=1%" ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" ' +
                     'class="no-padding-margin"></md-checkbox></th>';
                 angular.forEach($scope.header, function (header) {
                     html += '<th>';
