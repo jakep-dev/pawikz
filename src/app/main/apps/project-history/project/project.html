@@ -1,7 +1,11 @@
 <div>
-    <md-content layout-padding class="section-bg">
+    <md-content>
+        <div layout="row" layout-align="center center" layout-padding  style="font-size: large">
+            <div><strong>Work-up Name:</strong> &nbsp;</div>
+            <div>{{vm.templateOverview.projectName}}</div>
+        </div>
 
-        <div id="overviewGrid" layout="row" layout-xs="column">
+        <div id="overviewGrid" class="section-bg" layout="row" layout-xs="column">
             <div  flex="auto">
                 <table class="simple" width="100%">
                     <tbody>
@@ -50,6 +54,5 @@
                 </table>
             </div>
         </div>
-
     </md-content>
 </div>

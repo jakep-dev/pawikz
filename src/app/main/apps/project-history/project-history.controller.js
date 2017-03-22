@@ -10,19 +10,22 @@
         .controller('ProjectHistoryController', ProjectHistoryController);
 
     /** @ngInject */
-    function ProjectHistoryController($scope, $stateParams, $rootScope, store, $mdSidenav, navConfig, commonBusiness, overviewBusiness, projectHistoryBusiness)
+    function ProjectHistoryController($scope, $stateParams, $rootScope, $timeout, store, $mdSidenav, navConfig, commonBusiness, overviewBusiness, projectHistoryBusiness)
     {
         var vm = this;
         var projectId = $stateParams.projectId;
         var userDetails = store.get('user-info');
-        vm.historyList = null;
-        vm.templateOverview = null;
+        vm.historyList = [];
+        vm.completeHistoryData = [];
+        vm.templateOverview = overviewBusiness.templateOverview;
         vm.searches = [];
         vm.filterStepId = null;
         vm.filterFieldName = null;
         vm.filterModifiedBy = null;
         vm.filterModifiedDate = null;
         vm.filterAction = null;
+        vm.isProcessing = false;
+        vm.isInitiallyLoaded = false;
 
         vm.toggleSidenav = toggleSidenav;
         vm.removeFilter = removeFilter;
@@ -34,65 +37,29 @@
 
         function defineMainMenu(){
             commonBusiness.emitWithArgument("inject-main-menu", {
-                menuName: 'Project History',
+                menuName: 'Work-up History',
                 menuIcon: 'icon-history',
                 menuMode: 'ProjectHistory'
             });
         }
 
         function dataTableConfiguration(){
-            vm.dtOptions = projectHistoryBusiness.getDtOptions(getProjectHistory);
+            vm.dtOptions = projectHistoryBusiness.getDtOptions();
             vm.dtColumns = projectHistoryBusiness.getDtColumns();
         }
 
         //Get server call project history details
-        function getProjectHistory(sSource, aoData, fnCallback, oSettings)
+        function getProjectHistory()
         {
-            var draw = aoData[0].value;
-            var columns = aoData[1].value;
-            var sortOrder = aoData[2].value[0].dir;
-            var sortFilterIndex = aoData[2].value[0].column;
-            var sortFilter = columns[sortFilterIndex].data;
-            var start = aoData[3].value;
-            var length = aoData[4].value;
-            var searchFilter = aoData[5].value.value;
-
-            if(overviewBusiness.templateOverview){
-                vm.templateOverview = overviewBusiness.templateOverview;
-            }
-
-            console.log('projectId-' + projectId);
-            console.log('commonBusiness.userId-' + commonBusiness.userId);
-            console.log('start-' + start);
-            console.log('length-' + length);
-            console.log('filterStepId-' + vm.filterStepId);
-            console.log('filterFieldName-' + vm.filterFieldName);
-            console.log('filterModifiedBy-' + vm.filterModifiedBy);
-            console.log('filterModifiedDate-' + vm.filterModifiedDate);
-            console.log('filterAction-' + vm.filterAction);
-
-            projectHistoryBusiness.get(projectId, commonBusiness.userId, start, length, vm.filterStepId,
-                                    vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
-                                    (overviewBusiness.templateOverview === null)).then(function(response){
-                var records = {
-                    draw: draw,
-                    recordsTotal: 0,
-                    recordsFiltered: 0,
-                    data: projectHistoryBusiness.getDefaultData()
-                };
-
-                console.log('project history');
-                console.log(response);
-
+            console.log('Overview-', overviewBusiness.templateOverview)
+            projectHistoryBusiness.get(projectId, commonBusiness.userId, 0, 20000, vm.filterStepId,
+                vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
+                (overviewBusiness.templateOverview === null)).then(function(response){
                 if(response){
                     _.each(response, function(data){
                         if(data.historyList){
-                            records = {
-                                draw: draw,
-                                recordsTotal: data.paging.totalResults || 0,
-                                recordsFiltered: data.paging.totalResults || 0,
-                                data: data.historyList || projectHistoryBusiness.getDefaultData()
-                            };
+                            vm.completeHistoryData = data.historyList;
+                            vm.historyList.push.apply(vm.historyList, data.historyList);
                         }
                         else if(data.templateOverview){
                             vm.templateOverview = data.templateOverview;
@@ -111,9 +78,8 @@
                             });
                         }
                     });
+                    vm.isInitiallyLoaded = true;
                 }
-
-                fnCallback(records);
             });
         }
 
@@ -121,12 +87,42 @@
         function defineEvents(){
             commonBusiness.onMsg('filter-project-history', $scope, filterProjectHistory);
             commonBusiness.onMsg('clear-project-history', $scope, clearProjectHistory);
+            commonBusiness.onMsg('project-history-download-csv', $scope, downloadToCsv);
+        }
+
+        //Download project history to Csv file
+        function downloadToCsv(){
+            var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
+            var rows = [];
+            _.each(vm.completeHistoryData, function(history){
+               var historyRow = [];
+                historyRow.push(history.logId);
+                historyRow.push(history.stepName);
+                historyRow.push(history.fieldName);
+                historyRow.push(history.oldValue);
+                historyRow.push(history.newValue);
+                historyRow.push(history.workupUsed);
+                historyRow.push(history.modifiedBy);
+                historyRow.push(history.modifiedDate);
+                historyRow.push(history.action);
+               rows.push(historyRow);
+            });
+
+            var linkElem = $('#project-history-download');
+            var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
+
+            commonBusiness.explicitDownloadToCsv(headers, rows, linkElem, fileName);
         }
 
         //Filter Project History based on
         //StepId, FieldName, ModifiedBy, ModifiedDate and Action
         function filterProjectHistory(ev, data){
             if(data) {
+                vm.filterStepId = null;
+                vm.filterFieldName = null;
+                vm.filterModifiedBy = null;
+                vm.filterModifiedDate = null;
+                vm.filterAction = null;
                 vm.searches = [];
                 if(data.stepId){
                     vm.searches.push("StepName: " + data.stepId);
@@ -153,9 +149,8 @@
                     vm.filterAction = data.action;
                 }
 
-                if(_.size(vm.searches) > 0){
-                    redrawDataTable();
-                }
+                console.log('DataTable Filter');
+                redrawDataTable();
             }
         }
 
@@ -175,12 +170,24 @@
             $mdSidenav(sidenavId).toggle();
         }
 
+        //Re-draw data table
         function redrawDataTable()
         {
-            var oTable = $('#projectHistoryDetails').dataTable();
-            if(oTable){
-                oTable.fnDraw();
-            }
+            vm.isProcessing = true;
+
+            vm.historyList = _.filter(vm.completeHistoryData, function(history){
+                if((vm.filterAction === null || history.action === vm.filterAction) &&
+                   (vm.filterModifiedBy === null || history.modifiedBy === vm.filterModifiedBy) &&
+                   (vm.filterModifiedDate === null || history.modifiedDate === vm.filterModifiedDate) &&
+                   (vm.filterStepId === null || history.stepName === vm.filterStepId) &&
+                   (vm.filterFieldName === null || history.fieldName === vm.filterFieldName) ){
+                    return history;
+                }
+            });
+
+            $timeout(function(){
+                vm.isProcessing = false;
+            }, 300);
         }
 
         //Remove filter based on user selection
@@ -226,12 +233,15 @@
                 if(_.size(types) > 0){
                     commonBusiness.emitWithArgument("remove-project-filter", { type: types });
                 }
+
+                redrawDataTable();
             }
         }
 
         dataTableConfiguration();
         defineMainMenu();
         defineEvents();
+        getProjectHistory();
     }
 
 })();

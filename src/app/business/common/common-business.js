@@ -9,7 +9,7 @@
         .service('commonBusiness', commonBusiness);
 
     /* @ngInject */
-    function commonBusiness($rootScope, bottomSheetConfig) {
+    function commonBusiness($rootScope, bottomSheetConfig, Papa, deviceDetector, toast) {
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
@@ -31,7 +31,8 @@
             defineBottomSheet: defineBottomSheet,
             goTop: goTop,
             resetBottomSheet: resetBottomSheet,
-            socketType: socketType
+            socketType: socketType,
+            explicitDownloadToCsv: explicitDownloadToCsv
         };
 
         Object.defineProperty(business, 'isTemplateExpandAll', {
@@ -133,5 +134,25 @@
             return '';
         }
 
+        //Explicit download to csv
+        function explicitDownloadToCsv(headers, rows, elem, fileName){
+            var csvData = Papa.unparse({
+                fields: headers,
+                data: rows
+            });
+
+            if(!csvData || !elem || elem.length === 0 || !fileName){
+                return;
+            }
+
+            if (deviceDetector.browser === 'ie') {
+                window.navigator.msSaveOrOpenBlob(new Blob([csvData], {type: "text/plain;charset=utf-8;"}), fileName);
+            }else {
+                elem[0].download = fileName;
+                elem[0].href = 'data:application/csv,' + escape(csvData);
+                elem[0].click();
+            }
+            toast.simpleToast('Finished downloading - ' + fileName);
+        }
     }
 })();
