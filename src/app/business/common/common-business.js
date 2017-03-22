@@ -9,7 +9,7 @@
         .service('commonBusiness', commonBusiness);
 
     /* @ngInject */
-    function commonBusiness($rootScope, bottomSheetConfig, toast) {
+    function commonBusiness($rootScope, bottomSheetConfig, Papa, deviceDetector, toast) {
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
