@@ -9,7 +9,7 @@
         .service('commonBusiness', commonBusiness);
 
     /* @ngInject */
-    function commonBusiness($rootScope, bottomSheetConfig, Papa, deviceDetector, toast) {
+    function commonBusiness($rootScope, bottomSheetConfig, toast) {
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
@@ -68,6 +68,11 @@
             },
             set: function (value) {
                 isPrintableAll = value;
+                if(isPrintableAll){
+                    toast.simpleToast('Section will show on pdf download');
+                } else {
+                    toast.simpleToast('Section will not show on pdf download');
+                }
                 this.emitMsg('IsPrintable');
             }
         });
