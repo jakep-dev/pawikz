@@ -131,6 +131,26 @@
 
                 console.log('Template component creation initiated - ');
                 console.log(scope);
+                var hasNewsComponent = false;
+                _.each(scope.components.content,
+                    function (component) {
+                        if ((component.subtype || component.id) === 'AdvisenNewsSearch') {
+                            console.log('AdvisenNewsSearch component found.');
+                            hasNewsComponent = true;
+                        }
+                    }
+                );
+                if (hasNewsComponent) {
+                    scope.components.content.push(
+                        {
+                            ItemId: 'tmp_attachment',
+                            Mnemonic: 'tmp_attachment',
+                            id: 'AdvisenNewsAttachment',
+                            display: true,
+                            Label: 'Advisen News Attachment'
+                        }
+                    );
+                }
 
                 scope.loadMore = function() {
                     if (!scope.isLoadMoreDisabled) {
@@ -301,13 +321,30 @@
                                     var newScope = scope.$new();
                                     newScope.isprocesscomplete = true;
                                     var html = '';
+                                    var itemId = '';
+                                    var mnemonic = '';
+                                    var id = templateBusiness.getNewsId(renderContent);
+                                    if (id) {
+                                        itemId = id.itemId;
+                                        mnemonic = id.mnemonic;
+                                    }
                                     var searchName = renderContent.SearchName || '';
-                                    html += '<ms-news title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '" isprocesscomplete="isprocesscomplete"></ms-news>';
-                                    html += '</div>';
+                                    html += '<ms-news itemid="' + itemId + '" mnemonicid="' + mnemonic + '" title="' + templateBusiness.getNewsHeader(renderContent) + '" search-name="' + searchName + '" isprocesscomplete="isprocesscomplete"></ms-news>';
+                                    //html += '</div>';
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
                                     currentComponent++;
+                                    break;
+
+                                case 'AdvisenNewsAttachment':
+                                    var newScope = scope.$new();
+                                    newScope.isprocesscomplete = true;
+                                    var html = '';
+                                    html += '<ms-news-attachment></ms-news-attachment>';
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
                                     break;
                             }
                         }

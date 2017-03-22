@@ -6,75 +6,180 @@
         .controller('MsNewsAttachmentController', MsNewsAttachmentController)
         .directive('msNewsAttachment', msNewsAttachmentDirective);
 
-    /** @ngInject */
-    function MsNewsAttachmentController($scope, $sce, newsService, newsBusiness, commonBusiness, templateBusiness, $compile, $element) {
+    function MsNewsAttachmentController($scope, $sce,
+                                        commonBusiness, newsBusiness,
+                                        newsService) {
+
         var vm = this;
-
+        vm.deleteActions = [];
         vm.bookmarkedItems = [];
-        vm.showArticleContent = showArticleContent;
-        vm.attachmentNews = "attachment";
+        vm.removeSelectedNews = [];
 
-    
-        loadAttachments();
-        initializeActionButtons();
+        function buildArticle(bookmark, index) {
+            var article;
+            var actions;
+            article = {
+                rowId: index,
+                isOpen: false,
+                title: bookmark.title,
+                resourceId: bookmark.resourceId,
+                externalUrl: bookmark.externalUrl,
+                htmlArticle: '',
+                isLoaded: false,
+                bookmarkId: bookmark.bookmarkId,
+                stepId: bookmark.stepId,
+                isSelected: false,
+                isRemoved: false
+            }
+            actions = new Array();
+            actions.push({
+                id: 1,
+                callback: vm.selectBookmarkToRemove,
+                icon: 'icon-radiobox-blank',
+                isclicked: null,
+                disabled: false,
+                tooltip: 'Select',
+                type: 'button'
+            });
+            article.actions = actions;
+            article.htmlArticle = showArticleContent(article)
+            return article;
+        }
 
-        commonBusiness.onMsg('news-bookmark', $scope, function() {
-            vm.bookmarkedItems = newsBusiness.selectedNews;
-            loadAttachments();
-        });
+        function loadAttachments() {
+            var article;
+            var i;
+            var n;
+            var oldBookmark, newBookmark;
 
-        function initializeActionButtons() {
-            commonBusiness.onMsg('-Remove', $scope, function(ev) {
-                
-                forRemoveBookmark();
+            newsService.getAttachedArticles(commonBusiness.projectId, commonBusiness.stepId).then(function (response) {
+                if (response.bookmarks) {
+                    n = vm.bookmarkedItems.length;
+                    for (i = n - 1; i >= 0 ; i--) {
+                        newBookmark = _.find(response.bookmarks,
+                            function (bookmark) {
+                                if ((bookmark.resourceId === vm.bookmarkedItems[i].resourceId) && (bookmark.bookmarkId === vm.bookmarkedItems[i].bookmarkId)) {
+                                    return true;
+                                }
+                            }
+                        );
+                        if (!newBookmark) {
+                            vm.bookmarkedItems.splice(i, 1);
+                        }
+                    }
+                    n = response.bookmarks.length;
+                    for (i = 0; i < n; i++) {
+                        oldBookmark = _.find(vm.bookmarkedItems,
+                            function (bookmark) {
+                                if ((bookmark.resourceId === response.bookmarks[i].resourceId) && (bookmark.bookmarkId === response.bookmarks[i].bookmarkId)) {
+                                    return true;
+                                }
+                            }
+                        );
+                        if (!oldBookmark) {
+                            article = buildArticle(response.bookmarks[i], i);
+                            vm.bookmarkedItems.push(article);
+                        }
+                    }
+                }
             });
         }
 
-        function forRemoveBookmark(){
-            newsBusiness.removeBookmark(newsBusiness.removeselectedNews);
-        }
-
-
         function showArticleContent(article) {
-            newsService.showArticleContent(article.externalUrl).then(function(response) {
+            newsService.showArticleContent(article.externalUrl).then(function (response) {
                 article.htmlArticle = $sce.trustAsHtml(response.htmlContent);
                 article.isLoaded = true;
             });
         }
 
-        function loadAttachments() {
-            newsService.getAttachedArticles(commonBusiness.projectId, commonBusiness.stepId).then(function(response) {
+        function selectBookmarkToRemove(row) {
 
-                vm.bookmarkedItems = [];
-                if (response.bookmarks) {
-                    _.each(response.bookmarks, function(details, index) {
-                        var article = {
-                            rowId: index,
-                            isOpen: false,
-                            title: details.title,
-                            resourceId: details.resourceId,
-                            externalUrl: details.externalUrl,
-                            htmlArticle: '', //showArticleContent(details.externalUrl),
-                            isLoaded: false,
-                            bookmarkId: details.bookmarkId,
-                            stepId: details.stepId,
-                            isSelected : false
-                        }
-                        article.htmlArticle = showArticleContent(article)
-                        vm.bookmarkedItems.push(article);
-                    });
+            var i;
+            var n;
+            var isSelected = false;
+            var item;
+            var value;
+            var action;
 
-                    newsBusiness.selectedNews = vm.bookmarkedItems;
+            vm.removeSelectedNews.length = 0;
+            n = vm.bookmarkedItems.length;
+            for (i = 0; i < n; i++) {
+                item = vm.bookmarkedItems[i];
+                if (row === item.rowId) {
+                    value = item.isSelected;
+                    action = item.actions[0];
+                    if (value) {
+                        action.icon = 'icon-radiobox-blank';
+                        action.tooltip = 'Select';
+                    } else {
+                        action.icon = 'icon-radiobox-marked';
+                        action.tooltip = 'Un-Select';
+                    }
+                    item.isSelected = !value;
                 }
+                if (item.isSelected) {
+                    isSelected = true;
+                    vm.removeSelectedNews.push(item);
+                }
+            }
+            if (isSelected) {
+                vm.setDeleteButtonDisableStatus(false);
+            } else {
+                vm.setDeleteButtonDisableStatus(true);
+            }
+        }
+        vm.selectBookmarkToRemove = selectBookmarkToRemove;
+
+        function setDeleteButtonDisableStatus(value) {
+            vm.deleteButton.disabled = value;
+        }
+        vm.setDeleteButtonDisableStatus = setDeleteButtonDisableStatus;
+
+        function deleteAction() {
+            vm.deleteButton = {
+                id: 1,
+                callback: vm.deleteSelectedNews,
+                icon: 'icon-delete',
+                isclicked: null,
+                disabled: true,
+                tooltip: 'Remove Bookmark',
+                type: 'button'
+            };
+            vm.deleteActions.push(vm.deleteButton);
+        }
+
+        function deleteSelectedNews() {
+            newsBusiness.removeBookmark(vm.removeSelectedNews, function () {
+                var i;
+                var n;
+                var index;
+                n = vm.removeSelectedNews.length;
+                for (i = 0; i < n; i++) {
+                    index = vm.bookmarkedItems.indexOf(vm.removeSelectedNews[i]);
+                    if (index > -1) {
+                        vm.bookmarkedItems.splice(index, 1);
+                    }
+                }
+                vm.removeSelectedNews.length = 0;
+                vm.deleteButton.disabled = true;
             });
         }
+        vm.deleteSelectedNews = deleteSelectedNews;
+
+        commonBusiness.onMsg('reload-attachments', $scope, function () {
+            loadAttachments();
+        });
+
+        deleteAction();
+        loadAttachments();
     }
 
     /** @ngInject */
-    function msNewsAttachmentDirective($compile) {
+    function msNewsAttachmentDirective() {
         return {
             restrict: 'E',
-            scope: {},
+            scope: {
+            },
             controller: 'MsNewsAttachmentController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-news/ms-news-attachment/ms-news-attachment.html',

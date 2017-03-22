@@ -1,11 +1,14 @@
-<div ng-repeat="items in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0" id="msNewsAttachment">
-    <ms-accordion remove-bookmark-event="{{vm.attachmentNews}}" is-expandable="true" id="ms-accordion" ng-hide="{{(vm.removeAttachment) ? 'true' : 'false'}}" row="items.rowId" collapsed="true" index="$index" title="{{items.title}}">
-        <div ng-show="items.isLoaded" ng-bind-html="items.htmlArticle"></div>
+<div id="attachments">
+    <ms-accordion initial-collapsed="false" is-expandable="true" title="News Attachments" actions="vm.deleteActions">
+        <div id="ms-news-attachment-content" ng-repeat="item in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0" id="msNewsAttachment">
+            <ms-accordion initial-collapsed="true" is-expandable="true" id="ms-accordion" ng-hide="item.isRemoved" row="item.rowId" index="$index" title="{{item.title}}" actions="item.actions">
+                <div ng-show="item.isLoaded" ng-bind-html="item.htmlArticle"></div>
+            </ms-accordion>
+        </div>
+        <div ng-if="vm.bookmarkedItems.length == 0" id="ms-news-attachment-no-content" layout="row" layout-align="center center" layout-padding>
+            <div flex>
+                <ms-message message="No News Articles Attached"></ms-message>
+            </div>
+        </div>
     </ms-accordion>
-</div>
-
-<div ng-if="vm.bookmarkedItems.length == 0">
-    <div flex>
-        <ms-message message="No News Articles Attached"></ms-message>
-    </div>
 </div>

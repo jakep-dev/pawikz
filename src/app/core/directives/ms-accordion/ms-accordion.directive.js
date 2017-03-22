@@ -13,128 +13,85 @@
     function MsAccordionController($scope, $attrs, commonBusiness, newsBusiness) {
         var vm = this;
 
-        vm.iscollapsed = $scope.initialCollapsed;
+        vm.isCollapsed = $scope.initialCollapsed;
         vm.isExpandable = $scope.isExpandable;
-        vm.actions = $scope.actions;
         vm.titleClass = $scope.titlebg || 'md-amber-A200-bg';
         vm.isProcessComplete = true;
-        vm.showRadioButtonForBookmark = false;
-        vm.isselectBookmark= false;
-        vm.removeAttachment = [];
-
+        vm.row = $scope.row;
+        vm.onExpand = $scope.onExpand;
+        vm.registerExpandCompleteCallback = $scope.registerExpandCompleteCallback;
+        vm.registerToggleCollapseCallback = $scope.registerToggleCollapseCallback;
+        vm.registerCollapseAccordionCallback = $scope.registerCollapseAccordionCallback;
+        vm.registerExpandAccordionCallback = $scope.registerExpandAccordionCallback;
         vm.applyClickEvent = applyClickEvent;
-        vm.loadSearchResult = loadSearchResult;
-        vm.selectBookmarkToRemove = selectBookmarkToRemove;
-        vm.removeSelectedBookmarkChk = removeSelectedBookmarkChk;
+        vm.onExpandCollapse = onExpandCollapse;
 
         init();
 
-        if($scope.collapseSearchResult != null){
-            
-            commonBusiness.onMsg($scope.collapseSearchResult, $scope, function(ev) {
-                toggleCollapse();
-            });
+        function onExpandComplete() {
+            vm.isProcessComplete = true;
         }
-
-        commonBusiness.onMsg('remove-bookmark', $scope, function() {
-            removeSelectedBookmarkChk();
-        });
-
-        commonBusiness.onMsg('load-search-result', $scope, function(ev) {
-           vm.isProcessComplete = true;
-        });
+        vm.onExpandComplete = onExpandComplete;
+        if(vm.registerExpandCompleteCallback) {
+            vm.registerExpandCompleteCallback(vm.onExpandComplete);
+        }
 
         //Toggle the collapse
-        function loadSearchResult() {
-
-            vm.iscollapsed  = !vm.iscollapsed ;
-
-            if(!vm.iscollapsed  && $scope.expandSearchResult != null){
-                
-                vm.isProcessComplete = false;
-                commonBusiness.emitMsg('search-result-expand');
+        function onExpandCollapse() {
+            vm.isCollapsed = !vm.isCollapsed;
+            if (!vm.isCollapsed && vm.isProcessComplete) {
+                if (vm.registerExpandCompleteCallback) {
+                    vm.isProcessComplete = false;
+                }
+                if (vm.onExpand) {
+                    vm.onExpand();
+                }
             }
-
-            doExpandOrCollapse();
         }
 
-        function toggleCollapse(){
-            vm.iscollapsed  = !vm.iscollapsed;
+        function toggleCollapse() {
+            vm.isCollapsed = !vm.isCollapsed;
+        }
+        if (vm.registerToggleCollapseCallback) {
+            vm.registerToggleCollapseCallback(toggleCollapse);
         }
 
-        function doExpandOrCollapse(){
-            $scope.expandSearchResult = null;
+        function collapseAccordion() {
+            if (!vm.isCollapsed) {
+                vm.isCollapsed = true;
+            }
+        }
+        if (vm.registerCollapseAccordionCallback) {
+            vm.registerCollapseAccordionCallback(collapseAccordion);
         }
 
+        function expandAccordion() {
+            if (vm.isCollapsed) {
+                vm.isCollapsed = false;
+            }
+        }
+        if (vm.registerExpandAccordionCallback) {
+            vm.registerExpandAccordionCallback(expandAccordion);
+        }
 
         function init() {
             if (!vm.isExpandable) {
-                vm.iscollapsed  = false;
-            }
-
-            if ($scope.collapseSearchResult != null) {   
-                vm.isProcessComplete = true;
-                toggleCollapse();
-            }
-
-            if ($scope.removeBookmarkEvent != null) {
-                vm.showRadioButtonForBookmark = !vm.showRadioButtonForBookmark;
-            } 
-        }
-
-        function removeSelectedBookmarkChk(){
-            if(vm.isselectBookmark){
-                _.each(newsBusiness.removeselectedNews, function(item) {
-
-                    if ($scope.index === item.rowId && item.isSelected === vm.isselectBookmark) {
-                        item.isSelected = false;
-                        vm.articleIndex = $scope.index;
-                        vm.removeAttachment[vm.articleIndex] = true;
-                        disabledDeleteIcon();
-                        commonBusiness.emitMsg('news-bookmark');
-                    }
-                });
+                vm.isCollapsed = false;
             }
         }
-
-        function selectBookmarkToRemove(){
-            
-            vm.isselectBookmark = !vm.isselectBookmark;
-
-            disabledDeleteIcon();
-
-                _.each(newsBusiness.selectedNews, function(item) {
-                    
-                    if ($scope.index === item.rowId) {
-                        item.isSelected = vm.isselectBookmark;
-                    }
-
-                    if(item.isSelected){
-                       var actions = $scope.$parent.$parent.$parent.$parent.$parent.actions;
-                        angular.forEach(actions, function(action){
-                            action.disabled = false;
-                        });
-                    }
-                });
-
-                vm.selectBookmark = newsBusiness.selectedNews;
-                newsBusiness.removeselectedNews.push.apply(newsBusiness.removeselectedNews, newsBusiness.selectedNews);
-        }
-
-        function disabledDeleteIcon(){
-
-            var actions = $scope.$parent.$parent.$parent.$parent.$parent.actions;
-            angular.forEach(actions, function(action){
-                action.disabled = true;
-            });
-        }
-
-
 
         function applyClickEvent(action, $mdOpenMenu, ev) {
             if (action) {
                 if (action.type === 'button' && action.callback) {
-                    commonBusiness.emitMsg(action.callback);
+                    if (typeof(action.callback) === 'function') {
+                        if ($.isNumeric(vm.row)) {
+                            action.callback(vm.row);
+                        } else {
+                            action.callback();
+                        }
+                    } else {
+                        commonBusiness.emitMsg(action.callback);
+                    }
                 } else if (action.type === 'menu') {
                     $mdOpenMenu(ev);
                 }
@@ -152,15 +109,17 @@
             restrict: 'E',
             scope: {
                 title: '@',
-                initialCollapsed: '=?collapsed',
+                initialCollapsed: '@',
                 titlebg: '@',
                 isExpandable: '=?',
                 actions: '=',
                 index: '=',
                 row: '=',
-                removeBookmarkEvent: '@',
-                collapseSearchResult: '@',
-                expandSearchResult: '@'
+                onExpand: '=',
+                registerExpandCompleteCallback: '=',
+                registerToggleCollapseCallback: '=',
+                registerCollapseAccordionCallback: '=',
+                registerExpandAccordionCallback: '='
             },
             controller: 'MsAccordionController',
             controllerAs: 'vm',
