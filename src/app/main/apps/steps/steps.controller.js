@@ -117,12 +117,16 @@
                                    projectId: $stateParams.projectId
                                });
                            });
+
+                        //    defineMenuActions();
+
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
                     defineMenuActions();
+                    defineBottomSheet();
                 }
             });
         }
