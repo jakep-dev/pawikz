@@ -16,14 +16,16 @@
            <div  class="ms-menu-label" hide-gt-xs style="width: 9em; padding-left: 5px">{{vm.menuName}}</div>
            <div hide-xs  style="padding-left: 5px">{{vm.menuName}}</div>
        </div>
-        <div flex="30" ng-if="vm.workupName !== null" hide-xs layout="column" layout-align="center center" style="font-size: 0.6em; padding-left: 5px;">
-            <div class="ms-text-underline ms-menu-label">
-                Workup Name: {{ " " + vm.workupName}}
+        <div flex="30" ng-if="vm.workupName !== null" hide-xs layout="column" layout-align="center start" style="font-size: 0.6em; padding-left: 5px;">
+            <div class="ms-menu-label">
+                <span><strong>Workup Name -</strong></span> {{ " " + vm.workupName}}
                 <md-tooltip md-direction="bottom"
                     style="max-width: 40em; height: auto; word-break: break-all; white-space: normal;">
                     {{vm.workupName}}</md-tooltip>
             </div>
-            <div class="ms-text-underline">Company Id: {{" " + vm.companyId }}</div>
+            <div style="float: left">
+                <span><strong>Company ID -</strong></span> {{" " + vm.companyId }}
+            </div>
         </div>
         <div>
             <md-menu ng-if="vm.menuMode === 'Dashboard'" md-position-mode="target-right target">
