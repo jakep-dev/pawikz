@@ -40,7 +40,7 @@
         function defineMenuActions(){
             commonBusiness.emitWithArgument("inject-main-menu", {
                 menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
-                menuIcon: 'icon-view-module',
+                menuIcon: 'icon-menu',
                 menuMode: 'Steps',
                 companyId: commonBusiness.companyId,
                 companyName: commonBusiness.companyName,
