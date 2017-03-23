@@ -1841,7 +1841,7 @@
         }
         function componentExcelDownload(scope) {
             var linkElement = $('#link-component-download');
-            var dataInfo = buildExcelData(scope.excelComponents);
+            var dataInfo = buildExcelData(scope.excelComponents, scope.excelFilename);
             var data = unParseJsonToCsv(dataInfo);
             var BOM = String.fromCharCode(0xFEFF);  //fix for euro symbol
             var blob = new Blob([BOM + data], {
@@ -1863,7 +1863,7 @@
         }
 
         //build excel data based on nodes under component tag
-        function buildExcelData(tearcontent) {
+        function buildExcelData(tearcontent, header) {
             var excelRow = [];
             var tearsheetItem = [];
 
@@ -1881,6 +1881,7 @@
                 }
             });
 
+            excelRow.push([header]);
             _.each(tearsheetItem, function(tearsheet) {
                 var row = getTearSheetData(tearsheet);
 
