@@ -19,7 +19,8 @@
 
         $scope.textChange = function()
         {
-			$scope.save({row: $scope.row});        
+			$scope.save({row: $scope.row});
+            $scope.$parent.$parent.cellUpdateDate();   
 		};
     }
 

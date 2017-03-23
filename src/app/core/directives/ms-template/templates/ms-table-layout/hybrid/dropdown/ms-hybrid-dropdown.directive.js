@@ -16,6 +16,7 @@
         $scope.selectionChange = function()
         {
 			$scope.save({row: $scope.row});
+            $scope.$parent.$parent.cellUpdateDropdown();
         };
     }
 

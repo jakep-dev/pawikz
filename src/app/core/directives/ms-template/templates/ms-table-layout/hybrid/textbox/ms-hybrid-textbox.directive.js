@@ -19,6 +19,7 @@
         {
 			$scope.row[$scope.columnname] = templateBusinessFormat.formatData($scope.row[$scope.columnname], $scope.formatObj);
             $scope.save({row: $scope.row});
+            $scope.$parent.$parent.cellUpdate($scope.element);
         };
 
         $scope.removeFixes = function()
@@ -41,8 +42,9 @@
             },
             controller: 'MsHybridTextController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/hybrid/textbox/ms-hybrid-textbox.html',
-            link: function(scope)
+            link: function(scope, el)
             {
+                scope.element = el;
             }
         };
     }
