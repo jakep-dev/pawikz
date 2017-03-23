@@ -192,8 +192,15 @@ and (min-device-width: 1200px) {
 }
 
 md-input-container .md-input {
+  border-color: #e8d320;
   color: rgba(0,0,0,0.87);
-  border-color: #b5b5b5;
+  border-bottom: 2px solid #e8d320;
+}
+
+md-input-container.md-advisen-theme .md-input {
+  color: rgba(0,0,0,0.87);
+  border-color: #e8d320;
+  border-bottom: 2px solid #e8d320;
 }
 
 md-menu-content{
