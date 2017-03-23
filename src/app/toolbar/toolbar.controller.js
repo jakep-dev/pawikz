@@ -42,6 +42,7 @@
             vm.companyId = data.companyId || null;
             vm.companyName = data.companyName || null;
             vm.workupName = data.workupName || null;
+            vm.isProjectOverviewAllSelected = false;
         });
 
 
@@ -116,7 +117,6 @@
 
         vm.isStepTabletMode = false;
         vm.isProjectOverviewExpanded = false;
-        vm.isProjectOverviewAllSelected = false;
         function saveAllProjectOverview(){
             commonBusiness.emitMsg('project-overview-save-all');
         }

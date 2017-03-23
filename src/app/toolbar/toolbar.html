@@ -88,10 +88,15 @@
 
                     <md-menu-item>
                         <md-button  aria-label="select/Unselect all" ng-click="vm.flipSelectionOverview()">
-                                <span layout="row" layout-align="start center">
-                                    <md-checkbox aria-label="select" ng-checked="vm.isProjectOverviewAllSelected" class="no-padding-margin" style="margin-left:5px;">
-                                        <span style="font-size: 16px;margin-left:7px;">{{(vm.isProjectOverviewAllSelected) ? 'Unselect All' : 'Select All'}}</span>
-                                    </md-checkbox>
+                                <span layout="row" layout-align="start center" >
+                                    <div ng-if="!vm.isProjectOverviewAllSelected">
+                                        <md-icon md-font-icon="icon-checkbox-marked"></md-icon>
+                                        <span>Select All</span>
+                                    </div>
+                                    <div ng-if="vm.isProjectOverviewAllSelected">
+                                        <md-icon md-font-icon="icon-checkbox-blank-outline"></md-icon>
+                                        <span>UnSelect All</span>
+                                    </div>
                                 </span>
                         </md-button>
                     </md-menu-item>
@@ -158,9 +163,14 @@
                             <md-menu-item>
                                   <md-button aria-label="select/Unselect all" ng-click="vm.printableAll()">
                                     <span layout="row" layout-align="start center">
-                                            <md-checkbox aria-label="On/Off Pdf" ng-checked="vm.isPrintableAll" class="no-padding-margin" style="margin-left:5px;">
-                                                <span style="font-size: 16px;margin-left:7px;">{{(vm.isPrintableAll) ? 'Unselect All' : 'Select All'}}</span>
-                                            </md-checkbox> 
+                                        <div ng-if="!vm.isPrintableAll">
+                                            <md-icon md-font-icon="icon-checkbox-marked"></md-icon>
+                                            <span>Select All</span>
+                                        </div>
+                                        <div ng-if="vm.isPrintableAll">
+                                            <md-icon md-font-icon="icon-checkbox-blank-outline"></md-icon>
+                                            <span>UnSelect All</span>
+                                        </div>
                                     </span>
                                 </md-button>
                             </md-menu-item>

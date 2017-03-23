@@ -229,7 +229,7 @@
         function flipSelectionView()
         {
             vm.isAllSelected = !vm.isAllSelected;
-			commonBusiness.isPrintableAll = vm.isAllSelected;
+			// commonBusiness.isPrintableAll = vm.isAllSelected;
             selectionProcess(vm.isAllSelected);
             $mdMenu.hide()
         }
