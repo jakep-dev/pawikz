@@ -8,7 +8,7 @@
         .directive('msHybridText', msHybridTextDirective);
 
     /** @ngInject */
-    function MsHybridTextController($scope, templateBusinessFormat, templateBusiness)
+    function MsHybridTextController($scope, commonBusiness, templateBusinessFormat, templateBusiness)
     {
 		
 		$scope.disabled = ($scope.isdisabled === 'true');
@@ -19,7 +19,7 @@
         {
 			$scope.row[$scope.columnname] = templateBusinessFormat.formatData($scope.row[$scope.columnname], $scope.formatObj);
             $scope.save({row: $scope.row});
-            $scope.$parent.$parent.cellUpdate($scope.element);
+            commonBusiness.emitWithArgument($scope.tableItemId + '-CellUpdate', $scope.element);
         };
 
         $scope.removeFixes = function()
@@ -37,6 +37,7 @@
                 row: '=',
                 isdisabled: '@',
 				save: '&',
+                tableItemId: '@',
                 columnname: '@',
                 formats: '@'
             },

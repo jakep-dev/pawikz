@@ -127,11 +127,11 @@
 							case 'GenericTextItem':
 								var formats = templateBusinessFormat.getHybridTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
 								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
-								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
+								html += '<ms-hybrid-text row="row" save="saveRow(row)" table-item-id="'+$scope.itemid+'" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
 								break;
 							case 'DateItem':
 								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "M/D/YYYY")}}</span>'; // remove formats for easy sorting & searching
-								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-calendar>';
+								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" cell-update="cellUpdateDate()" columnname="'+itemId+'"></ms-hybrid-calendar>';
 								break;
 							case 'SingleDropDownItem':
 								var defaultValue = '';
@@ -154,6 +154,7 @@
 								html += '<ms-hybrid-dropdown ' +
 									'row="row" ' +
 									'save="saveRow(row)" ' +
+									'cell-update="cellUpdateDropdown()" ' +
 									'itemid="'+ itemId +'" ' +
 									'mnemonicid="'+ mnemonicId +'" ' +
 									'columnname="'+itemId+'" ' +
@@ -451,6 +452,10 @@
                 $timeout(function(){
                     addRows($scope, data);
                 }, 0);
+            });
+
+			commonBusiness.onMsg($scope.itemid + '-CellUpdate', $scope, function(ev, element) {
+				$scope.cellUpdate(element);
             });
         }
 
@@ -983,6 +988,7 @@
 					};					
 
 					scope.cellUpdate = function(element) {
+						//console.log(element);
 						if(scope.dtInstance.DataTable) {
 							scope.dtInstance.DataTable.cell(element.parent()[0]).invalidate().draw();
 						}
