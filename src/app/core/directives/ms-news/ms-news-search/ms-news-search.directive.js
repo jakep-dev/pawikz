@@ -76,9 +76,9 @@
                 if (vm.resultDetails[i].isSelected) {
                     vm.attachments.push(vm.resultDetails[i]);
                     selected = true;
+                    newsBusiness.selectedArticles.push.apply(newsBusiness.selectedArticles, vm.attachments);
                     break;
                 }
-                newsBusiness.selectedArticles.push.apply(newsBusiness.selectedArticles, vm.attachments);
             }
             if (selected) {
                 vm.setBookmarkButtonDisableStatus(false);
