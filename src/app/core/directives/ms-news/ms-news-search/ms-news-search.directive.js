@@ -24,6 +24,7 @@
         vm.loadingValue = null;
         vm.reloadValue = false;
         vm.newsSearchTableId = '_' + $scope.newsSearchTableId;
+        vm.attachments = [];
 
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
@@ -65,18 +66,17 @@
         }
 
         function newsSelection() {
-            var i;
-            var n;
             var selected = false;
 
             vm.setBookmarkButtonDisableStatus(true);
-            n = vm.resultDetails.length;
-            for (i = 0; i < n; i++) {
-                if (vm.resultDetails[i].isSelected) {
+
+            _.each(vm.resultDetails, function(item) {
+                if (item.isSelected) {
+                    vm.attachments.push(item);
                     selected = true;
-                    break;
                 }
-            }
+                newsBusiness.selectedArticles.push.apply(newsBusiness.selectedArticles, vm.attachments);
+            }); 
             if (selected) {
                 vm.setBookmarkButtonDisableStatus(false);
             }

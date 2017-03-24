@@ -1,5 +1,5 @@
 <div id="attachments">
-    <ms-accordion initial-collapsed="false" is-expandable="true" title="News Attachments" actions="vm.deleteActions">
+    <ms-accordion is-expandable="true" title="News Attachments" actions="vm.deleteActions">
         <div id="ms-news-attachment-content" ng-repeat="item in vm.bookmarkedItems" ng-if="vm.bookmarkedItems.length > 0" id="msNewsAttachment">
             <ms-accordion initial-collapsed="true" is-expandable="true" id="ms-accordion" ng-hide="item.isRemoved" row="item.rowId" index="$index" title="{{item.title}}" actions="item.actions">
                 <div ng-show="item.isLoaded" ng-bind-html="item.htmlArticle"></div>
