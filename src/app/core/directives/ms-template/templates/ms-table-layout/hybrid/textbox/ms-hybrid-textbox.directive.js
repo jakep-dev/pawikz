@@ -8,7 +8,7 @@
         .directive('msHybridText', msHybridTextDirective);
 
     /** @ngInject */
-    function MsHybridTextController($scope, templateBusinessFormat, templateBusiness)
+    function MsHybridTextController($scope, commonBusiness, templateBusinessFormat, templateBusiness)
     {
 		
 		$scope.disabled = ($scope.isdisabled === 'true');
@@ -19,6 +19,7 @@
         {
 			$scope.row[$scope.columnname] = templateBusinessFormat.formatData($scope.row[$scope.columnname], $scope.formatObj);
             $scope.save({row: $scope.row});
+            commonBusiness.emitWithArgument($scope.tableItemId + '-CellUpdate', $scope.element);
         };
 
         $scope.removeFixes = function()
@@ -36,13 +37,15 @@
                 row: '=',
                 isdisabled: '@',
 				save: '&',
+                tableItemId: '@',
                 columnname: '@',
                 formats: '@'
             },
             controller: 'MsHybridTextController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/hybrid/textbox/ms-hybrid-textbox.html',
-            link: function(scope)
+            link: function(scope, el)
             {
+                scope.element = el;
             }
         };
     }
