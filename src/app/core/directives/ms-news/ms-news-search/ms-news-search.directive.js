@@ -24,6 +24,7 @@
         vm.loadingValue = null;
         vm.reloadValue = false;
         vm.newsSearchTableId = '_' + $scope.newsSearchTableId;
+        vm.attachments = [];
 
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
@@ -73,9 +74,11 @@
             n = vm.resultDetails.length;
             for (i = 0; i < n; i++) {
                 if (vm.resultDetails[i].isSelected) {
+                    vm.attachments.push(vm.resultDetails[i]);
                     selected = true;
                     break;
                 }
+                newsBusiness.selectedArticles.push.apply(newsBusiness.selectedArticles, vm.attachments);
             }
             if (selected) {
                 vm.setBookmarkButtonDisableStatus(false);

@@ -88,7 +88,7 @@
         vm.onBookmarkNewsArticleComplete = onBookmarkNewsArticleComplete;
 
         function bookmarkNews() {
-            newsBusiness.bookmarkNewsArticle(vm.resultDetails, vm.onBookmarkNewsArticleStart, vm.onBookmarkNewsArticleComplete);
+            newsBusiness.bookmarkNewsArticle(newsBusiness.selectedArticles, vm.onBookmarkNewsArticleStart, vm.onBookmarkNewsArticleComplete);
         }
         vm.bookmarkNews = bookmarkNews;
 

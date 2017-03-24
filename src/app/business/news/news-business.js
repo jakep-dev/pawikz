@@ -12,6 +12,7 @@
     function newsBusiness(newsService, dialog, commonBusiness, clientConfig) {
 
         var business = {
+            selectedArticles : [],
             showArticleContent: showArticleContent,
             bookmarkNewsArticle: bookmarkNewsArticle,
             removeBookmark: removeBookmark

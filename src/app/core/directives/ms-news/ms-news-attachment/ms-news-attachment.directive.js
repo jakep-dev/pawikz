@@ -14,7 +14,6 @@
         vm.deleteActions = [];
         vm.bookmarkedItems = [];
         vm.removeSelectedNews = [];
-        vm.collapseEvent = "collapse";
 
         function buildArticle(bookmark, index) {
             var article;

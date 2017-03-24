@@ -78,10 +78,6 @@
             if (!vm.isExpandable) {
                 vm.isCollapsed = false;
             }
-
-            if($scope.collapseNewsAttachment != null){
-                vm.isCollapsed = false;
-            }
         }
 
         function applyClickEvent(action, $mdOpenMenu, ev) {
@@ -123,8 +119,7 @@
                 registerExpandCompleteCallback: '=',
                 registerToggleCollapseCallback: '=',
                 registerCollapseAccordionCallback: '=',
-                registerExpandAccordionCallback: '=',
-                collapseNewsAttachment: '@'
+                registerExpandAccordionCallback: '='
             },
             controller: 'MsAccordionController',
             controllerAs: 'vm',
