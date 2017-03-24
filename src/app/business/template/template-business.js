@@ -527,43 +527,43 @@
                 itemId: null,
                 mnemonicId: null
             };
+            if (subtype) {
+                switch (subtype.toLowerCase()) {
+                    case 'tablelayout1':
+                        //ReadOnly Table
+                        tableLayout = getHeaderAndColumnsForTableLayout1(scope.tearcontent);
+                        return buildReadOnlyTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                        break;
 
-            switch (subtype.toLowerCase()) {
-                case 'tablelayout1':
-                    //ReadOnly Table
-                    tableLayout = getHeaderAndColumnsForTableLayout1(scope.tearcontent);
-                    return buildReadOnlyTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
-                    break;
+                    case 'tablelayout2':
+                        //Filter Table
+                        tableLayout = getHeaderAndColumnsForTableLayout2(scope.tearcontent);
+                        return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                        break;
 
-                case 'tablelayout2':
-                    //Filter Table
-                    tableLayout = getHeaderAndColumnsForTableLayout2(scope.tearcontent);
-                    return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
-                    break;
+                    case 'tablelayout3':
+                        //ReadOnly-Pivot Table
+                        tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
+                        return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
+                        break;
 
-                case 'tablelayout3':
-                    //ReadOnly-Pivot Table
-                    tableLayout = getHeaderAndColumnsForTableLayout3(scope.tearcontent);
-                    return buildReadOnlyPivotTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
-                    break;
+                    case 'tablelayout4':
+                        tableLayout = getHeaderAndColumnsForTableLayout4(scope.tearcontent);
+                        return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
+                        //Hybrid Table
+                        break;
 
-                case 'tablelayout4':
-                    tableLayout = getHeaderAndColumnsForTableLayout4(scope.tearcontent);
-                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row, tableLayout.footer);
-                    //Hybrid Table
-                    break;
+                    case 'tablelayout5':
+                        tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
+                        return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                        break;
 
-                case 'tablelayout5':
-                    tableLayout = getHeaderAndColumnsForTableLayout5(scope.tearcontent);
-                    return buildFilterTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
-                    break;
-
-                case 'tablelayout6':
-                    tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
-                    return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
-                    break;
+                    case 'tablelayout6':
+                        tableLayout = getHeaderAndColumnsForTableLayout6(scope.tearcontent);
+                        return buildHybridTableLayout(scope, tableLayout.itemId, tableLayout.mnemonicId, tableLayout.header, tableLayout.row);
+                        break;
+                }
             }
-
             return null;
         }
 

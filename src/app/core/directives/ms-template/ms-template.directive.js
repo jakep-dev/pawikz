@@ -345,6 +345,7 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
                                     break;
                             }
                         }
@@ -363,6 +364,23 @@
                         });
                         scope.isCompLoaded = true;
                     }, 0);
+
+                    var promise = $interval(
+                        function () {
+                            var element = el.find('#template-content');
+                            var parentElement = $(element).parents('[ms-scroll]');
+                            if ((element.length > 0) && element[0].clientHeight && (parentElement.length > 0) && parentElement[0].clientHeight) {
+                                if (parentElement[0].clientHeight > element[0].clientHeight) {
+                                    scope.loadMore();
+                                } else {
+                                    $interval.cancel(promise);
+                                }
+                            } else {
+                                $interval.cancel(promise);
+                            }
+                        },
+                        1000
+                    );
                 }
 
                 return count;
@@ -379,8 +397,8 @@
                     //counting standard components with headers and child components
                     //for example stock charts, all table types, large text boxes
                     totalComp++;
-                } else if (content.ItemId && content.Mnemonic && (content.subtype || content.id)) {
-                    //counting WU_RATIOS_CHARTS, LinkItem, AdvisenNewsSearch
+                } else if (content.subtype || content.id) {
+                    //counting WU_RATIOS_CHARTS, LinkItem, AdvisenNewsSearch, Advisen News Attachment
                     totalComp++;
                 }
             });
