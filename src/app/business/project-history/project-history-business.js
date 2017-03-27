@@ -44,8 +44,7 @@
                 .withOption('paging', true)
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
-                .withOption('stateSave', true)
-                .withOption('order',[4, 'desc'])
+                .withOption('order',[7, 'desc'])
                 .withPaginationType('full')
                 .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }

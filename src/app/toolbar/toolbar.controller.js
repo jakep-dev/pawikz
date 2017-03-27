@@ -41,6 +41,8 @@
             vm.companyName = data.companyName || null;
             vm.workupName = data.workupName || null;
             vm.isProjectOverviewAllSelected = false;
+            vm.isStepExpanded = false;
+            vm.isProjectOverviewExpanded = false;
         });
 
 
