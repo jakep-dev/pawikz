@@ -29,7 +29,7 @@ exports.clients['DEV'] = {
     port: '443',
     loglevel: 1,
     transports: ['polling'],
-    useCertificate: true
+    useCertificate: false
 };
 exports.clients['INT'] = {
     protocol: 'https',
