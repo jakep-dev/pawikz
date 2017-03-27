@@ -40,6 +40,9 @@
             vm.companyId = data.companyId || null;
             vm.companyName = data.companyName || null;
             vm.workupName = data.workupName || null;
+
+            vm.isStepExpanded = false;
+            vm.isProjectOverviewExpanded = false;
         });
 
 
