@@ -44,6 +44,11 @@ console.log('PORT=' + port);
 console.log('NODE_ENV=' + environment);
 console.log('STARTUP_ENV=' + startupEnvironment);
 
+app.get('/', function (req, res, next) {
+    res.redirect('/pages/auth/login');
+});
+
+
 app.get('/ping', function(req, res, next) {
   console.log(req.body);
   res.send('pong');
