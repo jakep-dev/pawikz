@@ -28,6 +28,7 @@
         vm.isInitiallyLoaded = false;
         vm.dtOptions = null;
         vm.dtColumnDefs = null;
+        vm.dtInstanceCallback = {};
 
         vm.toggleSidenav = toggleSidenav;
         vm.removeFilter = removeFilter;
@@ -53,7 +54,6 @@
         //Get server call project history details
         function getProjectHistory()
         {
-            console.log('Overview-', overviewBusiness.templateOverview)
             projectHistoryBusiness.get(projectId, commonBusiness.userId, 0, 20000, vm.filterStepId,
                 vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
                 (overviewBusiness.templateOverview === null)).then(function(response){
@@ -199,6 +199,8 @@
             if(vm.searches.length === 0 || actionType === 'All'){
                 $rootScope.$emit('remove-project-filter', { type: ['All'] });
                 clearProjectHistory(null, null);
+                getProjectHistory();
+
             }
             else {
                 combinedStr = '';
