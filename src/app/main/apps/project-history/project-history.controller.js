@@ -125,22 +125,22 @@
                 vm.filterAction = null;
                 vm.searches = [];
                 if(data.stepId){
-                    vm.searches.push("StepName: " + data.stepId);
+                    vm.searches.push("Step Name: " + data.stepId);
                     vm.filterStepId = data.stepId;
                 }
 
                 if(data.fieldName){
-                    vm.searches.push("FieldName: " + data.fieldName);
+                    vm.searches.push("Field Name: " + data.fieldName);
                     vm.filterFieldName = data.fieldName;
                 }
 
                 if(data.modifiedBy){
-                    vm.searches.push("ModifiedBy: " + data.modifiedBy);
+                    vm.searches.push("Modified By: " + data.modifiedBy);
                     vm.filterModifiedBy = data.modifiedBy;
                 }
 
                 if(data.modifiedDate){
-                    vm.searches.push("ModifiedDate: " + data.modifiedDate);
+                    vm.searches.push("Modified Date: " + data.modifiedDate);
                     vm.filterModifiedDate = data.modifiedDate;
                 }
 
@@ -205,22 +205,22 @@
                     combinedStr += search;
                 });
 
-                if(!combinedStr.includes('StepName')){
+                if(!combinedStr.includes('Step Name')){
                     types.push('StepName');
                     vm.filterStepId = null;
                 }
 
-                if(!combinedStr.includes('FieldName')){
+                if(!combinedStr.includes('Field Name')){
                     types.push('FieldName');
                     vm.filterFieldName = null;
                 }
 
-                if(!combinedStr.includes('ModifiedBy')){
+                if(!combinedStr.includes('Modified By')){
                     types.push('ModifiedBy');
                     vm.filterModifiedBy = null;
                 }
 
-                if(!combinedStr.includes('ModifiedDate')){
+                if(!combinedStr.includes('Modified Date')){
                     types.push('ModifiedDate');
                     vm.filterModifiedDate = null;
                 }
