@@ -21,6 +21,9 @@
 
         var isTemplateExpandAll = false;
 		var isPrintableAll = false;
+        var isStepExpandAll = false;
+        var isPrevDisabled = false;
+        var isNextDisabled = false;
 
         var business = {
             emitMsg: emitMsg,
@@ -47,7 +50,6 @@
             }
         });
 
-        var isStepExpandAll = false;
         Object.defineProperty(business, 'isStepExpandAll', {
             enumerable: true,
             configurable: false,
@@ -74,6 +76,30 @@
                     toast.simpleToast('Section will not show on pdf download');
                 }
                 this.emitMsg('IsPrintable');
+            }
+        });
+
+        Object.defineProperty(business, 'isPrevDisabled', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return isPrevDisabled;
+            },
+            set: function (value) {
+                isPrevDisabled = value;
+                this.emitMsg('IsPrevDisabled');
+            }
+        });
+
+        Object.defineProperty(business, 'isNextDisabled', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return isNextDisabled;
+            },
+            set: function (value) {
+                isNextDisabled = value;
+                this.emitMsg('IsNextDisabled');
             }
         });
 
