@@ -93,7 +93,7 @@
         vm.bookmarkNews = bookmarkNews;
 
         function clearSelection() {
-            _.each(vm.resultDetails, function (item) {
+            _.each(newsBusiness.selectedArticles, function (item) {
                 if (item.isSelected) {
                     item.isSelected = false;
                     setBookmarkButtonDisableStatus(true);
