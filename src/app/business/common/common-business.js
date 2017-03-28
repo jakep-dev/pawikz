@@ -67,11 +67,6 @@
             },
             set: function (value) {
                 isPrintableAll = value;
-                if(isPrintableAll){
-                    toast.simpleToast('Section will show on pdf download');
-                } else {
-                    toast.simpleToast('Section will not show on pdf download');
-                }
                 this.emitMsg('IsPrintable');
             }
         });

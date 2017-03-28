@@ -41,8 +41,15 @@
             vm.menuMode = data.menuMode;
             vm.companyId = data.companyId || null;
             vm.companyName = data.companyName || null;
-            vm.workupName = data.workupName || null;
-            vm.isProjectOverviewAllSelected = false;
+            vm.workupName = data.workupName || null; 
+        });
+
+        commonBusiness.onMsg('project-overview-set-selection', $scope, function(ev, data) { 
+            vm.isProjectOverviewAllSelected = data; 
+        }); 
+
+        commonBusiness.onMsg('project-step-set-selection', $scope, function(ev, data) { 
+            vm.isPrintableAll = data; 
         });
 
 
@@ -96,6 +103,11 @@
 
         function printableAll(){
             vm.isPrintableAll = !vm.isPrintableAll;
+            if(vm.isPrintableAll){
+                    toast.simpleToast('Section will show on pdf download');
+                } else {
+                    toast.simpleToast('Section will not show on pdf download');
+                }
             commonBusiness.emitMsg('step-print-all');
         }
 

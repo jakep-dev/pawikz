@@ -64,6 +64,7 @@
         vm.showOverviewDetails =showOverviewDetails;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.checkIsPrintableAll = checkIsPrintableAll;
 
         //Data
         loadData();
@@ -153,6 +154,7 @@
                 console.log('Inside return of templateOverview');
                 vm.templateOverview = overviewBusiness.templateOverview;
                 vm.isOverviewLoaded = true;
+                vm.checkIsPrintableAll(); 
                 return;
             }
 
@@ -181,6 +183,7 @@
                         step.isExpanded = true;
                     });
 
+                    vm.checkIsPrintableAll(); 
                     autoSave();
 
                     commonBusiness.prevProjectId = commonBusiness.projectId;
@@ -237,6 +240,31 @@
         function expandAll()
         {
             vm.isAllExpanded = !vm.isAllExpanded;
+        }
+
+        function checkIsPrintableAll() { 
+            var isSelectAll = true; 
+            if(vm.templateOverview &&  
+                vm.templateOverview.steps &&  
+                vm.templateOverview.steps.length > 0) { 
+                    _.each(vm.templateOverview.steps,  function(step){ 
+                        if(step.sections && 
+                            step.sections.length > 0) { 
+                                _.each(step.sections, function(section){ 
+                                    if(section.value === false) { 
+                                        isSelectAll = false; 
+                                        return false; 
+                                    } 
+                                }); 
+                             
+                            if(isSelectAll === false) { 
+                                return false; 
+                            } 
+                        } 
+                    }); 
+            } 
+            commonBusiness.emitWithArgument("project-overview-set-selection", isSelectAll); 
+            vm.isAllSelected = isSelectAll; 
         }
 
         //Select the steps
