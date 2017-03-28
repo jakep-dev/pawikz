@@ -138,8 +138,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function autoResize(){
         $(window).on("resize", function () {
-            var tableRow = $("#dashBoardDetails").get(0).rows;
-            $compile(angular.element(tableRow).contents())($scope);
+            var elem = $("#dashBoardDetails");
+            if(elem && elem.length > 0){
+                var tableRow = $("#dashBoardDetails").get(0).rows;
+                $compile(angular.element(tableRow).contents())($scope);
+            }
         });
     }
 

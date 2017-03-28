@@ -26,6 +26,8 @@
         vm.filterAction = null;
         vm.isProcessing = false;
         vm.isInitiallyLoaded = false;
+        vm.dtOptions = null;
+        vm.dtColumnDefs = null;
 
         vm.toggleSidenav = toggleSidenav;
         vm.removeFilter = removeFilter;
@@ -45,7 +47,7 @@
 
         function dataTableConfiguration(){
             vm.dtOptions = projectHistoryBusiness.getDtOptions();
-            vm.dtColumns = projectHistoryBusiness.getDtColumns();
+            vm.dtColumnDefs = projectHistoryBusiness.getDtColumns();
         }
 
         //Get server call project history details
