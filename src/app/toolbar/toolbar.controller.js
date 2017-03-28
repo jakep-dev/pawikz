@@ -53,6 +53,14 @@
             }
         });
 
+        commonBusiness.onMsg('project-overview-set-selection', $scope, function(ev, data) {
+            vm.isProjectOverviewAllSelected = data;
+        });
+
+        commonBusiness.onMsg('project-step-set-selection', $scope, function(ev, data) {
+            vm.isPrintableAll = data;
+        });
+
 
 
 
@@ -137,6 +145,11 @@
 
         function printableAll(){
             vm.isPrintableAll = !vm.isPrintableAll;
+            if(vm.isPrintableAll){
+                    toast.simpleToast('Section will show on pdf download');
+                } else {
+                    toast.simpleToast('Section will not show on pdf download');
+                }
             commonBusiness.emitMsg('step-print-all');
         }
 

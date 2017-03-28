@@ -46,6 +46,26 @@
                 companyName: commonBusiness.companyName,
                 workupName: commonBusiness.projectName
             });
+             commonBusiness.emitWithArgument("project-step-set-selection", defineIsPrintableAll()); 
+        }
+
+        function defineIsPrintableAll() { 
+            var isSelectAll = true; 
+            if(overviewBusiness.templateOverview &&  
+                overviewBusiness.templateOverview.steps &&  
+                overviewBusiness.templateOverview.steps.length > 0) { 
+                     
+                var step = _.find(overviewBusiness.templateOverview.steps, {stepId: parseInt(stepId)} ); 
+                _.each(step.sections, function(section){ 
+                    if(section.value === false) { 
+                        isSelectAll = false; 
+                        return false; 
+                    } 
+                }); 
+            } 
+ 
+            commonBusiness.isPrintableAll = isSelectAll; 
+            return isSelectAll; 
         }
 
 
@@ -98,7 +118,7 @@
                 {
                     _.each(response, function(data)
                     {
-                       if(data.list)
+                       if(data.list)    
                        {
                            templateBusiness.mnemonics = data.list;
                        }
