@@ -43,6 +43,14 @@
             vm.isProjectOverviewAllSelected = false;
             vm.isStepExpanded = false;
             vm.isProjectOverviewExpanded = false;
+
+            switch (vm.menuMode){
+                case 'Steps':
+                    listenToStepMessages();
+                    break;
+
+                default:break;
+            }
         });
 
 
@@ -110,6 +118,21 @@
         function stepToggleExpand(){
             vm.isStepExpanded = !vm.isStepExpanded;
             commonBusiness.emitMsg('step-toogle-expand');
+        }
+
+        function listenToStepMessages(){
+            console.log('Hey am hitting here');
+            commonBusiness.onMsg('IsPrevDisabled', $scope, function(){
+                console.log('Fired');
+                console.log(commonBusiness.isPrevDisabled);
+                vm.isPrevDisabled = commonBusiness.isPrevDisabled;
+            });
+
+            commonBusiness.onMsg('IsNextDisabled', $scope, function(){
+                console.log('Fired');
+                console.log(commonBusiness.isNextDisabled);
+                vm.isNextDisabled = commonBusiness.isNextDisabled;
+            });
         }
 
         function printableAll(){
