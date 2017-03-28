@@ -24,14 +24,12 @@
             <md-chips ng-model="vm.searches" ng-click="vm.removeFilter('')" readonly="true" md-removable="true"></md-chips>
         </div>
 
-        <!--<table class="row-border cell-border table-bordered" ms-export width="100%"-->
-               <!--id="projectHistoryDetails" layout-padding datatable="" dt-options="vm.dtOptions"-->
-               <!--dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">-->
-        <!--</table>-->
-
         <div ng-hide="vm.isProcessing">
             <table class="row-border cell-border table-bordered"  width="100%"
-                   id="projectHistoryDetails" layout-padding datatable="ng" dt-options="vm.dtOptions">
+                   id="projectHistoryDetails" layout-padding datatable="ng"
+                   dt-column-defs="vm.dtColumnDefs"
+                   dt-instance="vm.dtInstanceCallback"
+                   dt-options="vm.dtOptions" dt-options="vm.dtOptions">
                 <thead>
                 <tr>
                     <th>Log Id</th>
