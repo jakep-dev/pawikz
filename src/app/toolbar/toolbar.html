@@ -138,12 +138,12 @@
             </md-menu>
 
             <div ng-if="vm.menuMode === 'Steps'" layout="row" layout-align="center center">
-                <div hide-xs>
+                <div hide-xs hide-sm>
                     <md-button class="md-icon-button md-primary" aria-label="Previous" ng-disabled="vm.isPrevDisabled" ng-click="vm.previousStep()">
                         <md-icon md-font-icon="icon-chevron-left" class="icon"></md-icon>
                     </md-button>
                 </div>
-                <div hide-xs>
+                <div hide-xs hide-sm>
                     <md-button class="md-icon-button md-primary" aria-label="Next" ng-disabled="vm.isNextDisabled"  ng-click="vm.nextStep()">
                         <md-icon md-font-icon="icon-chevron-right" class="icon"></md-icon>
                     </md-button>
@@ -191,7 +191,7 @@
                                 </md-button>
                             </md-menu-item>
 
-                            <md-menu-item hide-gt-xs>
+                            <md-menu-item hide-gt-sm>
                                 <md-button  aria-label="previous" ng-click="vm.previousStep()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-chevron-left"></md-icon>
@@ -200,7 +200,7 @@
                                 </md-button>
                             </md-menu-item>
 
-                            <md-menu-item hide-gt-xs>
+                            <md-menu-item hide-gt-sm>
                                 <md-button  aria-label="next" ng-click="vm.nextStep()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-chevron-right"></md-icon>
