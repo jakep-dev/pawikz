@@ -140,6 +140,12 @@ and (min-device-width: 1200px) {
     top:15px;
     z-index: 99;
   }
+  .ms-submenu-label{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30em;
+  }
 }
 
 
@@ -155,6 +161,13 @@ and (min-device-width: 1200px) {
     left:84%;
     top:15px;
     z-index: 99;
+  }
+
+  .ms-submenu-label{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 24em;
   }
 }
 
@@ -172,6 +185,13 @@ and (min-device-width: 1200px) {
     top:15px;
     z-index: 99;
   }
+
+  .ms-submenu-label{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20em;
+  }
 }
 
 
@@ -188,6 +208,13 @@ and (min-device-width: 1200px) {
     left:78%;
     top:15px;
     z-index: 99;
+  }
+
+  .ms-submenu-label{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 16em;
   }
 }
 
