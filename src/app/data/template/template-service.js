@@ -167,25 +167,6 @@
                 });
         }
 
-        //Get Overview Details
-        function getOverviewDefer(projectId) {
-
-            var deffered = $q.defer();
-
-            var url = clientConfig.endpoints.overViewEndPoint.get.concat(projectId);
-
-            $http.get(url)
-                .then(function (data, status, headers, config) {
-                    deffered.resolve(data.data);
-                })
-                .catch(function (error) {
-                    deffered.reject();
-                    logger.error(JSON.stringify(error));
-                });
-
-            return deffered;
-        }
-
         //Get Schema Defer
         function getSchemaDefer(projectId, stepId)
         {

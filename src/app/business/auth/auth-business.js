@@ -9,8 +9,9 @@
         .service('authBusiness', authBusiness);
 
     /* @ngInject */
-    function authBusiness(commonBusiness, dialog,
-                          $location, authService, Idle, toast, store, clientConfig, $mdDialog) {
+    function authBusiness($location, $mdDialog,
+                          Idle, toast, store, dialog,
+                          clientConfig, commonBusiness, authService, notificationBusiness) {
         this.userInfo = null;
         var userName = null;
 
@@ -45,6 +46,7 @@
                 $location.url('/pages/auth/login');
                 toast.simpleToast('Successfully logged out!');
             });
+            notificationBusiness.clearNotifications();
         }
 
 

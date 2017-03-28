@@ -8,25 +8,24 @@
         .directive('msHybridText', msHybridTextDirective);
 
     /** @ngInject */
-    function MsHybridTextController($scope, templateBusiness)
+    function MsHybridTextController($scope, commonBusiness, templateBusinessFormat, templateBusiness)
     {
-		//formats the data on initialization
-		$scope.row[$scope.columnname] = templateBusiness.formatData($scope.row[$scope.columnname], _.find($scope.$parent.$parent.subMnemonics, {mnemonic: $scope.columnname}));
+		
 		$scope.disabled = ($scope.isdisabled === 'true');
+        $scope.formatObj = angular.fromJson(_.unescape($scope.formats));
+        $scope.row[$scope.columnname] = templateBusinessFormat.formatData($scope.row[$scope.columnname], $scope.formatObj);
 
         $scope.textChange = function()
         {
-			var findMnemonic = _.find($scope.$parent.$parent.subMnemonics, {mnemonic: $scope.columnname});
-			if(findMnemonic && findMnemonic.dataType == 'NUMBER')
-			{
-				$scope.row[$scope.columnname] = $scope.row[$scope.columnname].replace(/[^0-9]/g, '');
-			}
-			//removes the format before formatting
-			$scope.row[$scope.columnname] = templateBusiness.removeFormatData($scope.row[$scope.columnname], findMnemonic);
-			$scope.row[$scope.columnname] = templateBusiness.formatData($scope.row[$scope.columnname], findMnemonic);
-			
-			$scope.save({row: $scope.row});
+			$scope.row[$scope.columnname] = templateBusinessFormat.formatData($scope.row[$scope.columnname], $scope.formatObj);
+            $scope.save({row: $scope.row});
+            commonBusiness.emitWithArgument($scope.tableItemId + '-CellUpdate', $scope.element);
         };
+
+        $scope.removeFixes = function()
+        {
+            $scope.row[$scope.columnname] = templateBusinessFormat.removeFixes($scope.row[$scope.columnname], $scope.formatObj);
+        }
     }
 
     /** @ngInject */
@@ -38,12 +37,15 @@
                 row: '=',
                 isdisabled: '@',
 				save: '&',
-                columnname: '@'
+                tableItemId: '@',
+                columnname: '@',
+                formats: '@'
             },
             controller: 'MsHybridTextController',
             templateUrl: 'app/core/directives/ms-template/templates/ms-table-layout/hybrid/textbox/ms-hybrid-textbox.html',
-            link: function(scope)
+            link: function(scope, el)
             {
+                scope.element = el;
             }
         };
     }

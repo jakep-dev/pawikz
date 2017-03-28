@@ -1,4 +1,4 @@
-<div class="md-whiteframe-1dp" id="step-main">
+<div id="step-main">
     <div id="step-header" style="height: 60px" class="md-amber-A200-bg"
          md-swipe-up="expandCollapseToggle()" layout="row" layout-align="space-between center">
         <div style="padding-left: 10px; font-size: 18px">
@@ -8,13 +8,7 @@
         </div>
         <div>
             <div layout="row" layout-align="end center">
-                <md-button class="md-icon-button" style="margin-right: -20px"
-                           aria-label="select/unselect"
-                           ng-disabled="(step.sections.length === 0)"
-                           ng-click="setStepSelection()">
-                    <md-icon ng-if="!step.value" md-font-icon="icon-select"></md-icon>
-                    <md-icon ng-if="step.value" md-font-icon="icon-select-inverse"></md-icon>
-                </md-button>
+                <md-checkbox aria-label="select" class="no-padding-margin" ng-model="step.value" ng-disabled="(step.sections.length === 0)"  ng-change="setStepSelection($event)" style="margin-right: -20px"></md-checkbox>
                 <md-button class="md-icon-button" aria-label="expand/collapse"
                            ng-disabled="!expandable"
                            ng-click="toggleExpanded()">
@@ -24,7 +18,7 @@
             </div>
         </div>
     </div>
-    <md-content id="step-content" ng-if="isExpanded" ng-animate="'expandCollapse'">
+    <md-content id="step-content" class="div-content" ng-if="isExpanded" ng-animate="'expandCollapse'">
         <md-list>
             <md-list-item  ng-repeat="section in step.sections">
                 <md-checkbox class="md-secondary" ng-model="section.value" ng-change="singleSelection()"></md-checkbox>

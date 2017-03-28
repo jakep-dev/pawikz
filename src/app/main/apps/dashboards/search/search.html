@@ -6,7 +6,6 @@
             <div layout="row" layout-align="center center">
                 <div>
                     <h2>Filter Dashboard</h2>
-
                 </div>
 
                 <div>
@@ -14,12 +13,7 @@
                         <md-icon md-font-icon="icon-arrow-right-bold">
                         </md-icon>
                     </md-button>
-
-                    <!--<md-button class="md-icon-button" aria-label="close" ng-click="vm.toggleSidenav('quick-panel')">-->
-                        <!---->
-                    <!--</md-button>-->
                 </div>
-
             </div>
             <md-progress-linear class="md-accent" md-mode="indeterminate" ng-if="vm.isSearching"></md-progress-linear>
         </md-toolbar>
@@ -46,8 +40,8 @@
         </div>
         <div layout="row" layout-align="center end">
             <md-button class="md-raised md-primary" aria-label="Search" ng-click="vm.filterDashboard()">
-                <md-icon md-font-icon="icon-magnify"></md-icon>
-                <label>Search</label>
+                <md-icon md-font-icon="icon-filter"></md-icon>
+                <label>Filter</label>
             </md-button>
             <md-button class="md-raised md-primary" aria-label="Clear" ng-click="vm.searchClear()">
                 <md-icon md-font-icon="icon-refresh"></md-icon>

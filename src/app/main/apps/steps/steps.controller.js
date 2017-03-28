@@ -18,6 +18,7 @@
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+        vm.stepId = stepId;
         $scope.stepId = stepId;
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/steps/sheet/steps-sheet.html';
@@ -36,9 +37,19 @@
         commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
-        vm.TearSheetStep = null;
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("inject-main-menu", {
+                menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
+                menuIcon: 'icon-menu',
+                menuMode: 'Steps',
+                companyId: commonBusiness.companyId,
+                companyName: commonBusiness.companyName,
+                workupName: commonBusiness.projectName
+            });
+        }
 
-        breadcrumbBusiness.title = unescape(stepName);
+
+        vm.TearSheetStep = null;
 
         var userDetails = store.get('user-info');
 
@@ -83,8 +94,6 @@
         {
             stepsBusiness.get(projectId, stepId, commonBusiness.userId, (overviewBusiness.templateOverview === null)).then(function(response)
             {
-                console.log('GetSchemaAndData');
-                console.log(response);
                 if(response)
                 {
                     _.each(response, function(data)
@@ -109,11 +118,14 @@
                                });
                            });
 
+                        //    defineMenuActions();
+
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
+                    defineMenuActions();
                     defineBottomSheet();
                 }
             });

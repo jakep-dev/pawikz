@@ -124,6 +124,7 @@
                 isReadyToProcess = false;
             }
 
+
             if(isReadyToProcess)
             {
                 component = getComponents(contentComponents, comp);
@@ -159,6 +160,7 @@
                     contents.push(comp.TearSheetItem);
                 }
             }
+
         });
 
         return contents;
@@ -295,6 +297,7 @@
                     sectionItem.length > 0)
                 {
                     sectionItem[0].isProcessed = true;
+                    var sectionType = sectionItem[0].type;
 
                     console.log('sectionId' + sectionId + ' Subtype - ' + sectionItem[0].subtype);
 
@@ -305,6 +308,9 @@
                     {
                         _.each(sectionItem[0].TearSheetItem, function(sheet)
                         {
+                            if(!sheet.type) {
+                                sheet.type = sectionType;
+                            }
                             component.sections.push(sheet);
                             if(sheet.ParentCom)
                             {
@@ -325,6 +331,9 @@
                                     sectionItem.length > 0)
                                 {
                                     sectionItem[0].isProcessed = true;
+                                    if(!sectionItem[0].type) {
+                                        sectionItem[0].type = sectionType;
+                                    }
                                     component.sections.push(sectionItem[0]);
                                 }
 

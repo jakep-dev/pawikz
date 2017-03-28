@@ -61,13 +61,17 @@
                         if (!dateList[dateValue]) {
                             dateArr.push(dateValue);
                             currentList = new Array();
-                            currentList[chartSetting.ratio_name] = parseFloat(chartSetting.ratio_value);
+                            currentList[chartSetting.ratio_name] = new Object();
+                            currentList[chartSetting.ratio_name].ratio_value = parseFloat(chartSetting.ratio_value);
+                            currentList[chartSetting.ratio_name].percent_change = parseFloat(chartSetting.percent_change);
                             dateList[dateValue] = currentList;
                         } else {
                             currentList = dateList[dateValue];
                             if (chartSetting.ratio_name) {
                                 if (!currentList[chartSetting.ratio_name]) {
-                                    currentList[chartSetting.ratio_name] = parseFloat(chartSetting.ratio_value);
+                                    currentList[chartSetting.ratio_name] = new Object();
+                                    currentList[chartSetting.ratio_name].ratio_value = parseFloat(chartSetting.ratio_value);
+                                    currentList[chartSetting.ratio_name].percent_change = parseFloat(chartSetting.percent_change);
                                 } else {
                                     console.log('Duplicate chart value for the same ratio_name and datadate.[' + dateValue + ',' + chartSetting.ratio_name + ']');
                                 }
@@ -84,7 +88,11 @@
                     currentObj = ratioNames[ratioName];
                     value = currentList[ratioName];
                     if (value) {
-                        currentObj.data.push(value);
+                        if (ratioNameArr.length > 1) {
+                            currentObj.data.push(value.percent_change);
+                        } else {
+                            currentObj.data.push(value.ratio_value);
+                        }
                     } else {
                         console.log('Missing ' + ratioName + ' value for datadate ' + dataDate);
                         currentObj.data.push(null);
@@ -137,7 +145,11 @@
             financialChartService.financialData(financialChartBusiness.getFinancialDataInputObject(compareNames, shortNames, compareIds, companyId, singleMultiple, ratioSelect, timePeriod, isCustomDate, startDate, endDate))
                 .then(function (data) {
                     vm.financialDataSet = groupChartData(data);
-                    vm.financialDataSet.yaxisTitle = yAxisLabel;
+                    if (vm.financialDataSet.ratioNameArr.length > 1) {
+                        vm.financialDataSet.yaxisTitle = yAxisLabel + ' - Percent Change';
+                    } else {
+                        vm.financialDataSet.yaxisTitle = yAxisLabel;
+                    }
                 }
             );
         };

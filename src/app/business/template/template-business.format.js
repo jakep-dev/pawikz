@@ -9,7 +9,7 @@
     function templateBusinessFormat(toast, $filter, templateBusiness, overviewBusiness, clientConfig) {
         var business = {
             getFormatObject: getFormatObject,
-			getProgramTableFormatObject: getProgramTableFormatObject,
+			getHybridTableFormatObject: getHybridTableFormatObject,
             removeFixes: removeFixes,
             formatData: formatData,
 			formatProgramTableData: formatProgramTableData,
@@ -65,14 +65,17 @@
     	    return formatObject;
     	}
 
-		function getProgramTableFormatObject(tearsheet, mnemonicType) {
+		function getHybridTableFormatObject(tearsheet, mnemonicType) {
 			var formatObject = getFormatObject(tearsheet);
 			
 			if(formatObject) {	
 				formatObject.dataType = mnemonicType.dataType;
     	    	formatObject.dataSubtype = mnemonicType.dataSubtype;
-				formatObject.precision = 2;
-				formatObject.invalidMessage = clientConfig.messages.programTableHybrid.invalidInput;
+
+				if(formatObject.dataType && formatObject.dataType === 'NUMBER') {
+					formatObject.precision = 2;
+					formatObject.invalidMessage = clientConfig.messages.programTableHybrid.invalidInput;
+				}
 			}
 
 			return formatObject;
@@ -272,7 +275,12 @@
     	            formatted = formatted.substr(0, formatObj.prefix.length) + '(' + formatted.substr(expr.exec(formatted).index);
     	        } else {
     	            if (formatObj.dataSubtype === 'CURRENCY') {
-    	                formatted = $filter('currency')(formatObj.numericValue, formatObj.prefix, formatObj.precision);
+						if(formatted === '0'){
+							formatObj.precision = '';
+							formatted = $filter('currency')(formatObj.numericValue, formatObj.prefix, formatObj.precision);
+						}else{
+							formatted = $filter('currency')(formatObj.numericValue, formatObj.prefix, formatObj.precision);
+						}
     	            } else {
     	                formatted = $filter('number')(formatObj.numericValue, formatObj.precision);
     	            }
@@ -581,14 +589,18 @@
             var columnWidth = colWidth;
 
             if(!angular.isUndefined(col) && typeof(col.css) != 'object'){
-                if((col.css && col.css.indexOf('tableWidth40') > -1)){
+                if ((col.css && col.css.indexOf('tableWidth50') > -1)) {
+                    columnWidth = '50%';
+                } else if ((col.css && col.css.indexOf('tableWidth40') > -1)) {
                     columnWidth = '20%';
-                }else if((col.css && col.css.indexOf('tableWidth30') > -1)){
+                } else if ((col.css && col.css.indexOf('tableWidth30') > -1)) {
                     columnWidth = '15%';
-                }else if((col.css && col.css.indexOf('tableWidth') > -1)){
+                } else if ((col.css && col.css.indexOf('tableWidth15') > -1)) {
+                    columnWidth = '';
+                } else if ((col.css && col.css.indexOf('tableWidth') > -1)) {
                     columnWidth = '10%';
-                }else{
-                    columnWidth = '2%';
+                } else {
+                    columnWidth = '';
                 }
             }
 

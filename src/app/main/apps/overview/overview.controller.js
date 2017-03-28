@@ -18,15 +18,11 @@
                                 overviewBusiness, templateBusiness, store, toast)
     {
         var isCompleteLoadRequired = (commonBusiness.projectId !== $stateParams.projectId);
-        console.log('isCompleteLoadRequired');
-        console.log('commonBusiness.projectId - ' + commonBusiness.projectId);
-        console.log('$stateParams.projectId - ' + $stateParams.projectId);
-
         commonBusiness.projectId = $stateParams.projectId;
             $rootScope.projectId = $stateParams.projectId;
         breadcrumbBusiness.title = 'Overview';
 
-        defineBottomSheet();
+        defineMenuActions();
 
         var userDetails = store.get('user-info');
 
@@ -64,23 +60,61 @@
         vm.showOverviewDetails =showOverviewDetails;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.projectHistory = projectHistory;
 
         //Data
         loadData();
+
+        function projectHistory(){
+
+        }
 
         function pdfDownload() {
            templateBusiness.requestPdfDownload();
         }
 
-        function defineBottomSheet()
-        {
-            $scope.saveAll = saveAll;
-            $scope.goTop = goTop;
-            commonBusiness.defineBottomSheet('app/main/apps/overview/sheet/overview-sheet.html', $scope, true);
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("inject-main-menu", {
+                menuName: 'Work-up Overview',
+                menuIcon: 'icon-view-agenda',
+                menuMode: 'ProjectOverview'
+            });
+
+
+            commonBusiness.onMsg("project-overview-save-all", $scope, function(){
+                saveAll();
+            });
+
+            commonBusiness.onMsg("project-overview-flip", $scope, function(){
+                    flipStepView();
+            });
+
+            commonBusiness.onMsg("project-overview-toggle-expand", $scope, function(){
+                    toggleExpand();
+            });
+
+            commonBusiness.onMsg("project-overview-flip-selection", $scope, function(){
+                    flipSelectionView();
+            });
+
+            commonBusiness.onMsg("pdf-download", $scope, function(){
+                    pdfDownload();
+            });
+
+            commonBusiness.onMsg("project-renew", $scope, function(){
+                renew(vm.projectId);
+            });
+
+            commonBusiness.onMsg("project-history", $scope, function(){
+                goToProjectHistory(vm.projectId, commonBusiness.userId);
+            });
         }
 
-        function showOverviewDetails(step)
-        {
+        function goToProjectHistory(projectId, userId){
+            overviewBusiness.goToProjectHistory(projectId, userId);
+        }
+
+        function showOverviewDetails(step) {
 
         }
 
@@ -124,7 +158,6 @@
         function loadData()
         {
             if(overviewBusiness.templateOverview !== null && !isCompleteLoadRequired){
-                console.log('Inside return of templateOverview');
                 vm.templateOverview = overviewBusiness.templateOverview;
                 vm.isOverviewLoaded = true;
                 return;
@@ -132,8 +165,6 @@
 
             overviewService.get($stateParams.projectId, $rootScope.passedUserId, commonBusiness.prevProjectId).then(function(data)
             {
-                console.log('TemplateOverview Data-');
-                console.log(data);
                 if(data.templateOverview)
                 {
                     vm.templateOverview = data.templateOverview;
@@ -203,7 +234,7 @@
         function flipSelectionView()
         {
             vm.isAllSelected = !vm.isAllSelected;
-			commonBusiness.isPrintableAll = vm.isAllSelected;
+			// commonBusiness.isPrintableAll = vm.isAllSelected;
             selectionProcess(vm.isAllSelected);
             $mdMenu.hide()
         }

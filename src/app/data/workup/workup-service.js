@@ -15,10 +15,23 @@
             getStatus: getStatus,
             lock: lock,
             unlock: unlock,
-            delete: deleteWorkup
+            delete: deleteWorkup,
+            gethtml: getHtml
         };
 
         return service;
+
+        function getHtml(fileName){
+            return $http({
+                url : fileName,
+                method : "GET"
+            }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+                });
+        }
 
         function lock(projectId, userId) {
             var input = {

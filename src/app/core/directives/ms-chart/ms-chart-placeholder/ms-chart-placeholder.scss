@@ -43,3 +43,27 @@ ms-chart-placeholder:nth-child(2) .md-icon-button .icon-arrow-up, ms-chart-place
     margin-left:246px;
     margin-top:-100px;
 }
+
+md-menu-content.advison-date-range-menu-content {
+    md-menu-item {
+        md-datepicker {
+            margin-right: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+}
+
+md-menu-content.advison-comparison-menu-content {
+    md-menu-item {
+        md-autocomplete {
+            height: $dense-menu-item-height;
+            md-autocomplete-wrap {
+                height: $dense-menu-item-height;
+                input {
+                    height: $dense-menu-item-height;
+                }
+            }
+        }
+    }
+}

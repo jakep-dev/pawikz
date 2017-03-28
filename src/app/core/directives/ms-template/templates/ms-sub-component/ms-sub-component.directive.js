@@ -54,7 +54,9 @@
 
         function printer()
         {
+
             vm.isAvailableForPrint = !vm.isAvailableForPrint;
+            
             if(vm.isAvailableForPrint)
             {
                 toast.simpleToast('Section will show on pdf download');

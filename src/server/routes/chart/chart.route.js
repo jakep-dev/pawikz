@@ -332,6 +332,7 @@
                             date_end: savedChart.date_end,
                             selectedIndicesList: [],
                             selectedPeerList: [],
+                            selectedPeerNameList: [],
                             selectedCompetitorsList: [],
                             searchedStocks: [],
                             to: {},
@@ -346,6 +347,7 @@
                         };
 
                         if (savedChart.peers) {
+                            var peerNames = savedChart.peerNames.split('||');
                             var peers = savedChart.peers.split(',');
                             for (var i = 0; i < peers.length; i++) {
                                 var peer = peers[i].trim();
@@ -357,7 +359,9 @@
                                     //chart.settings.selectedIndicesList.push(peer.substring(1, peer.length));
                                     chart.settings.selectedCompetitorsList.push(peer.substring(1, peer.length));
                                 } else if (peer.charAt(0) !== '^' && peer.charAt(0) !== '@') {
+                                    var peerName = peerNames[i].trim();
                                     chart.settings.selectedPeerList.push(peer);
+                                    chart.settings.selectedPeerNameList.push(peerName);
                                 }
                             }
                         }

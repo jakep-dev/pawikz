@@ -188,13 +188,17 @@
                         if (!context.dateList[context.dateValue]) {
                             context.dateArr.push(context.dateValue);
                             context.currentList = new Array();
-                            context.currentList[data[context.i].ratio_name] = parseFloat(data[context.i].ratio_value);
+                            context.currentList[data[context.i].ratio_name] = new Object();
+                            context.currentList[data[context.i].ratio_name].ratio_value = parseFloat(data[context.i].ratio_value);
+                            context.currentList[data[context.i].ratio_name].percent_change = parseFloat(data[context.i].percent_change);
                             context.dateList[context.dateValue] = context.currentList;
                         } else {
                             context.currentList = context.dateList[context.dateValue];
                             if (data[context.i].ratio_name) {
                                 if (!context.currentList[data[context.i].ratio_name]) {
-                                    context.currentList[data[context.i].ratio_name] = parseFloat(data[context.i].ratio_value);
+                                    context.currentList[data[context.i].ratio_name] = new Object();
+                                    context.currentList[data[context.i].ratio_name].ratio_value = parseFloat(data[context.i].ratio_value);
+                                    context.currentList[data[context.i].ratio_name].percent_change = parseFloat(data[context.i].percent_change);
                                 } else {
                                     console.log('Duplicate chart value for the same ratio_name and datadate.[' + context.dateValue + ',' + data[context.i].ratio_name + ']');
                                 }
@@ -206,14 +210,18 @@
 
             context.dateArr.sort();
             context.n1 = context.dateArr.length;
+            context.n2 = context.ratioNameArr.length;
             for (context.i = 0; context.i < context.n1; context.i++) {
                 context.currentList = context.dateList[context.dateArr[context.i]];
-                context.n2 = context.ratioNameArr.length;
                 for (context.j = 0; context.j < context.n2; context.j++) {
                     context.currentObj = context.ratioNames[context.ratioNameArr[context.j]];
                     context.value = context.currentList[context.ratioNameArr[context.j]];
                     if (context.value) {
-                        context.currentObj.data.push(context.value);
+                        if (context.n2 > 1) {
+                            context.currentObj.data.push(context.value.percent_change);
+                        } else {
+                            context.currentObj.data.push(context.value.ratio_value);
+                        }
                     } else {
                         console.log('Missing ' + context.ratioNameArr[context.j] + ' value for datadate ' + context.dateArr[context.i]);
                         context.currentObj.data.push(null);
@@ -235,7 +243,9 @@
                     name: context.finalName
                 });
             }
-
+            if (context.n2 > 1) {
+                yAxisLabel += ' - Percent Change';
+            }
             context.chartObject = {
                 chart: {
                     marginRight: 80,
@@ -1421,7 +1431,7 @@
                 client.get(subContext.url,
                     function (data, response) {
                         try {
-                            context.savedTable = getSavedTable(data, context);
+                            context.savedTable = data.items;
                         } catch (exception) {
                             console.log('[getAllSavedTableList]Error\n' + exception);
                             context.errorMessages.push(exception.message);
@@ -1439,42 +1449,174 @@
             }
         }
 
-        function getSavedTable(data, context) {
-            var subContext = new Object();
-            if(data.items)
-            {
-                subContext.savedTable = data.items;
+        //get saved table and add description if expanded
+        function getSavedTable(context, callback) {
+            if (context.errorMessages.length > 0) {
+                callback(null, context);
             } else {
-                subContext.savedTable = [];
+                if(context.savedTable && context.savedTable.length > 0) {
+                    async.map(context.savedTable, function(item, callback){
+                        processSavedItems(item, context, callback);
+                    }, function(err, results){                        
+                        callback(null, context);
+                    });
+                } else {
+                    callback(null, context);
+                }
             }
-            u.each(subContext.savedTable,
-                function (savedTable, index) {
-                    subContext.tableInfo = savedTable.info;
-                    u.each(savedTable.savedSigDevItemList,
-                        function (sigDevList, index) {
-                            u.each(sigDevList,
-                                function (sigDevItems, index) {
-                                    u.each(sigDevItems,
-                                        function (sigDevItem, index) {
-                                            //subContext.filename = getTableFilename(subContext.tableStepId, sigDevItem, subContext.pdfRequest.chartSettings) + '.part2.html';
-                                            context.chartObjectArr.push({
-                                                infile: JSON.stringify(sigDevItem),
-                                                callback: '',
-                                                constr: '',
-                                                outfile: subContext.tableInfo.stepId + '.' + subContext.tableInfo.mnemonic + '.' + subContext.tableInfo.itemId + '.' + 'chart_id_placeholder' + '.part2.html',
-                                                page: 'STOCK_TABLE',
-                                                stepId: subContext.tableInfo.stepId,
-                                                seqNo: sigDevItem.seqNo
-                                            });
-                                        }
-                                    );
-                                }
-                            );
-                        }
-                    );
+        }
+
+        function processSavedItems(context, mainContext, callback) {
+            if(context.savedSigDevItemList && context.savedSigDevItemList.length > 0) {
+                async.map(context.savedSigDevItemList, function(item, callback){
+                        processSavedList(item, mainContext, context.info, callback);
+                    }, function(err, results){
+                        callback(null, context);
+                    }
+                );
+            } else {
+                callback(null, context);
+            }
+            
+        }
+        
+        function processSavedList(context, mainContext, tableInfo, callback) {
+            if(context.savedSigDevItems && context.savedSigDevItems.length > 0) {
+                async.map(context.savedSigDevItems, 
+                    function(item, callback){
+                        getExpandedDescription(item, mainContext, callback);
+                    }, function(err, results){
+                        u.each(results, 
+                            function(item){
+                                mainContext.chartObjectArr.push({
+                                    infile: JSON.stringify(item),
+                                    callback: '',
+                                    constr: '',
+                                    outfile: tableInfo.stepId + '.' + tableInfo.mnemonic + '.' + tableInfo.itemId + '.' + 'chart_id_placeholder' + '.part2.html',
+                                    page: 'STOCK_TABLE',
+                                    stepId: tableInfo.stepId,
+                                    seqNo: item.seqNo
+                                });
+                            }
+                        );
+                        callback(null, context);
+                    }
+                );
+            } else {
+                callback(null, context);
+            }
+        }
+        
+        //add description for every row of mscad and sigdev
+        function getExpandedDescription(context, mainContext, callback) {
+            
+            var subContext = new Object();
+
+            subContext.functionList = new Array();
+            subContext.functionList.push(getMscadList.bind(null, context.mascad, mainContext));
+            subContext.functionList.push(getSigDevList.bind(null, context.sigdev, mainContext));
+            
+            async.parallel(subContext.functionList,
+                function (err, input) {
+                    callback(null, context);
                 }
             );
-            return subContext.savedTable;
+        }
+
+        function getMscadList(context, mainContext, callback) {
+            async.map(context, 
+                function(item, callback){
+                        getMscadDesc(item, mainContext, callback);
+                }, function(err, results){
+                    callback(null, context);
+                }
+            );
+        }
+
+        function getMscadDesc(context, mainContext, callback) {
+            if (context.tl_status && context.tl_status === 'Y') {
+                var subContext = new Object();
+                subContext.methodName = '';
+                if (!u.isUndefined(mainContext.service) && !u.isNull(mainContext.service)) {
+                    subContext.methodName = mainContext.service.methods.getMascadLargeLosseDetail;
+                }
+
+                subContext.args = 'mascad_id=' + context.mascadId + '&ssnid=' + mainContext.ssnid;
+                subContext.url = config.restcall.url + '/charts/' + subContext.methodName + '?' + subContext.args;
+                client.get(subContext.url,
+                    function (data, response) {
+                        try {
+                            if(data.detail){
+                                context.description = data.detail;
+                            } else {
+                                context.description = "No Data Available";
+                            }                        
+                        } catch (exception) {
+                            console.log('[getSigDevDesc]Error\n' + exception);
+                            context.errorMessages.push(exception.message);
+                        }
+                        callback(null, context);
+                    }
+                ).on('error',
+                    function (err) {
+                        console.log('[getSigDevDesc]Error\n' + err);
+                        subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
+                        context.errorMessages.push(subContext.message);
+                        callback(null, context);
+                    }
+                );
+            } else {
+                context.description = null;
+                callback(null, context);
+            }
+        }
+
+        function getSigDevList(context, mainContext, callback) {
+            async.map(context, 
+                function(item, callback){
+                        getSigDevDesc(item, mainContext, callback);
+                }, function(err, results){
+                    callback(null, context);
+                }
+            );
+        }
+
+        function getSigDevDesc(context, mainContext, callback) {
+            if (context.tl_status && context.tl_status === 'Y') {
+                var subContext = new Object();
+                subContext.methodName = '';
+                if (!u.isUndefined(mainContext.service) && !u.isNull(mainContext.service)) {
+                    subContext.methodName = mainContext.service.methods.getSignificantDevelopmentDetail;
+                }
+
+                subContext.args = 'sigdev_id=' + context.sigDevId + '&ssnid=' + mainContext.ssnid;
+                subContext.url = config.restcall.url + '/charts/' + subContext.methodName + '?' + subContext.args;
+                client.get(subContext.url,
+                    function (data, response) {
+                        try {
+                            if(data.detail){
+                                context.description = data.detail;
+                            } else {
+                                context.description = "No Data Available";
+                            }                        
+                        } catch (exception) {
+                            console.log('[getSigDevDesc]Error\n' + exception);
+                            context.errorMessages.push(exception.message);
+                        }
+                        callback(null, context);
+                    }
+                ).on('error',
+                    function (err) {
+                        console.log('[getSigDevDesc]Error\n' + err);
+                        subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
+                        context.errorMessages.push(subContext.message);
+                        callback(null, context);
+                        }
+                    );
+            } else {
+                context.description = null;
+                callback(null, context);
+            }
         }
 
         function processTables(context, callback) {
@@ -1805,8 +1947,11 @@
 
         function sendStatus(token, data) {
             if (token in config.userSocketInfo) {
-                //console.log(data);
+                //The value config.userSocketInfo[token] is null if user logs out from method disConnectionSocket in server/routes/socket/socket.js
+                //Check if the token is still valid before sending status message
+                if (config.userSocketInfo[token]) {
                 config.userSocketInfo[token].emit('pdf-download-status', data);
+                }
             }
         }
 
@@ -1826,7 +1971,7 @@
             context.sequences = [
                 [getFinancialChartRatioTypes, getAllSavedIFChartSettings, setupGetIFCChartDataPoints],
                 [getAllChartSettings, setupGetChartDataPoints],
-                [getAllSavedTableList]
+                [getAllSavedTableList, getSavedTable]
             ];
 
             function startup(callback) {

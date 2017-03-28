@@ -10,34 +10,88 @@
         .directive('msAccordion', msAccordionDirective)
 
 
-    function MsAccordionController($scope, commonBusiness) {
+    function MsAccordionController($scope, $attrs, commonBusiness, newsBusiness) {
         var vm = this;
 
-        vm.collapsed = $scope.initialCollapsed;
+        vm.isCollapsed = $scope.initialCollapsed;
         vm.isExpandable = $scope.isExpandable;
-        vm.actions = $scope.actions;
         vm.titleClass = $scope.titlebg || 'md-amber-A200-bg';
-
-        vm.collapse = collapse;
+        vm.isProcessComplete = true;
+        vm.row = $scope.row;
+        vm.onExpand = $scope.onExpand;
+        vm.registerExpandCompleteCallback = $scope.registerExpandCompleteCallback;
+        vm.registerToggleCollapseCallback = $scope.registerToggleCollapseCallback;
+        vm.registerCollapseAccordionCallback = $scope.registerCollapseAccordionCallback;
+        vm.registerExpandAccordionCallback = $scope.registerExpandAccordionCallback;
         vm.applyClickEvent = applyClickEvent;
+        vm.onExpandCollapse = onExpandCollapse;
 
         init();
 
+        function onExpandComplete() {
+            vm.isProcessComplete = true;
+        }
+        vm.onExpandComplete = onExpandComplete;
+        if(vm.registerExpandCompleteCallback) {
+            vm.registerExpandCompleteCallback(vm.onExpandComplete);
+        }
+
         //Toggle the collapse
-        function collapse() {
-            vm.collapsed = !vm.collapsed;
+        function onExpandCollapse() {
+            vm.isCollapsed = !vm.isCollapsed;
+            if (!vm.isCollapsed && vm.isProcessComplete) {
+                if (vm.registerExpandCompleteCallback) {
+                    vm.isProcessComplete = false;
+                }
+                if (vm.onExpand) {
+                    vm.onExpand();
+                }
+            }
+        }
+
+        function toggleCollapse() {
+            vm.isCollapsed = !vm.isCollapsed;
+        }
+        if (vm.registerToggleCollapseCallback) {
+            vm.registerToggleCollapseCallback(toggleCollapse);
+        }
+
+        function collapseAccordion() {
+            if (!vm.isCollapsed) {
+                vm.isCollapsed = true;
+            }
+        }
+        if (vm.registerCollapseAccordionCallback) {
+            vm.registerCollapseAccordionCallback(collapseAccordion);
+        }
+
+        function expandAccordion() {
+            if (vm.isCollapsed) {
+                vm.isCollapsed = false;
+            }
+        }
+        if (vm.registerExpandAccordionCallback) {
+            vm.registerExpandAccordionCallback(expandAccordion);
         }
 
         function init() {
             if (!vm.isExpandable) {
-                vm.collapse = false;
+                vm.isCollapsed = false;
             }
         }
 
         function applyClickEvent(action, $mdOpenMenu, ev) {
             if (action) {
                 if (action.type === 'button' && action.callback) {
-                    commonBusiness.emitMsg(action.callback);
+                    if (typeof(action.callback) === 'function') {
+                        if ($.isNumeric(vm.row)) {
+                            action.callback(vm.row);
+                        } else {
+                            action.callback();
+                        }
+                    } else {
+                        commonBusiness.emitMsg(action.callback);
+                    }
                 } else if (action.type === 'menu') {
                     $mdOpenMenu(ev);
                 }
@@ -55,10 +109,17 @@
             restrict: 'E',
             scope: {
                 title: '@',
-                initialCollapsed: '=?collapsed',
+                initialCollapsed: '@',
                 titlebg: '@',
                 isExpandable: '=?',
-                actions: '='
+                actions: '=',
+                index: '=',
+                row: '=',
+                onExpand: '=',
+                registerExpandCompleteCallback: '=',
+                registerToggleCollapseCallback: '=',
+                registerCollapseAccordionCallback: '=',
+                registerExpandAccordionCallback: '='
             },
             controller: 'MsAccordionController',
             controllerAs: 'vm',

@@ -6,8 +6,8 @@
         .controller('msComponentController', msComponentController)
         .directive('msComponent', msComponentDirective);
 
-    function msComponentController($scope, commonBusiness,
-        templateBusiness, overviewBusiness, toast) {
+    function msComponentController($scope, commonBusiness, templateBusinessFormat,
+                                    templateBusiness, overviewBusiness, toast, deviceDetector) {
         var vm = this;
         vm.isNonEditable = $scope.isnoneditable;
         vm.iscollapsible = $scope.iscollapsible;
@@ -17,11 +17,15 @@
         vm.collapsed = false;
         vm.isAvailableForPrint = null;
         vm.sectionId = null;
+        vm.isExcelDownloadable = $scope.tearcontent && $scope.tearcontent[0] && _.has($scope.tearcontent[0], 'excelDownLoadForCom');
+        vm.excelFilename = $scope.tearcontent && $scope.tearcontent[0] && $scope.tearcontent[0].excelDownLoadForCom;
+        vm.excelComponents = (vm.isExcelDownloadable)? $scope.tearcontent : null;
 
         vm.toggleCollapse = toggleCollapse;
         vm.applyClickEvent = applyClickEvent;
         vm.applyMenuEvent = applyMenuEvent;
         vm.printer = printer;
+        vm.downloadExcel = downloadExcel;
 
         $scope.$watch(
             "isprocesscomplete",
@@ -37,8 +41,8 @@
         });
 
         commonBusiness.onMsg('IsPrintable', $scope, function() {
-            if (vm.isAvailableForPrint != null && commonBusiness.isPrintableAll === vm.isAvailableForPrint) {
-                vm.printer();
+            if (vm.isAvailableForPrint != null) {
+                printAlltoPDF();
             }
         });
 
@@ -58,12 +62,24 @@
         }
 
         function printer() {
+
             vm.isAvailableForPrint = !vm.isAvailableForPrint;
             if (vm.isAvailableForPrint) {
                 toast.simpleToast('Section will show on pdf download');
             } else {
                 toast.simpleToast('Section will not show on pdf download');
             }
+
+            if (vm.sectionId) {
+                overviewBusiness.templateOverview.isChanged = true;
+                overviewBusiness.updateTemplateOverview(vm.sectionId, vm.isAvailableForPrint);
+                overviewBusiness.getReadyForAutoSave();
+            }
+        }
+
+        function printAlltoPDF() {
+            
+            vm.isAvailableForPrint = commonBusiness.isPrintableAll;
 
             if (vm.sectionId) {
                 overviewBusiness.templateOverview.isChanged = true;
@@ -119,6 +135,11 @@
         }
 
         buildActions();
+
+        //download excel ms-component level
+        function downloadExcel() {
+            templateBusiness.componentExcelDownload(vm);
+        }
     }
 
     /** @ngInject */

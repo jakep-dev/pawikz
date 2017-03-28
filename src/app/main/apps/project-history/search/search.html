@@ -1,0 +1,73 @@
+<div id="search-project" class="page-layout simple fullwidth white-bg" layout="row" ng-cloak md-swipe-right="vm.toggleSidenav('quick-panel')">
+    <div class="center" flex>
+        <md-toolbar class="md-primary">
+            <div layout="row" layout-align="center center">
+                <div>
+                    <h2>Filter Work-up History</h2>
+                </div>
+                <div>
+                    <md-button class="md-fab md-mini md-primary" aria-label="Close" ng-click="vm.toggleSidenav('quick-panel')">
+                        <md-icon md-font-icon="icon-arrow-right-bold">
+                        </md-icon>
+                    </md-button>
+                </div>
+            </div>
+            <md-progress-linear class="md-accent" md-mode="indeterminate" ng-if="vm.isSearching"></md-progress-linear>
+        </md-toolbar>
+
+        <div layout="column" layout-padding>
+            <md-input-container class="md-accent">
+                <label class="font-size-20"><strong>Step</strong></label>
+                <md-select ng-model="vm.selectedStep" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.steps, 'STEPS')">
+                    <md-option><em>None</em></md-option>
+                    <md-option layout-padding ng-repeat="step in vm.steps" value="{{step.name}}" close-tooltips>
+                        {{step.name}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-accent">
+                <label class="font-size-20"><strong>Field Name</strong></label>
+                <md-select ng-model="vm.selectedFieldName" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.fieldNames, 'FIELD_NAME')" >
+                    <md-option><em>None</em></md-option>
+                    <md-option layout-padding ng-repeat="fieldName in vm.fieldNames" value="{{fieldName.name}}">{{fieldName.name}}</md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-accent">
+                <label class="font-size-20"><strong>Modified By</strong></label>
+                <md-select ng-model="vm.selectedModifiedBy" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.modifiedBys, 'MODIFIED_BY')" >
+                    <md-option><em>None</em></md-option>
+                    <md-option layout-padding ng-repeat="modifiedBy in vm.modifiedBys" value="{{modifiedBy.name}}">{{modifiedBy.name}}</md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-accent">
+                <label class="font-size-20"><strong>Modified Date</strong></label>
+                <md-select ng-model="vm.selectedModifiedDate" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.modifiedDates, 'MODIFIED_DATE')" >
+                    <md-option><em>None</em></md-option>
+                    <md-option layout-padding ng-repeat="modifiedDate in vm.modifiedDates" value="{{modifiedDate.name}}">{{modifiedDate.name}}</md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-accent">
+                <label class="font-size-20"><strong>Action</strong></label>
+                <md-select ng-model="vm.selectedAction" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.actions, 'ACTION')" >
+                    <md-option><em>None</em></md-option>
+                    <md-option layout-padding ng-repeat="action in vm.actions" value="{{action.name}}">{{action.name}}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+
+        <div layout="row" layout-align="center end">
+            <md-button class="md-raised md-primary" aria-label="Search" ng-click="vm.filterProjectHistory()">
+                <md-icon md-font-icon="icon-filter"></md-icon>
+                <label>Filter</label>
+            </md-button>
+            <md-button class="md-raised md-primary" aria-label="Clear" ng-click="vm.clearProjectHistoryFilter()">
+                <md-icon md-font-icon="icon-refresh"></md-icon>
+                <label>Clear</label>
+            </md-button>
+        </div>
+    </div>
+</div>
