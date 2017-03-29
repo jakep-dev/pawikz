@@ -43,6 +43,22 @@
             vm.isProjectOverviewAllSelected = false;
             vm.isStepExpanded = false;
             vm.isProjectOverviewExpanded = false;
+
+            switch (vm.menuMode){
+                case 'Steps':
+                    listenToStepMessages();
+                    break;
+
+                default:break;
+            }
+        });
+
+        commonBusiness.onMsg('project-overview-set-selection', $scope, function(ev, data) {
+            vm.isProjectOverviewAllSelected = data;
+        });
+
+        commonBusiness.onMsg('project-step-set-selection', $scope, function(ev, data) {
+            vm.isPrintableAll = data;
         });
 
 
@@ -112,8 +128,28 @@
             commonBusiness.emitMsg('step-toogle-expand');
         }
 
+        function listenToStepMessages(){
+            console.log('Hey am hitting here');
+            commonBusiness.onMsg('IsPrevDisabled', $scope, function(){
+                console.log('Fired');
+                console.log(commonBusiness.isPrevDisabled);
+                vm.isPrevDisabled = commonBusiness.isPrevDisabled;
+            });
+
+            commonBusiness.onMsg('IsNextDisabled', $scope, function(){
+                console.log('Fired');
+                console.log(commonBusiness.isNextDisabled);
+                vm.isNextDisabled = commonBusiness.isNextDisabled;
+            });
+        }
+
         function printableAll(){
             vm.isPrintableAll = !vm.isPrintableAll;
+            if(vm.isPrintableAll){
+                    toast.simpleToast('Section will show on pdf download');
+                } else {
+                    toast.simpleToast('Section will not show on pdf download');
+                }
             commonBusiness.emitMsg('step-print-all');
         }
 

@@ -42,3 +42,9 @@ $expandHeight: 64px;
 .section-bg {
   background-color: #cccccc !important; 
 }
+
+#project-overview-details{
+  md-input-container .md-errors-spacer {
+    min-height: 0;
+  }
+}

@@ -17,7 +17,7 @@
            <div hide-xs  style="padding-left: 5px">{{vm.menuName}}</div>
        </div>
         <div flex="30" ng-if="vm.workupName !== null" hide-xs layout="column" layout-align="center start" style="font-size: 0.6em; padding-left: 5px;">
-            <div class="ms-menu-label" style="max-width: 25em;">
+            <div class="ms-submenu-label">
                 <span><strong>Workup Name -</strong></span> {{ " " + vm.workupName}}
                 <md-tooltip md-direction="bottom"
                     style="max-width: 40em; height: auto; word-break: break-all; white-space: normal;">
@@ -138,12 +138,12 @@
             </md-menu>
 
             <div ng-if="vm.menuMode === 'Steps'" layout="row" layout-align="center center">
-                <div hide-xs>
+                <div hide-xs hide-sm>
                     <md-button class="md-icon-button md-primary" aria-label="Previous" ng-disabled="vm.isPrevDisabled" ng-click="vm.previousStep()">
                         <md-icon md-font-icon="icon-chevron-left" class="icon"></md-icon>
                     </md-button>
                 </div>
-                <div hide-xs>
+                <div hide-xs hide-sm>
                     <md-button class="md-icon-button md-primary" aria-label="Next" ng-disabled="vm.isNextDisabled"  ng-click="vm.nextStep()">
                         <md-icon md-font-icon="icon-chevron-right" class="icon"></md-icon>
                     </md-button>
@@ -191,8 +191,8 @@
                                 </md-button>
                             </md-menu-item>
 
-                            <md-menu-item hide-gt-xs>
-                                <md-button  aria-label="previous" ng-click="vm.previousStep()">
+                            <md-menu-item hide-gt-sm>
+                                <md-button  aria-label="previous" ng-disabled="vm.isPrevDisabled" ng-click="vm.previousStep()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-chevron-left"></md-icon>
                                                         <span>Previous</span>
@@ -200,8 +200,8 @@
                                 </md-button>
                             </md-menu-item>
 
-                            <md-menu-item hide-gt-xs>
-                                <md-button  aria-label="next" ng-click="vm.nextStep()">
+                            <md-menu-item hide-gt-sm>
+                                <md-button  aria-label="next" ng-disabled="vm.isNextDisabled" ng-click="vm.nextStep()">
                                                   <span layout="row" layout-align="start center">
                                                         <md-icon md-font-icon="icon-chevron-right"></md-icon>
                                                         <span>Next</span>

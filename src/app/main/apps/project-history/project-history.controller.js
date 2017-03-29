@@ -26,6 +26,9 @@
         vm.filterAction = null;
         vm.isProcessing = false;
         vm.isInitiallyLoaded = false;
+        vm.dtOptions = null;
+        vm.dtColumnDefs = null;
+        vm.dtInstanceCallback = {};
 
         vm.toggleSidenav = toggleSidenav;
         vm.removeFilter = removeFilter;
@@ -45,13 +48,14 @@
 
         function dataTableConfiguration(){
             vm.dtOptions = projectHistoryBusiness.getDtOptions();
-            vm.dtColumns = projectHistoryBusiness.getDtColumns();
+            vm.dtColumnDefs = projectHistoryBusiness.getDtColumns();
         }
 
         //Get server call project history details
         function getProjectHistory()
         {
-            console.log('Overview-', overviewBusiness.templateOverview)
+            vm.historyList = [];
+            vm.completeHistoryData = [];
             projectHistoryBusiness.get(projectId, commonBusiness.userId, 0, 20000, vm.filterStepId,
                 vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
                 (overviewBusiness.templateOverview === null)).then(function(response){
@@ -125,22 +129,22 @@
                 vm.filterAction = null;
                 vm.searches = [];
                 if(data.stepId){
-                    vm.searches.push("StepName: " + data.stepId);
+                    vm.searches.push("Step Name: " + data.stepId);
                     vm.filterStepId = data.stepId;
                 }
 
                 if(data.fieldName){
-                    vm.searches.push("FieldName: " + data.fieldName);
+                    vm.searches.push("Field Name: " + data.fieldName);
                     vm.filterFieldName = data.fieldName;
                 }
 
                 if(data.modifiedBy){
-                    vm.searches.push("ModifiedBy: " + data.modifiedBy);
+                    vm.searches.push("Modified By: " + data.modifiedBy);
                     vm.filterModifiedBy = data.modifiedBy;
                 }
 
                 if(data.modifiedDate){
-                    vm.searches.push("ModifiedDate: " + data.modifiedDate);
+                    vm.searches.push("Modified Date: " + data.modifiedDate);
                     vm.filterModifiedDate = data.modifiedDate;
                 }
 
@@ -197,6 +201,8 @@
             if(vm.searches.length === 0 || actionType === 'All'){
                 $rootScope.$emit('remove-project-filter', { type: ['All'] });
                 clearProjectHistory(null, null);
+                getProjectHistory();
+
             }
             else {
                 combinedStr = '';
@@ -205,22 +211,22 @@
                     combinedStr += search;
                 });
 
-                if(!combinedStr.includes('StepName')){
+                if(!combinedStr.includes('Step Name')){
                     types.push('StepName');
                     vm.filterStepId = null;
                 }
 
-                if(!combinedStr.includes('FieldName')){
+                if(!combinedStr.includes('Field Name')){
                     types.push('FieldName');
                     vm.filterFieldName = null;
                 }
 
-                if(!combinedStr.includes('ModifiedBy')){
+                if(!combinedStr.includes('Modified By')){
                     types.push('ModifiedBy');
                     vm.filterModifiedBy = null;
                 }
 
-                if(!combinedStr.includes('ModifiedDate')){
+                if(!combinedStr.includes('Modified Date')){
                     types.push('ModifiedDate');
                     vm.filterModifiedDate = null;
                 }
