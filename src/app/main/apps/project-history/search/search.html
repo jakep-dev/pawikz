@@ -16,45 +16,50 @@
         </md-toolbar>
 
         <div layout="column" layout-padding>
-            <md-input-container class="md-accent">
+            <md-input-container class="md-accent ms-filter-input-text">
                 <label class="font-size-20"><strong>Step</strong></label>
                 <md-select ng-model="vm.selectedStep" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.steps, 'STEPS')">
                     <md-option><em>None</em></md-option>
-                    <md-option layout-padding ng-repeat="step in vm.steps" value="{{step.name}}" close-tooltips>
+                    <md-option class="ms-filter-data" layout-padding ng-repeat="step in vm.steps" value="{{step.name}}" close-tooltips>
                         {{step.name}}
                     </md-option>
                 </md-select>
             </md-input-container>
 
-            <md-input-container class="md-accent">
+            <md-input-container class="md-accent ms-filter-input-text">
                 <label class="font-size-20"><strong>Field Name</strong></label>
                 <md-select ng-model="vm.selectedFieldName" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.fieldNames, 'FIELD_NAME')" >
                     <md-option><em>None</em></md-option>
-                    <md-option layout-padding ng-repeat="fieldName in vm.fieldNames" value="{{fieldName.name}}">{{fieldName.name}}</md-option>
+                    <md-option class="ms-filter-data" layout-padding ng-repeat="fieldName in vm.fieldNames" value="{{fieldName.name}}">
+                        <md-tooltip md-direction="left">
+                            {{fieldName.name}}
+                        </md-tooltip>
+                        {{fieldName.name}}
+                    </md-option>
                 </md-select>
             </md-input-container>
 
-            <md-input-container class="md-accent">
+            <md-input-container class="md-accent ms-filter-input-text">
                 <label class="font-size-20"><strong>Modified By</strong></label>
                 <md-select ng-model="vm.selectedModifiedBy" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.modifiedBys, 'MODIFIED_BY')" >
                     <md-option><em>None</em></md-option>
-                    <md-option layout-padding ng-repeat="modifiedBy in vm.modifiedBys" value="{{modifiedBy.name}}">{{modifiedBy.name}}</md-option>
+                    <md-option class="ms-filter-data" layout-padding ng-repeat="modifiedBy in vm.modifiedBys" value="{{modifiedBy.name}}">{{modifiedBy.name}}</md-option>
                 </md-select>
             </md-input-container>
 
-            <md-input-container class="md-accent">
+            <md-input-container class="md-accent ms-filter-input-text">
                 <label class="font-size-20"><strong>Modified Date</strong></label>
                 <md-select ng-model="vm.selectedModifiedDate" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.modifiedDates, 'MODIFIED_DATE')" >
                     <md-option><em>None</em></md-option>
-                    <md-option layout-padding ng-repeat="modifiedDate in vm.modifiedDates" value="{{modifiedDate.name}}">{{modifiedDate.name}}</md-option>
+                    <md-option class="ms-filter-data" layout-padding ng-repeat="modifiedDate in vm.modifiedDates" value="{{modifiedDate.name}}">{{modifiedDate.name}}</md-option>
                 </md-select>
             </md-input-container>
 
-            <md-input-container class="md-accent">
+            <md-input-container class="md-accent ms-filter-input-text">
                 <label class="font-size-20"><strong>Action</strong></label>
                 <md-select ng-model="vm.selectedAction" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.actions, 'ACTION')" >
                     <md-option><em>None</em></md-option>
-                    <md-option layout-padding ng-repeat="action in vm.actions" value="{{action.name}}">{{action.name}}</md-option>
+                    <md-option class="ms-filter-data" layout-padding ng-repeat="action in vm.actions" value="{{action.name}}">{{action.name}}</md-option>
                 </md-select>
             </md-input-container>
         </div>
