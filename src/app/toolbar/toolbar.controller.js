@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function ToolbarController($scope, $mdSidenav, $interval, toast,
-                               store, commonBusiness, notificationBusiness, msNavFoldService)
+                               store, commonBusiness, notificationBusiness, msNavFoldService, overviewBusiness)
     {
         var vm = this;
         vm.userName = '';
@@ -155,6 +155,8 @@
 
         function stepSaveAll(){
             commonBusiness.emitMsg('step-save-all');
+            overviewBusiness.save(); 
+            overviewBusiness.cancelPromise(); 
         }
 
         function previousStep(){
