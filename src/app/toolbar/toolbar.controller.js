@@ -7,7 +7,7 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($scope, $mdSidenav, $interval,
+    function ToolbarController($scope, $mdSidenav, $interval, toast,
                                store, commonBusiness, notificationBusiness, msNavFoldService)
     {
         var vm = this;
