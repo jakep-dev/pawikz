@@ -54,6 +54,8 @@
         //Get server call project history details
         function getProjectHistory()
         {
+            vm.historyList = [];
+            vm.completeHistoryData = [];
             projectHistoryBusiness.get(projectId, commonBusiness.userId, 0, 20000, vm.filterStepId,
                 vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
                 (overviewBusiness.templateOverview === null)).then(function(response){
