@@ -113,9 +113,10 @@
                                 projectId: saveStepContext.stepMnemonics.projectId,
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 userId: saveStepContext.stepMnemonics.userId,
-                                ssnid: saveStepContext.stepMnemonics.token,
+                                ssnid: saveContext.token,
                                 mnemonics: context.mnemonics
                             },
+                            
                             headers: { 'Content-Type': 'application/json' }
                         };
 
@@ -201,7 +202,8 @@
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 mnemonic: tableMnemonic.mnemonic,
                                 itemId: tableMnemonic.itemId,
-                                table: context.addedRows
+                                table: context.addedRows,
+                                ssnid: saveContext.token
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
@@ -250,7 +252,8 @@
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 mnemonic: tableMnemonic.mnemonic,
                                 itemId: tableMnemonic.itemId,
-                                table: context.updatedRows
+                                table: context.updatedRows,
+                                ssnid: saveContext.token
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
@@ -298,7 +301,8 @@
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 mnemonic: tableMnemonic.mnemonic,
                                 itemId: tableMnemonic.itemId,
-                                table: context.deletedRows
+                                table: context.deletedRows,
+                                ssnid: saveContext.token
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
