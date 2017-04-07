@@ -9,13 +9,13 @@
         .factory('newsBusiness', newsBusiness);
 
     /* @ngInject */
-    function newsBusiness(newsService, dialog, commonBusiness) {
+    function newsBusiness(newsService, dialog, commonBusiness, clientConfig) {
 
         var business = {
-            selectedNews: [],
+            selectedArticles : [],
             showArticleContent: showArticleContent,
             bookmarkNewsArticle: bookmarkNewsArticle,
-            alertMessage: alertMessage
+            removeBookmark: removeBookmark
         };
 
         return business;
@@ -30,38 +30,17 @@
             });
         }
 
-
-        function alertMessage(scope) {
-            var val = false;
-
-            _.filter(scope, function(article) {
-                if (article.isSelected) {
-                    val = article.isSelected;
-                }
-            });
-
-            if (!val) {
-                dialog.alert("Bookmark News", "Please select news item(s)",
-                    null, {
-                        ok: {
-                            name: 'ok',
-                            callBack: function() {}
-                        }
-                    }, '', null, null);
-                dialog.close();
-            }
-        }
-
-        function bookmarkNewsArticle(scope, validation) {
-            if (validation) {
-                dialog.confirm('Bookmark News', 'Are you sure you want to include the full text of the checked article(s) in your work-up?', null, {
+        function bookmarkNewsArticle(scope, onBookmarkNewsArticleStart, onBookmarkNewsArticleComplete) {
+            
+                dialog.confirm(clientConfig.messages.newsArticle.bookmarkNewsItem.title, 
+                                clientConfig.messages.newsArticle.bookmarkNewsItem.content , null, {
                     ok: {
                         name: 'yes',
                         callBack: function() {
 
-                            // toggleCollapse();
-
-                            // commonBusiness.emitMsg('-Collapsed');
+                            if (onBookmarkNewsArticleStart) {
+                                onBookmarkNewsArticleStart();
+                            }
 
                             var selectAttachment = [];
                             _.each(scope, function(article) {
@@ -81,9 +60,10 @@
                             });
 
                             newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
-                                function(response) {
-                                    business.selectedNews.push.apply(business.selectedNews, selectAttachment);
-                                    commonBusiness.emitMsg('news-bookmark');
+                                function (response) {
+                                    onBookmarkNewsArticleComplete(selectAttachment);
+                                    //business.selectedNews.push.apply(business.selectedNews, selectAttachment);
+                                    //commonBusiness.emitMsg('news-bookmark');
                                 }
                             );
 
@@ -98,9 +78,51 @@
                         }
                     }
                 });
-            } else {
-                alertMessage(scope);
-            }
+        }
+
+         function removeBookmark(scope, callback) {
+
+            dialog.confirm(clientConfig.messages.newsArticle.deleteNewsItem.title, 
+                           clientConfig.messages.newsArticle.deleteNewsItem.content, null, {
+                ok: {
+                    name: 'yes',
+                    callBack: function() {
+
+                        var removeAttachment = [];
+
+                        _.each(scope, function(details) {
+
+                            if(details.isSelected){
+                                removeAttachment.push({
+                                    bookmarkId: details.bookmarkId,
+                                    resourceId: details.resourceId,
+                                    stepId: details.stepId
+                                });
+                            }
+
+                            
+                        });
+
+                        console.log(removeAttachment);
+
+                        newsService.deleteAttachedArticles(commonBusiness.projectId, commonBusiness.userId, removeAttachment).then(
+                            function(response) {
+                                console.log(response);
+                                callback();
+                            }
+                        );
+
+                        dialog.close();
+
+                    }
+                },
+                cancel: {
+                    name: 'no',
+                    callBack: function() {
+                        return false;
+                    }
+                }
+            });
         }
     }
 })();

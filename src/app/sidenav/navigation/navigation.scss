@@ -291,6 +291,10 @@ $navigationFoldedWidth: 64px;
                             .logo-text {
                                 display: none;
                             }
+
+                            .notification-center-text{
+                                display: none;
+                            }
                         }
 
                         ms-nav {
@@ -320,6 +324,11 @@ $navigationFoldedWidth: 64px;
                                     > .ms-nav-label,
                                     > .ms-nav-badge,
                                     > .arrow {
+                                        opacity: 0;
+                                        visibility: hidden;
+                                    }
+
+                                    > .ms-nav-hide{
                                         opacity: 0;
                                         visibility: hidden;
                                     }

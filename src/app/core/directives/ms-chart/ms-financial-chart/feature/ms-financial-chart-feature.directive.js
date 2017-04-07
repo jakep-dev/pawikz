@@ -555,7 +555,7 @@
                                                         ratioValue = dateItem[fullName];
                                                         legendItem = legendItems[i].legendItem;
                                                         if (ratioValue) {
-                                                            legendItem.attr({ text: (_.unescape(series.name) + ' ' + $filter("number")(ratioValue, 2)) });
+                                                            legendItem.attr({ text: (_.unescape(series.name) + ' ' + $filter("number")(ratioValue.ratio_value, 2)) });
                                                         } else {
                                                             legendItem.attr({ text: (_.unescape(series.name) + ' N/A') });
                                                         }
@@ -599,7 +599,7 @@
                                             }
                                             finalName = _.unescape(finalName);
                                             if (ratioValue) {
-                                                tooltipText += "<br/>" + finalName + ':' + $filter("number")(ratioValue, 2);
+                                                tooltipText += "<br/>" + finalName + ':' + $filter("number")(ratioValue.ratio_value, 2);
                                             } else {
                                                 tooltipText += "<br/>" + finalName + ': N/A';
                                             }

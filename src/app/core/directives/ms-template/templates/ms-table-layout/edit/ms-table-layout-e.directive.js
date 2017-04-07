@@ -8,7 +8,7 @@
 
 
     /** @ngInject */
-    function msTablelayoutEDirective($compile, templateService, commonBusiness, DTOptionsBuilder)
+    function msTablelayoutEDirective($compile, templateService, templateBusiness, commonBusiness, DTOptionsBuilder)
     {
         return {
             restrict: 'E',
@@ -58,12 +58,13 @@
                     var data = response.dynamicTableDataResp;
                     if(!data)
                     {
-                        html += '<div flex>';
-                        html += '<ms-message message="No data available"></ms-message>';
+                        html += '<div layout="row" layout-align="center center" layout-padding>';
+                        html += '<span>No data available</span>';
                         html += '</div>';
                     }
                     else {
-
+                        templateBusiness.updateTableLayoutMnemonics(commonBusiness.projectId, scope.mnemonicid, scope.itemid, data);
+                        
                         dtDefineOptions(scope);
                         dtDefineColumn(scope);
 

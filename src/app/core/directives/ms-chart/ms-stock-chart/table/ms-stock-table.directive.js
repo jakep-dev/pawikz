@@ -14,12 +14,13 @@
     }
 
     /** @ngInject */
-    function msStockTableDirective($compile, stockService, commonBusiness, DTOptionsBuilder, DTColumnDefBuilder)
+    function msStockTableDirective($compile, $timeout, stockService, commonBusiness, DTOptionsBuilder, DTColumnDefBuilder)
     {
         return {
             restrict : 'E',
             scope : {
-                table: '='
+                table: '=',
+                onTableUpdate: '&'
             },
             templateUrl : 'app/core/directives/ms-chart/ms-stock-chart/table/ms-stock-table.html',
             controller : 'msStockTableController',
@@ -151,6 +152,11 @@
                             .withOption('info', true)
                             .withOption('responsive', true)
                             .withPaginationType('full')
+                            .withOption('drawCallback', function(){
+                                $timeout(function(){
+                                    expandedDescription($scope, $scope.dtInstance.DataTable, el);
+                                }, 1000);
+                            })
                             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
             var sortedColumn = 0;
@@ -165,11 +171,12 @@
                 default : break; 
             }
 
+            buildRows($scope);
+
             if($scope.table.isDefaultChart)
             {
                 $scope.dtColumnDefs.push(DTColumnDefBuilder.newColumnDef(0).notSortable());
                 sortedColumn = sortedColumn + 1;
-                buildRows($scope);
             }
 
             $scope.dtOptions.withOption('sorting', [sortedColumn, 'desc']);
@@ -182,12 +189,89 @@
 
             el.find('#ms-stock-table').append($compile(html)($scope));
         }
+        
+        //expand description on table reDraw/change
+        function expandedDescription($scope, table, element) {
+            if(table) {
+                var tableRows = element.find('tbody').find('tr');
+                _.each(tableRows, function(row){
+                    var rowId = (row && row.attributes && row.attributes['table-id'] && row.attributes['table-id'].value)? row.attributes['table-id'].value : null;
+                    if(rowId) {
+                        var newScope = $scope.$new(true);  
+                        var isExpanded = false; 
+
+                        switch($scope.table.source.value){
+                            case 'SIGDEV':
+                                var rowDetail = _.find($scope.table.rows, function(detail)
+                                {
+                                    return (parseInt(detail.sigDevId) === parseInt(rowId));
+                                });
+                                
+                                if(rowDetail) {
+                                    isExpanded = rowDetail.IsExpanded;
+                                    var tr = table.row(row);
+                                    if ((!tr.child.isShown()) && isExpanded) {
+                                        newScope.data = {};
+                                        stockService.getSignificantDevelopmentDetail(rowDetail.sigDevId)
+                                        .then(function(response){
+                                            
+                                            if(response.detail){
+                                                newScope.data.detail = response.detail;
+                                            }else{
+                                                newScope.data.detail = "No Data Available";
+                                            }
+
+                                            
+                                            tr.child($compile('<ms-stock-table-ci></ms-stock-table-ci>')(newScope)).show();
+                                        });
+                                    
+                                    }
+                                }
+
+                            break;
+
+                            case 'MASCAD':
+                                var rowDetail = _.find($scope.table.rows, function(detail)
+                                {
+                                    return (parseInt(detail.mascadId) === parseInt(rowId));
+                                });
+                                
+                                if(rowDetail) {
+                                    isExpanded = rowDetail.IsExpanded;
+                                    var tr = table.row(row);
+                                    if ((!tr.child.isShown()) && isExpanded) {
+                                        newScope.data = {};
+                                        stockService.getMascadLargeLosseDetail(rowDetail.mascadId)
+                                        .then(function(response){
+                                            if(response.detail){
+                                                newScope.data.detail = response.detail;
+                                            }else{
+                                                newScope.data.detail = "No Data Available";
+                                            }
+                                            tr.child($compile('<ms-stock-table-ci></ms-stock-table-ci>')(newScope)).show();
+                                        });
+                                    }
+                                }
+                            break;
+
+                        }
+
+                        var tr = table.row(row);
+                        if ((!tr.child.isShown()) && isExpanded) {
+                            tr.child($compile('<ms-stock-table-ci></ms-stock-table-ci>')(newScope)).show();
+                        }
+                    }
+                });
+            }
+        }
 
         function buildRows($scope)
         {
             angular.forEach($scope.table.rows, function(eachRow)
             {
                eachRow.IsChecked = false;
+               eachRow.tl_status = eachRow.tl_status || 'N';
+               eachRow.IsExpanded = (eachRow.tl_status && eachRow.tl_status === 'Y') || false;
             });
         }
 
@@ -218,9 +302,10 @@
         function defineBodyLayout($scope)
         {
             var html = '';
+            var id = ($scope.table.source.value === 'SIGDEV') ? 'sigDevId' : 'mascadId';
 
             html += '<tbody>';
-            html += '<tr ng-repeat="row in table.rows">';
+            html += '<tr ng-repeat="row in table.rows" table-id="{{row.' + id + '}}">';
             
             if($scope.table.isDefaultChart)
             {
@@ -245,9 +330,11 @@
             var newScope = $scope.$new(true);
             newScope.data = {};
 
+            row.IsExpanded = !row.IsExpanded;
+            row.tl_status = (row.IsExpanded)? 'Y' : 'N';
+
             switch($scope.table.source.value){
                 case 'SIGDEV':
-
                     stockService.getSignificantDevelopmentDetail(row.sigDevId)
                     .then(function(response){
 
@@ -286,6 +373,8 @@
             else {
                 row.child($compile('<ms-stock-table-ci></ms-stock-table-ci>')(newScope)).show();
             }
+
+            $scope.onTableUpdate();
         }
 
         function calculateHeaderSelection($scope)

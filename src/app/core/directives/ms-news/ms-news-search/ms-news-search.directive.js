@@ -3,75 +3,88 @@
 
     angular
         .module('app.core')
-        .controller('msNewsSearchController', msNewsSearchController)
+        .controller('MsNewsSearchController', MsNewsSearchController)
         .directive('msNewsSearch', msNewsSearchDirective);
 
-    function msNewsSearchController($scope, $attrs, DTColumnDefBuilder, DTColumnBuilder, $stateParams,
-        DTOptionsBuilder, $mdDialog, commonBusiness, newsBusiness, templateService, newsService, dialog, templateBusiness, $http, $element, $compile) {
-
+    /** @ngInject */
+    function MsNewsSearchController($scope, $element, $compile, $mdDialog, $interval,
+                                    DTColumnDefBuilder, DTOptionsBuilder, 
+                                    commonBusiness, newsBusiness, newsService) {
         var vm = this;
+        var validate = false;
 
-        vm.resultDetails = [];
+        vm.resultDetails = $scope.resultDetails;
         vm.company = '';
         vm.articlesFound = '';
         vm.articlesShown = '';
         vm.date = '';
         vm.period = '';
         vm.sortVal = 'D';
+        vm.loadData = null;
+        vm.loadingValue = null;
+        vm.reloadValue = false;
+        vm.newsSearchTableId = '_' + $scope.newsSearchTableId;
+        vm.attachments = [];
 
-        vm.bookmarkNews = bookmarkNews;
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
         vm.newsSelection = newsSelection;
-        var validate = false;
+        vm.initialize = initialize;
 
-        dataTableConfiguration();
-        initializeActionButtons();
+        vm.registerNewsSearchCallback = $scope.registerNewsSearchCallback;
+        vm.onSearchComplete = $scope.onSearchComplete;
+        vm.setBookmarkButtonDisableStatus = $scope.setBookmarkButtonDisableStatus;
 
-        function initializeActionButtons() {
-            commonBusiness.onMsg('-Bookmark', $scope, function(ev) {
-                (validate) ? bookmarkNews(): confirmationMessage();
-            });
+        //Make initial call
+        initialize();
 
-            commonBusiness.onMsg('-Clear', $scope, function(ev) {
-                clearSelection();
-            });
+        function initialize()
+        {
+            vm.setBookmarkButtonDisableStatus(true);
+            dataTableConfiguration();
+        }
+
+        function startSearch() {
+            vm.loadData = true;
+            if (!vm.reloadValue) {
+                vm.reloadValue = true;
+                redrawDataTable();
+                initialize();
+            } else {
+                if (vm.onSearchComplete) {
+                    vm.onSearchComplete();
+                }
+            }
+        }
+        vm.startSearch = startSearch;
+        if (vm.registerNewsSearchCallback) {
+            vm.registerNewsSearchCallback(vm.startSearch);
         }
 
         function toggleCollapse() {
             vm.collapsed = !vm.collapsed;
         }
 
-        function clearSelection() {
-            _.each(vm.resultDetails, function(item) {
-                if (item.isSelected) {
-                    item.isSelected = false;
-                    validate = item.isSelected;
-                }
-            });
-        }
-
         function newsSelection() {
-            // function newsSelection() {
+            var selected = false;
+
+            vm.setBookmarkButtonDisableStatus(true);
 
             _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
-                    validate = item.isSelected;
+                    vm.attachments.push(item);
+                    selected = true;
                 }
-            });
+                newsBusiness.selectedArticles.push.apply(newsBusiness.selectedArticles, vm.attachments);
+            }); 
+            if (selected) {
+                vm.setBookmarkButtonDisableStatus(false);
+            }
         }
 
         function closeDialog() {
             $mdDialog.hide();
         };
-
-        function confirmationMessage() {
-            newsBusiness.alertMessage(vm.resultDetails);
-        }
-
-        function bookmarkNews() {
-            newsBusiness.bookmarkNewsArticle(vm.resultDetails, validate);
-        }
 
         function actionHtml(data, type, full, meta) {
 
@@ -93,7 +106,7 @@
 
         // Redraw datatable
         function redrawDataTable() {
-            var oTable = $('#newsPageDetails').dataTable();
+            var oTable = $element.find('#' + 'T_' + $scope.newsSearchTableId).dataTable();
             oTable.fnDraw();
         }
 
@@ -123,14 +136,13 @@
                 .withOption('createdRow', recompileHtml)
                 .withOption('initComplete', sort)
                 .withPaginationType('full')
-                .withDOM('<"top padding-10" <"left"<"length"l<"#newsPageDetails_sort">>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top padding-10" <"left"<"length"l<"#' + vm.newsSearchTableId + '_sort">>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
 
         function sort() {
             var html = '<label style="padding-left: 15px;">Sort by:</label>' +
                 '<select data-ng-options="o.name for o in options" ng-model="selectedOption" ng-change="vm.onSortChange(selectedOption)"></select>';
-            $element.find('#newsPageDetails_sort').append($compile(html)($scope));
-
+            $element.find('#' + vm.newsSearchTableId + '_sort').append($compile(html)($scope));
             $scope.options = [{
                     name: "Newest",
                     value: 'D',
@@ -142,7 +154,6 @@
                     id: 2
                 }
             ];
-
             $scope.selectedOption = $scope.options[0];
         }
 
@@ -154,8 +165,6 @@
         // Server Data callback for pagination
         function serverData(sSource, aoData, fnCallback, oSettings) {
 
-            $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = false;
-
             var draw = aoData[0].value;
             var columns = aoData[1].value;
             var start = aoData[3].value;
@@ -163,71 +172,101 @@
             var searchFilter = aoData[5].value.value;
             var pageNo = (start / length) + 1;
 
-            newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
+            if(vm.loadData){
+                newsService.search(commonBusiness.companyId, commonBusiness.userId, pageNo, vm.sortVal, searchFilter, length, $scope.searchName).then(function(response) {
 
-                var blankData = {
-                    rowId: '',
-                    isSelected: '',
-                    title: '',
-                    resourceId: '',
-                    publisher: '',
-                    summaryText: '',
-                    externalUrl: '',
-                    pubDate: ''
-                };
+                    var blankData = {
+                        rowId: '',
+                        isSelected: '',
+                        title: '',
+                        resourceId: '',
+                        publisher: '',
+                        summaryText: '',
+                        externalUrl: '',
+                        pubDate: ''
+                    };
 
-                vm.company = response.summary.company;
-                vm.articlesFound = response.summary.articlesFound;
-                vm.articlesShown = response.summary.articlesShown;
-                vm.date = response.summary.dateTime;
-                vm.period = response.summary.searchPeriod;
+                    vm.company = response.summary.company;
+                    vm.articlesFound = response.summary.articlesFound;
+                    vm.articlesShown = response.summary.articlesShown;
+                    vm.date = response.summary.dateTime;
+                    vm.period = response.summary.searchPeriod;
 
-                vm.resultDetails = [];
-                angular.forEach(response.results, function(details, index) {
+                    vm.resultDetails.length = 0;
+                    angular.forEach(response.results, function(details, index) {
 
-                    vm.resultDetails.push({
-                        rowId: index,
-                        isSelected: false,
-                        title: details.title,
-                        resourceId: details.resourceId,
-                        publisher: details.publisher,
-                        summaryText: details.summaryText,
-                        externalUrl: details.externalUrl,
-                        pubDate: details.pubDate
+                        vm.resultDetails.push({
+                            rowId: index,
+                            isSelected: false,
+                            title: details.title,
+                            resourceId: details.resourceId,
+                            publisher: details.publisher,
+                            summaryText: details.summaryText,
+                            externalUrl: details.externalUrl,
+                            pubDate: details.pubDate
+                        });
                     });
+
+                    var records = {
+                        draw: draw,
+                        recordsTotal: angular.isDefined(response) && angular.isDefined(response.summary) &&
+                            (response.summary !== null) ? response.summary.articlesFound : 0,
+                        recordsFiltered: angular.isDefined(response) && angular.isDefined(response.summary) &&
+                            (response.summary !== null) ? response.summary.articlesFound : 0,
+                        data: angular.isDefined(response) && angular.isDefined(response.results) &&
+                            vm.resultDetails !== null ? vm.resultDetails : blankData
+                    };
+                    if (vm.onSearchComplete) {
+                        vm.onSearchComplete();
+                    }
+                    fnCallback(records);
                 });
-
-                var records = {
-                    draw: draw,
-                    recordsTotal: angular.isDefined(response) && angular.isDefined(response.summary) &&
-                        (response.summary !== null) ? response.summary.articlesFound : 0,
-                    recordsFiltered: angular.isDefined(response) && angular.isDefined(response.summary) &&
-                        (response.summary !== null) ? response.summary.articlesFound : 0,
-                    data: angular.isDefined(response) && angular.isDefined(response.results) &&
-                        vm.resultDetails !== null ? vm.resultDetails : blankData
-                };
-
-
-                $scope.$parent.$parent.$parent.$parent.$parent.isprocesscomplete = true;
-
-                fnCallback(records);
-            });
+            }
         }
 
         function showArticleDetails(ev, title, exUrl) {
-
             newsBusiness.showArticleContent(title, exUrl);
         }
+
+        function insertTable() {
+            var element = $element.find('#newsPageDetails #ms-accordion-content');
+            if (element[0]) {
+                var html;
+                var id = 'T_' + $scope.newsSearchTableId;
+                html = '<table class="row-border cell-border table-bordered" ms-export width="100%" id="' + id + '" layout-padding datatable="" dt-options="vm.dtOptions" dt-column-defs="vm.dtColumnDefs"></table>';
+                element.append($compile(html)($scope));
+                //var e = $('#' + id);
+                //console.log(e[0]);
+            }
+        }
+
+        var promise = $interval(
+            function () {
+                var element = $element.find('#newsPageDetails #ms-accordion-content');
+                if (element[0]) {
+                    insertTable();
+                    $interval.cancel(promise);
+                } else {
+                    console.log('waiting for new-search-accordian to be created.');
+                }
+            },
+            50
+        );
     }
 
     /** @ngInject */
-    function msNewsSearchDirective($compile) {
+    function msNewsSearchDirective() {
         return {
             restrict: 'E',
             scope: {
+                resultDetails: '=',
+                registerNewsSearchCallback: '=',
+                onSearchComplete: '=',
+                setBookmarkButtonDisableStatus: '=',
+                newsSearchTableId: '=',
                 searchName: '@'
             },
-            controller: 'msNewsSearchController',
+            controller: 'MsNewsSearchController',
             controllerAs: 'vm',
             templateUrl: 'app/core/directives/ms-news/ms-news-search/ms-news-search.html'
         };

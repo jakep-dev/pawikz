@@ -23,6 +23,10 @@
             vm.onChartSave();
         };
 
+        vm.onTableUpdate = function(){
+            vm.onChartSave();
+        }
+
         $scope.$watch('vm.selectedSources + vm.selectedRange + vm.selectedDate', function (newValue, oldValue) {
             if(newValue !== oldValue){
                vm.tableInfo = defineTableInfo();
@@ -606,52 +610,6 @@
         };
 
         loadChartData();   
-
-        vm.onPeerRemove = function(peer) {
-            var indicesNdx;
-            vm.filterState.selectedIndices.some(function(ind, ndx) {
-                if (ind.indexOf(peer) === 0) {
-                    indicesNdx = ndx;
-                    return true;
-                }
-            });
-
-            if (indicesNdx >= 0) {
-                var selectedIndices = vm.filterState.selectedIndices;
-                selectedIndices.splice(indicesNdx, 1);
-                vm.filterState.selectedIndices = selectedIndices;
-                $scope.$broadcast('reloadIndices');
-            }
-
-            var competitorNdx;
-            vm.filterState.selectedCompetitors.some(function(competitor, ndx) {
-                if (competitor.indexOf(peer) === 0) {
-                    competitorNdx = ndx;
-                    return true;
-                }
-            });
-            if (competitorNdx >= 0) {
-                var selectedCompetitors = vm.filterState.selectedCompetitors;
-                selectedCompetitors.splice(competitorNdx, 1);
-                vm.filterState.selectedCompetitors = selectedCompetitors;
-                $scope.$broadcast('reloadCompetitors');
-            }
-
-            var peerIndex;
-            vm.filterState.selectedPeers.some(function(eachpeer, ndx) {
-                if (eachpeer.indexOf(peer) === 0) {
-                    peerIndex = ndx;
-                    return true;
-                }
-            });
-
-            if (peerIndex >= 0) {
-                vm.filterState.selectedPeers.splice(peerIndex, 1);
-                $scope.$broadcast('reloadPeers');
-            }
-
-            vm.onFilterStateUpdate();
-        };
 
         function defineTableInfo()
         {

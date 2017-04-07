@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app.core')
-            .directive('msWindowExit', function($window, $state, overviewBusiness, templateBusinessSave, clientConfig) {
+            .directive('msWindowExit', function ($window, $state, $cookies, clientConfig) {
                 return {
                     restrict: 'AE',
                     link: function(element, attrs){
@@ -12,10 +12,14 @@
                                 chkunload = $window.attachEvent ? 'onunload' : 'unload';/// make IE7, IE8 compatable
 
                             myEvent(chkevent, function (e) { // For >=IE7, Chrome, Firefox
+                                for (var x in $cookies) { $cookies.remove(x); }
+                                $window.localStorage.clear();
                                 clientConfig.socketInfo.socket.disconnect();
                             });
 
                             myEvent(chkunload, function (e) { // For >=IE7, Chrome, Firefox
+                                for (var x in $cookies) { $cookies.remove(x); }
+                                $window.localStorage.clear();
                                 clientConfig.socketInfo.socket.disconnect();
                             });
                         }

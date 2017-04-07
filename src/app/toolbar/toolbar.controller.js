@@ -7,12 +7,18 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $scope, $mdSidenav, $stateParams, $location, $translate, $interval,
-                               store, toast, Idle,
-                               msNavFoldService, authService, commonBusiness, authBusiness, notificationBusiness)
+    function ToolbarController($scope, $mdSidenav, $interval, toast,
+                               store, commonBusiness, notificationBusiness, msNavFoldService, overviewBusiness)
     {
         var vm = this;
         vm.userName = '';
+        vm.url = '';
+        vm.menuIcon = '';
+        vm.menuName = '';
+        vm.companyId = null;
+        vm.companyName = null;
+        vm.workupName = null;
+        vm.menuMode = '';
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
@@ -20,7 +26,6 @@
         if(userDetails)
         {
             vm.userName = userDetails.fullName;
-            console.log('Start background listeners with userDetails.userId. [' + userDetails.userId + ']');
             notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
             notificationBusiness.listenToWorkUpStatus(userDetails.userId);
             notificationBusiness.listenToRenewStatus(userDetails.userId);
@@ -28,54 +33,83 @@
             promiseSetupListener = $interval(setupListeners, 1000);
         }
 
-        commonBusiness.onMsg('UserFullName', $scope, function(ev, data) {
-            vm.userName = data;
+        commonBusiness.onMsg('inject-main-menu', $scope, function(ev, data) {
+            vm.menuIcon = data.menuIcon;
+            vm.menuName = data.menuName;
+            vm.menuMode = data.menuMode;
+            vm.companyId = data.companyId || null;
+            vm.companyName = data.companyName || null;
+            vm.workupName = data.workupName || null;
+            vm.isProjectOverviewAllSelected = false;
+            vm.isStepExpanded = false;
+            vm.isProjectOverviewExpanded = false;
+
+            switch (vm.menuMode){
+                case 'Steps':
+                    listenToStepMessages();
+                    break;
+
+                default:break;
+            }
+        });
+
+        commonBusiness.onMsg('project-overview-set-selection', $scope, function(ev, data) {
+            vm.isProjectOverviewAllSelected = data;
+        });
+
+        commonBusiness.onMsg('project-step-set-selection', $scope, function(ev, data) {
+            vm.isPrintableAll = data;
         });
 
 
-        vm.selectedLanguage = {
-            'title'      : 'English',
-            'translation': 'TOOLBAR.ENGLISH',
-            'code'       : 'en',
-            'flag'       : 'gb'
-        };
-
-        // Data
-        $rootScope.global = {
-            search: ''
-        };
-
-        vm.languages = [
-            {
-                'title'      : 'English',
-                'translation': 'TOOLBAR.ENGLISH',
-                'code'       : 'en',
-                'flag'       : 'gb'
-            },
-            {
-                'title'      : 'Spanish',
-                'translation': 'TOOLBAR.SPANISH',
-                'code'       : 'es',
-                'flag'       : 'es'
-            }
-        ];
 
 
         // Methods
         vm.toggleSidenav = toggleSidenav;
         vm.toggleNavigationSidenavFold = toggleNavigationSidenavFold;
-        vm.logout = logout;
-        vm.setUserStatus = setUserStatus;
-        vm.changeLanguage = changeLanguage;
+        vm.dashboardReload = dashboardReload;
+        vm.saveAllProjectOverview = saveAllProjectOverview;
+        vm.flipProjectOverView = flipProjectOverView;
+        vm.toggleExpandProjectOverview = toggleExpandProjectOverview;
+        vm.flipSelectionOverview = flipSelectionOverview;
+        vm.pdfDownload = pdfDownload;
+        vm.renew = renew;
+        vm.projectHistory = projectHistory;
 
-        //////////
+        vm.previousStep = previousStep;
+        vm.nextStep = nextStep;
+        vm.stepSaveAll = stepSaveAll;
+        vm.printableAll = printableAll;
+        vm.stepToggleExpand = stepToggleExpand;
+        vm.loadMore = loadMore;
+
+        vm.downloadProjectHistory = downloadProjectHistory;
+
+
+        //Download Project History
+        function downloadProjectHistory(type){
+            switch (type){
+                case 'csv':
+                    commonBusiness.emitMsg('project-history-download-csv');
+                    break;
+
+                case 'pdf':
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        function loadMore(){
+            commonBusiness.emitMsg('step-load-more');
+        }
 
         function setupListeners() {
             var userDetails = store.get('user-info');
 
             if (userDetails) {
                 vm.userName = userDetails.fullName;
-                console.log('[setupListeners]Start background listeners with userDetails.userId. [' + userDetails.userId + ']');
                 notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
                 notificationBusiness.listenToWorkUpStatus(userDetails.userId);
                 notificationBusiness.listenToRenewStatus(userDetails.userId);
@@ -83,6 +117,91 @@
             } else {
                 console.log('[setupListeners]userId not available.');
             }
+        }
+
+        vm.isPrintableAll = false;
+        vm.isStepExpanded = false;
+        vm.isPrevDisabled = false;
+        vm.isNextDisabled = false;
+        function stepToggleExpand(){
+            vm.isStepExpanded = !vm.isStepExpanded;
+            commonBusiness.emitMsg('step-toogle-expand');
+        }
+
+        function listenToStepMessages(){
+            console.log('Hey am hitting here');
+            commonBusiness.onMsg('IsPrevDisabled', $scope, function(){
+                console.log('Fired');
+                console.log(commonBusiness.isPrevDisabled);
+                vm.isPrevDisabled = commonBusiness.isPrevDisabled;
+            });
+
+            commonBusiness.onMsg('IsNextDisabled', $scope, function(){
+                console.log('Fired');
+                console.log(commonBusiness.isNextDisabled);
+                vm.isNextDisabled = commonBusiness.isNextDisabled;
+            });
+        }
+
+        function printableAll(){
+            vm.isPrintableAll = !vm.isPrintableAll;
+            if(vm.isPrintableAll){
+                    toast.simpleToast('Section will show on pdf download');
+                } else {
+                    toast.simpleToast('Section will not show on pdf download');
+                }
+            commonBusiness.emitMsg('step-print-all');
+        }
+
+        function stepSaveAll(){
+            commonBusiness.emitMsg('step-save-all');
+            overviewBusiness.save(); 
+            overviewBusiness.cancelPromise(); 
+        }
+
+        function previousStep(){
+            commonBusiness.emitMsg('prev-step');
+        }
+
+        function nextStep(){
+            commonBusiness.emitMsg('next-step');
+        }
+
+        function dashboardReload(){
+            commonBusiness.emitMsg('dashboard-reload');
+        }
+
+        vm.isStepTabletMode = false;
+        vm.isProjectOverviewExpanded = false;
+        function saveAllProjectOverview(){
+            commonBusiness.emitMsg('project-overview-save-all');
+        }
+
+        function flipProjectOverView(){
+            vm.isStepTabletMode = !vm.isStepTabletMode;
+            commonBusiness.emitMsg('project-overview-flip');
+        }
+
+        function toggleExpandProjectOverview(){
+            vm.isProjectOverviewExpanded = !vm.isProjectOverviewExpanded;
+            commonBusiness.emitMsg('project-overview-toggle-expand');
+        }
+
+        function flipSelectionOverview(){
+            vm.isProjectOverviewAllSelected = !vm.isProjectOverviewAllSelected;
+            commonBusiness.emitMsg('project-overview-flip-selection');
+        }
+
+        function pdfDownload(){
+            commonBusiness.emitMsg('pdf-download');
+        }
+
+        function renew(){
+            commonBusiness.emitMsg('project-renew');
+        }
+
+        function projectHistory(){
+            commonBusiness.emitMsg('project-history');
         }
 
         /**
@@ -103,35 +222,6 @@
             event.preventDefault();
 
             msNavFoldService.toggleFold();
-        }
-
-        /**
-         * Sets User Status
-         * @param status
-         */
-        function setUserStatus(status)
-        {
-            vm.userStatus = status;
-        }
-
-        /**
-         * Logout Function
-         * Remove the stored token and navigate to login page
-         */
-        function logout()
-        {
-            authBusiness.logOut();
-        }
-
-        /**
-         * Change Language
-         */
-        function changeLanguage(lang)
-        {
-            vm.selectedLanguage = lang;
-            //Change the language
-            $translate.use(lang.code);
-            toast.simpleToast('Language changed to ' + lang.title + '!');
         }
     }
 

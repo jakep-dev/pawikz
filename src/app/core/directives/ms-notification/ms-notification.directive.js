@@ -9,7 +9,7 @@
 
     /** @ngInject */
     function msNotificationController(toast,
-                                      $location, $interval, $scope, 
+                                      $location, $interval, $scope, $window,
                                       commonBusiness, templateBusiness, notificationBusiness
                                      )
     {
@@ -17,15 +17,23 @@
 
         //Variables.
         vm.notifications = notificationBusiness.notifications;
+        vm.isNotification = false;
+        vm.navClass = '';
 
         //Functions
         vm.processNotification = processNotification;
+        vm.showNotifications = showNotifications;
         vm.close = close;
 
         //Refresh binding to immediately show pdf status changes
         commonBusiness.onMsg('update-notification-binding', $scope, function () {
             $scope.$apply();
         });
+
+        function showNotifications(){
+            vm.isNotification = !vm.isNotification;
+            vm.navClass = vm.isNotification ? 'nav-active' : '';
+        }
 
         function close(notification)
         {
@@ -43,33 +51,39 @@
             {
                 notificationBusiness.notifications.splice(not, not);
             }
-            else if(not == 0)
+            else if(not === 0)
             {
                 notificationBusiness.notifications.splice(not, 1);
             }
 
         }
 
+        //Process Notification based on type
         function processNotification(notification)
         {
-            switch (notification.type)
-            {
-                case 'Renewal':
-                case 'Create-WorkUp':
-                    $location.url('/overview/' + notification.url);
-                    notification.status = 'close';
-                    break;
+            if(notification.progress >= 100){
+                switch (notification.type)
+                {
+                    case 'Renewal':
+                    case 'Create-WorkUp':
+                        $location.url('/overview/' + notification.url);
+                        notification.status = 'close';
+                        break;
 
-                case 'PDF-Download':
-                    if(notification.status === 'complete')
-                    {
-                        templateBusiness.downloadTemplatePdf(notification.requestId, notification.title);
-                    }
-                    else if (notification.status === 'error') {
-                        toast.simpleToast("Issue with PDF Download. Please try again.");
-                    }
-                    notification.status = 'close';
-                    break;
+                    case 'PDF-Download':
+                        if(notification.status === 'complete')
+                        {
+                            templateBusiness.downloadTemplatePdf(notification.requestId, notification.title);
+                        }
+                        else if (notification.status === 'error') {
+                            toast.simpleToast("Issue with PDF Download. Please try again.");
+                        }
+                        notification.status = 'close';
+                        break;
+                }
+            }
+            else{
+                toast.simpleToast(notification.type + ' in-progress.');
             }
         }
     }

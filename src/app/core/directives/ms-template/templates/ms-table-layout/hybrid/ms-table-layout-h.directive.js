@@ -10,8 +10,8 @@
     function msTablelayoutHDirective($compile, $timeout, templateService, 
 									 commonBusiness, templateBusiness,
                                      DTOptionsBuilder, DTColumnDefBuilder, 
-									 toast, deviceDetector, 
-									 clientConfig, templateBusinessSave)
+									 toast, deviceDetector, clientConfig,
+									 templateBusinessFormat, templateBusinessSave)
     {
         return {
             restrict: 'E',
@@ -64,7 +64,7 @@
 
             angular.forEach(data, function(eachData)
             {
-               eachData.IsChecked = (eachData.TL_STATUS === 'Y');
+               eachData.IsChecked = (eachData.TL_STATUS === 'N');
             });
 
             $scope.data.push.apply($scope.data, data);
@@ -83,7 +83,7 @@
 		   
            if($scope.columns.length > 0)
            {
-				html += '<td><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();saveRow(row)"></md-checkbox></td>';
+				html += '<td style="width:1%"><md-checkbox class="no-margin-padding" aria-label="Select All" ng-model="row.IsChecked" ng-change="rowMakeSelection();saveRow(row)"></md-checkbox></td>';
                 angular.forEach($scope.columns, function(eachCol)
                 {
                     var tearSheetItem = eachCol.TearSheetItem;
@@ -125,12 +125,13 @@
 												'text="'+tearSheetItem.param.content+'" columnname="'+itemId+'"></ms-hybrid-checkbox>';
                                 break;
 							case 'GenericTextItem':
+								var formats = templateBusinessFormat.getHybridTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
 								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
-								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-text>';
+								html += '<ms-hybrid-text row="row" save="saveRow(row)" table-item-id="'+$scope.itemid+'" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
 								break;
 							case 'DateItem':
-								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "MM/DD/YYYY")}}</span>'; // remove formats for easy sorting & searching
-								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-calendar>';
+								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "M/D/YYYY")}}</span>'; // remove formats for easy sorting & searching
+								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" cell-update="cellUpdateDate()" columnname="'+itemId+'"></ms-hybrid-calendar>';
 								break;
 							case 'SingleDropDownItem':
 								var defaultValue = '';
@@ -153,6 +154,7 @@
 								html += '<ms-hybrid-dropdown ' +
 									'row="row" ' +
 									'save="saveRow(row)" ' +
+									'cell-update="cellUpdateDropdown()" ' +
 									'itemid="'+ itemId +'" ' +
 									'mnemonicid="'+ mnemonicId +'" ' +
 									'columnname="'+itemId+'" ' +
@@ -192,7 +194,7 @@
             {
                 html += '<thead>';
                 html += '<tr class="row">';
-                html += '<th><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" ' +
+                html += '<th style="width:1%"><md-checkbox ng-model="IsAllChecked" ng-change="makeSelections(this)" aria-label="select all" ' +
                     'class="no-padding-margin"></md-checkbox></th>';
                 angular.forEach($scope.header, function (header) {
                     html += '<th>';
@@ -210,21 +212,31 @@
 		{
 			var html = '';
 			var label = '';
+			var rows = [];
 			
-			if($scope.tearsheet && $scope.tearsheet.footer && $scope.tearsheet.footer.length > 0)
+			if($scope.tearsheet && $scope.tearsheet.footer)
 			{	
+				if($scope.tearsheet.footer.length) {
+					rows = $scope.tearsheet.footer;
+				}else {
+					rows.push($scope.tearsheet.footer);
+				}
+
 				html += '<tfoot>';
 				
-				angular.forEach($scope.tearsheet.footer, function(row) 
+				angular.forEach(rows, function(row) 
 				{
 					html += '<tr>';
-					var colspan = $scope.columns.length / row.col.length;
 					angular.forEach(row.col, function(eachCol)
 					{
+						var colspan = eachCol.colspan || 1;
 						var tearSheetItem = eachCol.TearSheetItem;
+						var classValue = 'align-left';
+                        classValue = templateBusinessFormat.getAlignmentForTableLayoutGenericTextItem(eachCol, classValue);
+						
 						if(tearSheetItem)
 						{
-							html += '<td colspan="' + colspan + '">';
+							html += '<td class="' + classValue + '" colspan="' + colspan + '">';
 							
 							var itemId = tearSheetItem.ItemId;
 							var mnemonicId = tearSheetItem.Mnemonic;
@@ -274,22 +286,43 @@
 				tooltip: 'Add Rows',
 				type: 'menu',
                 scope: $scope,
-                menus:[{
-						type: 'input', 
-						isNumeric: true, 
-						model: $scope.rowNumber,
-						min: 1,
-						max: 100,
-						setValue : function (number) {
-							$scope.rowNumber = number;
-						}
-                    },
-                    {
-                        type: 'button',
-                        icon: null,
-                        name: 'Add',
-                        callback: $scope.itemid + '-Add'
-                    }],
+                menus:[
+					{
+						type: 'button',
+						icon: null,
+						name: '1 row',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 1
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '5 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 5
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '10 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 10
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '15 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 15
+					},
+					{
+						type: 'button',
+						icon: null,
+						name: '20 rows',
+						callback: $scope.itemid + '-Add',
+						callbackParam: 20
+					}
+				],
 			});
 			
 			$scope.$parent.$parent.actions.push({
@@ -360,6 +393,15 @@
         function calculateHeaderSelection($scope)
         {
 			$scope.IsAllChecked = _.every($scope.rows, function(row) { return row.IsChecked; });
+
+			//get Header checkbox scope
+			//header scope is recreated when data table is redrawn
+			if($scope.dtInstance.DataTable){
+				var checkbox = angular.element($scope.dtInstance.DataTable.column(0).header()).find('md-checkbox').scope();
+				if(checkbox) {
+					checkbox.IsAllChecked = $scope.IsAllChecked;
+				}
+			}
         }
 
         function initializeMsg($scope)
@@ -390,8 +432,15 @@
             });	
 
             commonBusiness.onMsg($scope.itemid + '-Upload', $scope, function() {
-
-                excelUpload($scope);
+				toast.simpleToast("Please choose file!", 300);
+				if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        excelUpload($scope);
+                    }, 1000);
+                } else {
+                    excelUpload($scope);
+                }
+                
             });
 
             commonBusiness.onMsg($scope.itemid + '-Delete', $scope, function() {
@@ -399,9 +448,14 @@
                 deleteRows($scope);
             });
 
-            commonBusiness.onMsg($scope.itemid + '-Add', $scope, function() {
+            commonBusiness.onMsg($scope.itemid + '-Add', $scope, function(ev, data) {
+                $timeout(function(){
+                    addRows($scope, data);
+                }, 0);
+            });
 
-                addRows($scope);
+			commonBusiness.onMsg($scope.itemid + '-CellUpdate', $scope, function(ev, element) {
+				$scope.cellUpdate(element);
             });
         }
 
@@ -469,28 +523,23 @@
             resetDataCheck($scope);
 			calculateHeaderSelection($scope);
 
-		   toast.simpleToast("Cleared filter!");
+			if($scope.isExcelUpload === false) {
+				toast.simpleToast("Cleared filter!");
+			}
         }
 		
-		function addRows($scope)
+		function addRows($scope, rowNumber)
 		{
 			var maxSequence = getMaxSequence($scope);
-			if(!angular.isUndefined($scope.rowNumber))
-			{
-				for( var i = 0; i < $scope.rowNumber; i ++){
-					
-					var sequence = (maxSequence + i + 1) + '';
-					var rowObj = {
-						SEQUENCE : sequence,
-						IsChecked: false
-					};
-					
-					insertRow($scope, rowObj, sequence);				
-				}
-			}
-			else
-			{
-				toast.simpleToast("Invalid input");
+			for( var i = 0; i < rowNumber; i ++){
+				
+				var sequence = (maxSequence + i + 1) + '';
+				var rowObj = {
+					SEQUENCE : sequence,
+					IsChecked: true
+				};
+				
+				insertRow($scope, rowObj, sequence);				
 			}
 			
 		}
@@ -607,7 +656,6 @@
 			{
 				computeTotal($scope, mnemonic.summation, mnemonic.itemId);
 			});
-			//templateBusiness.getReayForAutoSaveHybridTable($scope.itemid, $scope.mnemonicid, rowObject, action, sequence);
 			templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, rowObject, clientConfig.uiType.tableLayout);
 		}
 		
@@ -618,7 +666,7 @@
 			{
 				if(eachRow[summation]) 
 				{
-					totalValue += parseInt(templateBusiness.removeFormatData(eachRow[summation], _.find($scope.subMnemonics, {mnemonic: summation})));
+					totalValue += Number(templateBusiness.removeFormatData(eachRow[summation], _.find($scope.subMnemonics, {mnemonic: summation})));
 				}
 			});
 			
@@ -631,23 +679,21 @@
 		
 		function excelUpload($scope)
 		{
-			toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#hybrid-upload');
+            var uploadElement = angular.element('#hybrid-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-				setTimeout(function () {
+				$timeout(function(){
+					uploadElement.off('change');
 					uploadElement.change(function()
 					{
-						setTimeout(function () {
-							$(this).off('change');
+						$timeout(function(){
 							angular.element('#btn-hybrid-upload').trigger('click');
-							//$('#btn-hybrid-upload').click();
-						}, 500);
+						}, 0);
 					});
+
 					uploadElement.click();
-				}, 500);
+				}, 0);
             }
 		}
 		
@@ -714,25 +760,25 @@
 
                                 if(findHeader)
                                 {
-                                  var value = content[findHeader.index];
+                                  var value = (_.find($scope.subMnemonics, {mnemonic: header.HMnemonic}).dataType === 'DATE')? templateBusiness.parseDate(content[findHeader.index], 'M/D/YYYY') : content[findHeader.index];
 								  objRow[header.HMnemonic] = value;
                                 }
 
                             });
 							
 							objRow.SEQUENCE = (rowCount + maxSequence) + ''; //add max sequence so it doesn't conflict on delete
+							objRow.IsChecked = true;
 							insertRow($scope, objRow, (rowCount + maxSequence) + '');
                         }
 						
                         rowCount++;
+                        message = 'Uploaded successfully!';
                     });
 
                     if(message)
                     {
-                        message = 'Uploaded successfully!';
+                    	toast.simpleToast(message);
                     }
-
-                    toast.simpleToast(message);
                 }
             }
 
@@ -741,12 +787,15 @@
 		
 		function setTLStatus(row)
 		{
-			row.TL_STATUS = (row.IsChecked && row.IsChecked === true)? 'Y' : 'N';
+			row.TL_STATUS = (row.IsChecked && row.IsChecked === true)? 'N' : 'C';
 		}
 		
 		function removeAllRows($scope){
 			
+			$scope.isExcelUpload = true;
 			clearFilter($scope);
+			$scope.isExcelUpload = false;
+
 			angular.forEach($scope.rows, function(row){
 				row.IsChecked = true;
 			});
@@ -787,7 +836,7 @@
 					
 					if(row[header.HMnemonic])
 					{
-						columnValue = row[header.HMnemonic];
+						columnValue = (_.find($scope.subMnemonics, {mnemonic: header.HMnemonic}).dataType === 'DATE')? templateBusiness.formatDate(row[header.HMnemonic], 'M/D/YYYY') : row[header.HMnemonic]; + '"';
 					}
 
 					if(colCount == $scope.header.length)
@@ -866,7 +915,10 @@
 
         function defineHybridLink(scope, el, attrs)
         {
-            var dataTableId = scope.itemid;
+			//disable excel download in ms-componenet
+        	scope.$parent.$parent.vm.isExcelDownloadable = false;
+            
+			var dataTableId = scope.itemid;
             /*if(scope.tearsheet.columns.length > 0)
             {*/
                 scope.$parent.$parent.isprocesscomplete = false;
@@ -907,7 +959,12 @@
                 templateService.getDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                     scope.mnemonicid, scope.itemid, columns).then(function(response) {
 
-                    var data = response.dynamicTableDataResp;
+                    var data = null; 
+					if(response.dynamicTableDataResp) {
+						data =  _.sortBy(response.dynamicTableDataResp, function(row){
+							return (row.SEQUENCE && parseInt(row.SEQUENCE) ) ? parseInt(row.SEQUENCE) : 0; 
+						});
+					}
 					
 					defineLayout(scope, el);
 					defineActions(scope);
@@ -928,6 +985,43 @@
 					{
 						setTLStatus(row);
 						saveRow(scope, row);
+					};					
+
+					scope.cellUpdate = function(element) {
+						//console.log(element);
+						if(scope.dtInstance.DataTable) {
+							scope.dtInstance.DataTable.cell(element.parent()[0]).invalidate().draw();
+						}
+					};
+
+					scope.cellUpdateDate = function() {
+						$timeout(function() {
+							var oTable = scope.dtInstance.dataTable;
+							if(oTable) {
+								var datePicker = angular.element(oTable).find('ms-hybrid-calendar')				
+								_.each(datePicker, function(eachItem, index){
+									var cell = angular.element(eachItem).parent();
+									if(cell) {
+										scope.dtInstance.DataTable.cell(cell).invalidate().draw();
+									}
+								});
+							}
+						}, 500);
+					};
+
+					scope.cellUpdateDropdown = function() {
+						$timeout(function() {
+							var oTable = scope.dtInstance.dataTable;
+							if(oTable) {
+								var datePicker = angular.element(oTable).find('ms-hybrid-dropdown')				
+								_.each(datePicker, function(eachItem, index){
+									var cell = angular.element(eachItem).parent();
+									if(cell) {
+										scope.dtInstance.DataTable.cell(cell).invalidate().draw();
+									}
+								});
+							}
+						}, 500);
 					};
 					
 					scope.formatDate = function(value, format)

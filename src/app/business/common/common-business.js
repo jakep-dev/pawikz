@@ -9,7 +9,7 @@
         .service('commonBusiness', commonBusiness);
 
     /* @ngInject */
-    function commonBusiness($rootScope, bottomSheetConfig) {
+    function commonBusiness($rootScope, bottomSheetConfig, Papa, deviceDetector, toast) {
         this.projectId = null;
         this.userId = null;
         this.stepId = null;
@@ -21,6 +21,9 @@
 
         var isTemplateExpandAll = false;
 		var isPrintableAll = false;
+        var isStepExpandAll = false;
+        var isPrevDisabled = false;
+        var isNextDisabled = false;
 
         var business = {
             emitMsg: emitMsg,
@@ -31,7 +34,8 @@
             defineBottomSheet: defineBottomSheet,
             goTop: goTop,
             resetBottomSheet: resetBottomSheet,
-            socketType: socketType
+            socketType: socketType,
+            explicitDownloadToCsv: explicitDownloadToCsv
         };
 
         Object.defineProperty(business, 'isTemplateExpandAll', {
@@ -46,7 +50,6 @@
             }
         });
 
-        var isStepExpandAll = false;
         Object.defineProperty(business, 'isStepExpandAll', {
             enumerable: true,
             configurable: false,
@@ -68,6 +71,30 @@
             set: function (value) {
                 isPrintableAll = value;
                 this.emitMsg('IsPrintable');
+            }
+        });
+
+        Object.defineProperty(business, 'isPrevDisabled', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return isPrevDisabled;
+            },
+            set: function (value) {
+                isPrevDisabled = value;
+                this.emitMsg('IsPrevDisabled');
+            }
+        });
+
+        Object.defineProperty(business, 'isNextDisabled', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return isNextDisabled;
+            },
+            set: function (value) {
+                isNextDisabled = value;
+                this.emitMsg('IsNextDisabled');
             }
         });
 
@@ -133,5 +160,25 @@
             return '';
         }
 
+        //Explicit download to csv
+        function explicitDownloadToCsv(headers, rows, elem, fileName){
+            var csvData = Papa.unparse({
+                fields: headers,
+                data: rows
+            });
+
+            if(!csvData || !elem || elem.length === 0 || !fileName){
+                return;
+            }
+
+            if (deviceDetector.browser === 'ie') {
+                window.navigator.msSaveOrOpenBlob(new Blob([csvData], {type: "text/plain;charset=utf-8;"}), fileName);
+            }else {
+                elem[0].download = fileName;
+                elem[0].href = 'data:application/csv,' + escape(csvData);
+                elem[0].click();
+            }
+            toast.simpleToast('Finished downloading - ' + fileName);
+        }
     }
 })();

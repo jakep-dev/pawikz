@@ -1,0 +1,61 @@
+<div>
+    <md-content>
+        <div layout="row" layout-align="center center" layout-sm="column" layout-padding  style="font-size: large">
+            <div><strong>Work-up Name:</strong> &nbsp;</div>
+            <div>{{vm.templateOverview.projectName}}</div>
+        </div>
+
+        <div id="overviewGrid" class="section-bg" layout="row" layout-xs="column">
+            <div  flex="auto">
+                <table class="simple" width="100%">
+                    <tbody>
+                    <tr>
+                        <td>Work-up ID: </td>
+                        <td>
+                            <span>{{ vm.templateOverview.projectId }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>Company Name:</td>
+                        <td>
+                            <span>{{ vm.templateOverview.companyName }}</span>
+                        </td>
+
+
+                    </tr>
+                    <tr>
+                        <td>Company Id:</td>
+                        <td>
+                            <span>{{ vm.templateOverview.companyId }}</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div  flex="auto">
+                <table class="simple" width="100%">
+                    <tbody>
+                    <tr>
+                        <td>Created By:</td>
+                        <td>
+                            <span>{{ vm.templateOverview.createdBy }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Created Date:</td>
+                        <td>
+                            <span>{{ vm.templateOverview.createdDate }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </md-content>
+</div>

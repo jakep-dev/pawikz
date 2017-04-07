@@ -17,6 +17,7 @@
                 'app.chart.financialchart.business',
                 'app.breadcrumb.business',
                 'app.auth.business',
-                'app.news.business'
+                'app.news.business',
+                'app.project-history.business'
             ]);
 })();

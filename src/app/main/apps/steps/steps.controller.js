@@ -18,6 +18,7 @@
         var projectId = $stateParams.projectId;
         var stepId = $stateParams.stepId;
         var stepName = $stateParams.stepName;
+        vm.stepId = stepId;
         $scope.stepId = stepId;
         $rootScope.isBottomSheet = true;
         bottomSheetConfig.url = 'app/main/apps/steps/sheet/steps-sheet.html';
@@ -36,9 +37,39 @@
         commonBusiness.stepName = stepName;
         $rootScope.projectId = $stateParams.projectId;
 
-        vm.TearSheetStep = null;
+        function defineMenuActions(){
+            commonBusiness.emitWithArgument("inject-main-menu", {
+                menuName: 'Step ' + stepId + ' : ' + unescape(stepName),
+                menuIcon: 'icon-menu',
+                menuMode: 'Steps',
+                companyId: commonBusiness.companyId,
+                companyName: commonBusiness.companyName,
+                workupName: commonBusiness.projectName
+            });
+             commonBusiness.emitWithArgument("project-step-set-selection", defineIsPrintableAll()); 
+        }
 
-        breadcrumbBusiness.title = unescape(stepName);
+        function defineIsPrintableAll() { 
+            var isSelectAll = true; 
+            if(overviewBusiness.templateOverview &&  
+                overviewBusiness.templateOverview.steps &&  
+                overviewBusiness.templateOverview.steps.length > 0) { 
+                     
+                var step = _.find(overviewBusiness.templateOverview.steps, {stepId: parseInt(stepId)} ); 
+                _.each(step.sections, function(section){ 
+                    if(section.value === false) { 
+                        isSelectAll = false; 
+                        return false; 
+                    } 
+                }); 
+            } 
+ 
+            commonBusiness.isPrintableAll = isSelectAll; 
+            return isSelectAll; 
+        }
+
+
+        vm.TearSheetStep = null;
 
         var userDetails = store.get('user-info');
 
@@ -56,8 +87,8 @@
             $scope.previousStep = previousStep;
             $scope.nextStep = nextStep;
             $scope.loadMore = loadMoreComponents;
-            $scope.isPrevDisabled = stepsBusiness.isPreviousStep(stepId, overviewBusiness.templateOverview.steps);
-            $scope.isNextDisabled = stepsBusiness.isNextStep(stepId, overviewBusiness.templateOverview.steps);
+            commonBusiness.isPrevDisabled = stepsBusiness.isPreviousStep(stepId, overviewBusiness.templateOverview.steps);
+            commonBusiness.isNextDisabled = stepsBusiness.isNextStep(stepId, overviewBusiness.templateOverview.steps);
             commonBusiness.defineBottomSheet('app/main/apps/steps/sheet/steps-sheet.html', $scope, true);
         }
 
@@ -83,13 +114,11 @@
         {
             stepsBusiness.get(projectId, stepId, commonBusiness.userId, (overviewBusiness.templateOverview === null)).then(function(response)
             {
-                console.log('GetSchemaAndData');
-                console.log(response);
                 if(response)
                 {
                     _.each(response, function(data)
                     {
-                       if(data.list)
+                       if(data.list)    
                        {
                            templateBusiness.mnemonics = data.list;
                        }
@@ -109,11 +138,14 @@
                                });
                            });
 
+                        //    defineMenuActions();
+
                        }
                        else if(data.header) {
                            vm.TearSheetStep = data;
                        }
                     });
+                    defineMenuActions();
                     defineBottomSheet();
                 }
             });

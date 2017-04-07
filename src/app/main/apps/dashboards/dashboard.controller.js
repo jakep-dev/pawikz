@@ -22,6 +22,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.userId = 0;
     vm.isRedrawFromDelete = false;
     vm.selectedProjectId = null;
+    vm.searches = [];
+
     $rootScope.passedUserId = $stateParams.userId;
     if ($stateParams.token != '') {
         $rootScope.passedToken = $stateParams.token;
@@ -35,22 +37,70 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     vm.initialize = initialize;
     vm.renewTemplate = renewTemplate;
     vm.toggleSidenav = toggleSidenav;
+    vm.filterAgain = filterAgain;
+    defineMenuActions();
+
+    function defineMenuActions(){
+        "use strict";
+        commonBusiness.emitWithArgument("inject-main-menu", {
+            menuName: 'My Work-ups',
+            menuIcon: 'fa fa-folder-open-o s16',
+            menuMode: 'Dashboard'
+        });
+
+        commonBusiness.onMsg("dashboard-reload", $scope, function(){
+           reload();
+        });
+    }
+
+
+
+    function filterAgain(name){
+        if(vm.searches.length === 0){
+            vm.companyId = 0;
+            vm.userId = 0;
+            commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
+
+        }
+        else{
+            var combinedStr = '';
+            _.each(vm.searches, function(search){
+                combinedStr += search;
+            });
+
+            if(!combinedStr.includes('Company')){
+                vm.companyId = 0;
+                commonBusiness.emitWithArgument("ClearFilter", {type: 'Company'});
+            }
+
+            if(!combinedStr.includes('User')){
+                vm.userId = 0;
+                commonBusiness.emitWithArgument("ClearFilter", {type: 'User'});
+            }
+        }
+
+        redrawDataTable();
+    }
 
 
 
     // Make Initial call
     vm.initialize($stateParams.isNav, $stateParams.token);
 
-    commonBusiness.onMsg('FilterDashboard', $scope, function() {
-        if(dashboardBusiness.isFilterDasboard){
-            vm.companyId = dashboardBusiness.searchCompanyId;
-            vm.userId = dashboardBusiness.searchUserId;
+    commonBusiness.onMsg('FilterMyWorkUp', $scope, function(ev, data) {
+        if(data) {
+            vm.companyId = data.companyId;
+            vm.userId = data.userId;
+            vm.searches = [];
+            if(parseInt(vm.companyId) !== 0){
+                vm.searches.push("Company: " + data.companyName);
+            }
+
+            if(parseInt(vm.userId) !== 0){
+                vm.searches.push("User: " + data.userName);
+            }
+            redrawDataTable();
         }
-        else {
-            vm.companyId = 0;
-            vm.userId = 0;
-        }
-        redrawDataTable();
     });
 
     commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
@@ -84,6 +134,16 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
 
     function recompileHtml(row, data, dataIndex) {
         $compile(angular.element(row).contents())($scope);
+    }
+
+    function autoResize(){
+        $(window).on("resize", function () {
+            var elem = $("#dashBoardDetails");
+            if(elem && elem.length > 0){
+                var tableRow = $("#dashBoardDetails").get(0).rows;
+                $compile(angular.element(tableRow).contents())($scope);
+            }
+        });
     }
 
     function renewTemplate()
@@ -213,19 +273,21 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 workUpStatus(response);
             }
         });
+        autoResize();
     }
 
     //Toggle Sidenav
     function toggleSidenav(sidenavId) {
         $mdSidenav(sidenavId).toggle();
-        $mdMenu.hide()
+        $mdMenu.hide();
     }
 
     // Clear search
     function reload() {
         vm.companyId = 0;
         vm.userId = 0;
-        dashboardBusiness.isClearDashboard = true;
+        vm.searches = [];
+        commonBusiness.emitWithArgument("ClearFilter", {type: 'All'});
         redrawDataTable();
         $mdMenu.hide();
     }
@@ -270,6 +332,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             dashboardService.get($stateParams.userId, vm.userId, vm.companyId,
                 start, length, sortOrder, sortFilter, searchFilter, $rootScope.projectId).then(function(data)
             {
+                console.log('Dashboard');
+                console.log(data);
 
                 var blankData = {
                     companyName: '',
@@ -356,8 +420,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 commonBusiness.emitWithArgument('UserFullName', response.fullName);
             });
         }
-
         dataTableConfiguration();
+        autoResize();
     }
 
     function initComplete()
@@ -371,8 +435,14 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         //Defining column definitions
         vm.dtColumnDefs = [
             DTColumnDefBuilder.newColumnDef(1).renderWith(dashboardBusiness.getWorkupHtml),
+            DTColumnDefBuilder.newColumnDef(4).renderWith(dashboardBusiness.getPlatformHtml),
             DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
+
+        // render data for browser resizing
+        var responsive = {details : 
+                { renderer : dashboardBusiness.renderHtml }
+            };
 
         //Dashboard DataTable Configuration
         vm.dtOptions = DTOptionsBuilder
@@ -386,21 +456,22 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('createdRow', recompileHtml)
             .withOption('paging', true)
             .withOption('autoWidth', true)
-            .withOption('responsive', true)
+            .withOption('responsive', responsive)
             .withOption('stateSave', true)
-            .withOption('order',[4, 'desc'])
+            .withOption('order',[3, 'desc'])
             .withPaginationType('full')
             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
         //Defining columns for dashboard
-        vm.dtColumns = [
+        vm.dtColumns = [    
             DTColumnBuilder.newColumn('companyName', 'Company Name'),
             DTColumnBuilder.newColumn('projectName', 'Work-up Name'),
-            DTColumnBuilder.newColumn('status', 'Status'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
             DTColumnBuilder.newColumn('lastUpdateDate', 'Last Updated'),
+            DTColumnBuilder.newColumn('isNewFramework', 'Platform'),
             DTColumnBuilder.newColumn('action', 'Action')
         ];
+        autoResize();
     }
 
     function dashboardRenewalUpdate(data) {

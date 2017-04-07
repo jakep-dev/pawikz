@@ -1,0 +1,27 @@
+
+/* Center the doc tool icons at the top */
+.docs-tools .md-button.md-icon-button {
+  min-height: 0;
+  height: auto;
+}
+
+.docs-anchor {
+  color: inherit;
+}
+
+.md-fab.docs-scroll-fab {
+  position: fixed !important;
+
+  -webkit-transform: scale(0);
+
+  transform: scale(0);
+  -webkit-transition: -webkit-transform 0.2s;
+  transition: -webkit-transform 0.2s;
+  transition: transform 0.2s;
+  transition: transform 0.2s, -webkit-transform 0.2s;
+}
+
+.docs-scroll-fab.scrolling {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}

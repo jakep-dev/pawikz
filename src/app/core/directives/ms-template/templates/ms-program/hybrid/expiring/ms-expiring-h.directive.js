@@ -50,7 +50,15 @@
                         $scope.$parent.$parent.isprocesscomplete = true;
 
                         $scope.rows = [];
-                        _.each(response.dynamicTableDataResp, function(row, index){
+
+                        var data = null; 
+                        if(response.dynamicTableDataResp) {
+                            data =  _.sortBy(response.dynamicTableDataResp, function(row){
+                                return (row.SEQUENCE && parseInt(row.SEQUENCE) ) ? parseInt(row.SEQUENCE) : 0; 
+                            });
+                        }
+
+                        _.each(data, function(row, index){
                             $scope.rows.push(buildRow($scope, row, index == 0));
                         });
 
@@ -89,6 +97,7 @@
                     $scope.rows[rowNumber][column].value = value;
                     
                     saveRow($scope, $scope.rows[rowNumber]);
+                    templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
                 }
             };
 
@@ -364,7 +373,7 @@
                 switch(tearSheetItem.id)
                 {
                     case 'GenericTextItem':
-                        var formats = templateBusinessFormat.getProgramTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
+                        var formats = templateBusinessFormat.getHybridTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
                         html += '<ms-program-text columnname="'+ itemId +'" rowid="{{$index}}" ' +
                             'row="row.'+ itemId + '" compute="calculate(currentRow, value, rowId, columnName)" ' +
                             'itemid="{{row.'+ itemId +'.itemid}}" ' +
@@ -383,7 +392,7 @@
                     case 'DateItem':
                             html += '<ms-program-calendar row="row" rowid="{{$index}}" ' +
                             'compute="updateDate(value, \'' + itemId + '\', rowId)" ' +
-                            'value="{{row.'+ itemId +'.value}}" ' + 
+                            'value="row.'+ itemId +'.value" ' + 
                             'columnname="'+itemId+'"></ms-program-calendar>';
                         break;
 
@@ -596,7 +605,7 @@
 
                 if ((currentRow.LIMIT.value != '') && (currentRow.PREMIUM.value != '') && !isNaN(computedAtt) && isFinite(computedAtt))
                 {
-                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 0);
+                    currentRow.RETAIN.value = $filter("currency")(computedAtt, '', 2);
                 }
                 else
                 {
@@ -670,7 +679,15 @@
             });
 
             commonBusiness.onMsg('EPH-Upload', $scope, function() {
-                uploadExcel();
+                toast.simpleToast("Please choose file!", 300);
+                if (deviceDetector.browser === 'ie') {
+                    $timeout(function () {
+                        uploadExcel();
+                    }, 1000);
+                } else {
+                    uploadExcel();
+                }
+                
             });
 
             commonBusiness.onMsg('EPH-Download', $scope, function() {
@@ -781,7 +798,9 @@
 
                 templateBusiness.updateProgramTableMnemonics(commonBusiness.projectId, $scope.mnemonic, $scope.itemId, angular.copy($scope.rows));
             } else {
-                toast.simpleToast(clientConfig.messages.programTableHybrid.deleteRow);
+                if($scope.isExcelUpload === false) {
+                    toast.simpleToast(clientConfig.messages.programTableHybrid.deleteRow);
+                }
             }
 		}
 
@@ -884,7 +903,15 @@
                         $scope.mnemonic, $scope.copyproposed, columns).then(function(response) {
                            
                             removeAllRows($scope);
-                            _.each(response.dynamicTableDataResp, function(row, index){
+
+                            var data = null; 
+                            if(response.dynamicTableDataResp) {
+                                data =  _.sortBy(response.dynamicTableDataResp, function(row){
+                                    return (row.SEQUENCE && parseInt(row.SEQUENCE) ) ? parseInt(row.SEQUENCE) : 0; 
+                                });
+                            }
+
+                            _.each(data, function(row, index){
                                 
                                 //sets sequence to its previous max sequence so that no conflict on delete condition  
                                 row.SEQUENCE = maxSequence + index + 1;
@@ -922,24 +949,21 @@
 
         function uploadExcel()
         {
-            toast.simpleToast("Please choose file!");
-
-            var uploadElement = $('#expiring-upload');
+            var uploadElement = angular.element('#expiring-upload');
 
             if(uploadElement && uploadElement.length > 0)
             {
-                    setTimeout(function () {
-                        uploadElement.change(function(e)
-                        {
-                            setTimeout(function () {
-                                $(this).off('change');
-                                angular.element('#btn-expiring-upload').trigger('click');
-                                // $('#btn-expiring-upload').click();
-                            }, 500);
-                        });
+                $timeout(function(){
+                    uploadElement.off('change');
+                    uploadElement.change(function(e)
+                    {
+                        $timeout(function(){
+                            angular.element('#btn-expiring-upload').trigger('click');
+                        }, 0);
+                    });
 
-                        uploadElement.click();
-                    }, 500);
+                    uploadElement.click();
+                }, 0);
             }
         }
 
@@ -1013,7 +1037,7 @@
                                 if(findHeader)
                                 {
                                     var value = (_.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic}).dataType === 'NUMBER') ? removeCommaValue(content[findHeader.index]): content[findHeader.index]; //;
-                                    if((value || value.length === 0)  && header.HMnemonic === 'RETAIN') {
+                                    if(header.HMnemonic === 'RETAIN' && !value) {
                                         value = '0.00';
                                     }
                                     makeColDef += '"'+header.HMnemonic + '":"' + value + '",';
@@ -1050,12 +1074,13 @@
 
 		function removeAllRows($scope){
 			
-			//clearFilter($scope);
 			_.each($scope.rows, function(row){
 				row.IsChecked = true;
 			});
 			
-			deleteRows($scope);
+            $scope.isExcelUpload = true;
+			deleteRows($scope);            
+            $scope.isExcelUpload = false;
 		}
 
         function resetUploadElement()

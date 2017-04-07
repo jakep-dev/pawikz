@@ -1,70 +1,20 @@
 <div id="dashboard-project" class="page-layout simple fullwidth white-bg" layout="row"
      ng-cloak md-swipe-left="vm.toggleSidenav('quick-panel')">
-    <!-- CENTER -->
-    <div class="center" flex>
-        <!-- WIDGET GROUP -->
-        <div class="widget-group" layout="row" flex layout-wrap>
 
-            <!-- WIDGET 10 -->
-            <ms-widget  layout="row" flex>
-
-                <!-- Front -->
-                <ms-widget-front class="white-bg">
-                    <div class="simple-table-container">
-                        <div>
-                            <div class="table-title" layout="row"  layout-align="space-between center">
-                                <div layout="row" layout-align="start center">
-                                    <md-icon md-font-icon="fa fa-folder-open-o"></md-icon>
-                                    <span style="margin-left: 10px;">My Work-ups</span>
-                                </div>
-
-                                <md-menu md-position-mode="target-right target">
-                                    <md-button aria-label="more" class="md-icon-button"
-                                               ng-click="$mdOpenMenu($event)">
-                                        <md-icon md-font-icon="icon-dots-vertical" style="float: right"></md-icon>
-                                    </md-button>
-
-                                    <md-menu-content>
-                                        <md-menu-item>
-                                            <md-button  aria-label="Filter widget" ng-click="vm.toggleSidenav('quick-panel')">
-                                              <span layout="row" layout-align="start center">
-                                                    <md-icon md-font-icon="icon-filter"></md-icon>
-                                                    <span>Filter</span>
-                                              </span>
-                                            </md-button>
-                                        </md-menu-item>
-                                        <md-menu-item>
-                                            <md-button  aria-label="Refresh widget" ng-click="vm.reload()">
-                                              <span layout="row" layout-align="start center">
-                                                <md-icon md-font-icon="icon-reload"></md-icon>
-                                                <span>Reload</span>
-                                              </span>
-                                            </md-button>
-                                        </md-menu-item>
-                                    </md-menu-content>
-                                </md-menu>
-                            </div>
-
-                            <md-divider></md-divider>
-
-                            <table class="row-border cell-border table-bordered" ms-export width="100%"
-                                   id="dashBoardDetails" layout-padding datatable="" dt-options="vm.dtOptions"
-                                   dt-column-defs="vm.dtColumnDefs" dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">
-
-                            </table>
-
-                        </div>
-                    </div>
-                </ms-widget-front>
-                <!-- / Front -->
-
-            </ms-widget>
-            <!-- / WIDGET 10 -->
-
+    <div class="center" flex layout-padding>
+        <div class="dashboard-filter-summary" layout-padding
+             ng-show="vm.searches && vm.searches.length > 0">
+            <span>Filter Criteria: </span>
+            <md-chips ng-model="vm.searches" ng-click="vm.filterAgain('')" readonly="true" md-removable="true"></md-chips>
         </div>
-        <!-- / WIDGET GROUP -->
-    </div>
-    <!-- / CENTER -->
 
+        <md-content class="div-content">
+                <table class="row-border cell-border table-bordered" ms-export width="100%"
+                       id="dashBoardDetails" layout-padding datatable="" dt-options="vm.dtOptions"
+                       dt-column-defs="vm.dtColumnDefs" dt-columns="vm.dtColumns" dt-instance="vm.dtInstanceCallback">
+
+                </table>
+        </md-content>
+    </div>
 
 </div>
