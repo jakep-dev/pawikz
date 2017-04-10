@@ -96,22 +96,10 @@
 
         //Download project history to Csv file
         function downloadToCsv(){
+            var table = vm.dtInstanceCallback.DataTable;
             var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
-            var rows = [];
-            _.each(vm.completeHistoryData, function(history){
-               var historyRow = [];
-                historyRow.push(history.logId);
-                historyRow.push(history.stepName);
-                historyRow.push(history.fieldName);
-                historyRow.push(history.oldValue);
-                historyRow.push(history.newValue);
-                historyRow.push(history.workupUsed);
-                historyRow.push(history.modifiedBy);
-                historyRow.push(history.modifiedDate);
-                historyRow.push(history.action);
-               rows.push(historyRow);
-            });
-
+            var rows = table.rows( { filter : 'applied'} ).data();
+            
             var linkElem = $('#project-history-download');
             var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
 
