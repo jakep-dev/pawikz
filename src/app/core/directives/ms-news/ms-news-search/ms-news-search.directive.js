@@ -44,6 +44,10 @@
             dataTableConfiguration();
         }
 
+        commonBusiness.onMsg('load-news-search', $scope, function(){
+            startSearch();
+        });
+
         function startSearch() {
             vm.loadData = true;
             if (!vm.reloadValue) {
