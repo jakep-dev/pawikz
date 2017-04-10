@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function ToolbarController($scope, $mdSidenav, $interval, toast,
-                               store, commonBusiness, notificationBusiness, msNavFoldService, overviewBusiness)
+                               store, commonBusiness, notificationBusiness, msNavFoldService, overviewBusiness, newsBusiness)
     {
         var vm = this;
         vm.userName = '';
@@ -43,6 +43,10 @@
             vm.isProjectOverviewAllSelected = false;
             vm.isStepExpanded = false;
             vm.isProjectOverviewExpanded = false;
+
+            // clear the content of an array in every navigation of the page, 
+            // purposed for delete news attachment 
+            newsBusiness.selectedArticles = [];
 
             switch (vm.menuMode){
                 case 'Steps':
