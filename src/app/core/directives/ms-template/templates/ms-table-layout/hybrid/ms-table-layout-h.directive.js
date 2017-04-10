@@ -29,7 +29,7 @@
             $scope.dtInstance = {};
             $scope.isTableShow = true;
             $scope.IsAllChecked = false;
-            var html = '<table id="tablelayout-hybrid" ng-show="isTableShow" width="100%" dt-instance="dtInstance" dt-options="dtOptions" ' +
+            var html = '<table id="tablelayout-hybrid-'+$scope.itemid+'" ng-show="isTableShow" width="100%" dt-instance="dtInstance" dt-options="dtOptions" ' +
                 'class="row-border hover highlight cell-border" dt-column-defs="dtColumnDefs" datatable="ng" cellpadding="1" cellspacing="0">';
 
             $scope.dtOptions = DTOptionsBuilder
@@ -41,6 +41,9 @@
                 .withOption('info', true)
                 .withOption('sorting', [])
                 .withOption('responsive', true)
+				.withOption('initComplete', function(){
+					onSearch($scope);
+				})
                 .withPaginationType('full')
                 .withDOM('<"top bottom padding-10 topTableLayout"<"left"<"length"l>><"right"f>>rt<"bottom padding-10 bottomTableLayout"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
@@ -57,6 +60,32 @@
 
             el.find('#ms-table-layout-hybrid').append($compile(html)($scope));
         }
+
+		function onSearch($scope) {
+			$('#tablelayout-hybrid-' + $scope.itemid + '_filter input').unbind();
+			$('#tablelayout-hybrid-' + $scope.itemid + '_filter input').bind('keyup input propertychange', function(e) {
+				
+				var search = this.value;				
+				var dataTabale = $scope.dtInstance.dataTable;
+				var oTable = $scope.dtInstance.DataTable;
+				oTable.search(search);
+				 
+				if(e.keyCode == 13 || search.length == 0) {
+
+					if(dataTabale) {
+						
+						var cells = angular.element(dataTabale).find('td');
+						_.each(cells, function(cell){
+							if(oTable) {
+								oTable.cell(cell).invalidate().draw();
+							}
+						});
+
+						oTable.search(search);
+					}
+				}
+			 });
+		}
 
         function buildRows($scope, data)
         {
@@ -127,11 +156,11 @@
 							case 'GenericTextItem':
 								var formats = templateBusinessFormat.getHybridTableFormatObject(tearSheetItem, _.find($scope.subMnemonics, {mnemonic: mnemonicId}));
 								html += '<span style="display:none">{{removeFormatData(row.'+ itemId + ', "'+ itemId + '")}} {{row.' + itemId + '}}</span>'; // remove formats for easy sorting & searching								
-								html += '<ms-hybrid-text row="row" save="saveRow(row)" table-item-id="'+$scope.itemid+'" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
+								html += '<ms-hybrid-text row="row" save="saveRow(row)" columnname="'+itemId+'" formats="' + _.escape(angular.toJson(formats)) + '"></ms-hybrid-text>';
 								break;
 							case 'DateItem':
 								html += '<span style="display:none">{{row.'+ itemId + '}} {{formatDate(row.'+ itemId + ', "M/D/YYYY")}}</span>'; // remove formats for easy sorting & searching
-								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" cell-update="cellUpdateDate()" columnname="'+itemId+'"></ms-hybrid-calendar>';
+								html += '<ms-hybrid-calendar row="row" save="saveRow(row)" columnname="'+itemId+'"></ms-hybrid-calendar>';
 								break;
 							case 'SingleDropDownItem':
 								var defaultValue = '';
@@ -154,7 +183,6 @@
 								html += '<ms-hybrid-dropdown ' +
 									'row="row" ' +
 									'save="saveRow(row)" ' +
-									'cell-update="cellUpdateDropdown()" ' +
 									'itemid="'+ itemId +'" ' +
 									'mnemonicid="'+ mnemonicId +'" ' +
 									'columnname="'+itemId+'" ' +
@@ -452,10 +480,6 @@
                 $timeout(function(){
                     addRows($scope, data);
                 }, 0);
-            });
-
-			commonBusiness.onMsg($scope.itemid + '-CellUpdate', $scope, function(ev, element) {
-				$scope.cellUpdate(element);
             });
         }
 
@@ -985,43 +1009,6 @@
 					{
 						setTLStatus(row);
 						saveRow(scope, row);
-					};					
-
-					scope.cellUpdate = function(element) {
-						//console.log(element);
-						if(scope.dtInstance.DataTable) {
-							scope.dtInstance.DataTable.cell(element.parent()[0]).invalidate().draw();
-						}
-					};
-
-					scope.cellUpdateDate = function() {
-						$timeout(function() {
-							var oTable = scope.dtInstance.dataTable;
-							if(oTable) {
-								var datePicker = angular.element(oTable).find('ms-hybrid-calendar')				
-								_.each(datePicker, function(eachItem, index){
-									var cell = angular.element(eachItem).parent();
-									if(cell) {
-										scope.dtInstance.DataTable.cell(cell).invalidate().draw();
-									}
-								});
-							}
-						}, 500);
-					};
-
-					scope.cellUpdateDropdown = function() {
-						$timeout(function() {
-							var oTable = scope.dtInstance.dataTable;
-							if(oTable) {
-								var datePicker = angular.element(oTable).find('ms-hybrid-dropdown')				
-								_.each(datePicker, function(eachItem, index){
-									var cell = angular.element(eachItem).parent();
-									if(cell) {
-										scope.dtInstance.DataTable.cell(cell).invalidate().draw();
-									}
-								});
-							}
-						}, 500);
 					};
 					
 					scope.formatDate = function(value, format)
