@@ -56,12 +56,17 @@
         {
             vm.historyList = [];
             vm.completeHistoryData = [];
+            var dataSorting;
             projectHistoryBusiness.get(projectId, commonBusiness.userId, 0, 20000, vm.filterStepId,
                 vm.filterFieldName, vm.filterModifiedBy, vm.filterModifiedDate, vm.filterAction,
                 (overviewBusiness.templateOverview === null)).then(function(response){
                 if(response){
                     _.each(response, function(data){
                         if(data.historyList){
+                            _.each(data.historyList, function(list){
+                                    dataSorting = parseInt(list.stepName.split('.')[0].trim());
+                                    list["sortStepName"] = dataSorting;
+                            });
                             vm.completeHistoryData = data.historyList;
                             vm.historyList.push.apply(vm.historyList, data.historyList);
                         }
