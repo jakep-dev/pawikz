@@ -20,7 +20,6 @@
         $scope.textChange = function()
         {
 			$scope.save({row: $scope.row});
-            $scope.cellUpdate();   
 		};
     }
 
@@ -33,7 +32,6 @@
                 row: '=',
                 isdisabled: '@',
 				save: '&',
-                cellUpdate: '&',
                 columnname: '@'
             },
             controller: 'MsHybridCalendarController',

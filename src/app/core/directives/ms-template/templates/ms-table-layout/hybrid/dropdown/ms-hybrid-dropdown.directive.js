@@ -16,7 +16,6 @@
         $scope.selectionChange = function()
         {
 			$scope.save({row: $scope.row});
-            $scope.cellUpdate();
         };
     }
 
@@ -31,7 +30,6 @@
 				selections: '=',
 				defaultvalue: '@',
 				save: '&',
-                cellUpdate: '&',
                 columnname: '@'
             },
             controller: 'MsHybridDropdownController',
