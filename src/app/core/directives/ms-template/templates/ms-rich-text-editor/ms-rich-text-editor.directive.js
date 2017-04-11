@@ -159,11 +159,20 @@
         $scope.$watch(
             "value",
             function handleAutoSave(newValue, oldValue) {
+                // check history logs unnecessary updates
+                newValue = removeHtmlTags(newValue);
+                oldValue = removeHtmlTags(oldValue);
                 if(newValue !== oldValue) {
                     templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, newValue, clientConfig.uiType.general);
                 }
             }
         );
+    }
+
+    // check for default Text value purposed
+    function removeHtmlTags(value){
+        value = value.replace(/<p[^>]*>/g, "").replace(/<\/?p[^>]*>/g, ""); 
+        return value;
     }
 
     /** @ngInject */
