@@ -171,7 +171,7 @@
 
     // check for default Text value purposed
     function removeHtmlTags(value){
-        value = value ? String(value).replace(/<[^>]+>/gm, '') : ''; 
+        value = value.replace(/<p[^>]*>/g, "").replace(/<\/?p[^>]*>/g, ""); 
         return value;
     }
 
