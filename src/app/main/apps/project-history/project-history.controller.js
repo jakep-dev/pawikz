@@ -211,27 +211,27 @@
                     combinedStr += search;
                 });
 
-                if(!combinedStr.includes('Step Name')){
+               if(!(combinedStr.indexOf('Step Name') > -1)){ //IE doesn't support includes
                     types.push('StepName');
                     vm.filterStepId = null;
                 }
 
-                if(!combinedStr.includes('Field Name')){
+                if(!(combinedStr.indexOf('Field Name') > -1)){ //IE doesn't support includes
                     types.push('FieldName');
                     vm.filterFieldName = null;
                 }
 
-                if(!combinedStr.includes('Modified By')){
+                if(!(combinedStr.indexOf('Modified By') > -1)){ //IE doesn't support includes
                     types.push('ModifiedBy');
                     vm.filterModifiedBy = null;
                 }
 
-                if(!combinedStr.includes('Modified Date')){
+                if(!(combinedStr.indexOf('Modified Date') > -1)){ //IE doesn't support includes
                     types.push('ModifiedDate');
                     vm.filterModifiedDate = null;
                 }
 
-                if(!combinedStr.includes('Action')){
+                if(!(combinedStr.indexOf('Action') > -1)){ //IE doesn't support includes
                     types.push('Action');
                     vm.filterAction = null;
                 }
