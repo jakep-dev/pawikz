@@ -17,7 +17,7 @@
     var socket = require('./socket/socket');
     var newsRoute = require('./news/news.route');
 
-    routes.init = function (app, server, config)
+    routes.init = function (app, server, config, logger)
     {
         socket.init(server, config);
         dashboardRoute.init(app, config);
@@ -28,7 +28,7 @@
         workupRoute.init(app, config);
         chartRoute.init(app, config);
         financialChartRoute.init(app, config);
-        pdfRoute.init(app, config);
+        pdfRoute.init(app, config, logger);
         newsRoute.init(app, config);
     };
 

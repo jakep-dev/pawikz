@@ -2,15 +2,17 @@
     var async = require('async');
     var u = require('underscore');
     var fs = require('fs');
+    var logger;
 
     function getImageBase64Data(imagePath) {
         var path = process.cwd() + '/' + imagePath;
-        console.log('--->' + path);
+        logger.info('--->' + path);
         var content = fs.readFileSync(path, 'base64');
         return content;
     };
 
-    pdfRoutes.init = function (app, config) {
+    pdfRoutes.init = function (app, config, loggerObject) {
+        logger = loggerObject;
         var client = config.restcall.client;
         var config = config;
 
@@ -70,7 +72,7 @@
                     delete context.ratioTypeMap;
                     delete context.defaultRatio;
                     delete context.defaultRatioLabel;
-                    console.log('[setupGetIFCChartDataPoints]Error Count = ' + context.errorMessages.length);
+                    logger.info('[setupGetIFCChartDataPoints]Error Count = ' + context.errorMessages.length);
                     callback(null, context);
                 });
             }
@@ -81,7 +83,7 @@
         function getIFCChartDataPoints(chartSetting, callback) {
             var subContext = new Object();
             subContext.url = config.restcall.url + '/' + chartSetting.context.service.name + '/' + chartSetting.context.service.methods.getFinancialChartData
-            console.log(subContext.url);
+            logger.info(subContext.url);
             subContext.args = {
                 data: {
                     compare_name: chartSetting.context.ifcChartSettings[chartSetting.index].compareName,
@@ -134,21 +136,21 @@
                                 });
                             } else {
                                 subContext.errorMessage = '[getIFCChartDataPoints]data.data from ' + chartSetting.context.service.methods.getFinancialChartData + 'is null'
-                                console.log(subContext.errorMessage + '\nargs = ' + JSON.stringify(subContext.args));
+                                logger.error(subContext.errorMessage + '\nargs = ' + JSON.stringify(subContext.args));
                             }
                         } else {
                             subContext.errorMessage = '[getIFCChartDataPoints]data from ' + chartSetting.context.service.methods.getFinancialChartData + 'is null'
-                            console.log(subContext.errorMessage + '\nargs = ' + JSON.stringify(subContext.args));
+                            logger.error(subContext.errorMessage + '\nargs = ' + JSON.stringify(subContext.args));
                         }
                     } catch (exception) {
-                        console.log('[getIFCChartDataPoints]Error\n' + exception);
+                        logger.error('[getIFCChartDataPoints]Error\n' + JSON.stringify(exception));
                         subContext.errorMessage = exception.message;
                     }
                     callback(null, subContext.errorMessage);
                 }
             ).on('error',
                 function (err) {
-                    console.log('[getIFCChartDataPoints]Error\n' + err);
+                    logger.error('[getIFCChartDataPoints]Error\n' + JSON.stringify(err));
                     subContext.message = 'Error connecting to ' + chartSetting.context.service.methods.getFinancialChartData + ' url:' + subContext.url;
                     callback(null, subContext.message);
                 }
@@ -178,7 +180,7 @@
                             context.currentObj = context.ratioNames[data[context.i].ratio_name];
                             context.currentObj._count = context.currentObj._count + 1;
                             if (context.currentObj.shortName != data[context.i].ratio_short_name) {
-                                console.log(data[context.i].ratio_name + "'s short_name changed from " + context.currentObj.shortName + ' to ' + data[context.i].ratio_short_name);
+                                logger.warn(data[context.i].ratio_name + "'s short_name changed from " + context.currentObj.shortName + ' to ' + data[context.i].ratio_short_name);
                             }
                             context.currentObj.shortName = data[context.i].ratio_short_name;
                         }
@@ -200,7 +202,7 @@
                                     context.currentList[data[context.i].ratio_name].ratio_value = parseFloat(data[context.i].ratio_value);
                                     context.currentList[data[context.i].ratio_name].percent_change = parseFloat(data[context.i].percent_change);
                                 } else {
-                                    console.log('Duplicate chart value for the same ratio_name and datadate.[' + context.dateValue + ',' + data[context.i].ratio_name + ']');
+                                    logger.warn('Duplicate chart value for the same ratio_name and datadate.[' + context.dateValue + ',' + data[context.i].ratio_name + ']');
                                 }
                             }
                         }
@@ -223,7 +225,7 @@
                             context.currentObj.data.push(context.value.ratio_value);
                         }
                     } else {
-                        console.log('Missing ' + context.ratioNameArr[context.j] + ' value for datadate ' + context.dateArr[context.i]);
+                        logger.warn('Missing ' + context.ratioNameArr[context.j] + ' value for datadate ' + context.dateArr[context.i]);
                         context.currentObj.data.push(null);
                     }
                 }
@@ -355,7 +357,7 @@
                     subContext.methodName = context.service.methods.getAllSavedIFChartSettings;
                 }
                 subContext.url = config.restcall.url + '/' + context.service.name + '/' + subContext.methodName + '?project_id=' + context.project_id + '&ssnid=' + context.ssnid;
-                console.log(subContext.url);
+                logger.info(subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
                         subContext.ifcChartSettings = null;
@@ -364,7 +366,7 @@
                             context.ifcChartSettings = subContext.ifcChartSettings;
                         }
                         catch (exception) {
-                            console.log('[getAllSavedIFChartSettings]Error\n' + exception);
+                            logger.error('[getAllSavedIFChartSettings]Error\n' + JSON.stringify(exception));
                             context.errorMessages.push(exception.message);
                         }
                         callback(null, context);
@@ -2004,14 +2006,14 @@
                                 },
                                 function (asyncResult) {
                                     if (asyncResult.error) {
-                                        console.log('---->Request ' + context.requestId + ' is incomplete.');
+                                        logger.error('---->Request ' + context.requestId + ' is incomplete.');
                                         //indicate an error during status check
                                         context.PDFPercentComplete = -1;
                                     } else {
-                                        console.log('---->Request ' + context.requestId + ' is complete.');
+                                        logger.info('---->Request ' + context.requestId + ' is complete.');
                                     }
                                     context.data.progress = context.PDFPercentComplete;
-                                    console.log('Sending socket message for request:' + context.data.requestId);
+                                    logger.info('Sending socket message for request:' + context.data.requestId);
                                     sendStatus(context.ssnid, context.data);
                                 }
                             );
@@ -2020,7 +2022,7 @@
                             res.send(context);
                         } else {
                             context.errorMessages.push('setSVGFileStatus returned status: ' + context.responseCode);
-                            console.log('Returning error setSVGStatus response code back to caller.');
+                            logger.error('Returning error setSVGStatus response code [' + context.responseCode + '] back to caller.');
                             res.send(context);
                         }
                     }
@@ -2041,7 +2043,7 @@
             }
 
             context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName + '?request_id=' + context.request_id + '&fileName=' + context.file_name + '&ssnid=' + context.ssnid;
-            console.log(context.url);
+            logger.info(context.url);
             client.get(context.url, { responseType: 'arraybuffer' }, function (data, response) {
                 if (data) {
                     res.writeHead(200,

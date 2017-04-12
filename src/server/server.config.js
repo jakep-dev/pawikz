@@ -48,6 +48,27 @@ exports.clients['PROD'] = {
     useCertificate: false
 };
 
+exports.serverConfigs = new Array();
+exports.serverConfigs['DEV'] = {
+    logLevel: 'info',
+    maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
+    maxFiles: 2000,
+    logFilePath: '/data/logs/dev/dev_nodejs.log'
+};
+exports.serverConfigs['INT'] = {
+    logLevel: 'info',
+    maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
+    maxFiles: 2000,
+    logFilePath: '/data/logs/int/int_nodejs.log'
+};
+exports.serverConfigs['PROD'] = {
+    logLevel: 'info',
+    maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
+    maxFiles: 2000,
+    logFilePath: '/data/logs/prod/prod_nodejs.log'
+};
+
+
 var Client = require('node-rest-client').Client;
 var moment = require('moment');
 var environment = (process.env.STARTUP_ENV || 'DEV').toUpperCase();
@@ -57,12 +78,14 @@ switch (environment) {
     case 'DEV':
         exports.webservice = exports.webservices[environment];
         exports.client = exports.clients[environment];
+        exports.serverConfig = exports.serverConfigs[environment];
         break;
     default:
         //defaults to DEV environment
         environment = 'DEV'
         exports.webservice = exports.webservices['DEV'];
         exports.client = exports.clients['DEV'];
+        exports.serverConfig = exports.serverConfigs['DEV'];
         break;
 }
 
