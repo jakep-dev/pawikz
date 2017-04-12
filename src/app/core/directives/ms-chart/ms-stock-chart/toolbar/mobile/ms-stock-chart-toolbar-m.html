@@ -10,7 +10,7 @@
                     <md-menu-content width="3" class="advison-events-menu-content">
                         <md-menu-item>
 
-                            <md-switch  ng-model="vm.splits" aria-label="Splits" ng-change="vm.changedSplitsEvents()">
+                            <md-switch ng-model="vm.splits" aria-label="Splits" ng-change="vm.changedSplitsEvents()">
                                 Splits
                             </md-switch>
 
@@ -60,18 +60,18 @@
                         <md-menu-item>
                             <md-autocomplete
                                     md-no-cache="false"
-                                    md-search-text-change=""
-                                    md-search-text="vm.searchPeerText"
-                                    md-selected-item-change="vm.selectedPeerChange(item)"
-                                    md-items="item in vm.queryPeerSearch(vm.searchPeerText)"
-                                    md-item-text="item.display"
-                                    md-selected-item="vm.selectedPeerItem"
-                                    md-min-length="1"
-                                    md-menu-class="autocomplete-config"
-                                    placeholder="Search Peers">
+                                             md-search-text-change=""
+                                             md-search-text="vm.searchPeerText"
+                                             md-selected-item-change="vm.selectedPeerChange(item)"
+                                             md-items="item in vm.queryPeerSearch(vm.searchPeerText)"
+                                             md-item-text="item.display"
+                                             md-selected-item="vm.selectedPeerItem"
+                                             md-min-length="1"
+                                             md-menu-class="autocomplete-config"
+                                             placeholder="Search Peers">
                                 <md-item-template>
-                                <span md-highlight-text="vm.searchPeerText"
-                                      md-highlight-flags="^i">{{item.display}}</span>
+                                    <span md-highlight-text="vm.searchPeerText"
+                                          md-highlight-flags="^i">{{item.display}}</span>
                                 </md-item-template>
                                 <md-not-found>
                                     No matches found for "{{vm.searchPeerText}}".
@@ -82,13 +82,13 @@
                         <md-menu-item>
                             <md-menu md-offset="13 3">
                                 <md-button ng-click="$mdOpenMenu();" md-theme="advisen" class="md-raised btncomp">
-									Search Competitors
+                                    Search Competitors
                                 </md-button>
                                 <md-menu-content class="md-menu-content-height">
                                     <md-menu-item ng-repeat="item in vm.competitorList" style="padding-bottom: 25px; padding-left: 15px;">
                                         <md-checkbox ng-change="vm.updateCompetitorIds(item)"
                                                      ng-model="item.selectedCompetitorCheck"
-                                                aria-label="{{item.display}}">
+                                                     aria-label="{{item.display}}">
                                             {{item.display}}
                                         </md-checkbox>
                                     </md-menu-item>
@@ -110,13 +110,16 @@
                         <md-icon md-font-icon="icon-chevron-down" aria-label="icon-chevron-down"></md-icon>
                     </button>
                     <md-menu-content width="3" class="advison-date-range-menu-content">
+                        <md-tooltip md-direction="top" md-autohide="false" class="iscChartToolbarTooltip">System does not include data prior to 01/01/1996. <br>Earliest valid 'From' date is 01/01/1996. <br>Latest valid 'To' date is current date.</md-tooltip>
                         <md-menu-item>
-                            <md-datepicker ng-model="vm.startDate" md-max-date="vm.maxDate"
-                                           ng-change="vm.customDateChange();"></md-datepicker>
+                            <md-datepicker ng-model="vm.startDate" md-min-date="vm.minStartDate" md-max-date="vm.maxDate"
+                                           ng-model-options="{updateOn: 'default blur'}" ng-blur="vm.onBlur($event, 'startDate')"
+                                           ng-change="vm.customDateChange()"></md-datepicker>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-datepicker ng-model="vm.endDate" md-max-date="vm.maxDate"
-                                           ng-change="vm.customDateChange();"></md-datepicker>
+                            <md-datepicker ng-model="vm.endDate" md-min-date="vm.minEndDate" md-max-date="vm.maxDate"
+                                           ng-model-options="{updateOn: 'default blur'}" ng-blur="vm.onBlur($event, 'endDate')"
+                                           ng-change="vm.customDateChange()"></md-datepicker>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>

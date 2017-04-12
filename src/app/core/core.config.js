@@ -7,8 +7,8 @@
         .config(config);
 
     /** @ngInject */
-    function config($ariaProvider, $logProvider, msScrollConfigProvider,$translateProvider,
-                    $provide, fuseConfigProvider, $compileProvider)
+    function config($ariaProvider, $logProvider, msScrollConfigProvider, $translateProvider,
+                    $provide, fuseConfigProvider, $compileProvider, $mdDateLocaleProvider)
     {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|blob):/);
 
@@ -83,5 +83,15 @@
             'disableMdInkRippleOnMobile'     : false,
             'disableMdInkRippleOnIE'         : true
         });
+
+        //Chart begin and end date range need the flexibility to enter 1 or 01 for month and day portion of the date
+        $mdDateLocaleProvider.formatDate = function (date) {
+            return moment(date).format('M/D/YYYY');
+        };
+
+        $mdDateLocaleProvider.parseDate = function (dateString) {
+            var m = moment(dateString, 'M/D/YYYY', true);
+            return m.isValid() ? m.toDate() : new Date(NaN);
+        }
     }
 })();

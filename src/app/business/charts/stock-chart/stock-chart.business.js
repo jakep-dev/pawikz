@@ -18,6 +18,9 @@
         var competitorMap = null;
         var updateChartIdCallback = null;
 
+        //Absolute minimum date for which we have data for charts
+        var minimumChartDate = new Date(1996, 0, 1, 0, 0, 0, 0);
+
         function toDateString(dateObj, format) {
             if (!format) {
                 format = 'MM/DD/YYYY';
@@ -34,6 +37,14 @@
             getSaveSigDevInputObject: getSaveSigDevInputObject,
             getSaveStockSigDevInputObject: getSaveStockSigDevInputObject
         }
+
+        Object.defineProperty(business, 'minimumChartDate', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return minimumChartDate;
+            }
+        });
 
         Object.defineProperty(business, 'significantDevelopmentSources', {
             enumerable: true,
