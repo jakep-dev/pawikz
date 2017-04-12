@@ -113,7 +113,7 @@
                                 projectId: saveStepContext.stepMnemonics.projectId,
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 userId: saveStepContext.stepMnemonics.userId,
-                                ssnid: saveStepContext.saveContext.token,
+                                ssnid: saveStepContext.stepMnemonics.token,
                                 mnemonics: context.mnemonics
                             },
                             
