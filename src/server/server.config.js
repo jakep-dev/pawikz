@@ -50,19 +50,19 @@ exports.clients['PROD'] = {
 
 exports.serverConfigs = new Array();
 exports.serverConfigs['DEV'] = {
-    logLevel: 'info',
+    logLevel: 'debug',
     maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
     maxFiles: 2000,
     logFilePath: '/data/logs/dev/dev_nodejs.log'
 };
 exports.serverConfigs['INT'] = {
-    logLevel: 'info',
+    logLevel: 'debug',
     maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
     maxFiles: 2000,
     logFilePath: '/data/logs/int/int_nodejs.log'
 };
 exports.serverConfigs['PROD'] = {
-    logLevel: 'info',
+    logLevel: 'warn',
     maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
     maxFiles: 2000,
     logFilePath: '/data/logs/prod/prod_nodejs.log'

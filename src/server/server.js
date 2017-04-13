@@ -37,24 +37,18 @@ security.setupSecurity(app);
 var server = security.getServer(app, port, config.clients[startupEnvironment].useCertificate,
         function () {
             logger.info('Express server listening on port ' + port);
-            logger.info('NODE_ENV = ' + app.get('env') + '\nRunning ENV = ' + startupEnvironment + '\n__dirname = ' + __dirname + '\nprocess.cwd = ' + process.cwd());
+            logger.info('NODE_ENV = ' + app.get('env'));
+            logger.info('Running ENV = ' + startupEnvironment);
+            logger.info('__dirname = ' + __dirname);
+            logger.info('process.cwd = ' + process.cwd());
         }
     );
 
 var routes = require('./routes');
 routes.init(app, server, config, logger);
-logger.info('About to crank up node');
-logger.info('PORT=' + port);
-logger.info('NODE_ENV=' + environment);
-logger.info('STARTUP_ENV=' + startupEnvironment);
 
 app.get('/', function (req, res, next) {
     res.redirect('/pages/auth/login');
-});
-
-app.get('/ping', function(req, res, next) {
-  logger.info(req.body);
-  res.send('pong');
 });
 
 switch (environment) {
