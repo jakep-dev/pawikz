@@ -86,7 +86,12 @@
 
         //Chart begin and end date range need the flexibility to enter 1 or 01 for month and day portion of the date
         $mdDateLocaleProvider.formatDate = function (date) {
-            return moment(date).format('M/D/YYYY');
+            var m = moment(date);
+            if (m.isValid()) {
+                return m.format('M/D/YYYY');
+            } else {
+                return date;
+            }
         };
 
         $mdDateLocaleProvider.parseDate = function (dateString) {
