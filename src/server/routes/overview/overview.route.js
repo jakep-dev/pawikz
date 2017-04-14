@@ -3,12 +3,13 @@
 {
 
     var _ = require('underscore');
-    var workupBusiness = require('../workup/workup.business');
+    var workupBusiness;
 
-    overviewRoute.init = function(app, config)
+    overviewRoute.init = function(app, config, workupBusinessObject)
     {
         var client = config.restcall.client;
         var config = config;
+        workupBusiness = workupBusinessObject;
 
         config.parallel([app.post('/api/overview', getOverview),
             app.post('/api/overview/defer', getOverview),

@@ -14,14 +14,16 @@
     var financialChartRoute = require('./chart/financial-chart.route.js');
     var pdfRoute = require('./chart/pdf.route.js');
     var workupRoute = require('./workup/workup.route');
+    var workupBusiness = require('./workup/workup.business.js');
     var socket = require('./socket/socket');
     var newsRoute = require('./news/news.route');
 
     routes.init = function (app, server, config, logger)
     {
-        socket.init(server, config);
+        workupBusiness.init(config);
+        socket.init(server, config, workupBusiness);
         dashboardRoute.init(app, config);
-        overviewRoute.init(app, config);
+        overviewRoute.init(app, config, workupBusiness);
         authenticateRoute.init(app, config);
         templateRoute.init(app, config);
         loggingRoute.init(app, config);

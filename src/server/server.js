@@ -10,13 +10,16 @@ var exception = require('./exception/exception')();
 var favicon = require('serve-favicon');
 var path = require('path')
 var morgan = require('morgan');
-var config = require('./server.config');
-var security = require('./server.security');
-var logging = require('./server.logging');
+
+var nodeEnvironment = require('./helpers/server.environment');
+var config = nodeEnvironment.getConfig();
+
+var security = require('./helpers/server.security');
+var logging = require('./helpers/server.logging');
 
 var port = process.env.PORT || 4000;
 var environment = (process.env.NODE_ENV || 'DEV').toUpperCase();
-var startupEnvironment = config.environment;
+
 logging.init(config);
 var logger = logging.getLogger();
 
@@ -34,11 +37,11 @@ app.use(bodyParser.json({ limit: '100mb' }));
 security.setupSecurity(app);
 //false for http
 //true for https
-var server = security.getServer(app, port, config.clients[startupEnvironment].useCertificate,
+var server = security.getServer(app, port, config.client.useCertificate,
         function () {
             logger.info('Express server listening on port ' + port);
             logger.info('NODE_ENV = ' + app.get('env'));
-            logger.info('Running ENV = ' + startupEnvironment);
+            logger.info('Running ENV = ' + config.environment);
             logger.info('__dirname = ' + __dirname);
             logger.info('process.cwd = ' + process.cwd());
         }

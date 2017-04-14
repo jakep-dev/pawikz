@@ -2,10 +2,12 @@
 (function(socket)
 {
     var _ = require('underscore');
-    var workupBusiness = require('../workup/workup.business');
+    var workupBusiness;
 
-    socket.init = function(server, config)
+    socket.init = function(server, config, workupBusinessObject)
     {
+        workupBusiness = workupBusinessObject;
+
         //Configure the websocket
         var io = require('socket.io').listen(server);
         io.set('origins', config.socketIO.host);
