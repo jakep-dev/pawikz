@@ -14,9 +14,9 @@
                     service:'advwebservice'
                 },
                 client: {
-                    protocol: 'http',
+                    protocol: 'https',
                     domain: 'devcrm.advisen.com',
-                    port: '80',
+                    port: '443',
                     loglevel: 1,
                     transports: ['polling'],
                     useCertificate: false

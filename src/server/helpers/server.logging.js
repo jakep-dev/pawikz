@@ -9,6 +9,14 @@
         return (new Date()).toISOString();
     }
 
+    function logFormatter(options) {
+        if (options.message[options.message.length -1] == '\n') {
+            options.message = options.message.replace(/\n$/, '');
+        }
+        //options.timestamp() +' ['+ options.level.toUpperCase() +'] '+ (undefined !== options.message ? options.message : '') + (options.meta && Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
+        return options.timestamp() +' ['+ options.level.toUpperCase() +'] '+ (undefined !== options.message ? options.message : '') + (options.meta && options.meta.stack ? '\n' + options.meta.stack : '' );
+    }
+
     function getLogger() {
         return logger;
     }
@@ -62,7 +70,8 @@
                     maxFiles: config.logSetting.maxFiles,
                     colorize: false,
                     prettyPrint: true,
-                    timestamp: getTimestamp
+                    timestamp: getTimestamp,
+                    formatter: logFormatter
                 })
             ],
             exitOnError: false
@@ -73,9 +82,12 @@
                     level: config.logSetting.logLevel,
                     handleExceptions: true,
                     json: false,
+                    handleExceptions: true,
+                    humanReadableUnhandledException: true,
                     colorize: true,
                     prettyPrint: true,
-                    timestamp: getTimestamp
+                    timestamp: getTimestamp,
+                    formatter: logFormatter
                 }
             );
         }
