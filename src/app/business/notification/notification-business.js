@@ -46,23 +46,7 @@
         function pushNotification(data) {
             var returnObj = data;
             if (data) {
-                var notification = _.find(business.notifications, function (not) {
-                    if (not.id === data.id &&
-                       not.type === data.type) {
-                        return not;
-                    }
-                });
-
-                if (notification) {
-                    notification.status = data.status;
-                    notification.progress = data.progress;
-                    notification.disabled = data.disabled;
-                    notification.istrackable = data.istrackable;
-                    returnObj = notification;
-                }
-                else {
-                    business.notifications.push(data);
-                }
+                business.notifications.push(data);
             }
             return returnObj;
         }
@@ -74,6 +58,7 @@
 
                     var notification = _.find(business.notifications, function (not) {
                         if (not.id === response.projectId &&
+                            not.requestId === response.requestId && 
                             not.type === 'PDF-Download') {
                             return not;
                         }
