@@ -77,20 +77,24 @@ md-checkbox{
     height:auto;
   }
 }
-.advison-date-range-menu-content._md-menu-bar-menu.md-dense {
+.advison-date-range-menu-content._md-menu-bar-menu.md-dense{
   md-menu-item {
     height: auto;
   }
-  .md-datepicker-button {
-    display: none;
+  .md-datepicker-button{
+    display:none;
   }
-  .md-advisen-theme .md-datepicker-input-container {
-    border: none;
-    display: block;
+  .md-advisen-theme .md-datepicker-input-container{
+    border:none;
+    display:block;
     padding: 0px;
   }
 
-  md-menu-item:last-child .md-advisen-theme .md-datepicker-input-container {
-    margin-top: 15px;
+  md-menu-item:last-child  .md-advisen-theme .md-datepicker-input-container{
+    margin-top:15px;
   }
+  }
+
+md-tooltip.iscChartToolbarTooltip{
+    height: auto;
 }
