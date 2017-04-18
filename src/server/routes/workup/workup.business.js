@@ -1,8 +1,8 @@
 (function(workupBusiness) {
 
     var _ = require('underscore');
-    var config = require('../../server.config');
-    var client = config.restcall.client;
+    var config;
+    var client;
 
     /*
     * Lock the workup being used by user.
@@ -68,4 +68,10 @@
     function getServiceDetails(serviceName) {
         return _.find(config.restcall.service, {name: serviceName});
     }
+
+    workupBusiness.init = function (configDetails) {
+        config = configDetails;
+        client = config.restcall.client;
+    }
+
 })(module.exports);
