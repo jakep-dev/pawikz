@@ -30,7 +30,7 @@
             });
         }
 
-        function bookmarkNewsArticle(scope, onBookmarkNewsArticleStart, onBookmarkNewsArticleComplete) {
+        function bookmarkNewsArticle(selectedArticles, onBookmarkNewsArticleStart, onBookmarkNewsArticleComplete, itemId, mnemonicId) {
             
                 dialog.confirm(clientConfig.messages.newsArticle.bookmarkNewsItem.title, 
                                 clientConfig.messages.newsArticle.bookmarkNewsItem.content , null, {
@@ -43,22 +43,22 @@
                             }
 
                             var selectAttachment = [];
-                            _.each(scope, function(article) {
+                            var article = _.find(selectedArticles, {itemid: itemId, mnemonicid: mnemonicId, step_id: commonBusiness.stepId}); 
 
-                                if (article.isSelected) {
-
-                                    selectAttachment.push({
-                                        step_id: commonBusiness.stepId,
-                                        article_id: article.resourceId,
-                                        title: article.title,
-                                        article_url: article.externalUrl,
-                                        dockey: angular.isUndefined(article.dockey) ? '' : article.dockey,
-                                        collection: angular.isUndefined(article.collection) ? '' : article.collection,
+                                if(article){
+                                    _.each(article.news_items, function(item) {
+                                        if (item.isSelected) {
+                                            selectAttachment.push({
+                                                step_id: commonBusiness.stepId,
+                                                article_id: item.resourceId,
+                                                title: item.title,
+                                                article_url: item.externalUrl,
+                                                dockey: angular.isUndefined(item.dockey) ? '' : item.dockey,
+                                                collection: angular.isUndefined(item.collection) ? '' : item.collection,
+                                            });
+                                        }
                                     });
                                 }
-
-                            });
-
                             newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
                                 function (response) {
                                     onBookmarkNewsArticleComplete(selectAttachment);
@@ -68,7 +68,6 @@
                             );
 
                             dialog.close();
-
                         }
                     },
                     cancel: {
