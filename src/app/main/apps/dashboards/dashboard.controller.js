@@ -437,8 +437,8 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         //Defining column definitions
         vm.dtColumnDefs = [
             DTColumnDefBuilder.newColumnDef(1).renderWith(dashboardBusiness.getWorkupHtml),
-            DTColumnDefBuilder.newColumnDef(4).renderWith(dashboardBusiness.getPlatformHtml),
-            DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
+            DTColumnDefBuilder.newColumnDef(5).renderWith(dashboardBusiness.getPlatformHtml),
+            DTColumnDefBuilder.newColumnDef(6).renderWith(dashboardBusiness.getActionButtonsHtml).notSortable()
         ];
 
         // render data for browser resizing
