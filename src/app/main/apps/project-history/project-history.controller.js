@@ -98,7 +98,29 @@
         function downloadToCsv(){
             var table = vm.dtInstanceCallback.DataTable;
             var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
-            var rows = table.rows( { filter : 'applied'} ).data();
+            var data = table.rows( { filter : 'applied'} ).data();
+            var rows = [];
+            
+            //td that have attributes return as object not string
+            //needs to loop the data then create array of string per row
+            _.each(data, function(each){
+                
+                var row = [];
+                _.each(each, function(cell){
+                   
+                    var insert = '';
+                    if(_.isObject(cell) && _.property('display')(cell)) {
+                        insert = cell.display || '';
+                    } else {
+                        insert  = cell || '';
+                    }
+
+                    //unescape for encoded HTML esp &
+                    row.push(_.unescape(insert));
+                });
+
+                rows.push(row);
+            });
             
             var linkElem = $('#project-history-download');
             var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
