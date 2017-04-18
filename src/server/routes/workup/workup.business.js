@@ -69,8 +69,8 @@
         return _.find(config.restcall.service, {name: serviceName});
     }
 
-    workupBusiness.init = function (configObject) {
-        config = configObject;
+    workupBusiness.init = function (configDetails) {
+        config = configDetails;
         client = config.restcall.client;
     }
 

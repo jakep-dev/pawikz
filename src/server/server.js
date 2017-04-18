@@ -11,9 +11,7 @@ var favicon = require('serve-favicon');
 var path = require('path')
 var morgan = require('morgan');
 
-var nodeEnvironment = require('./helpers/server.environment');
-var config = nodeEnvironment.getConfig();
-
+var config = require('./helpers/server.environment');
 var security = require('./helpers/server.security');
 var logging = require('./helpers/server.logging');
 

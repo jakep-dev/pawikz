@@ -1,7 +1,35 @@
-(function(environment){
+(function (environment) {
+    var Client = require('node-rest-client').Client;
     var config = require('../server.config');
-    var settings = config.getSettings();
     var env = (process.env.STARTUP_ENV || 'DEV').toUpperCase().trim();
+
+    if (env === 'PROD') {
+        environment.webService = config.prod.webService;
+        environment.client = config.prod.client;
+        environment.logSetting = config.prod.log;
+    } else if (env === 'INT') {
+        environment.webService = config.int.webService;
+        environment.client = config.int.client;
+        environment.logSetting = config.int.log;
+    } else {
+        environment.webService = config.dev.webService;
+        environment.client = config.dev.client;
+        environment.logSetting = config.dev.log;
+        if (env != 'DEV') {
+            env = 'DEV';
+        }
+    }
+    environment.environment = env;
+    environment.restcall = config.modules.restcall;
+    environment.restcall.client = new Client();
+    environment.restcall.url = environment.webService.protocol.concat('://', environment.webService.url, ':', environment.webService.port, '/', environment.webService.service);
+    environment.userSocketInfo = config.modules.userSocketInfo;
+    environment.socketIO = config.modules.socketIO;
+    environment.socketIO.host = environment.client.protocol.concat('://', environment.client.domain, ':', environment.client.port);
+    environment.socketData = config.modules.socketData;
+
+    //existing log is in use by server/routes/logging/logging.route.js
+    environment.log = config.modules.log;
 
     function parallel(middlewares) {
         return function (req, res, next) {
@@ -10,39 +38,5 @@
             }, next);
         };
     };
-
-    function getConfig() {
-        var object = new Object();
-        if (env === 'PROD') {
-            object.webService = settings.environment.prod.webService;
-            object.client = settings.environment.prod.client;
-            object.logSetting = settings.environment.prod.log;
-        } else if (env === 'INT') {
-            object.webService = settings.environment.int.webService;
-            object.client = settings.environment.int.client;
-            object.logSetting = settings.environment.int.log;
-        } else {
-            object.webService = settings.environment.dev.webService;
-            object.client = settings.environment.dev.client;
-            object.logSetting = settings.environment.dev.log;
-            if (env != 'DEV') {
-                env = 'DEV';
-            }
-        }
-        object.environment = env;
-        object.restcall = settings.modules.restcall;
-        object.restcall.url = object.webService.protocol.concat('://', object.webService.url, ':', object.webService.port, '/', object.webService.service);
-        object.userSocketInfo = settings.modules.userSocketInfo;
-        object.socketIO = settings.modules.socketIO;
-        object.socketIO.host = object.client.protocol.concat('://', object.client.domain, ':', object.client.port);
-        object.socketData = settings.modules.socketData;
-
-        //existing log is in use by server/routes/logging/logging.route.js
-        object.log = settings.modules.log;
-        
-        object.parallel = parallel;
-        return object;
-    }
-    environment.getConfig = getConfig;
-
+    environment.parallel = parallel;
 })(module.exports);

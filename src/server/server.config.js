@@ -1,12 +1,8 @@
 (function(config){
 
-    var Client = require('node-rest-client').Client;
     var moment = require('moment');
 
-    var settings;
-    settings = {
-        environment: {
-            dev: {
+    config.dev = {
                 webService: {
                     protocol: 'http',
                     url: 'dev-vm-websvc.advisen.com',
@@ -29,8 +25,9 @@
                     logFilePath: '_all_msg.log',
                     exceptionLogFilePath: '_exceptions.log'
                 }
-            },
-            int: {
+    };
+
+    config.int = {
                 webService: {
                     protocol: 'https',
                     url: 'wsint.advisen.com',
@@ -53,8 +50,9 @@
                     logFilePath: '_all_msg.log',
                     exceptionLogFilePath: '_exceptions.log'
                 }
-            },
-            prod: {
+    };
+
+    config.prod = {
                 webService: {
                     protocol: 'https',
                     url: 'ws.advisen.com',
@@ -77,14 +75,17 @@
                     logFilePath: '_all_msg.log',
                     exceptionLogFilePath: '_exceptions.log'
                 }
-            }
-        },
-        modules: {
+    };
+
+    config.modules = {
             restcall: {
-                client: new Client(),
+                //initialize before use client = new Client();
+                client: undefined,
+
                 //url: exports.webservice.protocol.concat('://', exports.webservice.url, ':', exports.webservice.port, '/', exports.webservice.service),
                 //url is built once we know the environment (DEV INT or PROD)
                 url: '',
+
                 service: [{
                         name: 'templateManager',
                         methods: {
@@ -190,12 +191,5 @@
                 fileDirectory: '/' + moment().format('MM-DD-YYYY'),
                 fileName: '/log.' + moment().format('MM-DD-YYYY') + '.txt'
             }
-        }
     };
-
-    function getSettings() {
-        return settings;
-    }
-    config.getSettings = getSettings;
-
 })(module.exports);
