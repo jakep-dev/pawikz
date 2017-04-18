@@ -197,6 +197,12 @@
         }
 
         function pdfDownload(){
+            
+            //trigger save overview before pdf download to update the pdf content
+            if(vm.menuMode === 'ProjectOverview'){
+                commonBusiness.emitMsg('project-overview-save-all');
+            }
+            
             commonBusiness.emitMsg('pdf-download');
         }
 

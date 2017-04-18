@@ -162,6 +162,7 @@
                 vm.templateOverview = overviewBusiness.templateOverview;
                 vm.isOverviewLoaded = true;
                 vm.checkIsPrintableAll();
+                autoSave();
                 return;
             }
 
@@ -212,6 +213,7 @@
                         overviewBusiness.templateOverview = vm.templateOverview;
                         overviewBusiness.templateOverview.isChanged = true;
                         overviewBusiness.getReadyForAutoSave();
+                        commonBusiness.projectName = vm.templateOverview.projectName;
                     }
                     vm.isOverviewLoaded = true;
                 },
