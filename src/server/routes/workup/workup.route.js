@@ -4,13 +4,14 @@
 
     var _ = require('underscore');
     var interval = null;
+    var logger;
 
-    workupRoute.init = function(app, config)
+    workupRoute.init = function(app, config, log)
     {
-
+        logger = log;
         var client = config.restcall.client;
-        console.log('WorkUp Route Config - ');
-        console.log(config.userSocketInfo);
+        logger.debug('WorkUp Route Config - ');
+        logger.debug(config.userSocketInfo);
 
         config.parallel([
             app.post('/api/workup/create', create),
@@ -47,8 +48,8 @@
             context.token = req.headers['x-session-token'];
 
             client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                console.log('Response - StatusCode');
-                console.log(data);
+                logger.debug('Response - StatusCode');
+                logger.debug(data);
                 status(data.projectId, data.project_name, context.token, next);
                 res.status(response.statusCode).send(data);
             });
@@ -170,9 +171,9 @@
             };
 
             client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                console.log('Workup Status - ');
-                console.log(data);
-                console.log(projectId);
+                logger.debug('Workup Status - ');
+                logger.debug(data);
+                logger.debug(projectId);
                 if(data && data.templateStatus) {
 
                     context.compData = {
@@ -183,7 +184,7 @@
 
                     if(token in config.userSocketInfo)
                     {
-                        //console.log('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
+                        //logger.debug('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
                         config.userSocketInfo[token].emit('create-workup-status', context.compData);
                     }
 
@@ -235,13 +236,13 @@
 
         function notifyStatus(token, data, key, source)
         {
-            console.log('Renewal done - key = ' + key + ' source = ' + source);
-            console.log(data);
+            logger.debug('Renewal done - key = ' + key + ' source = ' + source);
+            logger.debug(data);
 
             clearInterval(interval);
             if(token in config.userSocketInfo)
             {
-                console.log('Emit');
+                logger.debug('Emit');
                 data.source = source;
                 config.userSocketInfo[token].emit(key, data);
             }
@@ -257,10 +258,10 @@
                             }
                         });
 
-            console.log('updateRenewStatus - ');
-            console.log(data);
-            console.log(config.socketData.workup);
-            console.log(workUp);
+            logger.debug('updateRenewStatus - ');
+            logger.debug(data);
+            logger.debug(config.socketData.workup);
+            logger.debug(workUp);
 
             if(workUp)
             {

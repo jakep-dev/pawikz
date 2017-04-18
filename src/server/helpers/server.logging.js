@@ -10,9 +10,21 @@
     }
 
     function logFormatter(options) {
-        if (options.message[options.message.length -1] == '\n') {
-            options.message = options.message.replace(/\n$/, '');
+        if (options.message) {
+            //strip out extra \n from morgan log messages
+            if (options.message[options.message.length - 1] == '\n') {
+                options.message = options.message.replace(/\n$/, '');
+            }
+        } else {
+            //if the message is blank, null or undefined and not a stack trace from an exception then message is most likely a JSON object.
+            //attempt to stringify the object
+            if (!options.meta || !options.meta.stack) {
+                try {
+                    options.message = JSON.stringify(options.meta);
+                } catch (exception) {}
+            }
         }
+
         //options.timestamp() +' ['+ options.level.toUpperCase() +'] '+ (undefined !== options.message ? options.message : '') + (options.meta && Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
         return options.timestamp() +' ['+ options.level.toUpperCase() +'] '+ (undefined !== options.message ? options.message : '') + (options.meta && options.meta.stack ? '\n' + options.meta.stack : '' );
     }

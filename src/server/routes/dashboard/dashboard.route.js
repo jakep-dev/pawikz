@@ -8,11 +8,13 @@
 
     var _ = require('underscore');
     var async = require('async');
+    var logger;
 
-    dashboardRoute.init = function(app, config)
+    dashboardRoute.init = function(app, config, log)
     {
         var client = config.restcall.client;
         var config = config;
+        logger = log;
 
         config.parallel([
             app.post('/api/dashboard', getDashboard),
@@ -151,10 +153,10 @@
 
         function releaseWorkUp(projectId, userId, token)
         {
-            console.log('notifyWorkUpNotInUse - ');
-            console.log(projectId);
-            console.log(userId);
-            console.log(config.socketData.workup);
+            logger.debug('notifyWorkUpNotInUse - ');
+            logger.debug(projectId);
+            logger.debug(userId);
+            logger.debug(config.socketData.workup);
 
             if(config.socketData.workup &&
                 config.socketData.workup.length > 0 &&

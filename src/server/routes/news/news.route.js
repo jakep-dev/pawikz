@@ -3,6 +3,7 @@
     var u = require('underscore');
     var config = null;
     var client = null;
+    var logger;
 
     function getServiceDetails(serviceName) {
         return _.find(config.restcall.service, { name: serviceName });
@@ -46,9 +47,10 @@
 
     newsRoute.attachNewsArticles = attachNewsArticles;
 
-    newsRoute.init = function(app, c) {
+    newsRoute.init = function(app, c, log) {
         config = c;
         client = config.restcall.client;
+        logger = log;
 
         config.parallel([
             app.post('/api/news/search', search),
@@ -68,7 +70,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.showArticleContent;
             }
 
@@ -90,7 +92,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.search;
             }
 
@@ -143,7 +145,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.getAttachedArticles;
             }
 

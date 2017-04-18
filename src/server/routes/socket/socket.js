@@ -3,10 +3,12 @@
 {
     var _ = require('underscore');
     var workupBusiness;
+    var logger;
 
-    socket.init = function(server, config, workupBiz)
+    socket.init = function(server, config, workupBiz, log)
     {
         workupBusiness = workupBiz;
+        logger = log;
 
         //Configure the websocket
         var io = require('socket.io').listen(server);
@@ -30,13 +32,13 @@
         *Join the workup-room to broadcast workup related updates to all users.*/
         function initializeSocket(socket)
         {
-            console.log('Init socket');
+            logger.debug('Init socket');
             socket.on('init-socket', function(data, callback)
             {
-                console.log('Token - ' + data.token);
+                logger.debug('Token - ' + data.token);
                 if(data.token in config.userSocketInfo)
                 {
-                    console.log('Already In');
+                    logger.debug('Already In');
                     callback(false);
                 }
                 else {
@@ -45,7 +47,7 @@
                     socket.userid = data.userId;
                     socket.join('workup-room');
                     config.userSocketInfo[socket.nickname] = socket;
-                    console.log('Adding to userSocketInfo');
+                    logger.debug('Adding to userSocketInfo');
                 }
             });
         }
@@ -56,21 +58,21 @@
         {
             socket.on('disconnect', function(data)
             {
-                console.log('Disconnected Socket');
+                logger.debug('Disconnected Socket');
                 if(!socket.nickname)
                     return;
 
                 releaseWorkUp(socket.userid, socket.nickname);
                 socket.leave('workup-room');
                 delete config.userSocketInfo[socket.nickname];
-                console.log(config.userSocketInfo);
+                logger.debug(config.userSocketInfo);
             });
         }
 
         function checkWorkUpInfo(socket)
         {
-            console.log('checkWorkUpInfo Socket');
-            socket.on('init-workup', function(data, callback)
+            logger.debug('checkWorkUpInfo Socket');
+            socket.on('init-workup', function (data, callback)
             {
                 if(data.token in config.userSocketInfo)
                 {
@@ -84,8 +86,8 @@
 
         function releaseWorkUp(userId, token)
         {
-            console.log('Release Workup - ');
-            console.log('UserId - ' + userId);
+            logger.debug('Release Workup - ');
+            logger.debug('UserId - ' + userId);
             if(userId && config.socketData.workup &&
                 config.socketData.workup.length > 0 )
             {
@@ -116,9 +118,9 @@
         * */
         function unlock(unlockWorkUp, token)
         {
-            console.log('Unlock');
-            console.log(unlockWorkUp);
-            console.log(token);
+            logger.debug('Unlock');
+            logger.debug(unlockWorkUp);
+            logger.debug(token);
             _.each(unlockWorkUp, function(workup)
             {
                 if(workup.projectId)
@@ -133,8 +135,8 @@
         * */
         function deleteWorkUp(availableWorkUp)
         {
-            console.log('AvailableWorkup after release - ');
-            console.log(availableWorkUp);
+            logger.debug('AvailableWorkup after release - ');
+            logger.debug(availableWorkUp);
             config.socketData.workup = [];
             config.socketData.workup.push.apply(config.socketData.workup, availableWorkUp);
         }
@@ -144,8 +146,8 @@
         * */
         function broadcastWorkUpRelease()
         {
-            console.log('broadcastWorkUpRelease');
-            console.log(config.socketData.workup);
+            logger.debug('broadcastWorkUpRelease');
+            logger.debug(config.socketData.workup);
             config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                 type: 'workup-info',
                 data: config.socketData.workup

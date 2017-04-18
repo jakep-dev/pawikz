@@ -4,12 +4,14 @@
 
     var _ = require('underscore');
     var workupBusiness;
+    var logger;
 
-    overviewRoute.init = function(app, config, workupBiz)
+    overviewRoute.init = function(app, config, workupBiz, log)
     {
         var client = config.restcall.client;
         var config = config;
         workupBusiness = workupBiz;
+        logger = log;
 
         config.parallel([app.post('/api/overview', getOverview),
             app.post('/api/overview/defer', getOverview),
@@ -65,8 +67,8 @@
                 }
             };
 
-            console.log('Project History Args - ');
-            console.log(args);
+            logger.debug('Project History Args - ');
+            logger.debug(args);
 
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response) {
                 res.status(response.statusCode).send(data);
@@ -134,18 +136,18 @@
         function saveOverview(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.saveOverview;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -159,7 +161,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-          console.log(args);
+            logger.debug(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -169,7 +171,7 @@
 
         function broadcastWorkUpInfo(token, userId, projectId, status)
         {
-            console.log('NotifyWorkUpUse - ' + userId);
+            logger.debug('NotifyWorkUpUse - ' + userId);
 
             if((token in config.userSocketInfo) &&
                 config.socketIO.socket)
@@ -185,16 +187,16 @@
                     }
                 });
 
-                console.log('WorkuPs');
-                console.log(workup);
+                logger.debug('WorkuPs');
+                logger.debug(workup);
 
                 if(workup)
                 {
                     workup.status = 'complete';
                 }
 
-                console.log('After Delete');
-                console.log(config.socketData.workup);
+                logger.debug('After Delete');
+                logger.debug(config.socketData.workup);
                 
                 workup = _.find(config.socketData.workup, function(item)
                 {
@@ -218,8 +220,8 @@
                     });
                 }
 
-                console.log('Workup broadcast-');
-                console.log(config.socketData.workup);
+                logger.debug('Workup broadcast-');
+                logger.debug(config.socketData.workup);
 
                 config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
                     type: 'workup-info',

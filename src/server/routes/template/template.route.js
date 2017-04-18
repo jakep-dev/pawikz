@@ -8,10 +8,13 @@
     var financialCharts = require('../chart/financial-chart.route.js');
     var async = require('async');
 
-    schemaRoute.init = function(app, config)
+    schemaRoute.init = function(app, config, log)
     {
         var client = config.restcall.client;
         var config = config;
+        var logger = log;
+
+        templateBusiness.init(log);
 
         config.parallel([
             app.post('/api/schema', schema),
@@ -57,7 +60,7 @@
             function saveStep(step, callback) {
                 var saveStepContext = new Object();
                 saveStepContext.stepMnemonics = step;
-                console.log(saveStepContext.stepMnemonics);
+                logger.debug(saveStepContext.stepMnemonics);
                 //loop through each mnemonic within a step and pass in token
                 if (saveStepContext.stepMnemonics.mnemonic && saveStepContext.stepMnemonics.mnemonic.length > 0) {
                     saveStepContext.dataCount = saveStepContext.stepMnemonics.mnemonic.length;
@@ -139,7 +142,7 @@
 
                     if (context.mnemonics && context.mnemonics.length > 0) {
                         async.map(context.mnemonics, saveTableLayout, function (err, results) {
-                            console.log('saveTableLayout');
+                            logger.debug('saveTableLayout');
                             callback(null, results);
                         });
                     } else {
@@ -154,7 +157,7 @@
                         deleted: deleteTableLayout.bind(null, tableMnemonic)
                     },
                         function (err, results) {
-                            console.log('buildSaveTableLayout');
+                            logger.debug('buildSaveTableLayout');
                             callback(null, results); //resuls are error messages
                         }
                     );
@@ -362,19 +365,19 @@
         //Schema for the templates
         function schema(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.templateSchema;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -386,7 +389,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -397,19 +400,19 @@
         //Mnemonics for the templates
         function mnemonics(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.templateMnemonics;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -421,7 +424,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -433,18 +436,18 @@
         function saveMnemonics(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.saveMnemonics;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -458,7 +461,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -469,19 +472,19 @@
         //Get Dynamic Table Layout details
         function dynamicTable(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.dynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -496,7 +499,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -507,18 +510,18 @@
 		function saveDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.saveDynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -532,7 +535,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -543,18 +546,18 @@
 		function addDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.addDynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -568,7 +571,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -579,18 +582,18 @@
 		function deleteDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.deleteDynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -604,7 +607,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {
@@ -614,19 +617,19 @@
 
 		function getScrapedHTML(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+		    logger.debug('Parameters -');
+		    logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.getScrapedHTML;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -640,7 +643,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
+            logger.debug(args);
 
             client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
             {

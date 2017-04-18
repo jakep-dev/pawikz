@@ -20,18 +20,18 @@
 
     routes.init = function (app, server, config, logger)
     {
-        workupBusiness.init(config);
-        socket.init(server, config, workupBusiness);
-        dashboardRoute.init(app, config);
-        overviewRoute.init(app, config, workupBusiness);
-        authenticateRoute.init(app, config);
-        templateRoute.init(app, config);
+        workupBusiness.init(config, logger);
+        socket.init(server, config, workupBusiness, logger);
+        dashboardRoute.init(app, config, logger);
+        overviewRoute.init(app, config, workupBusiness, logger);
+        authenticateRoute.init(app, config, logger);
+        templateRoute.init(app, config, logger);
         loggingRoute.init(app, config);
-        workupRoute.init(app, config);
-        chartRoute.init(app, config);
-        financialChartRoute.init(app, config);
+        workupRoute.init(app, config, logger);
+        chartRoute.init(app, config, logger);
+        financialChartRoute.init(app, config, logger);
         pdfRoute.init(app, config, logger);
-        newsRoute.init(app, config);
+        newsRoute.init(app, config, logger);
     };
 
 })(module.exports);

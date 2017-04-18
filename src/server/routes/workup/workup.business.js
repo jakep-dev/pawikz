@@ -3,6 +3,7 @@
     var _ = require('underscore');
     var config;
     var client;
+    var logger;
 
     /*
     * Lock the workup being used by user.
@@ -27,7 +28,7 @@
             }
         };
 
-        console.log('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
+        logger.debug('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
         client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args,function(data, response)
         {
 
@@ -69,9 +70,10 @@
         return _.find(config.restcall.service, {name: serviceName});
     }
 
-    workupBusiness.init = function (configDetails) {
+    workupBusiness.init = function (configDetails, log) {
         config = configDetails;
         client = config.restcall.client;
+        logger = log;
     }
 
 })(module.exports);
