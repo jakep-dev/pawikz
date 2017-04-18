@@ -4,9 +4,9 @@
     var _ = require('underscore');
     var workupBusiness;
 
-    socket.init = function(server, config, workupBusinessObject)
+    socket.init = function(server, config, workupBiz)
     {
-        workupBusiness = workupBusinessObject;
+        workupBusiness = workupBiz;
 
         //Configure the websocket
         var io = require('socket.io').listen(server);

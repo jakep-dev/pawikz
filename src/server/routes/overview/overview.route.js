@@ -5,11 +5,11 @@
     var _ = require('underscore');
     var workupBusiness;
 
-    overviewRoute.init = function(app, config, workupBusinessObject)
+    overviewRoute.init = function(app, config, workupBiz)
     {
         var client = config.restcall.client;
         var config = config;
-        workupBusiness = workupBusinessObject;
+        workupBusiness = workupBiz;
 
         config.parallel([app.post('/api/overview', getOverview),
             app.post('/api/overview/defer', getOverview),
