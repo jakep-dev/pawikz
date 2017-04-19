@@ -51,6 +51,12 @@
             vm.dtColumnDefs = projectHistoryBusiness.getDtColumns();
         }
 
+        function indexList(){
+            _.each(vm.historyList, function(row, index) {
+                row.index = index;
+            });
+        }
+
         //Get server call project history details
         function getProjectHistory()
         {
@@ -64,6 +70,7 @@
                         if(data.historyList){
                             vm.completeHistoryData = data.historyList;
                             vm.historyList.push.apply(vm.historyList, data.historyList);
+                            indexList();
                         }
                         else if(data.templateOverview){
                             vm.templateOverview = data.templateOverview;
@@ -98,29 +105,51 @@
         function downloadToCsv(){
             var table = vm.dtInstanceCallback.DataTable;
             var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
-            var data = table.rows( { filter : 'applied'} ).data();
             var rows = [];
             
-            //td that have attributes return as object not string
-            //needs to loop the data then create array of string per row
-            _.each(data, function(each){
+            var searchValue = (table && table.context[0] && 
+                                    table.context[0].oPreviousSearch && 
+                                    table.context[0].oPreviousSearch.sSearch)?
+                                        table.context[0].oPreviousSearch.sSearch : '';
+
+            if(searchValue.length > 0 ) {
+                var filteredData = table.rows( { filter : 'applied'} ).data();
+                var searchedIndices = [];
                 
-                var row = [];
-                _.each(each, function(cell){
-                   
-                    var insert = '';
-                    if(_.isObject(cell) && _.property('display')(cell)) {
-                        insert = cell.display || '';
-                    } else {
-                        insert  = cell || '';
-                    }
-
-                    //unescape for encoded HTML esp &
-                    row.push(_.unescape(insert));
+                _.each(filteredData, function(row){
+                    searchedIndices.push(parseInt(row[0]));
                 });
-
-                rows.push(row);
-            });
+                
+                _.each(vm.historyList, function(history){
+                    if(_.includes(searchedIndices, history.index)) {
+                        var historyRow = [];
+                        historyRow.push(history.logId);
+                        historyRow.push(history.stepName);
+                        historyRow.push(history.fieldName);
+                        historyRow.push(history.oldValue);
+                        historyRow.push(history.newValue);
+                        historyRow.push(history.workupUsed);
+                        historyRow.push(history.modifiedBy);
+                        historyRow.push(history.modifiedDate);
+                        historyRow.push(history.action);
+                        rows.push(historyRow);
+                    }
+                });
+            } else {
+                _.each(vm.historyList, function(history){
+                    var historyRow = [];
+                    historyRow.push(history.logId);
+                    historyRow.push(history.stepName);
+                    historyRow.push(history.fieldName);
+                    historyRow.push(history.oldValue);
+                    historyRow.push(history.newValue);
+                    historyRow.push(history.workupUsed);
+                    historyRow.push(history.modifiedBy);
+                    historyRow.push(history.modifiedDate);
+                    historyRow.push(history.action);
+                    rows.push(historyRow);
+                });
+            }
             
             var linkElem = $('#project-history-download');
             var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
