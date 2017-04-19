@@ -196,47 +196,25 @@
             if (userDetails) {
                 userName = userDetails.fullName;
                 userId = userDetails.userId;
-
-
-                var notification = _.find(notificationBusiness.notifications, function(not) {
-                    if (not.id === commonBusiness.projectId &&
-                        not.type === 'PDF-Download') {
-                        return not;
-                    }
+                
+                var notification = notificationBusiness.pushNotification({
+                    id: commonBusiness.projectId,
+                    title: commonBusiness.projectName,
+                    type: 'PDF-Download',
+                    icon: 'icon-file-pdf-box',
+                    progress: 0,
+                    disabled: true,
+                    tooltip: 'PDF Generation still in-progress',
+                    status: 'in-process',
+                    userId: userId,
+                    istrackable: true,
+                    requestId: 0
                 });
-
-                if (notification) {
-                    notification.disabled = true;
-                    notification.progress = 0;
-                    notification.status = 'in-process';
-                    notification.requestId = 0;
-                } else {
-                    notificationBusiness.pushNotification({
-                        id: commonBusiness.projectId,
-                        title: commonBusiness.projectName,
-                        type: 'PDF-Download',
-                        icon: 'icon-file-pdf-box',
-                        progress: 0,
-                        disabled: true,
-                        tooltip: 'PDF Generation still in-progress',
-                        status: 'in-process',
-                        userId: userId,
-                        istrackable: true,
-                        requestId: 0
-                    });
-                }
 
                 templateService.createTemplatePdfRequest(commonBusiness.projectId, userId,
                         commonBusiness.projectName,
                         commonBusiness.companyName, userName)
                     .then(function(data) {
-
-                        var notification = _.find(notificationBusiness.notifications, function(not) {
-                            if (not.id === commonBusiness.projectId &&
-                                not.type === 'PDF-Download') {
-                                return not;
-                            }
-                        });
 
                         if (!data) {
                             if (notification) {
