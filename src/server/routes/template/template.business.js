@@ -1,8 +1,8 @@
 
 (function(templateBusiness)
 {
-
     var _ = require('underscore');
+    var logger;
 
     ///Loop thru the content components and get the components ready to display on UI
     function getComponents(contentComponents, comp)
@@ -46,17 +46,17 @@
       };
         _.each(components, function(component)
         {
-            //console.log('Component ID:' + component.id);
+            //logger.debug('Component ID:' + component.id);
            var tearSheetItem = component.TearSheetItem;
            if(tearSheetItem && tearSheetItem.subtype &&
                (tearSheetItem.subtype === 'Header1' ||
                 tearSheetItem.subtype === 'Header2'))
            {
-               //console.log('Pushing Header Component ID:' + component.id);
+               //logger.debug('Pushing Header Component ID:' + component.id);
                comp.headers.push(component);
            }
            else {
-               //console.log('Pushing Content Component ID:' + component.id);
+               //logger.debug('Pushing Content Component ID:' + component.id);
                comp.contents.push(component);
            }
         });
@@ -123,7 +123,6 @@
             {
                 isReadyToProcess = false;
             }
-
 
             if(isReadyToProcess)
             {
@@ -299,7 +298,7 @@
                     sectionItem[0].isProcessed = true;
                     var sectionType = sectionItem[0].type;
 
-                    console.log('sectionId' + sectionId + ' Subtype - ' + sectionItem[0].subtype);
+                    logger.debug('sectionId' + sectionId + ' Subtype - ' + sectionItem[0].subtype);
 
                     if(sectionItem[0].subtype) {
                         component.sections.push(sectionItem[0]);
@@ -461,6 +460,10 @@
             }
         }
         return section;
+    }
+
+    templateBusiness.init = function (log) {
+        logger = log;
     }
 
 })(module.exports);
