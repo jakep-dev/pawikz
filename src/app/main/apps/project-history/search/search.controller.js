@@ -42,7 +42,7 @@
                 return;
             }
             vm.isSearching = true;
-            projectHistoryService.getProjectHistoryFilters(vm.projectId, filterType).then(function(data)
+            projectHistoryService.getProjectHistoryFilters(vm.projectId, filterType, vm.selectedStep).then(function(data)
             {
                 if(data && data.filter) {
                     _.each(data.filter, function(fil){

@@ -35,6 +35,10 @@
                 }
             };
 
+            if(req.body.step) {
+                args.parameters.step = req.body.step;
+            }
+
             client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response) {
                 res.status(response.statusCode).send(data);
             });
