@@ -45,8 +45,25 @@
         //Push the notification details
         function pushNotification(data) {
             var returnObj = data;
-            if (data) {
-                business.notifications.push(data);
+            if (data) { 
+                var notification = _.find(business.notifications, function (not) {
+                    if (not.id === data.id &&
+                        not.type === data.type && 
+                        not.type === 'PDF-Download') {
+                        return not;
+                    }
+                });
+
+                if (notification) {
+                    notification.status = data.status;
+                    notification.progress = data.progress;
+                    notification.disabled = data.disabled;
+                    notification.istrackable = data.istrackable;
+                    returnObj = notification;
+                }
+                else {
+                    business.notifications.push(data);
+                }
             }
             return returnObj;
         }
