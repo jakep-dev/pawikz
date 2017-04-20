@@ -49,7 +49,7 @@
                 var notification = _.find(business.notifications, function (not) {
                     if (not.id === data.id &&
                         not.type === data.type && 
-                        not.type === 'PDF-Download') {
+                        data.type !== 'PDF-Download') {
                         return not;
                     }
                 });
