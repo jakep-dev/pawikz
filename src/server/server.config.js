@@ -21,7 +21,7 @@
                     logLevel: 'debug',
                     maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
                     maxFiles: 2000,
-                    dirName: '/data/logs/dev',
+            dirName: '/data/logs/nodejs',
                     logFilePath: '_all_msg.log',
                     exceptionLogFilePath: '_exceptions.log'
                 }
@@ -46,7 +46,7 @@
                     logLevel: 'debug',
                     maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
                     maxFiles: 2000,
-                    dirName: '/data/logs/int',
+            dirName: '/data/logs/nodejs',
                     logFilePath: '_all_msg.log',
                     exceptionLogFilePath: '_exceptions.log'
                 }
@@ -71,7 +71,7 @@
                     logLevel: 'warn',
                     maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
                     maxFiles: 2000,
-                    dirName: '/data/logs/prod',
+            dirName: '/data/logs/nodejs',
                     logFilePath: '_all_msg.log',
                     exceptionLogFilePath: '_exceptions.log'
                 }

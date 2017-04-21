@@ -103,6 +103,7 @@
 
             client.post(subContext.url, subContext.args,
                 function (data, response) {
+                    logger.logIfHttpError(subContext.url, subContext.args, data, response);
                     subContext.errorMessage = null;
                     try {
                         if (data) {
@@ -150,7 +151,8 @@
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getIFCChartDataPoints]Error\n' + JSON.stringify(err));
+                    logger.error('[getIFCChartDataPoints]Error');
+                    logger.error(err);
                     subContext.message = 'Error connecting to ' + chartSetting.context.service.methods.getFinancialChartData + ' url:' + subContext.url;
                     callback(null, subContext.message);
                 }
@@ -360,6 +362,7 @@
                 logger.debug(subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         subContext.ifcChartSettings = null;
                         try {
                             subContext.ifcChartSettings = getAllIFCChartSettingsResponse(data);
@@ -373,7 +376,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getAllSavedIFChartSettings]Error\n' + err);
+                        logger.error('[getAllSavedIFChartSettings]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
@@ -437,6 +441,7 @@
                 logger.debug(subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         try {
                             subContext.ratioTypes = data.data;
                             subContext.ratioTypeMap = [];
@@ -465,7 +470,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getFinancialChartRatioTypes]Error\n' + err);
+                        logger.error('[getFinancialChartRatioTypes]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
@@ -524,6 +530,7 @@
                 logger.debug(chartSetting.context.service.methods.getStockData + ' API call---->', chartSetting.context.chartSettings[chartSetting.index].output.url);
                 client.get(chartSetting.context.chartSettings[chartSetting.index].output.url,
                     function (data, response) {
+                        logger.logIfHttpError(chartSetting.context.chartSettings[chartSetting.index].output.url, null, data, response);
                         subContext.errorMessage = null;
                         try {
                             chartSetting.context.chartSettings[chartSetting.index].output.activity = groupChartData(data);
@@ -744,7 +751,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getChartDataPoints]Error\n' + err);
+                        logger.error('[getChartDataPoints]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + chartSetting.context.service.methods.getStockData + '. url:' + chartSetting.context.chartSettings[chartSetting.index].output.url;
                         callback(null, subContext.message);
                     }
@@ -1101,6 +1109,7 @@
                 logger.debug(subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         subContext.chartSettings = null;
                         try {
                             subContext.chartSettings = getAllChartSettingsResponse(data, context);
@@ -1114,7 +1123,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getAllChartSettings]Error\n' + err);
+                        logger.error('[getAllChartSettings]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
@@ -1207,6 +1217,7 @@
                 logger.debug(subContext.methodName + ' API call---->', subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         try {
                             context.savedTable = data.items;
                         } catch (exception) {
@@ -1217,7 +1228,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getAllSavedTableList]Error\n' + err);
+                        logger.error('[getAllSavedTableList]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
@@ -1322,6 +1334,7 @@
                 subContext.url = config.restcall.url + '/charts/' + subContext.methodName + '?' + subContext.args;
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         try {
                             if(data.detail){
                                 context.description = data.detail;
@@ -1336,7 +1349,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getSigDevDesc]Error\n' + err);
+                        logger.error('[getMscadDesc]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
@@ -1370,6 +1384,7 @@
                 subContext.url = config.restcall.url + '/charts/' + subContext.methodName + '?' + subContext.args;
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         try {
                             if(data.detail){
                                 context.description = data.detail;
@@ -1384,7 +1399,8 @@
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getSigDevDesc]Error\n' + err);
+                        logger.error('[getSigDevDesc]Error');
+                        logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
                         callback(null, context);
@@ -1460,6 +1476,7 @@
                 logger.debug(subContext.methodName + ' API call---->', subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         subContext.pdfRequest = null;
                         try {
                             context.requestId = data.request.requestNo;
@@ -1474,6 +1491,7 @@
                     }
                 ).on('error',
                     function (err) {
+                        logger.error('[getPDFRequestId]Error');
                         logger.error(err);
                         subContext.message = 'Error connecting to ' + subContext.methodName + '. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
@@ -1565,11 +1583,13 @@
             //fs.writeFile(subContext.chartObj.outfile + '.txt', JSON.stringify(subContext.chartObj));
             client.post(setting.context.service.exportOptions.phatomjsURL, subContext.args,
                 function (data, response) {
+                    logger.logIfHttpError(setting.context.service.exportOptions.phatomjsURL, subContext.args, data, response);
                     logger.debug("Finished getImage call: " + data);
                     callback(null, null);
                 }
             ).on('error',
                 function (err) {
+                    logger.error('[getImage]Error');
                     logger.error(err);
                     subContext.message = 'Error connecting to chart to svg service.' + subContext.chartObj + '\n' + err;
                     callback(null, subContext.message);
@@ -1594,6 +1614,7 @@
                 logger.debug(subContext.methodName + ' API call---->', subContext.url);
                 client.get(subContext.url,
                     function (data, response) {
+                        logger.logIfHttpError(subContext.url, null, data, response);
                         try {
                             context.responseCode = response.statusCode;
                             //reduce the amount of data being sent back to client, we need it for debugging chart problems
@@ -1609,7 +1630,9 @@
                         logger.debug('[setSVGFileStatus]Request ' + context.requestId + ' OK\n' + context.errorMessages);
                         callback(null, context);
                     }
-                ).on('error', function (err) {
+                ).on('error',
+                    function (err) {
+                        logger.error('[setSVGFileStatus]Error');
                         logger.error(err);
                         subContext.message = '[setSVGFileStatus]Error connecting to setSVGFileStatus. url:' + subContext.url;
                         context.errorMessages.push(subContext.message);
@@ -1632,7 +1655,9 @@
             //logger.debug(methodName + ' API call---->', url);
             subContext.statusResponse = {};
 
-            client.get(subContext.url, function (data, response) {
+            client.get(subContext.url,
+                function (data, response) {
+                    logger.logIfHttpError(subContext.url, null, data, response);
                     try {
                         if (data.responseInfo.code === 200) {
                             subContext.statusResponse.error = false;
@@ -1671,8 +1696,9 @@
             ).on('error',
                 function (err)
                 {
+                    logger.error('[getTemplatePDFStatus]Error');
                     logger.error(err);
-                    logger.error('[on error]Error connecting to getTemplatePDFStatus. url:' + subContext.url);
+                    logger.error('[getTemplatePDFStatus][on error]Error connecting to getTemplatePDFStatus. url:' + subContext.url);
                     subContext.statusResponse.error = true;
                     next(subContext.statusResponse);
                 }
@@ -1819,20 +1845,31 @@
 
             context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName + '?request_id=' + context.request_id + '&fileName=' + context.file_name + '&ssnid=' + context.ssnid;
             logger.debug(context.url);
-            client.get(context.url, { responseType: 'arraybuffer' }, function (data, response) {
-                if (data) {
-                    res.writeHead(200,
-                        {
-                            'Content-Type': 'application/pdf',
-                            'Content-Disposition': 'attachment; filename=' + context.file_name,
-                            'Content-Transfer-Encoding': 'BINARY',
-                            'Content-Length': data.length
-                        }
-                    );
-                    res.write(data);
-                    res.end();
+            var args = { 
+                responseType: 'arraybuffer' 
+            };
+            client.get(context.url, args,
+                function (data, response) {
+                    logger.logIfHttpError(context.url, args, data, response);
+                    if (data) {
+                        res.writeHead(200,
+                            {
+                                'Content-Type': 'application/pdf',
+                                'Content-Disposition': 'attachment; filename=' + context.file_name,
+                                'Content-Transfer-Encoding': 'BINARY',
+                                'Content-Length': data.length
+                            }
+                        );
+                        res.write(data);
+                        res.end();
+                    }
                 }
-            });
+            ).on('error',
+                function (err) {
+                    logger.error('[downloadTemplatePDF]Error');
+                    logger.error(err);
+                }
+            );
         }
 
     }
