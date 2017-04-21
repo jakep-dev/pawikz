@@ -103,5 +103,20 @@
                 }
             );
         }
+
+        logger.logIfHttpError = function (url, args, data, response) {
+            if (response.statusCode >= 400) {
+                logger.error('===================');
+                logger.error('HTTP Error occured with status of ' + response.statusCode);
+                logger.error('URL = "' + url + '"');
+                logger.error('HTTP args =');
+                logger.error(args);
+                logger.error('HTTP data =');
+                logger.error(data);
+                logger.error('HTTP response =');
+                logger.error(response);
+                logger.error('===================');
+            }
+        }
     }
 })(module.exports);

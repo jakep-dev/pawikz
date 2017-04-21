@@ -39,11 +39,18 @@
             };
 
             logger.debug(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getUserInfo]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Logout user
@@ -64,11 +71,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[logout]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Authenticate the user and save token
@@ -98,11 +112,18 @@
             };
 
             logger.debug(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[authenticate]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function getServiceDetails(serviceName) {

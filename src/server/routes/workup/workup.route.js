@@ -46,13 +46,21 @@
             };
 
             context.token = req.headers['x-session-token'];
-
-            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                logger.debug('Response - StatusCode');
-                logger.debug(data);
-                status(data.projectId, data.project_name, context.token, next);
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+            client.get(url, context.args,
+                function (data, response) {
+                    logger.logIfHttpError(url, context.args, data, response);
+                    logger.debug('Response - StatusCode');
+                    logger.debug(data);
+                    status(data.projectId, data.project_name, context.token, next);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[create]Error');
+                    logger.error(err);
+                }
+            );
 
 
         }
@@ -82,17 +90,24 @@
 
             //Notify all users about the renewal process going on.
             broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'renewal');
+            var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+            client.get(url, context.args,
+                function (data, response) {
+                    logger.logIfHttpError(url, context.args, data, response);
+                   // data.projectId = req.body.projectId;
 
-            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
+                    //Notify Renewal Status to the user initiated the request.
+                    notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status', context.source);
 
-               // data.projectId = req.body.projectId;
-
-                //Notify Renewal Status to the user initiated the request.
-                notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status', context.source);
-
-                //Notify Renewal Status to all users. So that they can use the template.
-                broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'complete');
-            });
+                    //Notify Renewal Status to all users. So that they can use the template.
+                    broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'complete');
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[renew]Error');
+                    logger.error(err);
+                }
+            );
 
             res.status('200').send('');
         }
@@ -117,10 +132,18 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[lock]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //UnLock the workup is being worked by other user
@@ -143,10 +166,18 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[unlock]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Get the create workup status
@@ -169,38 +200,46 @@
                     ssnid: token
                 }
             };
+            var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+            client.get(url, context.args,
+                function (data, response) {
+                    logger.logIfHttpError(url, context.args, data, response);
+                    logger.debug('Workup Status - ');
+                    logger.debug(data);
+                    logger.debug(projectId);
+                    if(data && data.templateStatus) {
 
-            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                logger.debug('Workup Status - ');
-                logger.debug(data);
-                logger.debug(projectId);
-                if(data && data.templateStatus) {
+                        context.compData = {
+                            projectId: projectId,
+                            project_name: project_name,
+                            progress: parseInt(data.templateStatus.percentage)
+                        };
 
-                    context.compData = {
-                        projectId: projectId,
-                        project_name: project_name,
-                        progress: parseInt(data.templateStatus.percentage)
-                    };
+                        if(token in config.userSocketInfo)
+                        {
+                            //logger.debug('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
+                            config.userSocketInfo[token].emit('create-workup-status', context.compData);
+                        }
 
-                    if(token in config.userSocketInfo)
-                    {
-                        //logger.debug('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
-                        config.userSocketInfo[token].emit('create-workup-status', context.compData);
+                        if(parseInt(data.templateStatus.percentage) !== 100) {
+                           context.timeout = setTimeout(function () {
+                               status(projectId, project_name, token, next);
+                            }, 5000);
+                        }
+                        else {
+                            clearTimeout(context.timeout);
+                        }
                     }
-
-                    if(parseInt(data.templateStatus.percentage) !== 100) {
-                       context.timeout = setTimeout(function () {
-                           status(projectId, project_name, token, next);
-                        }, 5000);
-                    }
-                    else {
+                    else if(!data.templateStatus) {
                         clearTimeout(context.timeout);
                     }
                 }
-                else if(!data.templateStatus) {
-                    clearTimeout(context.timeout);
+            ).on('error',
+                function (err) {
+                    logger.error('[status]Error');
+                    logger.error(err);
                 }
-            });
+            );
         }
 
         //Remove workup
@@ -227,10 +266,18 @@
             context.token = req.headers['x-session-token'];
 
             broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'delete');
-
-            client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+            client.get(url, context.args,
+                function (data, response) {
+                    logger.logIfHttpError(url, context.args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[removeRequest]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 

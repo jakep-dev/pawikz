@@ -29,10 +29,18 @@
         };
 
         logger.debug('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
-        client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args,function(data, response)
-        {
-
-        });
+        var url = config.restcall.url + '/' + service.name + '/' + methodName;
+        client.get(url, args,
+            function (data, response)
+            {
+                logger.logIfHttpError(url, args, data, response);
+            }
+        ).on('error',
+            function (err) {
+                logger.error('[workupBusiness.lock]Error');
+                logger.error(err);
+            }
+        );
     };
 
     /*
@@ -57,11 +65,18 @@
                 ssnid: token
             }
         };
-
-        client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data, response)
-        {
-
-        });
+        var url = config.restcall.url + '/' + service.name + '/' + methodName;
+        client.get(url, args,
+            function (data, response)
+            {
+                logger.logIfHttpError(url, args, data, response);
+            }
+        ).on('error',
+            function (err) {
+                logger.error('[workupBusiness.unlock]Error');
+                logger.error(err);
+            }
+        );
     };
 
 

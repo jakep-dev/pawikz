@@ -34,11 +34,16 @@
 
         context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
 
-        client.post(context.url, context.args, function(data, response) {
-            context.results.data = data;
-            callback(null, context.results);
-        }).on('error',
+        client.post(context.url, context.args,
+            function (data, response) {
+                logger.logIfHttpError(context.url, context.args, data, response);
+                context.results.data = data;
+                callback(null, context.results);
+            }
+        ).on('error',
             function(err) {
+                logger.error('[attachNewsArticles]Error');
+                logger.error(err);
                 context.results.error = 'Error saving boormarked articles';
                 callback(null, context.results);
             }
@@ -80,10 +85,18 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
-
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName, args, function(data, response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[showArticleContent]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function search(req, res, next) {
@@ -108,10 +121,18 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
-
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName, args, function(data, response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[search]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function attachNewsArticles(req, res, next) {
@@ -132,11 +153,18 @@
                 },
                 headers: { 'Content-Type': 'application/json' }
             };
-
-            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
-                function(data, response) {
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
                     res.send(data);
-                });
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[attachNewsArticles]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function getAttachedArticles(req, res, next) {
@@ -156,10 +184,18 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
-
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName, args, function(data, response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getAttachedArticles]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function deleteAttachedArticles(req, res, next) {
@@ -181,11 +217,18 @@
                 },
                 headers: { 'Content-Type': 'application/json' }
             };
-
-            client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
-                function(data, response) {
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
                     res.send(data);
-                });
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[deleteAttachedArticles]Error');
+                    logger.error(err);
+                }
+            );
         }
     };
 
