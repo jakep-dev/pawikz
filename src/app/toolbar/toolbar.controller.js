@@ -29,6 +29,7 @@
             notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
             notificationBusiness.listenToWorkUpStatus(userDetails.userId);
             notificationBusiness.listenToRenewStatus(userDetails.userId);
+            notificationBusiness.listenToRefreshStatus(userDetails.userId);
         } else {
             promiseSetupListener = $interval(setupListeners, 1000);
         }
@@ -78,6 +79,7 @@
         vm.flipSelectionOverview = flipSelectionOverview;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.refresh = refresh;
         vm.projectHistory = projectHistory;
 
         vm.previousStep = previousStep;
@@ -117,6 +119,7 @@
                 notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
                 notificationBusiness.listenToWorkUpStatus(userDetails.userId);
                 notificationBusiness.listenToRenewStatus(userDetails.userId);
+                notificationBusiness.listenToRefreshStatus(userDetails.userId);
                 $interval.cancel(promiseSetupListener);
             } else {
                 console.log('[setupListeners]userId not available.');
@@ -208,6 +211,10 @@
 
         function renew(){
             commonBusiness.emitMsg('project-renew');
+        }
+
+        function refresh(){
+            commonBusiness.emitMsg('project-refresh');
         }
 
         function projectHistory(){

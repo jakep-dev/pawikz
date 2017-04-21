@@ -16,7 +16,8 @@
             lock: lock,
             unlock: unlock,
             delete: deleteWorkup,
-            gethtml: getHtml
+            gethtml: getHtml,
+            refresh: refresh
         };
 
         return service;
@@ -107,6 +108,30 @@
 
             return $http({
                 url : clientConfig.endpoints.workUpEndPoint.renew,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+                });
+        }
+
+        //Refresh the workup
+        function refresh(userId, projectId, projectName, source)
+        {
+            var input = {
+                userId: userId,
+                projectId: projectId,
+                source: source,
+                projectName : projectName
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.refresh,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",

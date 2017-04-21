@@ -48,6 +48,10 @@
                 renew();
             });
 
+            commonBusiness.onMsg("project-refresh", $scope, function(){
+                refresh();
+            });
+
             commonBusiness.onMsg("pdf-download", $scope, function(){
                 pdfDownload();
             });
@@ -86,6 +90,11 @@
         function renew() {
             notificationBusiness.initializeMessages($scope);
             workupBusiness.renew(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
+        }
+
+        function refresh() {
+            notificationBusiness.initializeMessages($scope);
+            workupBusiness.refresh(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
         }
 
 
