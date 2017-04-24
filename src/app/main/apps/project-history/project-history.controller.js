@@ -122,32 +122,12 @@
                 
                 _.each(vm.historyList, function(history){
                     if(_.includes(searchedIndices, history.index)) {
-                        var historyRow = [];
-                        historyRow.push(history.logId);
-                        historyRow.push(history.stepName);
-                        historyRow.push(history.fieldName);
-                        historyRow.push(history.oldValue);
-                        historyRow.push(history.newValue);
-                        historyRow.push(history.workupUsed);
-                        historyRow.push(history.modifiedBy);
-                        historyRow.push(history.modifiedDate);
-                        historyRow.push(history.action);
-                        rows.push(historyRow);
+                        rows.push(getRowDownload(history));
                     }
                 });
             } else {
-                _.each(vm.historyList, function(history){
-                    var historyRow = [];
-                    historyRow.push(history.logId);
-                    historyRow.push(history.stepName);
-                    historyRow.push(history.fieldName);
-                    historyRow.push(history.oldValue);
-                    historyRow.push(history.newValue);
-                    historyRow.push(history.workupUsed);
-                    historyRow.push(history.modifiedBy);
-                    historyRow.push(history.modifiedDate);
-                    historyRow.push(history.action);
-                    rows.push(historyRow);
+                _.each(vm.historyList, function(history){                    
+                    rows.push(getRowDownload(history));
                 });
             }
             
@@ -157,6 +137,20 @@
             commonBusiness.explicitDownloadToCsv(headers, rows, linkElem, fileName);
         }
 
+        function getRowDownload(history) {
+            var historyRow = [];
+            historyRow.push(history.logId);
+            historyRow.push(history.stepName);
+            historyRow.push(history.fieldName);
+            historyRow.push(history.oldValue);
+            historyRow.push(history.newValue);
+            historyRow.push(history.workupUsed);
+            historyRow.push(history.modifiedBy);
+            historyRow.push(history.modifiedDate);
+            historyRow.push(history.action);
+
+            return historyRow;
+        }
         //Filter Project History based on
         //StepId, FieldName, ModifiedBy, ModifiedDate and Action
         function filterProjectHistory(ev, data){
