@@ -347,6 +347,17 @@
                                     });
                                     currentComponent++;
                                     break;
+
+                                case 'AnalystReports':
+                                    var newScope = scope.$new();
+                                    newScope.isprocesscomplete = true;
+                                    var html = '';
+                                    html += '<ms-reports></ms-reports>';
+                                    bindHtml.push({
+                                        content: $compile(html)(newScope)
+                                    });
+                                    currentComponent++;
+                                    break;
                             }
                         }
                         if (currentComponent > totalComponent) {

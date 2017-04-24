@@ -5,14 +5,14 @@
     config.dev = {
                 webService: {
                     protocol: 'http',
-                    url: 'dev-vm-websvc.advisen.com',
-                    port: 8080,
+                    url: 'phldev.advisen.com',
+                    port: '',//8080,
                     service:'advwebservice'
                 },
                 client: {
                     protocol: 'https',
-                    domain: 'devcrm.advisen.com',
-                    port: '443',
+                    domain: 'localhost',
+                    port: '3000',
                     loglevel: 1,
                     transports: ['polling'],
                     useCertificate: false
@@ -170,6 +170,12 @@
                             getAttachedArticles: 'getAttachedArticles',
                             showArticleContent: 'getArticle',
                             deleteAttachedArticles: 'deleteAttachedArticles'
+                        }
+                    },
+                    {
+                        name: 'reports',
+                        methods: {
+                            getList: 'getAnalystReports'
                         }
                     }
                 ]

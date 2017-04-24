@@ -59,6 +59,9 @@
                     showArticleContent: '/api/news/showArticleContent',
                     deleteAttachedArticles: '/api/news/deleteAttachedArticles'
                 },
+                reportsEndPoint: {
+                    get: '/api/reports/list'
+                },
                 projectHistoryEndPoint: {
                     get: '/api/getProjectHistory',
                     getFilters: '/api/getProjectHistoryFilters'
@@ -112,6 +115,10 @@
                         title : 'Would you like to delete?',
                         content: 'Selected News Aricles(s) will be deleted. Please Confirm.'
                     } 
+                },
+                analystReports: {
+                    title : 'Purchase Report',
+                    content: 'Do you want to purchase this @price report?'
                 }
             }
         });

@@ -17,6 +17,7 @@
     var workupBusiness = require('./workup/workup.business.js');
     var socket = require('./socket/socket');
     var newsRoute = require('./news/news.route');
+    var reportsRoute = require('./reports/reports.route');
 
     routes.init = function (app, server, config, logger)
     {
@@ -32,6 +33,7 @@
         financialChartRoute.init(app, config, logger);
         pdfRoute.init(app, config, logger);
         newsRoute.init(app, config, logger);
+        reportsRoute.init(app, config, logger);
     };
 
 })(module.exports);
