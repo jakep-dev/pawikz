@@ -460,7 +460,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withOption('autoWidth', true)
             .withOption('responsive', responsive)
             .withOption('stateSave', true)
-            .withOption('order',[[3, 'desc'],[4, 'desc']])
+            .withOption('order',[4, 'desc'])
             .withPaginationType('full')
             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
