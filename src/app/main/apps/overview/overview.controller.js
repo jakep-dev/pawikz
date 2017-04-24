@@ -60,7 +60,7 @@
         vm.showOverviewDetails =showOverviewDetails;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
-        vm.refresh = refresh;
+        vm.dataRefresh = dataRefresh;
         vm.projectHistory = projectHistory;
         vm.checkIsPrintableAll = checkIsPrintableAll;
 
@@ -107,8 +107,8 @@
                 renew(vm.projectId);
             });
 
-            commonBusiness.onMsg("project-refresh", $scope, function(){
-                refresh(vm.projectId);
+            commonBusiness.onMsg("project-data-refresh", $scope, function(){
+                dataRefresh(vm.projectId);
             });
 
             commonBusiness.onMsg("project-history", $scope, function(){
@@ -132,10 +132,10 @@
         }
 
         //Refresh workup
-        function refresh(projectId)
+        function dataRefresh(projectId)
         {
             notificationBusiness.initializeMessages($scope);
-            workupBusiness.refresh(commonBusiness.userId, parseInt(projectId), commonBusiness.projectName, 'reload-overview');
+            workupBusiness.dataRefresh(commonBusiness.userId, parseInt(projectId), commonBusiness.projectName, 'reload-overview');
         }
 
         //Go to top

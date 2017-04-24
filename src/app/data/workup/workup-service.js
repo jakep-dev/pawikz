@@ -17,7 +17,7 @@
             unlock: unlock,
             delete: deleteWorkup,
             gethtml: getHtml,
-            refresh: refresh
+            dataRefresh: dataRefresh
         };
 
         return service;
@@ -121,7 +121,7 @@
         }
 
         //Refresh the workup
-        function refresh(userId, projectId, projectName, source)
+        function dataRefresh(userId, projectId, projectName, source)
         {
             var input = {
                 userId: userId,
@@ -131,7 +131,7 @@
             };
 
             return $http({
-                url : clientConfig.endpoints.workUpEndPoint.refresh,
+                url : clientConfig.endpoints.workUpEndPoint.dataRefresh,
                 method : "POST",
                 data : input,
                 contentType: "application/json; charset=utf-8",

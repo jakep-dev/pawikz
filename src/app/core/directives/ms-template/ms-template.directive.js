@@ -48,8 +48,8 @@
                 renew();
             });
 
-            commonBusiness.onMsg("project-refresh", $scope, function(){
-                refresh();
+            commonBusiness.onMsg("project-data-refresh", $scope, function(){
+                dataRefresh();
             });
 
             commonBusiness.onMsg("pdf-download", $scope, function(){
@@ -92,9 +92,9 @@
             workupBusiness.renew(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
         }
 
-        function refresh() {
+        function dataRefresh() {
             notificationBusiness.initializeMessages($scope);
-            workupBusiness.refresh(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
+            workupBusiness.dataRefresh(commonBusiness.userId, parseInt(commonBusiness.projectId), commonBusiness.projectName, 'reload-steps');
         }
 
 

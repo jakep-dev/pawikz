@@ -20,7 +20,7 @@
             app.post('/api/workup/status', status),
             app.post('/api/workup/unlock', unlock),
             app.post('/api/workup/delete', removeRequest),
-            app.post('/api/workup/refresh', refresh)
+            app.post('/api/workup/refresh', dataRefresh)
         ]);
 
 
@@ -99,7 +99,7 @@
         }
 
         //Refresh existing workup
-        function refresh(req, res, next)
+        function dataRefresh(req, res, next)
         {
             var context = new Object();
             context.service = getServiceDetails('templateManager');
@@ -122,13 +122,13 @@
             context.source = req.body.source;
 
             //Notify all users about the Refreshing process going on.
-            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'refresh');
+            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'DataRefresh');
 
 
             client.get(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
 
                 //Notify Refresh Status to the user initiated the request.
-                notifyStatus(req.headers['x-session-token'], req.body, 'notify-refresh-workup-status', context.source);
+                notifyStatus(req.headers['x-session-token'], req.body, 'notify-data-refresh-workup-status', context.source);
 
                 //Notify Refresh Status to all users. So that they can use the template.
                 broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'complete');

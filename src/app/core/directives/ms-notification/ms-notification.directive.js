@@ -65,7 +65,7 @@
                 switch (notification.type)
                 {
                     case 'Renewal':
-                    case 'Refresh':
+                    case 'DataRefresh':
                     case 'Create-WorkUp':
                         $location.url('/overview/' + notification.url);
                         notification.status = 'close';

@@ -17,7 +17,7 @@
                 renew: renew,
                 createWorkUp: createWorkUp,
                 renewFromDashboard: renewFromDashboard,
-                refresh : refresh
+                dataRefresh : dataRefresh
         };
 
         return business;
@@ -122,12 +122,12 @@
         }
 
         //Add refresh workup details to notification center and show dialog box to user.
-        function refresh(userId, projectId, projectName, reloadEvent)
+        function dataRefresh(userId, projectId, projectName, reloadEvent)
         {
             notificationBusiness.notifyNotificationCenter({
                 id: projectId,
                 title: projectName,
-                type: 'Refresh',
+                type: 'DataRefresh',
                 icon: 'refresh',
                 progress: 15,
                 disabled: true,
@@ -136,10 +136,10 @@
                 userId: userId,
                 istrackable: false,
                 url: projectId
-            }, 'notify-refresh-workup-notification-center');
-            workupService.refresh(userId, projectId, projectName, reloadEvent);
+            }, 'notify-data-refresh-workup-notification-center');
+            workupService.dataRefresh(userId, projectId, projectName, reloadEvent);
 
-            dialog.notify('Refreshing Workup', 'Go to Notification Center ',
+            dialog.notify('Refreshing the data', 'Go to Notification Center ',
                 '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
                 null,
                 {

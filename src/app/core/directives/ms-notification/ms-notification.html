@@ -20,7 +20,7 @@
                 <i ng-if="notification.status === 'close'" class="fa fa-close s16" ng-click="vm.close(notification)"></i>
             </div>
             <i ng-if="notification.type === 'Renewal' && notification.progress < 100" class="fa fa-refresh s16"></i>
-            <i ng-if="notification.type === 'Refresh' && notification.progress < 100" class="fa fa-repeat s16"></i>
+            <i ng-if="notification.type === 'DataRefresh' && notification.progress < 100" class="fa fa-repeat s16"></i>
             <i ng-if="notification.type === 'Create-WorkUp' && notification.progress < 100" class="fa fa-plus s16"></i>
             <i ng-if="notification.type === 'PDF-Download' && notification.progress < 100" class="fa fa-file-pdf-o s16"></i>
             <md-tooltip md-direction="right" class="tooltipContainer">{{notification.title}}</md-tooltip>
