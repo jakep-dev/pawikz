@@ -53,7 +53,8 @@
             if (data) {
                 var notification = _.find(business.notifications, function (not) {
                     if (not.id === data.id &&
-                        not.type === data.type) {
+                        not.type === data.type &&
+                        data.type !== 'PDF-Download') {
                         return not;
                     }
                 });
@@ -90,7 +91,7 @@
                     } else {
                         business.pushNotification({
                             id: response.projectId,
-                            title: decodeURIComponent(response.project_name),
+                            title: decodeURIComponent(response.projectName),
                             type: 'PDF-Download',
                             icon: 'file-pdf-o',
                             progress: response.progress,
@@ -102,12 +103,12 @@
                             requestId: response.requestId
                         });
                     }
-                    if (notification.progress === 100) {
+                    if (response.progress && response.progress === 100) {
                         dialog.close();
                         notification.status = 'complete';
                         notification.tooltip = 'PDF Generation complete';
                         notification.disabled = false;
-                    } else if (response.progress === -1) {
+                    } else if (response.progress && response.progress === -1) {
                         dialog.close();
                         notification.status = 'error';
                         notification.tooltip = 'PDF Generation error';
