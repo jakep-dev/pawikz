@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     angular
@@ -7,7 +7,7 @@
 
     /* @ngInject */
     function notificationBusiness(toast, dialog,
-                                  $rootScope, $mdToast, 
+                                  $rootScope, $mdToast,
                                   clientConfig, commonBusiness) {
         var business = {
             notifications: [],
@@ -18,7 +18,8 @@
             clearNotifications: clearNotifications,
             setDashboardCallback: setDashboardCallback,
             notifyNotificationCenter: notifyNotificationCenter,
-            listenToRenewStatus: listenToRenewStatus
+            listenToRenewStatus: listenToRenewStatus,
+            listenToDataRefreshStatus: listenToDataRefreshStatus
         };
 
         return business;
@@ -36,6 +37,10 @@
             commonBusiness.onMsg('notify-renewal-workup-notification-center', scope, function (ev, data) {
                 business.pushNotification(data);
             });
+
+            commonBusiness.onMsg('notify-data-refresh-workup-notification-center', scope, function (ev, data) {
+                business.pushNotification(data);
+            });
         }
 
         function clearNotifications() {
@@ -45,11 +50,10 @@
         //Push the notification details
         function pushNotification(data) {
             var returnObj = data;
-            if (data) { 
+            if (data) {
                 var notification = _.find(business.notifications, function (not) {
                     if (not.id === data.id &&
-                        not.type === data.type && 
-                        data.type !== 'PDF-Download') {
+                        not.type === data.type) {
                         return not;
                     }
                 });
@@ -60,8 +64,7 @@
                     notification.disabled = data.disabled;
                     notification.istrackable = data.istrackable;
                     returnObj = notification;
-                }
-                else {
+                } else {
                     business.notifications.push(data);
                 }
             }
@@ -75,7 +78,7 @@
 
                     var notification = _.find(business.notifications, function (not) {
                         if (not.id === response.projectId &&
-                            not.requestId === response.requestId && 
+                            not.requestId === response.requestId &&
                             not.type === 'PDF-Download') {
                             return not;
                         }
@@ -174,37 +177,78 @@
                             return not;
                         }
                     });
-                    if (notification) {
-                        notification.status = 'complete';
-                        notification.progress = 100;
-                        notification.disabled = false;
-                        notification.url = parseInt(response.projectId);
-                        if (response.project_name && response.project_name != '') {
-                            notification.title = response.project_name;
-                        }
-                    } else {
-                        business.pushNotification({
-                            id: parseInt(response.old_project_id),
-                            title: decodeURIComponent(response.project_name),
-                            type: 'Renewal',
-                            icon: 'refresh',
-                            progress: 100,
-                            disabled: false,
-                            tooltip: 'Renewal work-up still in-progress',
-                            status: 'complete',
-                            userId: userId,
-                            istrackable: false,
-                            url: parseInt(response.projectId)
-                        });
-                    }
-                    if (response.source && response.source === 'fromDashboard' && dashboardCallback) {
-                        dashboardCallback(response);
-                    } else if (response.source && ((response.source === 'reload-overview') || (response.source === 'reload-steps'))) {
-                        dialog.close();
-                    }
-                    commonBusiness.emitMsg('update-notification-binding');
+                    listenToDataWorkupStatus(notification, response, 'Renewal');
                 }
             });
+        }
+
+        function listenToDataRefreshStatus(userId) {
+            clientConfig.socketInfo.socket.on('notify-data-refresh-workup-status', function (response) {
+                if (response) {
+                    var notification = _.find(business.notifications, function (not) {
+                        if (not.type === 'DataRefresh' &&
+                            not.id === parseInt(response.projectId)) {
+                            return not;
+                        }
+                    });
+                    listenToDataWorkupStatus(notification, response, 'DataRefresh');
+                }
+            });
+        }
+
+        //Common method for Renewal and Data Refresh
+        function listenToDataWorkupStatus(notification, response, type){
+
+            var projectId = null;
+            var projectName;
+            var tooltip;
+
+            //If notification.type is equal to 'Renewal'
+            if(notification.type === type &&
+               notification.id === parseInt(response.old_project_id)){
+                projectId = response.old_project_id;
+                projectName = response.project_name;
+                tooltip = 'Renewal work-up';
+            }
+
+            //If notification.type is equal to 'DataRefresh'
+            if(notification.type === type &&
+               notification.id === parseInt(response.projectId)){
+                projectId = response.projectId;
+                projectName = response.projectName;
+                tooltip = 'Refreshing data';
+            }
+
+            if (notification) {
+                notification.status = 'complete';
+                notification.progress = 100;
+                notification.disabled = false;
+                notification.url = parseInt(response.projectId);
+                if (projectName && projectName != '') {
+                    notification.title = projectName;
+                }
+            } else {
+                business.pushNotification({
+                    id: parseInt(projectId),
+                    title: decodeURIComponent(projectName),
+                    type: type,
+                    icon: 'refresh',
+                    progress: 100,
+                    disabled: false,
+                    tooltip: tooltip + ' still in-progress',
+                    status: 'complete',
+                    userId: userId,
+                    istrackable: false,
+                    url: parseInt(response.projectId)
+                });
+            }
+
+            if (response.source && response.source === 'fromDashboard' && dashboardCallback) {
+                dashboardCallback(response);
+            } else if (response.source && ((response.source === 'reload-overview') || (response.source === 'reload-steps'))) {
+                dialog.close();
+            }
+            commonBusiness.emitMsg('update-notification-binding');
         }
 
     }

@@ -19,9 +19,9 @@
             app.post('/api/workup/lock', lock),
             app.post('/api/workup/status', status),
             app.post('/api/workup/unlock', unlock),
-            app.post('/api/workup/delete', removeRequest)
+            app.post('/api/workup/delete', removeRequest),
+            app.post('/api/workup/refresh', dataRefresh)
         ]);
-
 
         //Create new workup
         function create(req, res, next) {
@@ -61,8 +61,6 @@
                     logger.error(err);
                 }
             );
-
-
         }
 
         //Renew existing workup
@@ -109,6 +107,50 @@
                 }
             );
 
+            res.status('200').send('');
+        }
+
+        //Refresh existing workup
+        function dataRefresh(req, res, next)
+        {
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
+
+            if (!_.isUndefined(context.service) &&
+                !_.isNull(context.service))
+            {
+                context.methodName = context.service.methods.refreshWorkup;
+            }
+
+            context.args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    user_id: req.body.userId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+            context.source = req.body.source;
+
+            //Notify all users about the Refreshing process going on.
+            broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'DataRefresh');
+            var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+            client.get(url, context.args,
+                function (data, response) {
+                    logger.logIfHttpError(url, context.args, data, response);
+                    //Notify Refresh Status to the user initiated the request.
+                    notifyStatus(req.headers['x-session-token'], req.body, 'notify-data-refresh-workup-status', context.source);
+
+                    //Notify Refresh Status to all users. So that they can use the template.
+                    broadcastWorkUpInfo(req.headers['x-session-token'], req.body.projectId, req.body.userId, 'complete');
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[dataRefresh]Error');
+                    logger.error(err);
+                }
+            );
             res.status('200').send('');
         }
 

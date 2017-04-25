@@ -524,7 +524,10 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                         row.removeClass('not-active');
                         row.addClass('not-active');
                         break;
-
+                    case 'DataRefresh':
+                        row.removeClass('not-active');
+                        row.addClass('not-active');
+                        break;
                     case 'complete':
                         row.removeClass('not-active');
                         break;

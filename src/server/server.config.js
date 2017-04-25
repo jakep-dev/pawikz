@@ -106,7 +106,8 @@
                             setSVGFileStatus: 'setSVGFileStatus',
                             getTemplatePDFStatus: 'getTemplatePDFStatus',
                             downloadTemplatePDF: 'downloadTemplatePDF',
-                            deleteWorkup: 'deleteWorkup'
+                            deleteWorkup: 'deleteWorkup',
+                            refreshWorkup: 'refreshWorkup'
                         }
                     },
                     {
