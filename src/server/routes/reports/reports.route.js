@@ -37,9 +37,18 @@
                 }
             };
 
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName, args, function(data, response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args, 
+                function(data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getList - Analyst Report]');
+                    logger.error(err); 
+                }
+            );
         }
     };
 

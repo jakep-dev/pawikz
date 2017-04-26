@@ -14,6 +14,7 @@
         vm.reloadValue = false;
 
         vm.downloadLink = downloadLink;
+        vm.previewReport = previewReport;
         vm.startGetList = startGetList;
         vm.getListComplete = $scope.getListComplete;
         vm.registerGetListCallback = $scope.registerGetListCallback;
@@ -51,10 +52,10 @@
             
             vm.dtColumns = [    
                 DTColumnBuilder.newColumn('price', 'Price'),
-                DTColumnBuilder.newColumn('title', 'Report Title'),
-                DTColumnBuilder.newColumn('date', 'Date'),
-                DTColumnBuilder.newColumn('contributor', 'Contributor'),
-                DTColumnBuilder.newColumn('author', 'Author'),
+                DTColumnBuilder.newColumn('headline', 'Report Title'),
+                DTColumnBuilder.newColumn('storyDate', 'Date'),
+                DTColumnBuilder.newColumn('broker', 'Contributor'),
+                DTColumnBuilder.newColumn('analyst', 'Author'),
                 DTColumnBuilder.newColumn('pages', 'Pages'),
                 DTColumnBuilder.newColumn('language', 'Language')
             ];
@@ -69,9 +70,10 @@
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
                 .withOption('stateSave', true)
+                .withOption('filter', false)
                 .withOption('createdRow', recompileHtml)
                 .withPaginationType('full')
-                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
+                .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
 
         function redrawDataTable() {
@@ -84,10 +86,10 @@
 
         function titleHtml(data, type, full, meta) {
             return '<span>' +
-                        '<a href="#"  target="_blank"> ' +
+                        '<a href="#" ng-click="vm.previewReport(\'' + full.price + '\')"> ' +
                             '<i class="fa fa-search s16"></i> ' +
                         '</a> ' +
-                        '<a href="#" ng-click="vm.downloadLink(\'' + full.price + '\', \'' + full.downloadURL+ '\')"> ' +
+                        '<a href="#" ng-click="vm.downloadLink(\'' + full.price + '\', \'' + full.docURL+ '\')"> ' +
                             data  + 
                         '</a> ' +
                     '</span>';
@@ -115,7 +117,7 @@
                         price: '',
                         previewURL: '', 
                         title: '',
-                        downloadURL: '', 
+                        docURL: '', 
                         date: '', 
                         contributor: '', 
                         author: '', 
@@ -139,6 +141,14 @@
                     fnCallback(records);
                 });
             }
+        }
+
+        function previewReport(content) {
+            var div = '<div>' + content + '</div>';
+            dialog.notify('Preview', null,
+                    div,
+                    null,
+                    null, null, false);
         }
 
         function downloadLink(price, link) {
@@ -166,9 +176,7 @@
         }
 
         function goToLink(link) {
-            console.log(link);
             var win = $window.open(link, '_blank');
-            win.focus();
         }
     }
 

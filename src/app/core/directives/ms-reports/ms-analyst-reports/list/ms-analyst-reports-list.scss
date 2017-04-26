@@ -9,4 +9,23 @@ div#analyst-reports-list {
             }
         }
     }
+
+    .padding-10{
+        padding: 0px !important;
+    }
+}
+
+#analyst-report-table {
+    border:1px dotted lightgrey;
+    padding: 0px;
+
+    thead {
+        tr {
+            font-weight: bold;
+            background-color: rgba(15, 185, 255, 0.11);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+        }
+    }
+
+    
 }
