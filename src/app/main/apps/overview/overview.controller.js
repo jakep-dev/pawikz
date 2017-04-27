@@ -63,7 +63,7 @@
         vm.dataRefresh = dataRefresh;
         vm.projectHistory = projectHistory;
         vm.checkIsPrintableAll = checkIsPrintableAll;
-
+        overviewBusiness.templateOverview = null;
         //Data
         loadData();
 
