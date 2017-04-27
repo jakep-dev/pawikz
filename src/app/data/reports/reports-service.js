@@ -10,7 +10,9 @@
         var readyPromise;
 
         var service = {
-            get: get
+            get: get,
+            getPDFLink: getPDFLink,
+            getPreviewReport: getPreviewReport
         };
 
         return service;
@@ -26,6 +28,46 @@
 
             return $http({
                     url: clientConfig.endpoints.reportsEndPoint.get,
+                    method: "POST",
+                    data: input,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function getPDFLink() {
+            var input = {
+            }
+
+            return $http({
+                    url: clientConfig.endpoints.reportsEndPoint.getPDFLink,
+                    method: "POST",
+                    data: input,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                })
+                .then(function(data, status, headers, config) {
+                    return data.data;
+                })
+                .catch(function(error) {
+                    logger.error(JSON.stringify(error));
+                });
+        }
+
+        function getPreviewReport(url, userId) {
+            var input = {
+                url: url,
+                userId: userId
+            }
+
+            return $http({
+                    url: clientConfig.endpoints.reportsEndPoint.getPreviewReport,
                     method: "POST",
                     data: input,
                     contentType: "application/json; charset=utf-8",

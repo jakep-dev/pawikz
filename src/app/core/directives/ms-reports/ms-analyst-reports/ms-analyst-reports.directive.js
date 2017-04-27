@@ -86,7 +86,7 @@
 
         function titleHtml(data, type, full, meta) {
             return '<span>' +
-                        '<a href="#" ng-click="vm.previewReport(\'' + full.price + '\')"> ' +
+                        '<a href="#" ng-click="vm.previewReport(\'' + full.previewURL + '\')"> ' +
                             '<i class="fa fa-search s16"></i> ' +
                         '</a> ' +
                         '<a href="#" ng-click="vm.downloadLink(\'' + full.price + '\', \'' + full.docURL+ '\')"> ' +
@@ -143,12 +143,13 @@
             }
         }
 
-        function previewReport(content) {
-            var div = '<div>' + content + '</div>';
-            dialog.notify('Preview', null,
-                    div,
+        function previewReport(link) {
+            reportsService.getPreviewReport(link, commonBusiness.userId).then(function(response) {
+                dialog.notify('Preview', null,
+                    response.html,
                     null,
                     null, null, false);
+            });
         }
 
         function downloadLink(price, link) {
@@ -159,7 +160,7 @@
                     ok: {
                         name: 'yes',
                         callBack: function() {
-                            goToLink(link);
+                            getPDFLink(link);
                         }
                     },
                     cancel: {
@@ -170,13 +171,17 @@
                     }
                 });
             } else {
-                goToLink(link);
+                getPDFLink(link);
             }
             
         }
 
-        function goToLink(link) {
-            var win = $window.open(link, '_blank');
+        function getPDFLink(link) {
+            //var win = $window.open(link, '_blank');
+            reportsService.getPDFLink().then(function(response) {
+                //var win = $window.open(response.url, '_blank', 'toolbar=0,location=0,menubar=0');
+                var win = $window.open(response.url, '_blank');
+            });
         }
     }
 

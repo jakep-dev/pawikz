@@ -5,8 +5,8 @@
     config.dev = {
                 webService: {
                     protocol: 'http',
-                    url: 'phldev.advisen.com',
-                    port: '',//8080,
+                    url: 'dev-vm-websvc.advisen.com',
+                    port: 8080,
                     service:'advwebservice'
                 },
                 client: {
@@ -175,7 +175,9 @@
                     {
                         name: 'reports',
                         methods: {
-                            getList: 'getAnalystReports'
+                            getList: 'getAnalystReports',
+                            getPDFLink: 'getAnalystReportPDF',
+                            getPreviewReport: 'getFactsetPreview'
                         }
                     }
                 ]

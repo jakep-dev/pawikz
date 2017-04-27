@@ -10,7 +10,9 @@
         logger = log;
 
         config.parallel([
-            app.post('/api/reports/list', getList)
+            app.post('/api/reports/list', getList),
+            app.post('/api/reports/getPDFLink', getPDFLink),
+            app.post('/api/reports/getPreviewReport', getPreviewReport)
         ]);
 
         function getServiceDetails(serviceName) {
@@ -46,6 +48,71 @@
             ).on('error',
                 function (err) {
                     logger.error('[getList - Analyst Report]');
+                    logger.error(err); 
+                }
+            );
+        }
+
+        function getPDFLink(req, res, next) {
+            var service = getServiceDetails('reports');
+
+            var methodName = '';
+
+            if (!_.isUndefined(service) && !_.isNull(service)) {
+                logger.debug(service.name);
+                methodName = service.methods.getPDFLink;
+            }
+
+            var args = {
+                parameters: {
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args, 
+                function(data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    var pdf = {
+                        url: url
+                    }
+                    res.send(pdf);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[downloadPDF - Analyst Report]');
+                    logger.error(err); 
+                }
+            );
+        }
+
+        function getPreviewReport(req, res, next) {
+            var service = getServiceDetails('reports');
+
+            var methodName = '';
+
+            if (!_.isUndefined(service) && !_.isNull(service)) {
+                logger.debug(service.name);
+                methodName = service.methods.getPreviewReport;
+            }
+
+            var args = {
+                parameters: {
+                    preview_url: req.body.url,
+                    user_id: req.body.userId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args, 
+                function(data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getPreviewReport - Analyst Report]');
                     logger.error(err); 
                 }
             );

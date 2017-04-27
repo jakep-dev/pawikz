@@ -130,6 +130,9 @@
         function stepToggleExpand(){
             vm.isStepExpanded = !vm.isStepExpanded;
             commonBusiness.emitMsg('step-toogle-expand');
+
+            //for ms-accordion
+            commonBusiness.emitWithArgument('accordion-toggle-expand', vm.isStepExpanded);
         }
 
         function listenToStepMessages(){

@@ -111,7 +111,7 @@
 
     function msTemplateDirective($compile, $timeout,
         $interval, templateBusiness,
-        commonBusiness) {
+        commonBusiness, overviewBusiness) {
         return {
             restrict: 'E',
             scope: {
@@ -349,13 +349,22 @@
                                     break;
 
                                 case 'AnalystReports':
-                                    var newScope = scope.$new();
-                                    newScope.isprocesscomplete = true;
-                                    var html = '';
-                                    html += '<ms-reports></ms-reports>';
-                                    bindHtml.push({
-                                        content: $compile(html)(newScope)
-                                    });
+
+                                    //check if the user has permission to show analyst reports
+                                    if(overviewBusiness && 
+                                        overviewBusiness.templateOverview &&
+                                        overviewBusiness.templateOverview.hasFactsetAccess && 
+                                        overviewBusiness.templateOverview.hasFactsetAccess === 'Y') {
+                                            
+                                            var newScope = scope.$new();
+                                            newScope.isprocesscomplete = true;
+                                            var html = '';
+                                            html += '<ms-reports></ms-reports>';
+                                            bindHtml.push({
+                                                content: $compile(html)(newScope)
+                                            });
+                                    }
+                                    
                                     currentComponent++;
                                     break;
                             }

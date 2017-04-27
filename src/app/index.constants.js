@@ -60,7 +60,9 @@
                     deleteAttachedArticles: '/api/news/deleteAttachedArticles'
                 },
                 reportsEndPoint: {
-                    get: '/api/reports/list'
+                    get: '/api/reports/list',                    
+                    getPDFLink: '/api/reports/getPDFLink',
+                    getPreviewReport: '/api/reports/getPreviewReport'
                 },
                 projectHistoryEndPoint: {
                     get: '/api/getProjectHistory',

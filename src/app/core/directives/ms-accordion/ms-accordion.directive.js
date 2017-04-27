@@ -28,6 +28,12 @@
         // remove html tags in hovering accordion header
         vm.accordionHeaderTooltip = $scope.title.replace(/<\/?[^>]+(>|$)/g, "");
 
+        //expand/collapse All
+        commonBusiness.onMsg('accordion-toggle-expand', $scope, function(ev, data) {
+            vm.isCollapsed = !data;
+            onExpandCollapse();
+        });
+
         init();
 
         function onExpandComplete() {
