@@ -86,10 +86,10 @@
 
         function titleHtml(data, type, full, meta) {
             return '<span>' +
-                        '<a href="#" ng-click="vm.previewReport(\'' + full.previewURL + '\')"> ' +
+                        '<a href="#" ng-click="vm.previewReport(' + full.index + ')"> ' +
                             '<i class="fa fa-search s16"></i> ' +
                         '</a> ' +
-                        '<a href="#" ng-click="vm.downloadLink(\'' + full.price + '\', \'' + full.docURL+ '\')"> ' +
+                        '<a href="#" ng-click="vm.downloadLink(' + full.index + ')"> ' +
                             data  + 
                         '</a> ' +
                     '</span>';
@@ -108,11 +108,6 @@
             if(vm.loadData){
                 reportsService.get(commonBusiness.companyId, commonBusiness.userId, length, pageNo).then(function(response) {
 
-                    vm.company = response.summary.company || '';
-                    vm.reportsFound = response.summary.found || '';
-                    vm.date = response.summary.dateTime || '';
-                    vm.articlesShown = response.summary.articlesShown || '';
-
                     var blankData = {
                         price: '',
                         previewURL: '', 
@@ -125,6 +120,25 @@
                         language: '' 
                     };
 
+                    vm.analystReportsList = [];
+                    vm.identifierId = response.identifier_id;
+                    vm.identifierType = response.identifier_type;
+                    if(response && response.reports) {
+                        _.each(response.reports, function(report, index){
+                            if(report) {
+                                report.index = index;
+                                vm.analystReportsList.push(report);
+                            }
+                        });
+                    }
+
+                    if(response && response.summary) {
+                        vm.company = response.summary.company || '';
+                        vm.reportsFound = response.summary.found || '';
+                        vm.date = response.summary.dateTime || '';
+                        vm.articlesShown = response.summary.articlesShown || '';
+                    }
+
                     var records = {
                         draw: draw,
                         recordsTotal: angular.isDefined(response) && angular.isDefined(response.summary) &&
@@ -132,7 +146,7 @@
                         recordsFiltered: angular.isDefined(response) && angular.isDefined(response.summary) &&
                             (response.summary.found) ? response.summary.found : 0,
                         data: angular.isDefined(response.reports) && angular.isDefined(response.reports) &&
-                            response.reports !== null ? response.reports : blankData
+                            response.reports !== null ? vm.analystReportsList : blankData
                     };
 
                     if (vm.getListComplete) {
@@ -143,44 +157,55 @@
             }
         }
 
-        function previewReport(link) {
-            reportsService.getPreviewReport(link, commonBusiness.userId).then(function(response) {
-                dialog.notify('Preview', null,
-                    response.html,
-                    null,
-                    null, null, false);
-            });
+        function previewReport(index) {
+            var report = _.find(vm.analystReportsList, {index: index});
+            if(report) {
+                reportsService.getPreviewReport(report.previewURL, commonBusiness.userId).then(function(response) {
+
+                    // error on direct insert of the html string
+                    // get the main content and insert on the popup window
+                    var html = response.html;
+                    var search = 'fdsspan';
+                    var content = html.substring(html.indexOf('<' + search), html.indexOf('</' + search) + search.length + 2);
+                    dialog.notify('Preview', null,
+                        content,
+                        null,
+                        null, null, false);
+                });
+            }
         }
 
-        function downloadLink(price, link) {
-
-            if(price.length > 0  && price.toUpperCase() !== 'FREE') {
-                dialog.confirm(clientConfig.messages.analystReports.title, 
-                                clientConfig.messages.analystReports.content.replace('@price', price) , null, {
-                    ok: {
-                        name: 'yes',
-                        callBack: function() {
-                            getPDFLink(link);
+        function downloadLink(index) {
+            var report = _.find(vm.analystReportsList, {index: index});
+            if(report) {
+                if(report.price.length > 0  && report.price.toUpperCase() !== 'FREE') {
+                    dialog.confirm(clientConfig.messages.analystReports.title, 
+                                    clientConfig.messages.analystReports.content.replace('@price', report.price) , null, {
+                        ok: {
+                            name: 'yes',
+                            callBack: function() {
+                                getPDFLink(report);
+                            }
+                        },
+                        cancel: {
+                            name: 'no',
+                            callBack: function() {
+                                return false;
+                            }
                         }
-                    },
-                    cancel: {
-                        name: 'no',
-                        callBack: function() {
-                            return false;
-                        }
-                    }
-                });
-            } else {
-                getPDFLink(link);
+                    });
+                } else {
+                    getPDFLink(report);
+                }
             }
+            
             
         }
 
-        function getPDFLink(link) {
-            //var win = $window.open(link, '_blank');
-            reportsService.getPDFLink().then(function(response) {
-                //var win = $window.open(response.url, '_blank', 'toolbar=0,location=0,menubar=0');
-                var win = $window.open(response.url, '_blank');
+        function getPDFLink(report) {
+            reportsService.getPDFLink(commonBusiness.userId, commonBusiness.companyId,
+                vm.identifierId, vm.identifierType, report).then(function(response) {
+                    var win = $window.open(response.url, '_blank');
             });
         }
     }

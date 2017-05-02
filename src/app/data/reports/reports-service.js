@@ -41,8 +41,13 @@
                 });
         }
 
-        function getPDFLink() {
+        function getPDFLink(userId, companyId, identifierId, identifierType, report) {
             var input = {
+                userId: userId,
+                companyId: companyId,
+                identifierId: identifierId,
+                identifierType: identifierType,
+                report: report
             }
 
             return $http({

@@ -30,8 +30,10 @@
 
         //expand/collapse All
         commonBusiness.onMsg('accordion-toggle-expand', $scope, function(ev, data) {
-            vm.isCollapsed = !data;
-            onExpandCollapse();
+            if(vm.isExpandable) {
+                vm.isCollapsed = !data;
+                onExpandCollapse();
+            }
         });
 
         init();

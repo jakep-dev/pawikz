@@ -11,8 +11,8 @@
                 },
                 client: {
                     protocol: 'https',
-                    domain: 'localhost',
-                    port: '3000',
+                    domain: 'devcrm.advisen.com',
+                    port: '443',
                     loglevel: 1,
                     transports: ['polling'],
                     useCertificate: false

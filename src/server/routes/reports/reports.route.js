@@ -65,25 +65,34 @@
 
             var args = {
                 parameters: {
+                    user_id: req.body.userId,
+                    company_id: req.body.companyId,
+                    identifier_id: req.body.identifierId,
+                    identifier_type: req.body.identifierType,
+                    report_id: req.body.report.documentId,
+                    report_title: encodeURIComponent(req.body.report.headline),
+                    repot_date: req.body.report.storyDate,
+                    report_price: req.body.report.price,
+                    number_of_pages: req.body.report.pages, 
+                    author_id: req.body.report.analysts,
+                    contributor_id: req.body.report.broker,  
+                    doc_url: encodeURIComponent(req.body.report.docURL),
+                    billing_type: req.body.report.billingType,
+                    purchase_info: encodeURIComponent(req.body.report.purchaseInfo),
                     ssnid: req.headers['x-session-token']
-                }
+               }
             };
 
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
-            client.get(url, args, 
-                function(data, response) {
-                    logger.logIfHttpError(url, args, data, response);
-                    var pdf = {
-                        url: url
-                    }
-                    res.send(pdf);
-                }
-            ).on('error',
-                function (err) {
-                    logger.error('[downloadPDF - Analyst Report]');
-                    logger.error(err); 
-                }
-            );
+            var params = [];
+
+            _.mapObject(args.parameters, function(val, key){
+                params.push(key + '=' + val);
+            });
+
+            res.send({
+                url: url + '?' + params.join('&')
+            });
         }
 
         function getPreviewReport(req, res, next) {
@@ -97,15 +106,16 @@
             }
 
             var args = {
-                parameters: {
+                data: {
                     preview_url: req.body.url,
                     user_id: req.body.userId,
                     ssnid: req.headers['x-session-token']
-                }
+                },
+                headers: { "Content-Type": "application/json" }
             };
 
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
-            client.get(url, args, 
+            client.post(url, args, 
                 function(data, response) {
                     logger.logIfHttpError(url, args, data, response);
                     res.send(data);
