@@ -783,14 +783,14 @@
             newScope.itemid = itemId;
             newScope.mnemonicid = mnemonicId;
             newScope.prompt = prompt;
-            newScope.value = _.escape(value);
+            newScope.value = value;
             newScope.isdisabled = false;
             newScope.answer = answer;
 
 
             comp.html = '<ms-rich-text-editor itemid="' + newScope.itemid + '" ' +
                 'mnemonicid="' + newScope.mnemonicid + '" prompt="' + newScope.prompt + '" ' +
-                'value="' + newScope.value + '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
+                '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
             comp.scope = newScope;
 
             return comp;
