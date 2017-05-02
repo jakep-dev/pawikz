@@ -40,7 +40,7 @@
                 printableAll();
             });
 
-            commonBusiness.onMsg("step-toogle-expand", $scope, function(){
+            commonBusiness.onMsg("step-toggle-expand", $scope, function(){
                 toggleExpand();
             });
 
