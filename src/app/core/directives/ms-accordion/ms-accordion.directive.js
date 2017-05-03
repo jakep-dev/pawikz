@@ -30,15 +30,10 @@
 
         //for news section expand/collapse all
         commonBusiness.onMsg('IsTemplateExpanded', $scope, function() {
-            if(vm.isExpandable){
-                vm.isCollapsed = !commonBusiness.isTemplateExpandAll;
-                if(!vm.isCollapsed && vm.isProcessComplete){
-                    if(vm.registerExpandCompleteCallback){
-                        vm.isProcessComplete = false;
-                        commonBusiness.emitMsg('load-news-search');
-                    }
-                }
-            }
+            if(vm.isExpandable){ 
+                vm.isCollapsed = commonBusiness.isTemplateExpandAll; 
+                onExpandCollapse();  
+            } 
         });
 
         function onExpandComplete() {
