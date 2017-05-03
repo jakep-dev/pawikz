@@ -226,8 +226,6 @@
                 dest.setFullYear(src.getFullYear());
                 dest.setMonth(src.getMonth());
                 dest.setDate(src.getDate());
-            } else {
-                dest = new Date(src);
             }
         }
 
@@ -423,10 +421,8 @@
                 vm.startDate.setMinutes(0);
                 vm.startDate.setSeconds(0);
                 vm.startDate.setMilliseconds(0);
-                //vm.filterState.startDate = vm.startDate;
-                assignDateValue(vm.startDate, vm.filterState.startDate);
-                //vm.filterState.endDate = vm.endDate;
-                assignDateValue(vm.endDate, vm.filterState.endDate);
+                vm.filterState.startDate = new Date(vm.startDate);
+                vm.filterState.endDate = new Date(vm.endDate);
             } else {
                 //vm.startDate = vm.filterState.startDate;
                 vm.startDate = new Date(vm.filterState.startDate);

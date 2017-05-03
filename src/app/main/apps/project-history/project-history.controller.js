@@ -51,6 +51,12 @@
             vm.dtColumnDefs = projectHistoryBusiness.getDtColumns();
         }
 
+        function indexList(){
+            _.each(vm.historyList, function(row, index) {
+                row.index = index;
+            });
+        }
+
         //Get server call project history details
         function getProjectHistory()
         {
@@ -64,6 +70,7 @@
                         if(data.historyList){
                             vm.completeHistoryData = data.historyList;
                             vm.historyList.push.apply(vm.historyList, data.historyList);
+                            indexList();
                         }
                         else if(data.templateOverview){
                             vm.templateOverview = data.templateOverview;
@@ -98,7 +105,31 @@
         function downloadToCsv(){
             var table = vm.dtInstanceCallback.DataTable;
             var headers = ["Log Id", "Step", "Field Name", "Old Value", "New Value", "Work-up Used", "Modified By", "Modified Date", "Action"];
-            var rows = table.rows( { filter : 'applied'} ).data();
+            var rows = [];
+            
+            var searchValue = (table && table.context[0] && 
+                                    table.context[0].oPreviousSearch && 
+                                    table.context[0].oPreviousSearch.sSearch)?
+                                        table.context[0].oPreviousSearch.sSearch : '';
+
+            if(searchValue.length > 0 ) {
+                var filteredData = table.rows( { filter : 'applied'} ).data();
+                var searchedIndices = [];
+                
+                _.each(filteredData, function(row){
+                    searchedIndices.push(parseInt(row[0]));
+                });
+                
+                _.each(vm.historyList, function(history){
+                    if(_.includes(searchedIndices, history.index)) {
+                        rows.push(getRowDownload(history));
+                    }
+                });
+            } else {
+                _.each(vm.historyList, function(history){                    
+                    rows.push(getRowDownload(history));
+                });
+            }
             
             var linkElem = $('#project-history-download');
             var fileName = 'ProjectHistory_' + commonBusiness.projectName.trim() + '.csv';
@@ -106,6 +137,20 @@
             commonBusiness.explicitDownloadToCsv(headers, rows, linkElem, fileName);
         }
 
+        function getRowDownload(history) {
+            var historyRow = [];
+            historyRow.push(history.logId);
+            historyRow.push(history.stepName);
+            historyRow.push(history.fieldName);
+            historyRow.push(history.oldValue);
+            historyRow.push(history.newValue);
+            historyRow.push(history.workupUsed);
+            historyRow.push(history.modifiedBy);
+            historyRow.push(history.modifiedDate);
+            historyRow.push(history.action);
+
+            return historyRow;
+        }
         //Filter Project History based on
         //StepId, FieldName, ModifiedBy, ModifiedDate and Action
         function filterProjectHistory(ev, data){

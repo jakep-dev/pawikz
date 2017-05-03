@@ -84,6 +84,7 @@
                 vm.selectedModifiedBy = null;
                 vm.selectedModifiedDate = null;
                 vm.selectedAction = null;
+                clearFieldName();
                 commonBusiness.emitMsg('clear-project-history');
             }
         }
