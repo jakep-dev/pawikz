@@ -139,8 +139,8 @@
             }, 'notify-data-refresh-workup-notification-center');
             workupService.dataRefresh(userId, projectId, projectName, reloadEvent);
 
-            dialog.notify('Refreshing the data', 'Go to Notification Center ',
-                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+            dialog.notify('Refreshing the data', 'Go to the notification center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to view the progress.</span>',
                 null,
                 {
                     ok: {
