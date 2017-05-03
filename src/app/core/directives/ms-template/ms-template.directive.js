@@ -40,7 +40,7 @@
                 printableAll();
             });
 
-            commonBusiness.onMsg("step-toogle-expand", $scope, function(){
+            commonBusiness.onMsg("step-toggle-expand", $scope, function(){
                 toggleExpand();
             });
 
@@ -120,7 +120,7 @@
 
     function msTemplateDirective($compile, $timeout,
         $interval, templateBusiness,
-        commonBusiness) {
+        commonBusiness, overviewBusiness) {
         return {
             restrict: 'E',
             scope: {
@@ -354,6 +354,26 @@
                                     bindHtml.push({
                                         content: $compile(html)(newScope)
                                     });
+                                    currentComponent++;
+                                    break;
+
+                                case 'AnalystReports':
+
+                                    //check if the user has permission to show analyst reports
+                                    if(overviewBusiness && 
+                                        overviewBusiness.templateOverview &&
+                                        overviewBusiness.templateOverview.hasFactsetAccess && 
+                                        overviewBusiness.templateOverview.hasFactsetAccess === 'Y') {
+                                            
+                                            var newScope = scope.$new();
+                                            newScope.isprocesscomplete = true;
+                                            var html = '';
+                                            html += '<ms-reports></ms-reports>';
+                                            bindHtml.push({
+                                                content: $compile(html)(newScope)
+                                            });
+                                    }
+                                    
                                     currentComponent++;
                                     break;
                             }

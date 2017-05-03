@@ -132,7 +132,7 @@
         vm.isNextDisabled = false;
         function stepToggleExpand(){
             vm.isStepExpanded = !vm.isStepExpanded;
-            commonBusiness.emitMsg('step-toogle-expand');
+            commonBusiness.emitMsg('step-toggle-expand');
         }
 
         function listenToStepMessages(){

@@ -1,0 +1,11 @@
+<div id="reports">
+    <ms-accordion initial-collapsed="true" 
+                    on-expand="vm.onExpand" 
+                    register-expand-complete-callback="vm.registerExpandCompleteCallback" 
+                    register-collapse-accordion-callback="null" 
+                    is-expandable="true" 
+                    title="Analyst Reports">
+        <ms-analyst-reports get-list-complete="vm.getListComplete"
+                            register-get-list-callback="vm.registerGetListCallback"></ms-analyst-reports>
+    </ms-accordion>
+</div>

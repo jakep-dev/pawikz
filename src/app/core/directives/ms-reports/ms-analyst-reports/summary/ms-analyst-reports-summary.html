@@ -1,0 +1,42 @@
+<ms-accordion initial-collapsed="false" is-expandable="false" title="Search Summary">
+    <div id="overview-grid" layout="row" layout-sm="column" layout-xs="column">
+        <div flex="auto">
+            <table class="simple" width="100%">
+                <tbody>
+                    <tr>
+                        <td>Company Search :</td>
+                        <td>
+                            <span>{{vm.company}}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Reports Found :</td>
+                        <td>
+                            <span>{{vm.reportsFound}}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div flex="auto">
+            <table class="simple" width="100%">
+                <tbody>
+
+                    <tr>
+                        <td>Date and Time :</td>
+                        <td>
+                            <span>{{vm.date}}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Showing Articles :</td>
+                        <td>
+                            <span>{{vm.articlesShown}}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</ms-accordion>
+<div class="minPadding"></div>

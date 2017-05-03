@@ -172,6 +172,14 @@
                             showArticleContent: 'getArticle',
                             deleteAttachedArticles: 'deleteAttachedArticles'
                         }
+                    },
+                    {
+                        name: 'reports',
+                        methods: {
+                            getList: 'getAnalystReports',
+                            getPDFLink: 'getAnalystReportPDF',
+                            getPreviewReport: 'getFactsetPreview'
+                        }
                     }
                 ]
             },

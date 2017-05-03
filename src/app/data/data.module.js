@@ -16,6 +16,7 @@
                 'app.template.service',
                 'app.workup.service',
                 'app.news.service',
-                'app.project-history.service'
+                'app.project-history.service',
+                'app.reports.service'
             ]);
 })();
