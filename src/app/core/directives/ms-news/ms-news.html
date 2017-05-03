@@ -1,5 +1,5 @@
 <div id="news">
     <ms-accordion initial-collapsed="false" on-expand="vm.onExpand" register-expand-complete-callback="vm.registerExpandCompleteCallback" register-collapse-accordion-callback="vm.registerCollapseAccordionCallback" is-expandable="true" title="{{vm.title}}" actions="vm.actions">
-        <ms-news-search news-search-table-id="vm.newsSearchTableId" result-details="vm.resultDetails" search-name="{{vm.searchName}}" on-search-complete="vm.onSearchComplete" register-news-search-callback="vm.registerNewsSearchCallback" set-bookmark-button-disable-status="vm.setBookmarkButtonDisableStatus"></ms-news-search>
+        <ms-news-search news-search-table-id="vm.newsSearchTableId" result-details="vm.resultDetails" search-name="{{vm.searchName}}" on-search-complete="vm.onSearchComplete" register-news-search-callback="vm.registerNewsSearchCallback" set-bookmark-button-disable-status="vm.setBookmarkButtonDisableStatus" itemid="{{vm.itemId}}" mnemonicid="{{vm.mnemonicId}}" ></ms-news-search>
     </ms-accordion>
 </div>

@@ -25,6 +25,8 @@
         vm.reloadValue = false;
         vm.newsSearchTableId = '_' + $scope.newsSearchTableId;
         vm.attachments = [];
+        vm.itemId = $scope.itemid;
+        vm.mnemonicId = $scope.mnemonicid;
 
         vm.showArticleDetails = showArticleDetails;
         vm.onSortChange = onSortChange;
@@ -72,13 +74,31 @@
 
             _.each(vm.resultDetails, function(item) {
                 if (item.isSelected) {
-                    vm.attachments.push(item);
+                    if(vm.attachments.indexOf(item) === -1){
+                        vm.attachments.push(item);
+                    }
                     selected = true;
+                    setAttachmentByItemId(vm.attachments, vm.itemId, vm.mnemonicId);
                 }
-                newsBusiness.selectedArticles.push.apply(newsBusiness.selectedArticles, vm.attachments);
             }); 
             if (selected) {
                 vm.setBookmarkButtonDisableStatus(false);
+            }
+        }
+
+        function setAttachmentByItemId(attachment, itemId, mnemonicId){
+            var articles = [];
+            var attach_articles = _.find(newsBusiness.selectedArticles, {itemid: itemId, mnemonicid: mnemonicId, step_id: commonBusiness.stepId}); 
+            
+            if(!attach_articles){
+                newsBusiness.selectedArticles.push({
+                    itemid : itemId,
+                    mnemonicid : mnemonicId,
+                    step_id : commonBusiness.stepId,
+                    news_items : attachment
+                });
+            }else{
+                attach_articles.news_items = attachment;
             }
         }
 
@@ -264,7 +284,9 @@
                 onSearchComplete: '=',
                 setBookmarkButtonDisableStatus: '=',
                 newsSearchTableId: '=',
-                searchName: '@'
+                searchName: '@',
+                itemid : '@',
+                mnemonicid: '@'
             },
             controller: 'MsNewsSearchController',
             controllerAs: 'vm',

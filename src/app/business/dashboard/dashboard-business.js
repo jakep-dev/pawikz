@@ -67,7 +67,8 @@
         // get workup link html in dashboard
         function getWorkupHtml(data, type, full, meta)
         {
-            return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + data + '</a>';
+            var projectName = (Number(full.projectId) === Number(commonBusiness.projectId))? commonBusiness.projectName : data;
+            return '<a class="overviewStyle" overview="true" projectId="'+ full.projectId +'"  href="#">' + projectName + '</a>';
         }
 
         // get platform image

@@ -8,11 +8,13 @@
 
     var _ = require('underscore');
     var async = require('async');
+    var logger;
 
-    dashboardRoute.init = function(app, config)
+    dashboardRoute.init = function(app, config, log)
     {
         var client = config.restcall.client;
         var config = config;
+        logger = log;
 
         config.parallel([
             app.post('/api/dashboard', getDashboard),
@@ -59,14 +61,17 @@
                 };
 
                 broadcastWorkUpInfo(context.token, context.projectId, context.userId, 'delete');
-
-                client.get(config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName, subContext.args,
+                var url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName;
+                client.get(url, subContext.args,
                     function (data, response) {
+                        logger.logIfHttpError(url, subContext.args, data, response);
                         context.delete = context.projectId;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
+                        logger.error('[removeWorkUp]Error');
+                        logger.error(err);
                         broadcastWorkUpInfo(context.token, context.projectId, context.userId, 'complete');
                         callback(null, context);
                     }
@@ -99,14 +104,17 @@
                         ssnid: context.token
                     }
                 };
-
-                client.get(config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName, subContext.args,
+                var url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName;
+                client.get(url, subContext.args,
                     function (data, response) {
+                        logger.logIfHttpError(url, subContext.args, data, response);
                         context.workUpList = data;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
+                        logger.error('[getFilteredDashboard]Error');
+                        logger.error(err);
                         callback(null, context);
                     }
                 );
@@ -142,19 +150,26 @@
                     'Content-Type': 'application/json'
                 }
             };
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getDashboard]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function releaseWorkUp(projectId, userId, token)
         {
-            console.log('notifyWorkUpNotInUse - ');
-            console.log(projectId);
-            console.log(userId);
-            console.log(config.socketData.workup);
+            logger.debug('notifyWorkUpNotInUse - ');
+            logger.debug(projectId);
+            logger.debug(userId);
+            logger.debug(config.socketData.workup);
 
             if(config.socketData.workup &&
                 config.socketData.workup.length > 0 &&
@@ -196,10 +211,16 @@
                     'Content-Type': 'application/json'
                 }
             };
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName, args,
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
                 function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
                     res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getDashboardUsers]Error');
+                    logger.error(err);
                 }
             );
         }
@@ -225,10 +246,16 @@
                     'Content-Type': 'application/json'
                 }
             };
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName, args,
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
                 function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
                     res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getDashboardCompanies]Error');
+                    logger.error(err);
                 }
             );
         }

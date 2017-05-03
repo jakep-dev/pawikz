@@ -8,10 +8,13 @@
     var financialCharts = require('../chart/financial-chart.route.js');
     var async = require('async');
 
-    schemaRoute.init = function(app, config)
+    schemaRoute.init = function(app, config, log)
     {
         var client = config.restcall.client;
         var config = config;
+        var logger = log;
+
+        templateBusiness.init(log);
 
         config.parallel([
             app.post('/api/schema', schema),
@@ -57,7 +60,7 @@
             function saveStep(step, callback) {
                 var saveStepContext = new Object();
                 saveStepContext.stepMnemonics = step;
-                console.log(saveStepContext.stepMnemonics);
+                logger.debug(saveStepContext.stepMnemonics);
                 //loop through each mnemonic within a step and pass in token
                 if (saveStepContext.stepMnemonics.mnemonic && saveStepContext.stepMnemonics.mnemonic.length > 0) {
                     saveStepContext.dataCount = saveStepContext.stepMnemonics.mnemonic.length;
@@ -116,16 +119,23 @@
                                 ssnid: saveStepContext.stepMnemonics.token,
                                 mnemonics: context.mnemonics
                             },
+                            
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.mnemonics;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error saving general mnemonics';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.mnemonics;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[saveGeneral]Error');
+                                logger.error(err);
+                                context.results.error = 'Error saving general mnemonics';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, null);
@@ -138,7 +148,7 @@
 
                     if (context.mnemonics && context.mnemonics.length > 0) {
                         async.map(context.mnemonics, saveTableLayout, function (err, results) {
-                            console.log('saveTableLayout');
+                            logger.debug('saveTableLayout');
                             callback(null, results);
                         });
                     } else {
@@ -153,7 +163,7 @@
                         deleted: deleteTableLayout.bind(null, tableMnemonic)
                     },
                         function (err, results) {
-                            console.log('buildSaveTableLayout');
+                            logger.debug('buildSaveTableLayout');
                             callback(null, results); //resuls are error messages
                         }
                     );
@@ -201,18 +211,25 @@
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 mnemonic: tableMnemonic.mnemonic,
                                 itemId: tableMnemonic.itemId,
-                                table: context.addedRows
+                                table: context.addedRows,
+                                ssnid: saveContext.token
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.addedRows;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error adding rows on TableLayout';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.addedRows;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[addTableLayout]Error');
+                                logger.error(err);
+                                context.results.error = 'Error adding rows on TableLayout';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, context.results);
@@ -250,18 +267,25 @@
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 mnemonic: tableMnemonic.mnemonic,
                                 itemId: tableMnemonic.itemId,
-                                table: context.updatedRows
+                                table: context.updatedRows,
+                                ssnid: saveContext.token
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.updatedRows;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error updating rows on TableLayout';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.updatedRows;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[updateTableLayout]Error');
+                                logger.error(err);
+                                context.results.error = 'Error updating rows on TableLayout';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, context.results);
@@ -298,18 +322,25 @@
                                 stepId: saveStepContext.stepMnemonics.stepId,
                                 mnemonic: tableMnemonic.mnemonic,
                                 itemId: tableMnemonic.itemId,
-                                table: context.deletedRows
+                                table: context.deletedRows,
+                                ssnid: saveContext.token
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.deletedRows;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error deleting rows on TableLayout';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.deletedRows;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[deleteTableLayout]Error');
+                                logger.error(err);
+                                context.results.error = 'Error deleting rows on TableLayout';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, context.results);
@@ -358,19 +389,19 @@
         //Schema for the templates
         function schema(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.templateSchema;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -382,30 +413,37 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(setSchemaVariations(data));
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(setSchemaVariations(data));
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[schema]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Mnemonics for the templates
         function mnemonics(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.templateMnemonics;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -417,30 +455,37 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[mnemonics]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Save Mnemoics for the templates
         function saveMnemonics(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.saveMnemonics;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -454,30 +499,37 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[saveMnemonics]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Get Dynamic Table Layout details
         function dynamicTable(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.dynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -492,29 +544,36 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[dynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function saveDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.saveDynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -528,29 +587,36 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[saveDynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function addDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.addDynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -564,29 +630,36 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[addDynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function deleteDynamicTable(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            console.log('Parameters -');
-            console.log(req.body);
+            logger.debug('Parameters -');
+            logger.debug(req.body);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.deleteDynamicTableData;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -600,29 +673,36 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[deleteDynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function getScrapedHTML(req, res, next)
         {
-            console.log('Parameters -');
-            console.log(req.body);
+		    logger.debug('Parameters -');
+		    logger.debug(req.body);
 
             var service = getServiceDetails('templateSearch');
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                console.log(service.name);
+                logger.debug(service.name);
                 methodName = service.methods.getScrapedHTML;
             }
 
-            console.log(methodName);
+            logger.debug(methodName);
 
             var args =
             {
@@ -636,12 +716,19 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            console.log(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            logger.debug(args);
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getScrapedHTML]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function getServiceDetails(serviceName) {

@@ -14,6 +14,8 @@
         vm.newsSearchTableId = $scope.mnemonicid + '_' +  $scope.itemid;
         vm.title = $scope.title;
         vm.searchName = $scope.searchName;
+        vm.itemId = $scope.itemid;
+        vm.mnemonicId = $scope.mnemonicid;
 
         function defineAction() {
 
@@ -88,17 +90,20 @@
         vm.onBookmarkNewsArticleComplete = onBookmarkNewsArticleComplete;
 
         function bookmarkNews() {
-            newsBusiness.bookmarkNewsArticle(newsBusiness.selectedArticles, vm.onBookmarkNewsArticleStart, vm.onBookmarkNewsArticleComplete);
+            newsBusiness.bookmarkNewsArticle(newsBusiness.selectedArticles, vm.onBookmarkNewsArticleStart, vm.onBookmarkNewsArticleComplete, vm.itemId, vm.mnemonicId);
         }
         vm.bookmarkNews = bookmarkNews;
 
         function clearSelection() {
-            _.each(newsBusiness.selectedArticles, function (item) {
-                if (item.isSelected) {
-                    item.isSelected = false;
-                    setBookmarkButtonDisableStatus(true);
+                var item = _.find(newsBusiness.selectedArticles, {itemid: vm.itemId, mnemonicid: vm.mnemonicId, step_id: commonBusiness.stepId}); 
+                if(item){
+                     _.each(item.news_items, function (item) {
+                         if (item.isSelected) {
+                            item.isSelected = false;
+                            setBookmarkButtonDisableStatus(true);
+                        }   
+                     });
                 }
-            });
         }
         vm.clearSelection = clearSelection;
 

@@ -25,6 +25,8 @@
         vm.registerExpandAccordionCallback = $scope.registerExpandAccordionCallback;
         vm.applyClickEvent = applyClickEvent;
         vm.onExpandCollapse = onExpandCollapse;
+        // remove html tags in hovering accordion header
+        vm.accordionHeaderTooltip = $scope.title.replace(/<\/?[^>]+(>|$)/g, "");
 
         init();
 

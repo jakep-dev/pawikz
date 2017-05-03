@@ -18,12 +18,19 @@
         var competitorMap = null;
         var updateChartIdCallback = null;
 
+        //Absolute minimum date for which we have data for charts
+        var minimumChartDate = new Date(1996, 0, 1, 0, 0, 0, 0);
+
         function toDateString(dateObj, format) {
-            if (!format) {
-                format = 'MM/DD/YYYY';
+            if (angular.isDate(dateObj)) {
+                if (!format) {
+                    format = 'MM/DD/YYYY';
+                }
+                var m = moment(dateObj.toISOString().substring(0, 10), 'YYYY-MM-DD');
+                return m.format(format);
+            } else {
+                return '';
             }
-            var m = moment(dateObj.toISOString().substring(0, 10), 'YYYY-MM-DD');
-            return m.format(format);
         }
 
         var business = {
@@ -34,6 +41,14 @@
             getSaveSigDevInputObject: getSaveSigDevInputObject,
             getSaveStockSigDevInputObject: getSaveStockSigDevInputObject
         }
+
+        Object.defineProperty(business, 'minimumChartDate', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return minimumChartDate;
+            }
+        });
 
         Object.defineProperty(business, 'significantDevelopmentSources', {
             enumerable: true,
