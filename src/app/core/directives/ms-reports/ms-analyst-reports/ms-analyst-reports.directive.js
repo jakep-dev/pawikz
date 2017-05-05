@@ -87,6 +87,7 @@
                 .withOption('responsive', true)
                 .withOption('stateSave', true)
                 .withOption('filter', false)
+                .withOption('sorting', [0, 'asc'])
                 .withOption('createdRow', recompileHtml)
                 .withOption('drawCallback', function() {
                     getReportsShown(vm)
@@ -100,13 +101,18 @@
         }
 
         function getReportsShown(vm) {
-            $timeout(function(){
-                var table = vm.dtInstance.DataTable;
-                var tableInfo = table && table.page && table.page.info();
-                if(tableInfo && vm.isProcessing === false) {
-                    vm.reportsShown = (tableInfo.start + 1) + '-' + tableInfo.end;
-                }
-            }, 500);
+            if(vm.analystReportsList && vm.analystReportsList.length > 0) {
+                $timeout(function(){
+                    var table = vm.dtInstance.DataTable;
+                    var tableInfo = table && table.page && table.page.info();
+                    if(tableInfo && vm.isProcessing === false) {
+                        vm.reportsShown = (tableInfo.start + 1) + '-' + tableInfo.end;
+                    }
+                }, 500);
+            } else if(vm.isProcessing === false) {
+                vm.reportsShown = 0;
+                vm.reportsFound = 0;
+            }
         }
 
         function recompileHtml(row, data, dataIndex) {

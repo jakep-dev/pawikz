@@ -25,7 +25,9 @@ div#analyst-reports-list {
             background-color: rgba(15, 185, 255, 0.11);
             border: 1px solid rgba(0, 0, 0, 0.12);
         }
-    }
 
-    
+        th {
+            min-width: 70px;
+        }
+    }
 }
