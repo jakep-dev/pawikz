@@ -33,8 +33,6 @@
                 parameters: {
                     company_id: req.body.companyId,
                     user_id: req.body.userId,
-                    page_no: req.body.pageNo,
-                    results_per_page: req.body.length,
                     ssnid: req.headers['x-session-token']
                 }
             };
@@ -71,11 +69,11 @@
                     identifier_type: req.body.identifierType,
                     report_id: req.body.report.documentId,
                     report_title: encodeURIComponent(req.body.report.headline),
-                    repot_date: req.body.report.storyDate,
+                    report_date: req.body.report.storyDate,
                     report_price: req.body.report.price,
                     number_of_pages: req.body.report.pages, 
-                    author_id: req.body.report.analysts,
-                    contributor_id: req.body.report.broker,  
+                    author_id: req.body.report.analystCodes,
+                    contributor_id: req.body.report.brokerCode,
                     doc_url: encodeURIComponent(req.body.report.docURL),
                     billing_type: req.body.report.billingType,
                     purchase_info: encodeURIComponent(req.body.report.purchaseInfo),

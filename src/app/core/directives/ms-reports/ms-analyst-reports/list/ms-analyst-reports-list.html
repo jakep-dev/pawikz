@@ -3,9 +3,39 @@
             id="analyst-report-table"
             width="100%"
             layout-padding 
-            datatable="" 
+            datatable="ng" 
             dt-options="vm.dtOptions"
-            dt-column-defs="vm.dtColumnDefs" 
-            dt-columns="vm.dtColumns" 
-            dt-instance="vm.dtInstance"></table>
+            dt-instance="vm.dtInstance">
+                <thead>
+                    <tr>
+                        <th>Price</th>
+                        <th>Report Title</th>
+                        <th>Date</th>
+                        <th>Contributor</th>
+                        <th>Author</th>
+                        <th>Pages</th>
+                        <th>Language</th>
+                    </tr>
+                </thead>
+                <tbody ng-hide="vm.isProcessing">
+                    <tr ng-repeat="report in vm.analystReportsList">
+                        <td data-sort="{{report.priceSort}}">{{(!report.isFree)? '$': ''}}{{report.price}}</td>
+                        <td>
+                            <span>
+                                <a href="#" ng-click="vm.previewReport(report)">
+                                    <i class="fa fa-search s16"></i>
+                                </a>
+                                <a href="#" ng-click="vm.downloadLink(report)">
+                                    {{report.headline}}
+                                </a>
+                            </span>
+                        </td>
+                        <td data-sort="{{report.storyDateSort}}">{{report.storyDate}}</td>
+                        <td>{{report.broker}}</td>
+                        <td>{{report.analyst}}</td>
+                        <td>{{report.pages}}</td>
+                        <td>{{report.language}}</td>
+                    </tr>
+                </tbody>
+    </table>
 </ms-accordion>

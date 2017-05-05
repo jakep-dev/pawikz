@@ -6,8 +6,9 @@
         .controller('msAnalystReportsController', msAnalystReportsController)
         .directive('msAnalystReports', msAnalystReportsDirective);
 
-    function msAnalystReportsController($scope, $compile, $window,
-                                        dialog, clientConfig, commonBusiness, reportsService,
+    function msAnalystReportsController($scope, $compile, $window, $timeout,
+                                        dialog, clientConfig, reportsService,
+                                        templateBusinessFormat, commonBusiness,
                                         DTColumnBuilder, DTColumnDefBuilder, DTOptionsBuilder) {
         var vm = this;
 
@@ -31,11 +32,43 @@
         }
 
         function startGetList() {
+            var table = vm.dtInstance.DataTable;
             vm.loadData = true;
             if (!vm.reloadValue) {
                 vm.reloadValue = true;
-                redrawDataTable();
-                initialize();
+                vm.isProcessing = true;
+                reportsService.get(commonBusiness.companyId, commonBusiness.userId).then(function(response) {
+                            
+                    vm.analystReportsList = [];
+                    vm.identifierId = response.identifier_id;
+                    vm.identifierType = response.identifier_type;
+                    if(response && response.reports) {
+                        _.each(response.reports, function(report, index){
+                            if(report) {
+                                report.index = index;
+                                report.isFree = report.price && report.price.length > 0  && report.price.toUpperCase() === 'FREE';
+                                report.priceSort = (report.isFree)? 0 : parseInt(report.price);
+                                report.storyDateSort = templateBusinessFormat.parseDate(report.storyDate, 'MM-DD-YYYY');
+                                vm.analystReportsList.push(report);
+                            }
+                        });
+                    }
+
+                    console.log(vm.analystReportsList);
+
+                    if(response && response.summary) {
+                        vm.company = response.summary.company || '';
+                        vm.reportsFound = response.summary.found || '';
+                        vm.date = response.summary.dateTime || '';
+                        vm.reportsShown = response.summary.articlesShown || '';
+                    }
+
+                    vm.isProcessing = false;
+
+                    if (vm.getListComplete) {
+                        vm.getListComplete();
+                    }
+                });
             } else {
                 if (vm.getListComplete) {
                     vm.getListComplete();
@@ -46,32 +79,18 @@
         function dataTableConfiguration() {
             vm.dtInstance = null;            
             
-            vm.dtColumnDefs = [
-                DTColumnDefBuilder.newColumnDef(1).renderWith(titleHtml)
-            ];
-            
-            vm.dtColumns = [    
-                DTColumnBuilder.newColumn('price', 'Price'),
-                DTColumnBuilder.newColumn('headline', 'Report Title'),
-                DTColumnBuilder.newColumn('storyDate', 'Date'),
-                DTColumnBuilder.newColumn('broker', 'Contributor'),
-                DTColumnBuilder.newColumn('analyst', 'Author'),
-                DTColumnBuilder.newColumn('pages', 'Pages'),
-                DTColumnBuilder.newColumn('language', 'Language')
-            ];
-            
             vm.dtOptions = DTOptionsBuilder
                 .newOptions()
-                .withFnServerData(serverData)
-                .withDataProp('data')
                 .withOption('processing', true)
-                .withOption('serverSide', true)
                 .withOption('paging', true)
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
                 .withOption('stateSave', true)
                 .withOption('filter', false)
                 .withOption('createdRow', recompileHtml)
+                .withOption('drawCallback', function() {
+                    getReportsShown(vm)
+                })
                 .withPaginationType('full')
                 .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
         }
@@ -80,85 +99,21 @@
             vm.dtInstance.dataTable._fnDraw();
         }
 
+        function getReportsShown(vm) {
+            $timeout(function(){
+                var table = vm.dtInstance.DataTable;
+                var tableInfo = table && table.page && table.page.info();
+                if(tableInfo && vm.isProcessing === false) {
+                    vm.reportsShown = (tableInfo.start + 1) + '-' + tableInfo.end;
+                }
+            }, 500);
+        }
+
         function recompileHtml(row, data, dataIndex) {
             $compile(angular.element(row).contents())($scope);
         }
 
-        function titleHtml(data, type, full, meta) {
-            return '<span>' +
-                        '<a href="#" ng-click="vm.previewReport(' + full.index + ')"> ' +
-                            '<i class="fa fa-search s16"></i> ' +
-                        '</a> ' +
-                        '<a href="#" ng-click="vm.downloadLink(' + full.index + ')"> ' +
-                            data  + 
-                        '</a> ' +
-                    '</span>';
-        }
-
-        // Server Data callback for pagination
-        function serverData(sSource, aoData, fnCallback, oSettings) {
-
-            var draw = aoData[0].value;
-            //var columns = aoData[1].value;
-            var start = aoData[3].value;
-            var length = aoData[4].value;
-            //var searchFilter = aoData[5].value.value;
-            var pageNo = (start / length) + 1;
-
-            if(vm.loadData){
-                reportsService.get(commonBusiness.companyId, commonBusiness.userId, length, pageNo).then(function(response) {
-
-                    var blankData = {
-                        price: '',
-                        previewURL: '', 
-                        title: '',
-                        docURL: '', 
-                        date: '', 
-                        contributor: '', 
-                        author: '', 
-                        pages: '', 
-                        language: '' 
-                    };
-
-                    vm.analystReportsList = [];
-                    vm.identifierId = response.identifier_id;
-                    vm.identifierType = response.identifier_type;
-                    if(response && response.reports) {
-                        _.each(response.reports, function(report, index){
-                            if(report) {
-                                report.index = index;
-                                vm.analystReportsList.push(report);
-                            }
-                        });
-                    }
-
-                    if(response && response.summary) {
-                        vm.company = response.summary.company || '';
-                        vm.reportsFound = response.summary.found || '';
-                        vm.date = response.summary.dateTime || '';
-                        vm.articlesShown = response.summary.articlesShown || '';
-                    }
-
-                    var records = {
-                        draw: draw,
-                        recordsTotal: angular.isDefined(response) && angular.isDefined(response.summary) &&
-                            (response.summary.found) ? response.summary.found : 0,
-                        recordsFiltered: angular.isDefined(response) && angular.isDefined(response.summary) &&
-                            (response.summary.found) ? response.summary.found : 0,
-                        data: angular.isDefined(response.reports) && angular.isDefined(response.reports) &&
-                            response.reports !== null ? vm.analystReportsList : blankData
-                    };
-
-                    if (vm.getListComplete) {
-                        vm.getListComplete();
-                    }
-                    fnCallback(records);
-                });
-            }
-        }
-
-        function previewReport(index) {
-            var report = _.find(vm.analystReportsList, {index: index});
+        function previewReport(report) {
             if(report) {
                 reportsService.getPreviewReport(report.previewURL, commonBusiness.userId).then(function(response) {
 
@@ -175,12 +130,11 @@
             }
         }
 
-        function downloadLink(index) {
-            var report = _.find(vm.analystReportsList, {index: index});
+        function downloadLink(report) {
             if(report) {
-                if(report.price.length > 0  && report.price.toUpperCase() !== 'FREE') {
+                if(!report.isFree) {
                     dialog.confirm(clientConfig.messages.analystReports.title, 
-                                    clientConfig.messages.analystReports.content.replace('@price', report.price) , null, {
+                                    clientConfig.messages.analystReports.content.replace('@price', '$' + report.price) , null, {
                         ok: {
                             name: 'yes',
                             callBack: function() {

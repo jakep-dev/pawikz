@@ -18,12 +18,10 @@
         return service;
 
 
-        function get(companyId, userId, length, pageNo) {
+        function get(companyId, userId) {
             var input = {
                 companyId: companyId,
                 userId: userId,
-                length: length,
-                pageNo: pageNo
             }
 
             return $http({
