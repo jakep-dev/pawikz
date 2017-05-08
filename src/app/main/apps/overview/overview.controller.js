@@ -60,9 +60,10 @@
         vm.showOverviewDetails =showOverviewDetails;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.dataRefresh = dataRefresh;
         vm.projectHistory = projectHistory;
         vm.checkIsPrintableAll = checkIsPrintableAll;
-
+        overviewBusiness.templateOverview = null;
         //Data
         loadData();
 
@@ -106,6 +107,10 @@
                 renew(vm.projectId);
             });
 
+            commonBusiness.onMsg("project-data-refresh", $scope, function(){
+                dataRefresh(vm.projectId);
+            });
+
             commonBusiness.onMsg("project-history", $scope, function(){
                 goToProjectHistory(vm.projectId, commonBusiness.userId);
             });
@@ -124,6 +129,13 @@
         {
             notificationBusiness.initializeMessages($scope);
             workupBusiness.renew(commonBusiness.userId, parseInt(projectId), commonBusiness.projectName, 'reload-overview');
+        }
+
+        //Refresh workup
+        function dataRefresh(projectId)
+        {
+            notificationBusiness.initializeMessages($scope);
+            workupBusiness.dataRefresh(commonBusiness.userId, parseInt(projectId), commonBusiness.projectName, 'reload-overview');
         }
 
         //Go to top
@@ -162,6 +174,7 @@
                 vm.templateOverview = overviewBusiness.templateOverview;
                 vm.isOverviewLoaded = true;
                 vm.checkIsPrintableAll();
+                autoSave();
                 return;
             }
 
@@ -212,6 +225,7 @@
                         overviewBusiness.templateOverview = vm.templateOverview;
                         overviewBusiness.templateOverview.isChanged = true;
                         overviewBusiness.getReadyForAutoSave();
+                        commonBusiness.projectName = vm.templateOverview.projectName;
                     }
                     vm.isOverviewLoaded = true;
                 },

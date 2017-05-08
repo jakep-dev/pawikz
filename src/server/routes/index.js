@@ -14,22 +14,26 @@
     var financialChartRoute = require('./chart/financial-chart.route.js');
     var pdfRoute = require('./chart/pdf.route.js');
     var workupRoute = require('./workup/workup.route');
+    var workupBusiness = require('./workup/workup.business.js');
     var socket = require('./socket/socket');
     var newsRoute = require('./news/news.route');
+    var reportsRoute = require('./reports/reports.route');
 
-    routes.init = function (app, server, config)
+    routes.init = function (app, server, config, logger)
     {
-        socket.init(server, config);
-        dashboardRoute.init(app, config);
-        overviewRoute.init(app, config);
-        authenticateRoute.init(app, config);
-        templateRoute.init(app, config);
+        workupBusiness.init(config, logger);
+        socket.init(server, config, workupBusiness, logger);
+        dashboardRoute.init(app, config, logger);
+        overviewRoute.init(app, config, workupBusiness, logger);
+        authenticateRoute.init(app, config, logger);
+        templateRoute.init(app, config, logger);
         loggingRoute.init(app, config);
-        workupRoute.init(app, config);
-        chartRoute.init(app, config);
-        financialChartRoute.init(app, config);
-        pdfRoute.init(app, config);
-        newsRoute.init(app, config);
+        workupRoute.init(app, config, logger);
+        chartRoute.init(app, config, logger);
+        financialChartRoute.init(app, config, logger);
+        pdfRoute.init(app, config, logger);
+        newsRoute.init(app, config, logger);
+        reportsRoute.init(app, config, logger);
     };
 
 })(module.exports);

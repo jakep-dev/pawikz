@@ -5,6 +5,7 @@
     var fs = require('fs');
     var config = null;
     var client = null;
+    var logger;
 
     function getServiceDetails(serviceName) {
         return u.find(config.restcall.service, { name: serviceName });
@@ -34,13 +35,18 @@
             headers: { "Content-Type": "application/json" }
         };
         context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
-        //console.log('[saveInteractiveStockChart] url =' + context.url);
-        //console.log('[saveInteractiveStockChart]\n' + JSON.stringify(context.args));
-        client.post(context.url, context.args, function (data, response) {
-            context.results.data = data;
-            callback(null, context.results);
-        }).on('error',
+        //logger.debug('[saveInteractiveStockChart] url =' + context.url);
+        //logger.debug('[saveInteractiveStockChart]\n' + JSON.stringify(context.args));
+        client.post(context.url, context.args,
+            function (data, response) {
+                logger.logIfHttpError(context.url, context.args, data, response);
+                context.results.data = data;
+                callback(null, context.results);
+            }
+        ).on('error',
             function (err) {
+                logger.error('[saveInteractiveStockChart]Error');
+                logger.error(err);
                 context.results.error = 'Error saving interactive stock chart';
                 callback(null, context.results);
             }
@@ -74,13 +80,18 @@
             headers: { "Content-Type": "application/json" }
         };
         context.url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
-        //console.log('[saveSigDevItems] url =' + context.url);
-        //console.log('[saveSigDevItems]\n' + JSON.stringify(context.args));
-        client.post(context.url, context.args, function (data, response) {
-            context.results.data = data;
-            callback(null, context.results);
-        }).on('error',
+        //logger.debug('[saveSigDevItems] url =' + context.url);
+        //logger.debug('[saveSigDevItems]\n' + JSON.stringify(context.args));
+        client.post(context.url, context.args,
+            function (data, response) {
+                logger.logIfHttpError(context.url, context.args, data, response);
+                context.results.data = data;
+                callback(null, context.results);
+            }
+        ).on('error',
             function (err) {
+                logger.error('[saveSigDevItems]Error');
+                logger.error(err);
                 context.results.error = 'Error saving interactive stock chart';
                 callback(null, context.results);
             }
@@ -89,9 +100,10 @@
 
     chartRoutes.saveSigDevItems = saveSigDevItems;
 
-    chartRoutes.init = function (app, c) {
+    chartRoutes.init = function (app, c, log) {
         config = c;
         client = config.restcall.client;
+        logger = log;
 
         config.parallel([
             app.post('/api/getChartData', getChartData),
@@ -99,15 +111,12 @@
             app.post('/api/getIndices', getIndices),
             app.post('/api/getCompetitors', getCompetitors),
             app.post('/api/getSavedChartData', getSavedChartData),
-            //app.post('/api/saveChartSettings', saveChartSettings),
-            //app.post('/api/saveChartAllSettings', saveChartAllSettings),
             app.post('/api/getSavedChartTable', getSavedChartTable),
             app.post('/api/getSignificantDevelopmentList', getSignificantDevelopmentList),
             app.post('/api/getSignificantDevelopmentDetail', getSignificantDevelopmentDetail),
             app.post('/api/getMascadLargeLosseDetail', getMascadLargeLosseDetail),
             app.post('/api/getMascadLargeLosseList', getMascadLargeLosseList),
             app.post('/api/getSigDevSource', getSigDevSource),
-            //app.post('/api/saveSigDevItems', saveSigDevItems)
         ]);
 
         function getChartData(req, res, next) {
@@ -137,103 +146,19 @@
                 + '&earnings=' + earnings
                 + '&date_start=' + start_date
                 + '&date_end=' + end_date;
-            //console.log('[getChartData] url = ' + url);
+            //logger.debug('[getChartData] url = ' + url);
             client.get(url,
                 function (data, response) {
+                    logger.logIfHttpError(url, null, data, response);
                     res.send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getChartData]Error');
+                    logger.error(err);
                 }
             );
         }
-
-        //this creates new charts or remove not iterated ones
-        //function saveChartAllSettings(req, res, next) {
-        //    var service = getServiceDetails('charts');
-        //    var methodName = '';
-        //    if (!u.isUndefined(service) && !u.isNull(service)) {
-        //        methodName = service.methods.saveChartSettings;
-        //    }
-
-        //    var projectId = req.body.project_id;
-        //    var companyId = req.body.company_id;
-        //    var stepId = req.body.step_id;
-        //    var ssnid = req.headers['x-session-token'];
-        //    var chartSettings = req.body.chartSettings;
-        //    console.log('***************** ONEAL CHART SETTINGS START ONEAL *****************');
-        //    console.log(chartSettings);
-        //    console.log('***************** ONEAL CHART SETTINGS  END  ONEAL *****************');
-        //    //chartsettings should be a array and and defined
-        //    var args = {
-        //        data: {
-        //            project_id: parseInt(projectId),
-        //            company_id: parseInt(companyId),
-        //            step_id: parseInt(stepId),
-        //            ssnid: ssnid,
-        //            chartSettings: chartSettings
-        //        },
-        //        headers: { "Content-Type": "application/json" }
-        //    };
-
-        //    var url = config.restcall.url + '/' + service.name + '/' + methodName, args;
-        //    //console.log('[saveChartAllSettings]Before ' + url + "\n" + JSON.stringify(args));
-        //    client.post(url, args,
-        //        function (data, response) {
-        //            //console.log('[saveChartAllSettings]After \n' + JSON.stringify(data));
-        //            res.send(data);
-        //        }
-        //    );
-        //}
-
-        ////this ceates a single chart
-        //function saveChartSettings(req, res, next) {
-        //    var service = getServiceDetails('charts');
-        //    var methodName = '';
-        //    if (!u.isUndefined(service) && !u.isNull(service)) {
-        //        methodName = service.methods.saveChartSettings;
-        //    }
-
-        //    var tickers = req.body.tickers;
-        //    var period = req.body.period;
-        //    var ssnid = req.headers['x-session-token'];
-        //    var splits = req.body.splits;
-        //    var dividends = req.body.dividends;
-        //    var earnings = req.body.earnings;
-        //    var end_date = req.body.end_date;
-        //    var start_date = req.body.start_date;
-        //    var chart_title = req.body.chartTitle;
-        //    var chart_id = req.body.chart_id;
-        //    var chartSetting = {
-        //        chart_title: chart_title,
-        //        peers: tickers,
-        //        period: period,
-        //        date_start: start_date,
-        //        date_end: end_date,
-        //        dividends: dividends,
-        //        earnings: earnings,
-        //        splits: splits,
-        //        chart_id: chart_id
-        //    };
-
-        //    if (chart_id) {
-        //        chartSetting.chartId = parseInt(chart_id);
-        //    }
-
-        //    var args = {
-        //        data : {
-        //            project_id: parseInt(projectId),
-        //            company_id: parseInt(companyId),
-        //            step_id: parseInt(stepId),
-        //            ssnid: ssnid,
-        //            data: [chartSetting],
-        //            delete_ignored: false
-        //        },
-        //        headers: { "Content-Type": "application/json" }
-        //    };
-        //    client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
-        //        function(data, response) {
-        //            res.send(data);
-        //        }
-        //    );
-        //}
 
         function getTickers(req, res, next) {
             var service = getServiceDetails('templateSearch');
@@ -243,10 +168,16 @@
             }
 
             var  keyword = req.body.keyword, ssnid= req.headers['x-session-token'];
-
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?keyword=' + keyword + '&ssnid=' + ssnid,
+            var url = config.restcall.url + '/' + service.name + '/' + methodName + '?keyword=' + keyword + '&ssnid=' + ssnid;
+            client.get(url,
                 function (data, response) {
+                    logger.logIfHttpError(url, null, data, response);
                     res.send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getTickers]Error');
+                    logger.error(err);
                 }
             );
         }
@@ -259,10 +190,16 @@
             }
 
             var ssnid = req.headers['x-session-token'];
-
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?ssnid=' + ssnid,
+            var url = config.restcall.url + '/' + service.name + '/' + methodName + '?ssnid=' + ssnid;
+            client.get(url,
                 function (data, response) {
+                    logger.logIfHttpError(url, null, data, response);
                     res.send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getIndices]Error');
+                    logger.error(err);
                 }
             );
         }
@@ -276,10 +213,16 @@
 
             var  ssnid = req.headers['x-session-token'];
             var companyId = req.body.companyId;
-
-            client.get(config.restcall.url + '/' + service.name + '/' + methodName + '?company_id=' + companyId + '&ssnid=' + ssnid,
+            var url = config.restcall.url + '/' + service.name + '/' + methodName + '?company_id=' + companyId + '&ssnid=' + ssnid;
+            client.get(url,
                 function (data, response) {
+                    logger.logIfHttpError(url, null, data, response);
                     res.send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getCompetitors]Error');
+                    logger.error(err);
                 }
             );
         }
@@ -297,10 +240,16 @@
             var mnemonic = req.body.mnemonic;
             var itemId = req.body.item_id;
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?project_id=' + projectId + '&step_id=' + stepId + '&mnemonic=' + mnemonic + '&item_id=' + itemId + '&ssnid=' + ssnid;
-            //console.log('[getSavedChartData] url = ' + url);
+            //logger.debug('[getSavedChartData] url = ' + url);
             client.get(url,
                 function (data, response) {
+                    logger.logIfHttpError(url, null, data, response);
                     res.status(response.statusCode).send(getChartSettings(data));
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getSavedChartData]Error');
+                    logger.error(err);
                 }
             );
         }
@@ -385,7 +334,7 @@
                     }
                 });
             }
-            //console.log(JSON.stringify(result));
+            //logger.debug(JSON.stringify(result));
             return result;
         }
 
@@ -399,43 +348,11 @@
 
             fs.writeFile('src/server/data/tmp/htmlRequest/' + reqID + '/chart/' + fileName, fileData, function (err) {
                 if (err) {
-                    return console.error(err);
+                    return logger.error(err);
                 }
-                return console.log('success');
+                return logger.debug('success');
             });
         }
-
-        //function saveSigDevItems(req, res, next) {
-        //    var service = getServiceDetails('charts');
-        //    var methodName = '';
-        //    if (!u.isUndefined(service) && !u.isNull(service)) {
-        //        methodName = service.methods.saveSigDevItems;
-        //    }
-
-        //    var projectId = req.body.project_id;
-        //    var stepId = req.body.step_id;
-        //    var mnemonic = req.body.mnemonic;
-        //    var itemId = req.body.item_id;
-        //    var token = req.headers['x-session-token'];
-        //    var items = req.body.items;
-        //    var args = {
-        //        data: {
-        //            project_id: parseInt(projectId),
-        //            step_id: parseInt(stepId),
-        //            mnemonic: mnemonic,
-        //            item_id: itemId,
-        //            token: token,
-        //            items: items
-        //        },
-        //        headers: { "Content-Type": "application/json" }
-        //    };
-
-        //    client.post(config.restcall.url + '/' + service.name + '/' + methodName, args,
-        //        function (data, response) {
-        //            res.send(data);
-        //        }
-        //    );
-        //}
 
         function getSavedChartTable(req, res, next) {
             var service = getServiceDetails('charts');
@@ -457,11 +374,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getSavedChartTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function getSignificantDevelopmentList(req, res, next) {
@@ -483,11 +407,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getSignificantDevelopmentList]Error');
+                    logger.error(err);
+                }
+            );
 
         }
 
@@ -510,11 +441,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getMascadLargeLosseList]Error');
+                    logger.error(err);
+                }
+            );
 
         }
 
@@ -535,11 +473,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getSignificantDevelopmentDetail]Error');
+                    logger.error(err);
+                }
+            );
 
         }
 
@@ -560,11 +505,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getMascadLargeLosseDetail]Error');
+                    logger.error(err);
+                }
+            );
 
         }
 
@@ -584,11 +536,18 @@
                 },
                 headers:{'Content-Type':'application/json'}
             };
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getSigDevSource]Error');
+                    logger.error(err);
+                }
+            );
 
         }
 

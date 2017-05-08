@@ -201,10 +201,29 @@
                                         scope.jsCharts = [];
                                         var chart;
                                         var chartSettings;
+                                        var startDate;
+                                        var endDate;
 
                                         for (var i = 0; i < data.newCharts.length; i++) {
                                             chart = data.newCharts[i];
                                             chartSettings = chart.settings;
+
+                                            //trim off time portion of the date for accurate date diff calculation
+                                            startDate = templateBusinessFormat.parseDate(chartSettings.date_start, 'YYYY-MM-DD');
+                                            if (angular.isDate(startDate)) {
+                                                startDate.setHours(0);
+                                                startDate.setMinutes(0);
+                                                startDate.setSeconds(0);
+                                                startDate.setMilliseconds(0);
+                                            }
+                                            endDate = templateBusinessFormat.parseDate(chartSettings.date_end, 'YYYY-MM-DD');
+                                            if (angular.isDate(endDate)) {
+                                                endDate.setHours(0);
+                                                endDate.setMinutes(0);
+                                                endDate.setSeconds(0);
+                                                endDate.setMilliseconds(0);
+                                            }
+
                                             scope.jsCharts.push({
                                                 tearsheet: {
                                                     type: angular.lowercase(scope.type),
@@ -222,8 +241,8 @@
                                                     mainStock: '',
                                                     interval: chartSettings.selectedPeriod,
                                                     chart_date: chartSettings.chart_date,
-                                                    startDate: templateBusinessFormat.parseDate(chartSettings.date_start, 'YYYY-MM-DD'),
-                                                    endDate: templateBusinessFormat.parseDate(chartSettings.date_end, 'YYYY-MM-DD'),
+                                                    startDate: startDate,
+                                                    endDate: endDate,
                                                     splits: chartSettings.isSplits,
                                                     earnings: chartSettings.isEarnings,
                                                     dividends: chartSettings.isDividends,

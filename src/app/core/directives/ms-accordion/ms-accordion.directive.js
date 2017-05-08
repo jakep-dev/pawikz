@@ -25,8 +25,18 @@
         vm.registerExpandAccordionCallback = $scope.registerExpandAccordionCallback;
         vm.applyClickEvent = applyClickEvent;
         vm.onExpandCollapse = onExpandCollapse;
+        // remove html tags in hovering accordion header
+        vm.accordionHeaderTooltip = $scope.title.replace(/<\/?[^>]+(>|$)/g, "");
 
         init();
+
+        //for news section expand/collapse all
+        commonBusiness.onMsg('IsTemplateExpanded', $scope, function() {
+            if(vm.isExpandable){ 
+                vm.isCollapsed = commonBusiness.isTemplateExpandAll; 
+                onExpandCollapse();  
+            } 
+        });
 
         function onExpandComplete() {
             vm.isProcessComplete = true;

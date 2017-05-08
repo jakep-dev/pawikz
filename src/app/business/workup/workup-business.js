@@ -16,7 +16,8 @@
                 initialize: initialize,
                 renew: renew,
                 createWorkUp: createWorkUp,
-                renewFromDashboard: renewFromDashboard
+                renewFromDashboard: renewFromDashboard,
+                dataRefresh : dataRefresh
         };
 
         return business;
@@ -109,6 +110,37 @@
 
             dialog.notify('Renewing Workup', 'Go to Notification Center ',
                 '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
+                null,
+                {
+                    ok: {
+                        callBack: function() {
+                            navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
+                            $location.url('/dashboard/'+ commonBusiness.userId );
+                        }
+                    }
+                }, null, false);
+        }
+
+        //Add refresh workup details to notification center and show dialog box to user.
+        function dataRefresh(userId, projectId, projectName, reloadEvent)
+        {
+            notificationBusiness.notifyNotificationCenter({
+                id: projectId,
+                title: projectName,
+                type: 'DataRefresh',
+                icon: 'refresh',
+                progress: 15,
+                disabled: true,
+                tooltip: 'Refreshing still in-progress',
+                status: 'in-process',
+                userId: userId,
+                istrackable: false,
+                url: projectId
+            }, 'notify-data-refresh-workup-notification-center');
+            workupService.dataRefresh(userId, projectId, projectName, reloadEvent);
+
+            dialog.notify('Refreshing the data', 'Go to the notification center ',
+                '<md-icon md-font-icon="icon-bell"></md-icon> <span> to view the progress.</span>',
                 null,
                 {
                     ok: {

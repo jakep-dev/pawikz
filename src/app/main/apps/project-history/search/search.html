@@ -18,7 +18,7 @@
         <div layout="column" layout-padding>
             <md-input-container class="md-accent ms-filter-input-text">
                 <label class="font-size-20"><strong>Step</strong></label>
-                <md-select ng-model="vm.selectedStep" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.steps, 'STEPS')">
+                <md-select ng-model="vm.selectedStep" ng-change="vm.clearFieldName()" class="md-accent" md-on-open="vm.searchCtrlLoad(vm.steps, 'STEPS')">
                     <md-option><em>None</em></md-option>
                     <md-option class="ms-filter-data" layout-padding ng-repeat="step in vm.steps" value="{{step.name}}" close-tooltips>
                         {{step.name}}

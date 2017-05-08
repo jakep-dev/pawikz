@@ -756,19 +756,23 @@
 
                         resizeSensor = new ResizeSensor($(elem).find('#container'), function () {
                             var context = new Object();
-                            if (activity.bottomChart.xAxis != null && activity.bottomChart.xAxis.length > 0) {
+                            if (activity.bottomChart && activity.bottomChart.xAxis && (activity.bottomChart.xAxis.length > 0)) {
                                 activity.bottomChart.xAxis[0].setCategories(activity.xData);
                             }
                             $timeout(function (params) {
-                                params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
-                                if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
-                                    params.chart.xAxis[0].labelRotation = 0;
-                                    params.chart.isDirty = true;
-                                    params.chart.redraw();
+                                if (params.chart) {
+                                    params.labelsChanged = setupXAxisLabels($(params.chart.container).find('.highcharts-xaxis-labels').find('text'));
+                                    if (params.labelsChanged && (params.chart.xAxis != null) && (params.chart.xAxis.length > 0)) {
+                                        params.chart.xAxis[0].labelRotation = 0;
+                                        params.chart.isDirty = true;
+                                        params.chart.redraw();
+                                    }
                                 }
                             }, 500, false, { chart: activity.bottomChart, name: activity.name });
                             activity.topChart.reflow();
-                            activity.bottomChart.reflow();
+                            if (activity.bottomChart) {
+                                activity.bottomChart.reflow();
+                            }
                         });
                     }
                 }

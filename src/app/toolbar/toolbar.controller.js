@@ -8,7 +8,7 @@
 
     /** @ngInject */
     function ToolbarController($scope, $mdSidenav, $interval, toast,
-                               store, commonBusiness, notificationBusiness, msNavFoldService, overviewBusiness)
+                               store, commonBusiness, notificationBusiness, msNavFoldService, overviewBusiness, newsBusiness)
     {
         var vm = this;
         vm.userName = '';
@@ -29,6 +29,7 @@
             notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
             notificationBusiness.listenToWorkUpStatus(userDetails.userId);
             notificationBusiness.listenToRenewStatus(userDetails.userId);
+            notificationBusiness.listenToDataRefreshStatus(userDetails.userId);
         } else {
             promiseSetupListener = $interval(setupListeners, 1000);
         }
@@ -43,6 +44,10 @@
             vm.isProjectOverviewAllSelected = false;
             vm.isStepExpanded = false;
             vm.isProjectOverviewExpanded = false;
+
+            // clear the content of an array in every navigation of the page, 
+            // purposed for delete news attachment 
+            newsBusiness.selectedArticles = [];
 
             switch (vm.menuMode){
                 case 'Steps':
@@ -74,6 +79,7 @@
         vm.flipSelectionOverview = flipSelectionOverview;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.dataRefresh = dataRefresh;
         vm.projectHistory = projectHistory;
 
         vm.previousStep = previousStep;
@@ -113,6 +119,7 @@
                 notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
                 notificationBusiness.listenToWorkUpStatus(userDetails.userId);
                 notificationBusiness.listenToRenewStatus(userDetails.userId);
+                notificationBusiness.listenToDataRefreshStatus(userDetails.userId);
                 $interval.cancel(promiseSetupListener);
             } else {
                 console.log('[setupListeners]userId not available.');
@@ -125,7 +132,7 @@
         vm.isNextDisabled = false;
         function stepToggleExpand(){
             vm.isStepExpanded = !vm.isStepExpanded;
-            commonBusiness.emitMsg('step-toogle-expand');
+            commonBusiness.emitMsg('step-toggle-expand');
         }
 
         function listenToStepMessages(){
@@ -193,11 +200,21 @@
         }
 
         function pdfDownload(){
+            
+            //trigger save overview before pdf download to update the pdf content
+            if(vm.menuMode === 'ProjectOverview'){
+                commonBusiness.emitMsg('project-overview-save-all');
+            }
+            
             commonBusiness.emitMsg('pdf-download');
         }
 
         function renew(){
             commonBusiness.emitMsg('project-renew');
+        }
+
+        function dataRefresh(){
+            commonBusiness.emitMsg('project-data-refresh');
         }
 
         function projectHistory(){

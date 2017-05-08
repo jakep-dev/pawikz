@@ -10,7 +10,7 @@
     /** @ngInject */
     function msNotificationController(toast,
                                       $location, $interval, $scope, $window,
-                                      commonBusiness, templateBusiness, notificationBusiness
+                                      commonBusiness, templateBusiness, notificationBusiness, overviewBusiness
                                      )
     {
         var vm = this;
@@ -65,6 +65,7 @@
                 switch (notification.type)
                 {
                     case 'Renewal':
+                    case 'DataRefresh':
                     case 'Create-WorkUp':
                         $location.url('/overview/' + notification.url);
                         notification.status = 'close';

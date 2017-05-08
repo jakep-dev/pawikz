@@ -5,7 +5,7 @@
            .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope, 
+    function msStockChartToolBarController($scope, $mdMenu, $timeout,
                                            dialog,
                                            commonBusiness, stockChartBusiness, stockService) {
         var vm = this;
@@ -120,8 +120,12 @@
 
         vm.peers = [];
         vm.maxDate = new Date();
-        setStartEndDate(vm.selectedPeriod);
-        setStartEndDate(vm.selectedPeriod);
+        vm.maxDate.setHours(0);
+        vm.maxDate.setMinutes(0);
+        vm.maxDate.setSeconds(0);
+        vm.maxDate.setMilliseconds(0);
+        vm.maxStartDate = vm.maxDate;
+        vm.maxEndDate = vm.maxDate;
 
         vm.competitorList = new Array();
         vm.competitorMap = new Array();
@@ -215,39 +219,144 @@
             });
         }
 
+        //Assign internal date components individually to avoid straight assignment dest = src
+        //so that changes to dest in the future won't change src
+        function assignDateValue(src, dest) {
+            if (angular.isDate(dest)) {
+                dest.setFullYear(src.getFullYear());
+                dest.setMonth(src.getMonth());
+                dest.setDate(src.getDate());
+            }
+        }
+
+        //When there is an error with the start or end date, reset both start and end date from vm.filterState
+        //To work around the bug with the md-datepicker control when setting a value outside allowable date range
+        //      1) set the max date to the previous value to force the currently invalid date to be out of range
+        //      2) set date (vm.startDate/vm.endDate) within the new temporary range
+        //      3) allow the ng-model binding to update.
+        //      4) when $timeout function is called the model is updated with the temporary values (vm.startDate/vm.endDate)
+        //      5) set date (vm.startDate/vm.endDate) to the previous value from vm.filterState
+        //      6) set the max date for the md-datepicker
+        function resetCustomDate() {
+            vm.maxStartDate = new Date(vm.filterState.startDate);
+            vm.startDate.setDate(vm.maxStartDate.getDate() - 1);
+            vm.maxEndDate = new Date(vm.filterState.endDate);
+            vm.endDate.setDate(vm.maxEndDate.getDate() - 1);
+            $timeout(function () {
+                vm.startDate = new Date(vm.filterState.startDate);
+                assignDateValue(vm.startDate, vm.prevStartDate);
+                vm.endDate = new Date(vm.filterState.endDate);
+                assignDateValue(vm.endDate, vm.prevEndDate);
+                vm.maxStartDate = vm.maxDate;
+                vm.maxEndDate = vm.maxDate;
+                setMinCalendarDate();
+                vm.onFilterStateUpdate();
+            }, 10);
+        }
+
+        //Since the md-datepicker is inside the menu, we have to delay the hiding of the menu to allow the workaround to run before closing the menu
+        function delayedMenuHide() {
+            $timeout(function () {
+                $mdMenu.hide();
+            }, 500);
+        }
+
         function customDateChange() {
+            if (!vm.startDate) {
+                vm.startDate = new Date(vm.prevStartDate);
+            } else {
+                //vm.prevStartDate = vm.startDate;
+                assignDateValue(vm.startDate, vm.prevStartDate);
+            }
+            if (!vm.endDate) {
+                vm.endDate = new Date(vm.prevEndDate);
+            } else {
+                //vm.prevEndDate = vm.endDate;
+                assignDateValue(vm.endDate, vm.prevEndDate);
+            }
             if (vm.startDate > vm.endDate) {
-                vm.startDate = vm.filterState.startDate;
-                vm.endDate = vm.filterState.endDate;
+                resetCustomDate();
+                delayedMenuHide();
                 dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, null, {
                     ok: {
-                        name: 'ok', callBack: function () {
-                        }
+                        name: 'ok'
                     }
                 });
             } else {
                 if (vm.startDate && vm.endDate) {
-                    var duration;
-                    duration = moment.duration(moment(vm.endDate).diff(moment(vm.startDate)));
-                    if (duration.asYears() >= 10.0) {
-                        vm.startDate = vm.filterState.startDate;
-                        vm.endDate = vm.filterState.endDate;
-                        dialog.alert('Warning!', "Custom date range cannot exceed 10 years. Please adjust the date range.", null, null, {
+                    if (isLessThanAbsoluteMinDate(vm.startDate)) {
+                        resetCustomDate();
+                        delayedMenuHide();
+                        dialog.alert('Warning!', "Data exists from 01/01/1996 onward. Please adjust 'From' date.", null, null, {
                             ok: {
-                                name: 'ok', callBack: function () {
-                                }
+                                name: 'ok'
                             }
                         });
+                    } else if (vm.endDate > vm.maxDate) {
+                        resetCustomDate();
+                        delayedMenuHide();
+                        dialog.alert('Warning!', "'To' date cannot be a future date. Please adjust to a current or past date.", null, null, {
+                                ok: {
+                                    name: 'ok'
+                                }
+                        });
                     } else {
-                        vm.filterState.startDate = vm.startDate;
-                        vm.filterState.endDate = vm.endDate;
-                        vm.changedPeriod('CUSTOM');
-                        vm.onFilterStateUpdate();
+                        var minDate = new Date(vm.endDate);
+                        minDate.setFullYear(vm.endDate.getFullYear() -10);
+                        if(vm.startDate < minDate) {
+                            resetCustomDate();
+                            delayedMenuHide();
+                            dialog.alert('Warning!', "Custom date range cannot exceed 10 years. Please adjust the date range.", null, null, {
+                                ok: {
+                                    name: 'ok'
+                                }
+                            });
+                        } else {
+                            //vm.filterState.startDate = vm.startDate;
+                            assignDateValue(vm.startDate, vm.filterState.startDate);
+                            //vm.filterState.endDate = vm.endDate;
+                            assignDateValue(vm.endDate, vm.filterState.endDate);
+                            vm.filterState.interval = 'CUSTOM';
+                            setMinCalendarDate();
+                            vm.onFilterStateUpdate();
+                        }
                     }
                 }
             }
         }
         vm.customDateChange = customDateChange;
+
+        function onBlur(event, name) {
+            var inputCtrl;
+            var modelValue;
+            var newValue;
+            var dateFormat = 'M/D/YYYY';
+
+            if (event && event.target && $(event.target).find('input').length > 0) {
+                inputCtrl = $(event.target).find('input')[0];
+                newValue = moment(inputCtrl.value, dateFormat, true);
+                if (name == 'endDate') {
+                    modelValue = moment(vm.endDate);
+                    if (!newValue.isValid()) {
+                        //inputCtrl.value = modelValue.format(dateFormat);
+                        resetCustomDate();
+                    } else if (inputCtrl.value != modelValue.format(dateFormat)) {
+                        vm.endDate = newValue.toDate();
+                        customDateChange();
+                    }
+                } else if (name == 'startDate') {
+                    modelValue = moment(vm.startDate);                    
+                    if (!newValue.isValid()) {
+                        //inputCtrl.value = modelValue.format(dateFormat);
+                        resetCustomDate();
+                    } else if (inputCtrl.value != modelValue.format(dateFormat)) {
+                        vm.startDate = newValue.toDate();
+                        customDateChange();
+                    }
+                }
+            }
+        }
+        vm.onBlur = onBlur;
 
         function changedSplitsEvents() {
             vm.filterState.splits = vm.splits;
@@ -268,8 +377,10 @@
         vm.changedDividendsEvents = changedDividendsEvents;
 
         function changedPeriod(periodVal) {
-            vm.filterState.startDate = vm.startDate;
-            vm.filterState.endDate = vm.endDate;
+            //vm.filterState.startDate = vm.startDate;
+            assignDateValue(vm.startDate, vm.filterState.startDate);
+            //vm.filterState.endDate = vm.endDate;
+            assignDateValue(vm.endDate, vm.filterState.endDate);
             vm.filterState.interval = periodVal;
             setStartEndDate(periodVal);
             vm.onFilterStateUpdate();
@@ -277,9 +388,15 @@
         vm.changedPeriod = changedPeriod;
 
         function setStartEndDate(periodVal) {
+            var d;
             if (periodVal !== 'CUSTOM') {
-                var d = new Date();
                 vm.endDate = new Date();
+                vm.endDate.setHours(0);
+                vm.endDate.setMinutes(0);
+                vm.endDate.setSeconds(0);
+                vm.endDate.setMilliseconds(0);
+
+                d = new Date();
                 if (periodVal === '1W') {
                     d.setDate(d.getDate() - 7);
                 } else if (periodVal === '1M') {
@@ -300,12 +417,35 @@
                     d.setFullYear(d.getFullYear() - 10);
                 }
                 vm.startDate = d;
-                vm.filterState.startDate = vm.startDate;
-                vm.filterState.endDate = vm.endDate;
+                vm.startDate.setHours(0);
+                vm.startDate.setMinutes(0);
+                vm.startDate.setSeconds(0);
+                vm.startDate.setMilliseconds(0);
+                vm.filterState.startDate = new Date(vm.startDate);
+                vm.filterState.endDate = new Date(vm.endDate);
             } else {
-                vm.startDate = vm.filterState.startDate;
-                vm.endDate = vm.filterState.endDate;
+                //vm.startDate = vm.filterState.startDate;
+                vm.startDate = new Date(vm.filterState.startDate);
+                //vm.endDate = vm.filterState.endDate;
+                vm.endDate = new Date(vm.filterState.endDate);
             }
+            setMinCalendarDate();
+            vm.prevStartDate = new Date(vm.startDate);
+            vm.prevEndDate = new Date(vm.endDate);
+        }
+
+        function isLessThanAbsoluteMinDate(dateValue) {
+            return stockChartBusiness.minimumChartDate > dateValue;
+        }
+
+        function setMinCalendarDate() {
+            vm.minStartDate = new Date(vm.endDate);
+            vm.minStartDate.setFullYear(vm.endDate.getFullYear() - 10);
+            if (isLessThanAbsoluteMinDate(vm.minStartDate)) {
+                var minDate = stockChartBusiness.minimumChartDate;
+                vm.minStartDate.setFullYear(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+            }
+            vm.minEndDate = new Date(vm.startDate);
         }
 
         function queryPeerSearch(query) {

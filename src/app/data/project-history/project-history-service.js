@@ -19,10 +19,11 @@
 
         //Get project history filter details
         //Steps, FieldNames, ModifiedBy, ModifiedDate
-        function getProjectHistoryFilters(projectId, filterType){
+        function getProjectHistoryFilters(projectId, filterType, step){
             var input = {
                 projectId: projectId,
-                filterType: filterType
+                filterType: filterType,
+                step: step
             };
 
             return $http({

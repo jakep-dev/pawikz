@@ -110,13 +110,16 @@
                         <md-icon md-font-icon="icon-chevron-down" aria-label="icon-chevron-down"></md-icon>
                     </button>
                     <md-menu-content width="3" class="advison-date-range-menu-content">
+                        <md-tooltip md-direction="top" md-autohide="false" class="iscChartToolbarTooltip">System does not include data prior to 01/01/1996. <br>Earliest valid 'From' date is 01/01/1996. <br>Latest valid 'To' date is current date.</md-tooltip>
                         <md-menu-item>
-                            <md-datepicker ng-model="vm.startDate" md-max-date="vm.maxDate"
-                                           ng-change="vm.customDateChange();"></md-datepicker>
+                            <md-datepicker ng-model="vm.startDate" md-min-date="vm.minStartDate" md-max-date="vm.maxStartDate"
+                                           ng-model-options="{updateOn: 'default blur'}" ng-blur="vm.onBlur($event, 'startDate')"
+                                           ng-change="vm.customDateChange()"></md-datepicker>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-datepicker ng-model="vm.endDate" md-max-date="vm.maxDate"
-                                           ng-change="vm.customDateChange();"></md-datepicker>
+                            <md-datepicker ng-model="vm.endDate" md-min-date="vm.minEndDate" md-max-date="vm.maxEndDate"
+                                           ng-model-options="{updateOn: 'default blur'}" ng-blur="vm.onBlur($event, 'endDate')"
+                                           ng-change="vm.customDateChange()"></md-datepicker>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>

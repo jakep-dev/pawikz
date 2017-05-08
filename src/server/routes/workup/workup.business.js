@@ -1,8 +1,9 @@
 (function(workupBusiness) {
 
     var _ = require('underscore');
-    var config = require('../../server.config');
-    var client = config.restcall.client;
+    var config;
+    var client;
+    var logger;
 
     /*
     * Lock the workup being used by user.
@@ -27,11 +28,19 @@
             }
         };
 
-        console.log('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
-        client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args,function(data, response)
-        {
-
-        });
+        logger.debug('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
+        var url = config.restcall.url + '/' + service.name + '/' + methodName;
+        client.get(url, args,
+            function (data, response)
+            {
+                logger.logIfHttpError(url, args, data, response);
+            }
+        ).on('error',
+            function (err) {
+                logger.error('[workupBusiness.lock]Error');
+                logger.error(err);
+            }
+        );
     };
 
     /*
@@ -56,11 +65,18 @@
                 ssnid: token
             }
         };
-
-        client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data, response)
-        {
-
-        });
+        var url = config.restcall.url + '/' + service.name + '/' + methodName;
+        client.get(url, args,
+            function (data, response)
+            {
+                logger.logIfHttpError(url, args, data, response);
+            }
+        ).on('error',
+            function (err) {
+                logger.error('[workupBusiness.unlock]Error');
+                logger.error(err);
+            }
+        );
     };
 
 
@@ -68,4 +84,11 @@
     function getServiceDetails(serviceName) {
         return _.find(config.restcall.service, {name: serviceName});
     }
+
+    workupBusiness.init = function (configDetails, log) {
+        config = configDetails;
+        client = config.restcall.client;
+        logger = log;
+    }
+
 })(module.exports);

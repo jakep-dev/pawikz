@@ -196,47 +196,25 @@
             if (userDetails) {
                 userName = userDetails.fullName;
                 userId = userDetails.userId;
-
-
-                var notification = _.find(notificationBusiness.notifications, function(not) {
-                    if (not.id === commonBusiness.projectId &&
-                        not.type === 'PDF-Download') {
-                        return not;
-                    }
+                
+                var notification = notificationBusiness.pushNotification({
+                    id: commonBusiness.projectId,
+                    title: commonBusiness.projectName,
+                    type: 'PDF-Download',
+                    icon: 'icon-file-pdf-box',
+                    progress: 0,
+                    disabled: true,
+                    tooltip: 'PDF Generation still in-progress',
+                    status: 'in-process',
+                    userId: userId,
+                    istrackable: true,
+                    requestId: 0
                 });
-
-                if (notification) {
-                    notification.disabled = true;
-                    notification.progress = 0;
-                    notification.status = 'in-process';
-                    notification.requestId = 0;
-                } else {
-                    notificationBusiness.pushNotification({
-                        id: commonBusiness.projectId,
-                        title: commonBusiness.projectName,
-                        type: 'PDF-Download',
-                        icon: 'icon-file-pdf-box',
-                        progress: 0,
-                        disabled: true,
-                        tooltip: 'PDF Generation still in-progress',
-                        status: 'in-process',
-                        userId: userId,
-                        istrackable: true,
-                        requestId: 0
-                    });
-                }
 
                 templateService.createTemplatePdfRequest(commonBusiness.projectId, userId,
                         commonBusiness.projectName,
                         commonBusiness.companyName, userName)
                     .then(function(data) {
-
-                        var notification = _.find(notificationBusiness.notifications, function(not) {
-                            if (not.id === commonBusiness.projectId &&
-                                not.type === 'PDF-Download') {
-                                return not;
-                            }
-                        });
 
                         if (!data) {
                             if (notification) {
@@ -805,14 +783,14 @@
             newScope.itemid = itemId;
             newScope.mnemonicid = mnemonicId;
             newScope.prompt = prompt;
-            newScope.value = _.escape(value);
+            newScope.value = value;
             newScope.isdisabled = false;
             newScope.answer = answer;
 
 
             comp.html = '<ms-rich-text-editor itemid="' + newScope.itemid + '" ' +
                 'mnemonicid="' + newScope.mnemonicid + '" prompt="' + newScope.prompt + '" ' +
-                'value="' + newScope.value + '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
+                '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
             comp.scope = newScope;
 
             return comp;
