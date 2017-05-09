@@ -48,6 +48,7 @@
             height: mainHeight * .9,
             charCounterCount: false,
             placeholderText: $scope.answer || 'Enter text here',
+            spellcheck: true,
             key: clientConfig.appSettings.textEditorApiKey
         };
         $element.find('#textEditorDialog').froalaEditor(vm.froalaOptions);
@@ -156,6 +157,7 @@
             ],
             toolbarInline: false,
             placeholderText: $scope.answer || 'Enter text here',
+            spellcheck: true,
             key: clientConfig.appSettings.textEditorApiKey
         };
     }
