@@ -14,6 +14,10 @@
     {
         var vm = this;
         vm.close = close;
+
+        //keep track if the dialog is in a closed state
+        vm.isDialogClosed = false;
+
         var mainHeight = $('#main').height();
         vm.froalaOptions = {
             toolbarButtons: [
@@ -48,7 +52,9 @@
             height: mainHeight * .9,
             charCounterCount: false,
             placeholderText: $scope.answer || 'Enter text here',
-            spellcheck: true,
+            pluginsEnabled: ['align', 'colors', 'draggable', 'entities', 'fontFamily',
+                'fontSize', 'fullscreen', 'image', 'inlineStyle', 'lineBreaker', 'link', 'lists', 'paragraphFormat',
+                'paragraphStyle', 'quickInsert', 'quote', 'save', 'table', 'url', 'wordPaste'],
             key: clientConfig.appSettings.textEditorApiKey
         };
         $element.find('#textEditorDialog').froalaEditor(vm.froalaOptions);
@@ -64,13 +70,17 @@
 
         function close()
         {
-            //On exit of dialog box, set parent text box with text from popup dialog
-            $scope.setValue($element.find('#textEditorDialog').froalaEditor('html.get'));
-            $scope.updateCharacterCount();
-            //Clear text in popup dialog
-            $element.find('#textEditorDialog').froalaEditor('html.set', '');
+            if (!vm.isDialogClosed) {
+                vm.isDialogClosed = true;
+                //On exit of dialog box, set parent text box with text from popup dialog
+                $scope.setValue($element.find('#textEditorDialog').froalaEditor('html.get'));
+                $scope.updateCharacterCount();
+                //Clear text in popup dialog
+                $element.find('#textEditorDialog').froalaEditor('html.set', '');
+            }
             dialog.close();
         }
+        $scope.registerDialogClose(close);
     }
 
     /** @ngInject */
@@ -84,6 +94,13 @@
         $scope.newScope.isdisabled = $scope.isdisabled;
         $scope.newScope.answer = $scope.answer;
         $scope.textDialogScope = MsRichTextEditorDialogController;
+
+        //Holds the function to call when user clicks outside the popup dialog
+        var dialogClose = null;
+        //The popup dialog controller calls this to pass in close function so the $mdDialog can call the close method inside itself
+        function registerDialogClose(closeHandler) {
+            dialogClose = closeHandler;
+        }
 
         var textEditorId = 'textEditor_' + $scope.itemid;
 
@@ -109,6 +126,9 @@
                 $scope.newScope.getValue = this.html.get;
                 $scope.newScope.setValue = this.html.set;
 
+                //pass in the registerDialogClose so the popup dialog could pass the close function to the $mdDialog to call when user clicks outside it
+                $scope.newScope.registerDialogClose = registerDialogClose;
+
                 $scope.newScope.answer = answer;
                 $mdDialog.show({
                     scope: $scope.newScope,
@@ -119,7 +139,12 @@
                     templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/dialog/ms-rich-text-editor.dialog.html',
                     //parent: angular.element(document.body),
                     //targetEvent: ev,
-                    clickOutsideToClose:true,
+                    clickOutsideToClose: true,
+                    onRemoving: function() {
+                        if (dialogClose) {
+                            dialogClose();
+                        }
+                    },
                     fullscreen: true
                 });
             }
@@ -157,7 +182,9 @@
             ],
             toolbarInline: false,
             placeholderText: $scope.answer || 'Enter text here',
-            spellcheck: true,
+            pluginsEnabled: ['align', 'colors', 'draggable', 'entities', 'fontFamily',
+                'fontSize', 'fullscreen', 'image', 'inlineStyle', 'lineBreaker', 'link', 'lists', 'paragraphFormat',
+                'paragraphStyle', 'quickInsert', 'quote', 'save', 'table', 'url', 'wordPaste'],
             key: clientConfig.appSettings.textEditorApiKey
         };
     }
