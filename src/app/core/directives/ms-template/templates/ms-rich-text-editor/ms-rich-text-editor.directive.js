@@ -64,6 +64,7 @@
         $scope.setValue('');
         $element.find('#textEditorDialog').on('froalaEditor.blur',
             function (e, editor) {
+                //console.log('Save from dialog popup');
                 templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, editor.html.get(), clientConfig.uiType.general);
             }
         );
@@ -84,7 +85,7 @@
     }
 
     /** @ngInject */
-    function MsRichTextEditorController($scope, $mdDialog, clientConfig, commonBusiness)
+    function MsRichTextEditorController($scope, $mdDialog, clientConfig, commonBusiness, templateBusinessSave)
     {
         $scope.newScope = $scope.$new();
         $scope.newScope.itemid = $scope.itemid;
@@ -120,11 +121,19 @@
                     answer = obj[0].attributes['answer'].value;
                 $scope.newScope.itemid = itemid;
                 $scope.newScope.mnemonicid = mnemonicid;
-                $scope.newScope.updateCharacterCount = $scope.updateCharacterCount;
+
+                //pass function to allow popup close method to update character count
+                $scope.newScope.updateCharacterCount = updateCharacterCount;
+
+                function updateCharacterCount() {
+                    templateBusinessSave.getReadyForAutoSave($scope.editor[0].attributes['itemid'].value, $scope.editor[0].attributes['mnemonicid'].value, $scope.editor.froalaEditor('html.get'), clientConfig.uiType.general);
+                    $scope.editor.froalaEditor('events.trigger', 'charCounter.update');
+                }
 
                 //pass functions to get and set html text of parent text box to avoid passing large block of text
                 $scope.newScope.getValue = this.html.get;
                 $scope.newScope.setValue = this.html.set;
+                $scope.editor = obj;
 
                 //pass in the registerDialogClose so the popup dialog could pass the close function to the $mdDialog to call when user clicks outside it
                 $scope.newScope.registerDialogClose = registerDialogClose;
@@ -196,7 +205,7 @@
     }
 
     /** @ngInject */
-    function msRichTextEditorDirective($compile, templateBusinessSave, clientConfig)
+    function msRichTextEditorDirective($compile, clientConfig, templateBusinessSave)
     {
         return {
             restrict: 'E',
@@ -214,11 +223,6 @@
             {
                 return function ($scope)
                 {
-                    function updateCharacterCount() {
-                        templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, el.find('#textEditor').froalaEditor('html.get'), clientConfig.uiType.general);
-                        el.find('#textEditor').froalaEditor('events.trigger', 'charCounter.update');
-                    }
-
                     if (!$scope.value) {
                         $scope.value = $scope.$parent.value;
                     }
@@ -240,11 +244,9 @@
                     //manually setting text doesn't update the character count
                     el.find('#textEditor').froalaEditor('events.trigger', 'charCounter.update');
 
-                    //pass function to allow popup close method to update character count
-                    $scope.updateCharacterCount = updateCharacterCount;
-
                     el.find('#textEditor').on('froalaEditor.blur',
                         function (e, editor) {
+                            //console.log('Save from content area');
                             templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, editor.html.get(), clientConfig.uiType.general);
                         }
                     );
