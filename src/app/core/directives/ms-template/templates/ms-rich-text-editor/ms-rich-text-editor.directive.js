@@ -74,9 +74,9 @@
                 vm.isDialogClosed = true;
                 //On exit of dialog box, set parent text box with text from popup dialog
                 $scope.setValue($element.find('#textEditorDialog').froalaEditor('html.get'));
-                $scope.updateCharacterCount();
                 //Clear text in popup dialog
                 $element.find('#textEditorDialog').froalaEditor('html.set', '');
+                $scope.updateCharacterCount();
             }
             dialog.close();
         }
@@ -212,12 +212,13 @@
             templateUrl: 'app/core/directives/ms-template/templates/ms-rich-text-editor/ms-rich-text-editor.html',
             compile: function(el, attrs)
             {
-                function updateCharacterCount() {
-                    el.find('#textEditor').froalaEditor('events.trigger', 'charCounter.update');
-                }
-
                 return function ($scope)
                 {
+                    function updateCharacterCount() {
+                        templateBusinessSave.getReadyForAutoSave($scope.itemid, $scope.mnemonicid, el.find('#textEditor').froalaEditor('html.get'), clientConfig.uiType.general);
+                        el.find('#textEditor').froalaEditor('events.trigger', 'charCounter.update');
+                    }
+
                     if (!$scope.value) {
                         $scope.value = $scope.$parent.value;
                     }
@@ -237,7 +238,7 @@
                     $scope.value = '';
 
                     //manually setting text doesn't update the character count
-                    updateCharacterCount();
+                    el.find('#textEditor').froalaEditor('events.trigger', 'charCounter.update');
 
                     //pass function to allow popup close method to update character count
                     $scope.updateCharacterCount = updateCharacterCount;
