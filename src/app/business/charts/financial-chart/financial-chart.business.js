@@ -17,6 +17,9 @@
         var defaultRatioLabel = null;
         var updateChartIdCallback = null;
 
+        //Absolute minimum date for which we have data for charts
+        var minimumChartDate = new Date(1996, 0, 1, 0, 0, 0, 0);
+
         //Each item has
         //label
         //value
@@ -245,6 +248,14 @@
             convertFinancialChartSettings: convertFinancialChartSettings,
             toDateString: toDateString
         };
+
+        Object.defineProperty(business, 'minimumChartDate', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return minimumChartDate;
+            }
+        });
 
         Object.defineProperty(business, 'peerIndustries', {
             enumerable: true,
