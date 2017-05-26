@@ -111,8 +111,14 @@
                 logger.error('URL = "' + url + '"');
                 logger.error('HTTP args =');
                 logger.error(args);
-                logger.error('HTTP data =');
-                logger.error(data);
+                if (data) {
+                    logger.error('HTTP data =');
+                    if (typeof (data) == 'object' && data.toString) {
+                        logger.error(data.toString('utf8'));
+                    } else {
+                        logger.error(data);
+                    }
+                }
                 logger.error('HTTP response =');
                 logger.error(response);
                 logger.error('===================');
