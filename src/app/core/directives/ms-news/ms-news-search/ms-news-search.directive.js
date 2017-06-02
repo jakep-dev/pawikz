@@ -151,7 +151,7 @@
                 .withOption('paging', true)
                 .withOption('autoWidth', true)
                 .withOption('responsive', true)
-                .withOption('stateSave', true)
+                .withOption('stateSave', false)
                 .withOption('order', false)
                 .withOption('createdRow', recompileHtml)
                 .withOption('initComplete', sort)
