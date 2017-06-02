@@ -13,6 +13,7 @@
 
         var business = {
             selectedArticles : [],
+            bookmarkedArticles: [],
             showArticleContent: showArticleContent,
             bookmarkNewsArticle: bookmarkNewsArticle,
             removeBookmark: removeBookmark
@@ -59,15 +60,43 @@
                                         }
                                     });
                                 }
-                            newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
-                                function (response) {
-                                    onBookmarkNewsArticleComplete(selectAttachment);
-                                    //business.selectedNews.push.apply(business.selectedNews, selectAttachment);
-                                    //commonBusiness.emitMsg('news-bookmark');
-                                }
-                            );
+                            
+                            var list = business.bookmarkedArticles.length;
+                            var duplicateAttachment = false;
 
-                            dialog.close();
+                            //returns true if selected articles is duplicate
+                            //otherwise, returns false
+                            for (var i = list - 1; i >= 0; i--) {
+                                _.each(article.news_items, function (item) {
+                                    if (item.isSelected) {
+                                        if (parseInt(item.resourceId) === business.bookmarkedArticles[i].resourceId) {
+                                            duplicateAttachment = true;
+                                        }
+                                    }
+                                });
+                            }
+
+                            if (duplicateAttachment) {
+                                dialog.confirm(clientConfig.messages.newsArticle.bookmarkNewsItem.title,
+                                    clientConfig.messages.newsArticle.bookmarkNewsItem.duplicate, null, {
+                                        ok: {
+                                            name: 'yes',
+                                            callBack: function () {
+                                                attachmentNotificationCenter(selectAttachment, onBookmarkNewsArticleComplete);
+                                            }
+                                        },
+                                        cancel: {
+                                            name: 'no',
+                                            callBack: function () {
+                                                return false;
+                                            }
+                                        }
+                                    }, null , false);
+                            }
+
+                            if (!duplicateAttachment) {
+                                attachmentNotificationCenter(selectAttachment, onBookmarkNewsArticleComplete);
+                            }
                         }
                     },
                     cancel: {
@@ -76,6 +105,23 @@
                             return false;
                         }
                     }
+                });
+        }
+
+        function attachmentNotificationCenter(selectAttachment, onBookmarkNewsArticleComplete) {
+            newsService.attachNewsArticles(commonBusiness.projectId, commonBusiness.userId, selectAttachment).then(
+                function (response) {
+                    onBookmarkNewsArticleComplete(selectAttachment);
+                    dialog.notify(clientConfig.messages.newsArticle.bookmarkNewsItem.title,
+                        clientConfig.messages.newsArticle.bookmarkNewsItem.success, null,
+                        {
+                            ok: {
+                                callBack: function () {
+                                    dialog.close();
+                                }
+                            }
+                        },
+                        null, null, false);
                 });
         }
 
