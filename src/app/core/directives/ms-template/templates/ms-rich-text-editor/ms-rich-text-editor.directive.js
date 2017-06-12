@@ -48,6 +48,7 @@
                 "clearFormatting",
                 "selectAll"
             ],
+            toolbarSticky: false,
             toolbarInline: false,
             height: mainHeight * .9,
             charCounterCount: false,
@@ -189,6 +190,7 @@
                 "clearFormatting",
                 "selectAll"
             ],
+            toolbarSticky: false,
             toolbarInline: false,
             placeholderText: $scope.answer || 'Enter text here',
             pluginsEnabled: ['align', 'colors', 'draggable', 'entities', 'fontFamily',
