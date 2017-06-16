@@ -46,5 +46,9 @@ $tb-v2-layout-input-height: 25px;
   .row:nth-child(odd) {
     background-color: rgba(15, 185, 255, 0.11);
     border-radius: $tb-v2-layout-border-radius;
+  }  
+
+  md-input-container .md-errors-spacer {
+    min-height: 0;
   }
 }

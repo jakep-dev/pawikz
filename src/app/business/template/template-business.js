@@ -440,14 +440,14 @@
 
             newScope.itemid = itemId;
             newScope.mnemonicid = mnemonicId;
-
+            newScope.iseditable = !scope.isnoneditable;
             newScope.tearsheet = {
                 header: header,
                 columns: columns,
                 footer: footer
             };
 
-            comp.html = '<ms-tablelayout-r-p itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r-p>';
+            comp.html = '<ms-tablelayout-r-p itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" iseditable="' + newScope.iseditable + '" isfulloption="false"></ms-tablelayout-r-p>';
             comp.scope = newScope;
 
             return comp;
