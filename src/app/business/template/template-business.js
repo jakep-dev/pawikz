@@ -806,13 +806,11 @@
                     scope: null
                 };
 
-            if (mnemonicid !== 'SEC_PARSE') {
                 newScope.mnemonicid = mnemonicid;
                 newScope.itemid = itemid;
 
                 comp.html = '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>';
                 comp.scope = newScope;
-            }
 
             return comp;
         }
