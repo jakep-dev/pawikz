@@ -817,7 +817,9 @@
                 var colCount = 1;
                _.each($scope.tearsheet.header, function(header)
                {
-                   var value = row[header.HMnemonic].value;
+                   var value = (row[header.HMnemonic].id === 'DateItem')? 
+                                        templateBusiness.formatDate(templateBusiness.parseDate(row[header.HMnemonic].value, 'DD-MMM-YY'), 'M/D/YYYY') : 
+                                        row[header.HMnemonic].value;
                    var headerName = header.HLabel;
 
                    data +=  '"'+ headerName +'":';
@@ -1036,7 +1038,14 @@
 
                                 if(findHeader)
                                 {
-                                    var value = (_.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic}).dataType === 'NUMBER') ? removeCommaValue(content[findHeader.index]): content[findHeader.index]; //;
+                                    var value = content[findHeader.index];
+                                    var mnemonic = _.find($scope.subMnemonics, {mnemonic: findHeader.mnemonic});
+                                    if(mnemonic && mnemonic.dataType === 'NUMBER') {
+                                        value = removeCommaValue(value);
+                                    } else if(mnemonic && mnemonic.dataType === 'DATE') {
+                                        value = templateBusiness.formatDate(templateBusiness.parseDate(value, 'M/D/YYYY'), 'DD-MMM-YY');
+                                    }
+                                    
                                     if(header.HMnemonic === 'RETAIN' && !value) {
                                         value = '0.00';
                                     }
