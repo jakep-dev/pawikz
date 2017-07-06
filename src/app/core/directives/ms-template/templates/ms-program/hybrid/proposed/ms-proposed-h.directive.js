@@ -1147,6 +1147,7 @@
                 if(angular.isObject(value)) {
                     if(value.itemid){
                         var mnemonicValue = value.value || '';
+                        mnemonicValue = (key === 'ROL' && mnemonicValue === 'N/A')? '' : mnemonicValue;
                         save.row.push({
                             columnName: value.itemid,
                             value: (_.find($scope.subMnemonics, {mnemonic: key}).dataType === 'NUMBER') ? removeCommaValue(mnemonicValue): mnemonicValue
@@ -1154,6 +1155,7 @@
                     }
                 }else {
                     var mnemonicValue = value || '';
+                    mnemonicValue = (key === 'ROL' && mnemonicValue === 'N/A')? '' : mnemonicValue;
                     save.row.push({
                         columnName: key,
                         value: mnemonicValue
