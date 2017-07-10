@@ -730,13 +730,14 @@
                 var headerStatus = [];
                 var rowIndex = 0;
 
-                angular.forEach($scope.header, function(eachHeader)
+                angular.forEach($scope.header, function(eachHeader, headerIndex)
                 {
 					var headerName = eachHeader.HLabel;
 
-					var findHeader = _.find(csvHeaders, function(header)
+					var findHeader = _.find(csvHeaders, function(header, columnIndex)
 					{
-						if(headerName.toUpperCase() === header.toUpperCase())
+						if(headerName.toUpperCase() === header.toUpperCase() &&
+								headerIndex === columnIndex)
 						{
 							return header;
 						}
@@ -744,6 +745,7 @@
 
                     headerStatus.push({
                         name: eachHeader.HLabel,
+						mnemonic: eachHeader.HMnemonic,
                         iscsv: !findHeader ? false : true,
                         index: rowIndex
                     });
@@ -776,7 +778,7 @@
                             {
 								var findHeader = _.find(headerStatus, function(head)
                                {
-                                   if(head.name === header.HLabel)
+                                   if(head.mnemonic === header.HMnemonic)
                                    {
                                        return head;
                                    }
@@ -841,58 +843,40 @@
 			var linkElement = $('#link-hybrid-download');
 			var dataInfo = [];
 			var data = null;
-			
+
+			//Insert Header
+			data = [];
+			angular.forEach($scope.header, function(header) {
+				data.push(header.HLabel);
+			});
+			dataInfo.push(angular.fromJson(data));
+
+			//Insert Row Data
 			angular.forEach($scope.rows, function(row)
 			{
-				var data = '';
-				data += '{';
-				var colCount = 1;
+				data = [];
 				angular.forEach($scope.header, function(header)
-				{	
-					var headerName = ' ';
+				{
 					var columnValue = '';
-					
-					if(header.HLabel){
-						headerName = header.HLabel;
-					}
-					
-					data +=  '"'+ headerName +'":';
-					
 					if(row[header.HMnemonic])
 					{
 						columnValue = (_.find($scope.subMnemonics, {mnemonic: header.HMnemonic}).dataType === 'DATE')? templateBusiness.formatDate(row[header.HMnemonic], 'M/D/YYYY') : row[header.HMnemonic]; + '"';
 					}
 
-					if(colCount == $scope.header.length)
-					{
-					   data +=  '"'+ columnValue +'"';
-					}
-					else {
-					   data +=  '"'+ columnValue +'",';
-					}
-
-					colCount++;
+					data.push(columnValue)
 				});
-				data += '}';
 				dataInfo.push(angular.fromJson(data));
 			});
 			
+			//insert footer data
 			if($scope.footerMnemonics && $scope.footerMnemonics.length > 0)
 			{
 				angular.forEach($scope.footerMnemonics, function(footer)
 				{
-					data = '';
-					data += '{';	
-					if($scope.header && $scope.header[0] && $scope.header[0].HLabel ){
-						data +=  '"'+ $scope.header[0].HLabel +'":';
-						data +=  '"'+ footer.header +'",';
-					}
+					data = [];
+					data.push(footer.header);
+					data.push(footer.value);
 					
-					if($scope.header && $scope.header[1] && $scope.header[1].HLabel ){
-						data +=  '"'+ $scope.header[1].HLabel +'":';
-						data +=  '"'+ footer.value +'"';
-					}
-					data += '}';
 					dataInfo.push(angular.fromJson(data));
 				});
 			}

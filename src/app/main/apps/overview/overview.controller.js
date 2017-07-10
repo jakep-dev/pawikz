@@ -178,10 +178,10 @@
                 return;
             }
 
-            overviewService.get($stateParams.projectId, $rootScope.passedUserId, commonBusiness.prevProjectId).then(function(data)
-            {
-                if(data.templateOverview)
-                {
+            overviewService.get($stateParams.projectId, $rootScope.passedUserId, commonBusiness.prevProjectId)
+                .then(
+                    function (data) {
+                        if(data.templateOverview) {
                     vm.templateOverview = data.templateOverview;
                     commonBusiness.companyId = vm.templateOverview.companyId;
                     commonBusiness.projectName = vm.templateOverview.projectName;
@@ -210,8 +210,8 @@
                     navConfig.sideNavItems.splice(0, _.size(navConfig.sideNavItems));
                     toast.simpleToast('There are no overview details available');
                 }
-
-            });
+                    }
+                );
         }
 
 

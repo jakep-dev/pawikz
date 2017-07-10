@@ -112,7 +112,9 @@
                 newsArticle : {
                     bookmarkNewsItem : {
                         title : 'Bookmark News',
-                        content: 'Are you sure you want to include the full text of the checked article(s) in your work-up?'
+                        content: 'Are you sure you want to include the full text of the checked article(s) in your work-up?',
+                        success: 'Selected article(s) attached successfully.',
+                        duplicate: 'One or more of the selected article(s) were already attached. System will ignore those artice(s). Do you want to proceed?'
                     },
                     deleteNewsItem :{
                         title : 'Would you like to delete?',

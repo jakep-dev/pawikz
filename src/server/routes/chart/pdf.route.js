@@ -836,6 +836,9 @@
                 if (subContext.results.stockChartPeerData && Array.isArray(subContext.results.stockChartPeerData)) {
                     subContext.n = subContext.results.stockChartPeerData.length;
                     if (subContext.n > 0) {
+                        subContext.results.stockChartPeerData.sort(function (itemA, itemB) {
+                            return (itemA.ticker < itemB.ticker) ? -1 : ((itemA.ticker > itemB.ticker) ? 1 : 0);
+                        });
                         for (subContext.i = 0; subContext.i < subContext.n; subContext.i++) {
                             subContext.peerDataItem = subContext.results.stockChartPeerData[subContext.i];
                             if (subContext.peerDataItem) {
