@@ -1349,7 +1349,7 @@
                 angular.forEach(business.mnemonics, function(eachrow) {
                     if (eachrow.itemId === itemId && eachrow.dataSubtype) {
                         angular.forEach(eachrow.dataSubtype.split(','), function(eachColumn) {
-                            var mnemonic = eachColumn.split(' ');
+                            var mnemonic = eachColumn.trim().split(' ');
                             if (mnemonic.length > 0) {
                                 subMnemonics.push({
                                     mnemonic: mnemonic[0] || '',
