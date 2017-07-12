@@ -210,6 +210,8 @@
         }
 
         function renew(){
+            //Clear all selected news articles for renewal purposed
+            newsBusiness.bookmarkedArticles = [];
             commonBusiness.emitMsg('project-renew');
         }
 
