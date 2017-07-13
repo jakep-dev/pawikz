@@ -14,7 +14,7 @@
     }
 
     /** @ngInject */
-    function msScrapeDirective($compile, commonBusiness, templateService)
+    function msScrapeDirective($compile, commonBusiness, templateService, templateBusinessFormat)
     {
         return {
             restrict: 'E',
@@ -31,20 +31,9 @@
 				
 				templateService.getScrapedHTML(commonBusiness.projectId, commonBusiness.stepId,
                     scope.mnemonicid, scope.itemid).then(function(response) {
-
-						html += '<div>';
-						if(response && response.html)
-						{		
-							html += response.html;
-						}
-						else
-						{
-							html += '<ms-message message="Under Construction"></ms-message>';
-						}						
-						html += '<div>';
-						
-						scope.$parent.$parent.isprocesscomplete = true;						
-						el.find('#ms-scrape').append($compile(response.html)(scope));
+                        
+                        scope.$parent.$parent.isprocesscomplete = true;						
+						el.find('#ms-scrape').append($compile(templateBusinessFormat.getScrapedHTML(scope, response))(scope));
 					}
 				);
             }
