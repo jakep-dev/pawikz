@@ -241,12 +241,15 @@ table.mainToolbarCellAlignment{
                     display: -webkit-flex;
                     display: -moz-flex;
                     display: flex;
-                    overflow:hidden;
 
                     div {
-                        white-space: nowrap; 
-                        text-overflow: ellipsis; 
-                        overflow:hidden;
+                        max-width: 100%;
+
+                        span {
+                            white-space: nowrap; 
+                            text-overflow: ellipsis; 
+                            overflow:hidden;
+                        }
                     }
                 }
             }
