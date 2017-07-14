@@ -19,9 +19,15 @@
                     <i class="{{vm.menuIcon}}"></i>
                     <div class="ms-menu-label" hide-gt-xs style="width: 9em; padding-left: 5px;">
                         <span>{{vm.menuName}}</span>
+                        <md-tooltip md-direction="bottom" style="max-width: 40em; height: auto; word-break: break-all; white-space: normal;">
+                            {{vm.menuName}}
+                        </md-tooltip>
                     </div>
                     <div hide-xs style="padding-left: 5px;">
                         <span>{{vm.menuName}}</span>
+                        <md-tooltip md-direction="bottom" style="max-width: 40em; height: auto; word-break: break-all; white-space: normal;">
+                            {{vm.menuName}}
+                        </md-tooltip>
                     </div>
                 </div>
             </td>
@@ -41,7 +47,7 @@
                     </div>
                 </div>
             </td>
-            <td style="min-width: 0;">
+            <td style="width: 12%;">
                 <div layout="row" layout-align="end center">
 
                     <div ng-if="vm.menuMode === 'Dashboard'" layout="row" layout-align="center center">
