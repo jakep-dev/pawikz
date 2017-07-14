@@ -29,7 +29,8 @@
             getAlignmentForTableLayoutNonEditable : getAlignmentForTableLayoutNonEditable,
             getAlignmentWidthColumForTableLayout : getAlignmentWidthColumForTableLayout,
             formatDate: formatDate,
-            parseDate: parseDate
+			parseDate: parseDate,
+			getScrapedHTML: getScrapedHTML
 
         }
     	return business;
@@ -617,7 +618,36 @@
         {
             var date = moment(date);
             return date.isValid() ? date.format(format) : '';
-        }
+		}
+		
+		function getScrapedHTML(scope, scraped)
+		{
+			var html = '';
+			html += '<div>';
+			if(scraped && scraped.html)
+			{	
+				//insert hardcoded html to have same display for no found SEC documents
+				if(scope.mnemonicid === 'SEC_PARSE' && scraped.html === 'No data was found!')
+				{
+					html += '<table width="98%" align="center"> ' +
+							'   <tr> ' +
+							'       <td style="font-size:12px; font-family: monospace; color:#000000;">No SEC documents have been found</td> ' +
+							'   </tr> ' +
+							'</table>';
+				}
+				else 
+				{
+					html += scraped.html;
+				}
+			}
+			else
+			{
+				html += '<ms-message message="Under Construction"></ms-message>';
+			}						
+			html += '<div>';
+
+			return html;
+		}
 
     }
 })();

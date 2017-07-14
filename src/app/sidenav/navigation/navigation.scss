@@ -345,9 +345,9 @@ $navigationFoldedWidth: 64px;
                                         width: $navigationFoldedWidth;
                                         white-space: nowrap;
                                         overflow: hidden;
-                                        text-overflow: ellipsis;
                                         padding-left: 0px;
                                         padding-right: 16px;
+                                        text-overflow: clip;
                                         display: inline-block;
                                     }
 
