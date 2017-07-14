@@ -98,6 +98,7 @@ $navigationFoldedWidth: 64px;
                     padding-left: 2em;
                     white-space: nowrap;
                     overflow: hidden;
+                    text-overflow: ellipsis;
                     transition: opacity 0s ease-in-out 0s;
                 }
 
@@ -346,6 +347,7 @@ $navigationFoldedWidth: 64px;
                                         overflow: hidden;
                                         padding-left: 0px;
                                         padding-right: 16px;
+                                        text-overflow: clip;
                                         display: inline-block;
                                     }
 
