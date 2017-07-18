@@ -583,7 +583,8 @@
                                             //distance: 10,
                                             align: 'center',
                                             enabled: subContext.dataset.showxaxisLabel
-                                        }
+                                        },
+                                        tickPositions : []
                                     },
                                     plotOptions: {
                                         series: {
