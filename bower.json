@@ -26,7 +26,8 @@
     "angular-datatables": "~0.5.1",
     "angular-disable-all": "~0.0.1",
     "a0-angular-storage": "~0.0.13",
-    "angular-froala": "^2.5.1",
+    "angular-froala": "^2.6.1",
+    "froala-wysiwyg-editor": "^2.6.2",
     "highcharts-ng": "^0.0.11",
     "highcharts": "~4.2.3",
     "angular-papaparse": "^1.0.0",
@@ -45,7 +46,8 @@
   },
   "resolutions": {
     "angular": "1.5.5",
-    "moment": "2.13.0"
+    "moment": "2.13.0",
+    "jquery": ">=1.7"
   },
   "overrides": {
     "angular-material": {
