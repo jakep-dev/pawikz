@@ -1585,7 +1585,7 @@
             };
 
             logger.debug("Output File: " + subContext.chartObj.outfile);
-            fs.writeFile(subContext.chartObj.outfile + '.txt', JSON.stringify(subContext.chartObj));
+            //fs.writeFile(subContext.chartObj.outfile + '.txt', JSON.stringify(subContext.chartObj));
             client.post(setting.context.service.exportOptions.phatomjsURL, subContext.args,
                 function (data, response) {
                     logger.logIfHttpError(setting.context.service.exportOptions.phatomjsURL, subContext.args, data, response);
