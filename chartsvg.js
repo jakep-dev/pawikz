@@ -25,6 +25,8 @@
 //                BROKEN_AXIS: 'node_modules/highcharts/modules/broken-axis.js'
             }
         },
+        DEFAULT_WIDTH: 800,
+        DEFAULT_HEIGHT: 375,
         TIMEOUT: 5000 /* 5 seconds timout for loading images */
     };
 
@@ -74,6 +76,12 @@
         var jsFile;
         var loadSuccess;
 
+        chartConfig = JSON.parse(params.infile);
+        page.viewportSize = {
+            width: chartConfig.chart.width || config.DEFAULT_WIDTH,
+            height: chartConfig.chart.height || config.DEFAULT_HEIGHT
+        };
+
         // security measures, for not allowing loading iframes
         page.navigationLocked = true;
 
@@ -122,7 +130,6 @@
                 }
             }
 
-            chartConfig = JSON.parse(params.infile);
             var filename = params.outfile;
             //console.log(filename);
 
@@ -131,8 +138,8 @@
             //console.log(chartConfig.chart.type);
 
             var args = {
-                width: 800,
-                height: 375,
+                width: config.DEFAULT_WIDTH,
+                height: config.DEFAULT_HEIGHT,
                 chartConfig: chartConfig,
                 filename: filename
             };
@@ -526,7 +533,6 @@
                     console.log("No chart height specified, setting it to " + opt.height);
                     opt.chartConfig.chart.height = opt.height;
                 }
-
                 if ((opt.chartConfig.chart.type == 'column') || (opt.chartConfig.chart.type == 'line')) {
                     opt.chartConfig.chart.events = {
                         load: function () {
