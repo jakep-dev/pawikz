@@ -541,7 +541,8 @@
                                     chart: {
                                         marginRight: 80,
                                         spacingTop: subContext.dataset.spacingTop,
-                                        spacingBottom: 8,
+                                        spacingBottom: 0,
+                                        marginBottom: 8,
                                         zoomType: 'x',
                                         type: subContext.dataset.type,
                                         width: chartSetting.context.service.exportOptions.stockChartWidth,
