@@ -129,7 +129,7 @@
                     }
                 }
             }
-
+            chartConfig = JSON.parse(params.infile);
             var filename = params.outfile;
             //console.log(filename);
 
