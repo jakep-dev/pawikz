@@ -47,8 +47,8 @@
                     </div>
                 </div>
             </td>
-            <td style="width: 12%;">
-                <div layout="row" layout-align="end center">
+            <td style="width: 15%;">
+                <div layout="row" layout-align="end center" width="100%;">
 
                     <div ng-if="vm.menuMode === 'Dashboard'" layout="row" layout-align="center center">
                         <div>
@@ -169,12 +169,12 @@
                     </div>
 
                     <div ng-if="vm.menuMode === 'Steps'" layout="row" layout-align="center center">
-                        <div hide-xs hide-sm>
+                        <div hide show-gt-sm>
                             <md-button class="md-icon-button md-primary" aria-label="Previous" ng-disabled="vm.isPrevDisabled" ng-click="vm.previousStep()">
                                 <md-icon md-font-icon="icon-chevron-left" class="icon"></md-icon>
                             </md-button>
                         </div>
-                        <div hide-xs hide-sm>
+                        <div hide show-gt-sm>
                             <md-button class="md-icon-button md-primary" aria-label="Next" ng-disabled="vm.isNextDisabled" ng-click="vm.nextStep()">
                                 <md-icon md-font-icon="icon-chevron-right" class="icon"></md-icon>
                             </md-button>
