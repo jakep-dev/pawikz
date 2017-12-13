@@ -161,6 +161,9 @@
                 if (data.stockChartPeerData && Array.isArray(data.stockChartPeerData)) {
                     n = data.stockChartPeerData.length;
                     if (n > 0) {
+                        data.stockChartPeerData.sort(function (itemA, itemB) {
+                            return (itemA.ticker < itemB.ticker) ? -1 : ((itemA.ticker > itemB.ticker) ? 1 : 0);
+                        });
                         for (i = 0; i < n; i++) {
                             peerDataItem = data.stockChartPeerData[i];
                             if (peerDataItem) {

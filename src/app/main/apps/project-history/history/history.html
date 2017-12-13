@@ -32,19 +32,23 @@
                    dt-options="vm.dtOptions" dt-options="vm.dtOptions">
                 <thead>
                 <tr>
-                    <th>Log Id</th>
-                    <th>Step</th>
-                    <th>Field Name</th>
-                    <th>Old Value</th>
-                    <th>New Value</th>
-                    <th>Work-up Used</th>
-                    <th>Modified By</th>
-                    <th>Modified Date</th>
-                    <th>Action</th>
+                    <th style="display:none"></th>
+                    <th><span>Log Id</span></th>
+                    <th><span>Step</span></th>
+                    <th><span>Field Name</span></th>
+                    <th><span>Old Value</span></th>
+                    <th><span>New Value</span></th>
+                    <th><span>Work-up Used</span></th>
+                    <th><span>Modified By</span></th>
+                    <th><span>Modified Date</span></th>
+                    <th><span>Action</span></th>
+
+
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="history in vm.historyList">
+                    <td style="display:none">{{history.index}}</td>
                     <td>{{history.logId}}</td>
                     <td data-sort="{{history.step_id}}">{{history.stepName}}</td>
                     <td>{{history.fieldName}}</td>

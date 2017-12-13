@@ -28,6 +28,7 @@
         vm.searchCtrlLoad = searchCtrlLoad;
         vm.filterProjectHistory = filterProjectHistory;
         vm.clearProjectHistoryFilter = clearProjectHistoryFilter;
+        vm.clearFieldName = clearFieldName;
 
         defineEventListeners();
 
@@ -45,6 +46,12 @@
             projectHistoryService.getProjectHistoryFilters(vm.projectId, filterType, vm.selectedStep).then(function(data)
             {
                 if(data && data.filter) {
+                    
+                    //sort Field name options
+                    if(filterType === 'FIELD_NAME') {
+                        data.filter = _.sortBy(data.filter, 'value');
+                    }
+
                     _.each(data.filter, function(fil){
                        obj.push({
                          id: fil.value,
@@ -77,8 +84,14 @@
                 vm.selectedModifiedBy = null;
                 vm.selectedModifiedDate = null;
                 vm.selectedAction = null;
+                clearFieldName();
                 commonBusiness.emitMsg('clear-project-history');
             }
+        }
+
+        //clear field name option when step selection change
+        function clearFieldName(){
+            vm.fieldNames = [];
         }
 
         //Define all the event listeners

@@ -29,6 +29,7 @@
             notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
             notificationBusiness.listenToWorkUpStatus(userDetails.userId);
             notificationBusiness.listenToRenewStatus(userDetails.userId);
+            notificationBusiness.listenToDataRefreshStatus(userDetails.userId);
         } else {
             promiseSetupListener = $interval(setupListeners, 1000);
         }
@@ -78,6 +79,7 @@
         vm.flipSelectionOverview = flipSelectionOverview;
         vm.pdfDownload = pdfDownload;
         vm.renew = renew;
+        vm.dataRefresh = dataRefresh;
         vm.projectHistory = projectHistory;
 
         vm.previousStep = previousStep;
@@ -117,6 +119,7 @@
                 notificationBusiness.listenToPDFDownloadStatus(userDetails.userId);
                 notificationBusiness.listenToWorkUpStatus(userDetails.userId);
                 notificationBusiness.listenToRenewStatus(userDetails.userId);
+                notificationBusiness.listenToDataRefreshStatus(userDetails.userId);
                 $interval.cancel(promiseSetupListener);
             } else {
                 console.log('[setupListeners]userId not available.');
@@ -129,7 +132,7 @@
         vm.isNextDisabled = false;
         function stepToggleExpand(){
             vm.isStepExpanded = !vm.isStepExpanded;
-            commonBusiness.emitMsg('step-toogle-expand');
+            commonBusiness.emitMsg('step-toggle-expand');
         }
 
         function listenToStepMessages(){
@@ -207,7 +210,13 @@
         }
 
         function renew(){
+            //Clear all selected news articles for renewal purposed
+            newsBusiness.bookmarkedArticles = [];
             commonBusiness.emitMsg('project-renew');
+        }
+
+        function dataRefresh(){
+            commonBusiness.emitMsg('project-data-refresh');
         }
 
         function projectHistory(){

@@ -1,0 +1,41 @@
+<ms-accordion initial-collapsed="false" is-expandable="false" title="Search Result">
+    <table class="row-border cell-border table-bordered"
+            id="analyst-report-table"
+            width="100%"
+            layout-padding 
+            datatable="ng" 
+            dt-options="vm.dtOptions"
+            dt-instance="vm.dtInstance">
+                <thead>
+                    <tr>
+                        <th><span>Price</span></th>
+                        <th><span>Report Title</span></th>
+                        <th><span>Date</span></th>
+                        <th><span>Contributor</span></th>
+                        <th><span>Author</span></th>
+                        <th><span>Pages</span></th>
+                        <th><span>Language</span></th>
+                    </tr>
+                </thead>
+                <tbody ng-hide="vm.isProcessing">
+                    <tr ng-repeat="report in vm.analystReportsList">
+                        <td data-sort="{{report.priceSort}}">{{(!report.isFree)? '$': ''}}{{report.price}}</td>
+                        <td>
+                            <span>
+                                <a href="#" ng-click="vm.previewReport(report)">
+                                    <i class="fa fa-search s16"></i>
+                                </a>
+                                <a href="#" ng-click="vm.downloadLink(report)">
+                                    {{report.headline}}
+                                </a>
+                            </span>
+                        </td>
+                        <td data-sort="{{report.storyDateSort}}">{{report.storyDate}}</td>
+                        <td>{{report.broker}}</td>
+                        <td>{{report.analyst}}</td>
+                        <td>{{report.pages}}</td>
+                        <td>{{report.language}}</td>
+                    </tr>
+                </tbody>
+    </table>
+</ms-accordion>

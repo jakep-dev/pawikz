@@ -5,7 +5,7 @@
            .directive('msStockChartToolBar', msStockChartToolBarDirective);
 
     /** @ngInject */
-    function msStockChartToolBarController($scope, $mdMenu,
+    function msStockChartToolBarController($scope, $mdMenu, $timeout,
                                            dialog,
                                            commonBusiness, stockChartBusiness, stockService) {
         var vm = this;
@@ -120,6 +120,13 @@
 
         vm.peers = [];
         vm.maxDate = new Date();
+        vm.maxDate.setHours(0);
+        vm.maxDate.setMinutes(0);
+        vm.maxDate.setSeconds(0);
+        vm.maxDate.setMilliseconds(0);
+        vm.maxStartDate = vm.maxDate;
+        vm.maxEndDate = vm.maxDate;
+
         vm.competitorList = new Array();
         vm.competitorMap = new Array();
         vm.selectedCompetitors = [];
@@ -212,76 +219,103 @@
             });
         }
 
+        //Assign internal date components individually to avoid straight assignment dest = src
+        //so that changes to dest in the future won't change src
+        function assignDateValue(src, dest) {
+            if (angular.isDate(dest)) {
+                dest.setFullYear(src.getFullYear());
+                dest.setMonth(src.getMonth());
+                dest.setDate(src.getDate());
+            }
+        }
+
+        //When there is an error with the start or end date, reset both start and end date from vm.filterState
+        //To work around the bug with the md-datepicker control when setting a value outside allowable date range
+        //      1) set the max date to the previous value to force the currently invalid date to be out of range
+        //      2) set date (vm.startDate/vm.endDate) within the new temporary range
+        //      3) allow the ng-model binding to update.
+        //      4) when $timeout function is called the model is updated with the temporary values (vm.startDate/vm.endDate)
+        //      5) set date (vm.startDate/vm.endDate) to the previous value from vm.filterState
+        //      6) set the max date for the md-datepicker
         function resetCustomDate() {
-            vm.prevStartDate = vm.startDate = new Date(vm.filterState.startDate);
-            vm.prevEndDate= vm.endDate = new Date(vm.filterState.endDate);
-            setMinCalendarDate();
-            vm.onFilterStateUpdate();
+            vm.maxStartDate = new Date(vm.filterState.startDate);
+            vm.startDate.setDate(vm.maxStartDate.getDate() - 1);
+            vm.maxEndDate = new Date(vm.filterState.endDate);
+            vm.endDate.setDate(vm.maxEndDate.getDate() - 1);
+            $timeout(function () {
+                vm.startDate = new Date(vm.filterState.startDate);
+                assignDateValue(vm.startDate, vm.prevStartDate);
+                vm.endDate = new Date(vm.filterState.endDate);
+                assignDateValue(vm.endDate, vm.prevEndDate);
+                vm.maxStartDate = vm.maxDate;
+                vm.maxEndDate = vm.maxDate;
+                setMinCalendarDate();
+                vm.onFilterStateUpdate();
+            }, 10);
+        }
+
+        //Since the md-datepicker is inside the menu, we have to delay the hiding of the menu to allow the workaround to run before closing the menu
+        function delayedMenuHide() {
+            $timeout(function () {
+                $mdMenu.hide();
+            }, 500);
         }
 
         function customDateChange() {
             if (!vm.startDate) {
-                vm.startDate = vm.prevStartDate;
+                vm.startDate = new Date(vm.prevStartDate);
             } else {
-                vm.prevStartDate = vm.startDate;
+                //vm.prevStartDate = vm.startDate;
+                assignDateValue(vm.startDate, vm.prevStartDate);
             }
             if (!vm.endDate) {
-                vm.endDate = vm.prevEndDate;
+                vm.endDate = new Date(vm.prevEndDate);
             } else {
-                vm.prevEndDate = vm.endDate;
+                //vm.prevEndDate = vm.endDate;
+                assignDateValue(vm.endDate, vm.prevEndDate);
             }
             if (vm.startDate > vm.endDate) {
                 resetCustomDate();
-                $mdMenu.hide();
+                delayedMenuHide();
                 dialog.alert('Error', "Entered date range is invalid.To date cannot be prior to From date.", null, null, {
                     ok: {
-                        name: 'ok',
-                        callBack: function () {
-                            $mdMenu.hide();
-                        }
+                        name: 'ok'
                     }
                 });
             } else {
                 if (vm.startDate && vm.endDate) {
                     if (isLessThanAbsoluteMinDate(vm.startDate)) {
                         resetCustomDate();
-                        $mdMenu.hide();
+                        delayedMenuHide();
                         dialog.alert('Warning!', "Data exists from 01/01/1996 onward. Please adjust 'From' date.", null, null, {
                             ok: {
-                                name: 'ok',
-                                callBack: function () {
-                                    $mdMenu.hide();
-                                }
+                                name: 'ok'
                             }
                         });
                     } else if (vm.endDate > vm.maxDate) {
                         resetCustomDate();
-                        $mdMenu.hide();
+                        delayedMenuHide();
                         dialog.alert('Warning!', "'To' date cannot be a future date. Please adjust to a current or past date.", null, null, {
                                 ok: {
-                                name: 'ok',
-                                callBack: function () {
-                                    $mdMenu.hide();
+                                    name: 'ok'
                                 }
-                            }
                         });
                     } else {
                         var minDate = new Date(vm.endDate);
                         minDate.setFullYear(vm.endDate.getFullYear() -10);
                         if(vm.startDate < minDate) {
                             resetCustomDate();
-                            $mdMenu.hide();
+                            delayedMenuHide();
                             dialog.alert('Warning!', "Custom date range cannot exceed 10 years. Please adjust the date range.", null, null, {
                                 ok: {
-                                name: 'ok',
-                                    callBack: function () {
-                                        $mdMenu.hide();
-                                    }
+                                    name: 'ok'
                                 }
                             });
                         } else {
-                            vm.filterState.startDate = vm.startDate;
-                            vm.filterState.endDate = vm.endDate;
+                            //vm.filterState.startDate = vm.startDate;
+                            assignDateValue(vm.startDate, vm.filterState.startDate);
+                            //vm.filterState.endDate = vm.endDate;
+                            assignDateValue(vm.endDate, vm.filterState.endDate);
                             vm.filterState.interval = 'CUSTOM';
                             setMinCalendarDate();
                             vm.onFilterStateUpdate();
@@ -304,7 +338,8 @@
                 if (name == 'endDate') {
                     modelValue = moment(vm.endDate);
                     if (!newValue.isValid()) {
-                        inputCtrl.value = modelValue.format(dateFormat);
+                        //inputCtrl.value = modelValue.format(dateFormat);
+                        resetCustomDate();
                     } else if (inputCtrl.value != modelValue.format(dateFormat)) {
                         vm.endDate = newValue.toDate();
                         customDateChange();
@@ -312,7 +347,8 @@
                 } else if (name == 'startDate') {
                     modelValue = moment(vm.startDate);                    
                     if (!newValue.isValid()) {
-                        inputCtrl.value = modelValue.format(dateFormat);
+                        //inputCtrl.value = modelValue.format(dateFormat);
+                        resetCustomDate();
                     } else if (inputCtrl.value != modelValue.format(dateFormat)) {
                         vm.startDate = newValue.toDate();
                         customDateChange();
@@ -341,8 +377,10 @@
         vm.changedDividendsEvents = changedDividendsEvents;
 
         function changedPeriod(periodVal) {
-            vm.filterState.startDate = vm.startDate;
-            vm.filterState.endDate = vm.endDate;
+            //vm.filterState.startDate = vm.startDate;
+            assignDateValue(vm.startDate, vm.filterState.startDate);
+            //vm.filterState.endDate = vm.endDate;
+            assignDateValue(vm.endDate, vm.filterState.endDate);
             vm.filterState.interval = periodVal;
             setStartEndDate(periodVal);
             vm.onFilterStateUpdate();
@@ -383,15 +421,17 @@
                 vm.startDate.setMinutes(0);
                 vm.startDate.setSeconds(0);
                 vm.startDate.setMilliseconds(0);
-                vm.filterState.startDate = vm.startDate;
-                vm.filterState.endDate = vm.endDate;
+                vm.filterState.startDate = new Date(vm.startDate);
+                vm.filterState.endDate = new Date(vm.endDate);
             } else {
-                vm.startDate = vm.filterState.startDate;
-                vm.endDate = vm.filterState.endDate;
+                //vm.startDate = vm.filterState.startDate;
+                vm.startDate = new Date(vm.filterState.startDate);
+                //vm.endDate = vm.filterState.endDate;
+                vm.endDate = new Date(vm.filterState.endDate);
             }
             setMinCalendarDate();
-            vm.prevStartDate = vm.startDate;
-            vm.prevEndDate = vm.endDate;
+            vm.prevStartDate = new Date(vm.startDate);
+            vm.prevEndDate = new Date(vm.endDate);
         }
 
         function isLessThanAbsoluteMinDate(dateValue) {

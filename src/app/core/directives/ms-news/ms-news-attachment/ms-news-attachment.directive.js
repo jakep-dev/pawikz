@@ -79,6 +79,7 @@
                         if (!oldBookmark) {
                             article = buildArticle(response.bookmarks[i], i);
                             vm.bookmarkedItems.push(article);
+                            newsBusiness.bookmarkedArticles = vm.bookmarkedItems;
                         }
                     }
                 }

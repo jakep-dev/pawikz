@@ -50,7 +50,8 @@
                     status: '/api/workup/status',
                     lock: '/api/workup/lock',
                     unlock: '/api/workup/unlock',
-                    delete: '/api/workup/delete'
+                    delete: '/api/workup/delete',
+                    dataRefresh: '/api/workup/refresh'
                 },
                 newsEndPoint: {
                     search: '/api/news/search',
@@ -58,6 +59,11 @@
                     getAttachedArticles: '/api/news/getAttachedArticles',
                     showArticleContent: '/api/news/showArticleContent',
                     deleteAttachedArticles: '/api/news/deleteAttachedArticles'
+                },
+                reportsEndPoint: {
+                    get: '/api/reports/list',                    
+                    getPDFLink: '/api/reports/getPDFLink',
+                    getPreviewReport: '/api/reports/getPreviewReport'
                 },
                 projectHistoryEndPoint: {
                     get: '/api/getProjectHistory',
@@ -106,12 +112,18 @@
                 newsArticle : {
                     bookmarkNewsItem : {
                         title : 'Bookmark News',
-                        content: 'Are you sure you want to include the full text of the checked article(s) in your work-up?'
+                        content: 'Are you sure you want to include the full text of the checked article(s) in your work-up?',
+                        success: 'Selected article(s) attached successfully.',
+                        duplicate: 'One or more of the selected article(s) were already attached. System will ignore those artice(s). Do you want to proceed?'
                     },
                     deleteNewsItem :{
                         title : 'Would you like to delete?',
                         content: 'Selected News Aricles(s) will be deleted. Please Confirm.'
                     } 
+                },
+                analystReports: {
+                    title : 'Purchase Report',
+                    content: 'Do you want to purchase this @price report?'
                 }
             }
         });

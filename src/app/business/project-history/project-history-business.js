@@ -43,7 +43,7 @@
                 .withOption('paging', true)
                 .withOption('filter', true)
                 .withOption('autoWidth', true)
-                .withOption('sorting', [7, 'desc'])
+                .withOption('sorting', [8, 'desc'])
                 .withOption('responsive', true)
                 .withPaginationType('full')
                 .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');

@@ -40,10 +40,18 @@
             if(req.body.step) {
                 args.parameters.step = req.body.step;
             }
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getProjectHistoryFilters]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Get project history details
@@ -73,10 +81,18 @@
 
             logger.debug('Project History Args - ');
             logger.debug(args);
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response) {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getProjectHistory]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Get Dashboard data
@@ -98,11 +114,18 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
-            {
-                res.status(response.statusCode).send(setOverViewDetails(data));
-            });
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(setOverViewDetails(data));
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getOverviewDefer]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Get Dashboard data
@@ -127,13 +150,20 @@
                 workupBusiness.unlock(req.body.prevProjectId, req.body.userId, req.headers['x-session-token']);
             }
 
-
-            client.get(config.restcall.url + '/templateSearch/' + methodName ,args,function(data,response)
-            {
-                workupBusiness.lock(req.body.projectId, req.body.userId, req.headers['x-session-token']);
-                broadcastWorkUpInfo(req.headers['x-session-token'], req.body.userId, req.body.projectId, 'in-process');
-                res.status(response.statusCode).send(setOverViewDetails(data));
-            });
+            var url = config.restcall.url + '/templateSearch/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    workupBusiness.lock(req.body.projectId, req.body.userId, req.headers['x-session-token']);
+                    broadcastWorkUpInfo(req.headers['x-session-token'], req.body.userId, req.body.projectId, 'in-process');
+                    res.status(response.statusCode).send(setOverViewDetails(data));
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getOverview]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Save Overview data
@@ -166,11 +196,18 @@
             };
 
             logger.debug(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' + service.name + '/' + methodName;
+            client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[saveOverview]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function broadcastWorkUpInfo(token, userId, projectId, status)

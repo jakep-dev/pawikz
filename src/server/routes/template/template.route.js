@@ -122,14 +122,20 @@
                             
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.mnemonics;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error saving general mnemonics';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.mnemonics;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[saveGeneral]Error');
+                                logger.error(err);
+                                context.results.error = 'Error saving general mnemonics';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, null);
@@ -210,14 +216,20 @@
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.addedRows;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error adding rows on TableLayout';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.addedRows;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[addTableLayout]Error');
+                                logger.error(err);
+                                context.results.error = 'Error adding rows on TableLayout';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, context.results);
@@ -260,14 +272,20 @@
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.updatedRows;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error updating rows on TableLayout';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.updatedRows;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[updateTableLayout]Error');
+                                logger.error(err);
+                                context.results.error = 'Error updating rows on TableLayout';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, context.results);
@@ -309,14 +327,20 @@
                             },
                             headers: { 'Content-Type': 'application/json' }
                         };
-
-                        client.post(config.restcall.url + '/' + context.service.name + '/' + context.methodName, context.args, function (data, response) {
-                            context.results.data = context.deletedRows;
-                            callback(null, context.results);
-                        }).on('error', function (err) {
-                            context.results.error = 'Error deleting rows on TableLayout';
-                            callback(null, context.results);
-                        }
+                        var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+                        client.post(url, context.args,
+                            function (data, response) {
+                                logger.logIfHttpError(url, context.args, data, response);
+                                context.results.data = context.deletedRows;
+                                callback(null, context.results);
+                            }
+                        ).on('error',
+                            function (err) {
+                                logger.error('[deleteTableLayout]Error');
+                                logger.error(err);
+                                context.results.error = 'Error deleting rows on TableLayout';
+                                callback(null, context.results);
+                            }
                         );
                     } else {
                         callback(null, context.results);
@@ -390,11 +414,18 @@
             };
 
             logger.debug(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(setSchemaVariations(data));
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(setSchemaVariations(data));
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[schema]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Mnemonics for the templates
@@ -425,11 +456,18 @@
             };
 
             logger.debug(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[mnemonics]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Save Mnemoics for the templates
@@ -462,11 +500,18 @@
             };
 
             logger.debug(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[saveMnemonics]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         //Get Dynamic Table Layout details
@@ -500,11 +545,18 @@
             };
 
             logger.debug(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[dynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function saveDynamicTable(req, res, next)
@@ -536,11 +588,18 @@
             };
 
             logger.debug(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[saveDynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function addDynamicTable(req, res, next)
@@ -572,11 +631,18 @@
             };
 
             logger.debug(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[addDynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function deleteDynamicTable(req, res, next)
@@ -608,11 +674,18 @@
             };
 
             logger.debug(args);
-
-            client.post(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.post(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[deleteDynamicTable]Error');
+                    logger.error(err);
+                }
+            );
         }
 
 		function getScrapedHTML(req, res, next)
@@ -644,11 +717,18 @@
             };
 
             logger.debug(args);
-
-            client.get(config.restcall.url + '/' +  service.name  + '/' + methodName, args, function(data,response)
-            {
-                res.status(response.statusCode).send(data);
-            });
+            var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+		    client.get(url, args,
+                function (data, response) {
+                    logger.logIfHttpError(url, args, data, response);
+                    res.status(response.statusCode).send(data);
+                }
+            ).on('error',
+                function (err) {
+                    logger.error('[getScrapedHTML]Error');
+                    logger.error(err);
+                }
+            );
         }
 
         function getServiceDetails(serviceName) {

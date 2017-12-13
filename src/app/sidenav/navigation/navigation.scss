@@ -94,6 +94,14 @@ $navigationFoldedWidth: 64px;
                     transition: opacity 0s ease-in-out 0s;
                 }
 
+                .ms-nav-label-collapse{
+                    padding-left: 2em;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    transition: opacity 0s ease-in-out 0s;
+                }
+
                 .arrow {
                     position: absolute;
                     top: 16px;
@@ -332,6 +340,17 @@ $navigationFoldedWidth: 64px;
                                         opacity: 0;
                                         visibility: hidden;
                                     }
+
+                                    > .ms-nav-label-collapse{
+                                        width: $navigationFoldedWidth;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        padding-left: 0px;
+                                        padding-right: 16px;
+                                        text-overflow: clip;
+                                        display: inline-block;
+                                    }
+
                                 }
                             }
                         }

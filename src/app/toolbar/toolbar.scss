@@ -7,7 +7,6 @@ $toolbarHeight: 64px;
     max-height: $toolbarHeight;
     z-index: 55;
 
-
     #navigation-toggle {
         width: $toolbarHeight;
         height: $toolbarHeight;
@@ -206,3 +205,58 @@ $toolbarHeight: 64px;
     text-decoration: underline;
     cursor: default;
 }
+
+table.mainToolbarCellAlignment{
+    table-layout: fixed;
+    width: 100%;
+    white-space: nowrap;
+    -webkit-border-horizontal-spacing: 0px;
+    -webkit-border-vertical-spacing: 0px;
+
+    tr {
+        td.mainToolbarNavigation {
+            width: $toolbarHeight;
+            padding: 0px;
+        }
+
+        td {
+            div.mainToolbarMenuName {
+                display: -webkit-flex;
+                display: -moz-flex;
+                display: flex;
+
+                div {
+                    white-space: nowrap; 
+                    text-overflow: ellipsis; 
+                    overflow:hidden;
+                }
+            }
+
+            div.mainToolbarWorkupName {
+                display: -webkit-flex;
+                display: -moz-flex;
+                display: flex;
+
+                div {
+                    display: -webkit-flex;
+                    display: -moz-flex;
+                    display: flex;
+                    width: 100%;
+
+                    div {
+                        max-width: 100%;
+
+                        span {
+                            white-space: nowrap; 
+                            text-overflow: ellipsis; 
+                            overflow:hidden;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+

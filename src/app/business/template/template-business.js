@@ -440,14 +440,14 @@
 
             newScope.itemid = itemId;
             newScope.mnemonicid = mnemonicId;
-
+            newScope.iseditable = !scope.isnoneditable;
             newScope.tearsheet = {
                 header: header,
                 columns: columns,
                 footer: footer
             };
 
-            comp.html = '<ms-tablelayout-r-p itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r-p>';
+            comp.html = '<ms-tablelayout-r-p itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" iseditable="' + newScope.iseditable + '" isfulloption="false"></ms-tablelayout-r-p>';
             comp.scope = newScope;
 
             return comp;
@@ -783,14 +783,14 @@
             newScope.itemid = itemId;
             newScope.mnemonicid = mnemonicId;
             newScope.prompt = prompt;
-            newScope.value = _.escape(value);
+            newScope.value = value;
             newScope.isdisabled = false;
             newScope.answer = answer;
 
 
             comp.html = '<ms-rich-text-editor itemid="' + newScope.itemid + '" ' +
                 'mnemonicid="' + newScope.mnemonicid + '" prompt="' + newScope.prompt + '" ' +
-                'value="' + newScope.value + '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
+                '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
             comp.scope = newScope;
 
             return comp;
@@ -806,13 +806,11 @@
                     scope: null
                 };
 
-            if (mnemonicid !== 'SEC_PARSE') {
                 newScope.mnemonicid = mnemonicid;
                 newScope.itemid = itemid;
 
                 comp.html = '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>';
                 comp.scope = newScope;
-            }
 
             return comp;
         }
@@ -1351,7 +1349,7 @@
                 angular.forEach(business.mnemonics, function(eachrow) {
                     if (eachrow.itemId === itemId && eachrow.dataSubtype) {
                         angular.forEach(eachrow.dataSubtype.split(','), function(eachColumn) {
-                            var mnemonic = eachColumn.split(' ');
+                            var mnemonic = eachColumn.trim().split(' ');
                             if (mnemonic.length > 0) {
                                 subMnemonics.push({
                                     mnemonic: mnemonic[0] || '',
