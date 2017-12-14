@@ -239,7 +239,25 @@
                     el.find('#textEditorContent').append($compile(html)($scope));
                     el.find('#textEditor').froalaEditor($scope.froalaOptions);
                     el.find('#textEditor').froalaEditor('html.set', $scope.value);
+                    el.find('#textEditor').froalaEditor()
+                    .on('froalaEditor.image.beforeUpload', function (e, editor, files) {
+                        if (files.length) {
+                        // Create a File Reader.
+                        var reader = new FileReader();
+                    
+                        // Set the reader to insert images when they are loaded.
+                        reader.onload = function (e) {
+                            var result = e.target.result;
+                            editor.image.insert(result, null, null, editor.image.get());
+                        };
+                        
+                        // Read image as base64.
+                        reader.readAsDataURL(files[0]);
+                        }
 
+                        // Stop default upload chain.
+                        return false;
+                        })
                     //free up memory on client side
                     $scope.value = '';
 
