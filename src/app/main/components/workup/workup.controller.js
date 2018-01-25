@@ -9,7 +9,8 @@
 
 /** @ngInject */
 function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrumbBusiness,
-                          workupBusiness, templateBusiness, commonBusiness, dialog, store, clientConfig, $mdToast)
+                          workupBusiness, templateBusiness, notificationBusiness,
+                          commonBusiness, dialog, store, clientConfig, $mdToast)
 {
     var vm = this;
 
@@ -21,6 +22,8 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
 
     workupBusiness.initialize($stateParams.token);
 
+
+    notificationBusiness.listenToSocket($stateParams.token, $stateParams.userId);
 
     clientConfig.socketInfo.socket.emit('init-socket', {
         token: $stateParams.token,
