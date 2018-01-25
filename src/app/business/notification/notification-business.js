@@ -7,7 +7,7 @@
 
     /* @ngInject */
     function notificationBusiness(toast, dialog,
-                                  $rootScope, $mdToast,
+                                  $rootScope, $mdToast, $interval,
                                   clientConfig, commonBusiness) {
         var business = {
             notifications: [],
