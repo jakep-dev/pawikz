@@ -19,7 +19,8 @@
             setDashboardCallback: setDashboardCallback,
             notifyNotificationCenter: notifyNotificationCenter,
             listenToRenewStatus: listenToRenewStatus,
-            listenToDataRefreshStatus: listenToDataRefreshStatus
+            listenToDataRefreshStatus: listenToDataRefreshStatus,
+            listenToSocket: listenToSocket
         };
 
         return business;
@@ -28,6 +29,38 @@
         function setDashboardCallback(obj) {
             dashboardCallback = obj;
         }
+
+        function listenToSocket (token, userId) {
+            let socketInterval = $interval(function () {
+                if(clientConfig.socketInfo.socket.disconnected)
+                {
+                    clientConfig.socketInfo.socket.connect();
+                }
+
+                if(token && userId) {
+                    clientConfig.socketInfo.socket.emit('init-socket',{
+                        token: token,
+                        userId: userId
+                    }, function(data) {
+                        
+                    });
+                }
+                if(isAllNotificationCompleted()) {
+                    $interval.cancel(socketInterval);
+                }
+                
+            }, 5000, token, userId);
+        }
+
+        function isAllNotificationCompleted() {
+           var inProcess = _.filter(business.notifications, function(not) {
+                if(not.status === 'in-process') {
+                    return not;
+                }
+            });
+            return !inProcess || (inProcess && inProcess.length === 0);
+        }
+
 
         function notifyNotificationCenter(notification, message) {
             commonBusiness.emitWithArgument(message, notification);
