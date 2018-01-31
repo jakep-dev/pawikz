@@ -25,6 +25,7 @@
 
         //Create new workup
         function create(req, res, next) {
+            logger.debug('Inside Create Workup')
             var context = new Object();
             context.service = getServiceDetails('templateManager');
             context.methodName = '';
