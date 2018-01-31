@@ -52,7 +52,7 @@
                     $interval.cancel(socketInterval);
                 }
                 
-            }, 5000, token, userId);
+            }, 10000, token, userId);
         }
 
         function isAllNotificationCompleted() {

@@ -47,6 +47,10 @@
 
             context.token = req.headers['x-session-token'];
             var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+
+            logger.debug('create work up context ', context);
+            logger.debug('url - ', url);
+
             client.get(url, context.args,
                 function (data, response) {
                     logger.logIfHttpError(url, context.args, data, response);
@@ -225,6 +229,7 @@
         //Get the create workup status
         function status(projectId, project_name, token, next)
         {
+            logger.debug('Inside Workup Status');
             var context = new Object();
             context.service = getServiceDetails('templateManager');
             context.methodName = '';
@@ -243,6 +248,7 @@
                 }
             };
             var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+            logger.debug('Workup Status Url ', url);
             client.get(url, context.args,
                 function (data, response) {
                     logger.logIfHttpError(url, context.args, data, response);
@@ -250,7 +256,6 @@
                     logger.debug(data);
                     logger.debug(projectId);
                     if(data && data.templateStatus) {
-
                         context.compData = {
                             projectId: projectId,
                             project_name: project_name,
