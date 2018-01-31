@@ -68,7 +68,7 @@
             useCertificate: false
         },
         log: {
-            logLevel: 'warn',
+            logLevel: 'debug',
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
