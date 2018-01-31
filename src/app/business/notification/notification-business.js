@@ -37,6 +37,8 @@
                     clientConfig.socketInfo.socket.connect();
                 }
 
+                console.log('ListenToSocket token - ', token, ' - ', userId);
+
                 if(token && userId) {
                     clientConfig.socketInfo.socket.emit('init-socket',{
                         token: token,
@@ -46,6 +48,7 @@
                     });
                 }
                 if(isAllNotificationCompleted()) {
+                    console.log('Inside isAllNotificationCompleted')
                     $interval.cancel(socketInterval);
                 }
                 
@@ -156,6 +159,8 @@
 
         function listenToWorkUpStatus(userId) {
             clientConfig.socketInfo.socket.on('create-workup-status', function (response) {
+                console.log('create-workup-status ', response);
+
                 if (response) {
 
                     var notification = _.find(business.notifications, function (not) {
