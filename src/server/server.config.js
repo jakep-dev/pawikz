@@ -31,7 +31,7 @@
         webService: {
             protocol: 'https',
             url: 'wsint.advisen.com',
-            port: 443,
+            port: '',
             service: 'advwebservice'
         },
         client: {
@@ -56,7 +56,7 @@
         webService: {
             protocol: 'https',
             url: 'ws.advisen.com',
-            port: 443,
+            port: '',
             service: 'advwebservice'
         },
         client: {
