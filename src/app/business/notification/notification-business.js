@@ -70,9 +70,9 @@
                 workupService.checkStatus(notification.projectId)
                              .then(function(data){
                                     console.log('CheckStatus Response ', notification);
-                                    if(parseInt(data.progress) !== parseInt(notification.progress)) {
+                                    if(parseInt(data.templateStatus.percentage) !== parseInt(notification.progress)) {
                                         console.log('Inside');
-                                        notification.progress = parseInt(data.progress);
+                                        notification.progress = parseInt(data.templateStatus.percentage);
                                     }
 
                                     console.log('Notification ', notification);
@@ -81,9 +81,9 @@
                                         dialog.close();
                                         notification.status = 'complete';
                                         notification.disabled = false;
-                                        notification.url = response.projectId;
+                                        notification.url = notification.projectId;
                                         $rootScope.toastTitle = 'WorkUp Creation Completed!';
-                                        $rootScope.toastProjectId = response.projectId;
+                                        $rootScope.toastProjectId = notification.projectId;
                                         $mdToast.show({
                                             hideDelay: 8000,
                                             position: 'bottom right',
@@ -91,8 +91,7 @@
                                             templateUrl: 'app/main/components/workup/toast/workup.toast.html'
                                         });
                                     }
-                                    commonBusiness.emitMsg('update-notification-binding');
-                             });
+                });
            }
         }
 

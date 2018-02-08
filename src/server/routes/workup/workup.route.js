@@ -47,6 +47,9 @@
             var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
 
             client.get(url, context.args, function (data, response) {
+                logger.debug('Reponse of CheckSTatus');
+                logger.debug(data);
+                
                 res.status(response.statusCode).send(data);
             })
             .on('error',
