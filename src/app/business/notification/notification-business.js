@@ -8,7 +8,7 @@
     /* @ngInject */
     function notificationBusiness(toast, dialog,
                                   $rootScope, $mdToast, $interval,
-                                  clientConfig, commonBusiness) {
+                                  clientConfig, commonBusiness, workupService) {
         var business = {
             notifications: [],
             initializeMessages: initializeMessages,
@@ -47,12 +47,33 @@
                         
                     });
                 }
+
+                checkForNotificationStatusFor15();
+
                 if(isAllNotificationCompleted()) {
                     console.log('Inside isAllNotificationCompleted')
                     $interval.cancel(socketInterval);
                 }
                 
             }, 10000, token, userId);
+        }
+
+        function checkForNotificationStatusFor15() {
+            console.log('Check for status');
+           var inProcess15 = _.find(business.notifications, function(not) {
+                if (not.status === 'in-process' && not.progress === 15){
+                    return not;
+                }
+            });
+
+            console.log('InProcess15 - ', inProcess15);
+        
+           if (inProcess15) {
+                workupService.checkStatus(inProcess15.projectId)
+                             .then(function(data){
+                                console.log('InProcess15 Response - ', data);
+                             });
+           }
         }
 
         function isAllNotificationCompleted() {

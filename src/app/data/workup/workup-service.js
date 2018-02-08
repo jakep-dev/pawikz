@@ -17,10 +17,31 @@
             unlock: unlock,
             delete: deleteWorkup,
             gethtml: getHtml,
-            dataRefresh: dataRefresh
+            dataRefresh: dataRefresh,
+            checkStatus: checkStatus,
         };
 
         return service;
+
+        // Check the workup status
+        function checkStatus(projectId) {
+            var input = {
+                projectId: projectId
+            };
+
+            return $http({
+                url : clientConfig.endpoints.workUpEndPoint.checkStatus,
+                method : "POST",
+                data : input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).then(function(data, status, headers, config) {
+                    return data;
+                })
+                .catch(function(error) {
+
+            });
+        }
 
         function getHtml(fileName){
             return $http({

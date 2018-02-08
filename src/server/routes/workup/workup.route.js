@@ -20,8 +20,41 @@
             app.post('/api/workup/status', status),
             app.post('/api/workup/unlock', unlock),
             app.post('/api/workup/delete', removeRequest),
-            app.post('/api/workup/refresh', dataRefresh)
+            app.post('/api/workup/refresh', dataRefresh),
+            app.post('/api/workup/checkStatus', checkStatus),
         ]);
+
+        // Checks the status of projectId.
+        function checkStatus(req, res, next) {
+            logger.debug('Inside Check Status of Workup');
+            var context = new Object();
+            context.service = getServiceDetails('templateManager');
+            context.methodName = '';
+
+            if(!_.isUndefined(context.service) &&
+                !_.isNull(context.service))
+            {
+                context.methodName = context.service.methods.createWorkUpStatus;
+            }
+
+            context.args =
+            {
+                parameters: {
+                    project_id: req.body.projectId,
+                    ssnid: req.headers['x-session-token']
+                }
+            };
+            var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
+
+            client.get(url, context.args, function (data, response) {
+                res.status(response.statusCode).send(data);
+            })
+            .on('error',
+            function (err) {
+                logger.error('[checkStatus]Error');
+                logger.error(err);
+            });
+        }
 
         //Create new workup
         function create(req, res, next) {
