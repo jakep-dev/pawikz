@@ -60,6 +60,7 @@
         {
             workupService.create(userId, companyId, templateId).then(function(response)
             {
+                console.log('Creating workup - ', response);
                 if(response) {
                     notificationBusiness.notifyNotificationCenter({
                         id: response.projectId,
