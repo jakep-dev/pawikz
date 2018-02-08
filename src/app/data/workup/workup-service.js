@@ -36,7 +36,7 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).then(function(data, status, headers, config) {
-                    return data;
+                    return data.data;
                 })
                 .catch(function(error) {
 

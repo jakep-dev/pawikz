@@ -60,18 +60,38 @@
 
         function checkForNotificationStatusFor15() {
             console.log('Check for status');
-           var inProcess15 = _.find(business.notifications, function(not) {
-                if (not.status === 'in-process' && not.type === 'Create-WorkUp'){
+           var notification = _.find(business.notifications, function(not) {
+                if (not.status === 'in-process' && not.type === 'Create-WorkUp' && not.progress === 15){
                     return not;
                 }
             });
-
-            console.log('InProcess15 - ', inProcess15);
         
-           if (inProcess15) {
-                workupService.checkStatus(inProcess15.projectId)
+           if (notification) {
+                workupService.checkStatus(notification.projectId)
                              .then(function(data){
-                                console.log('InProcess15 Response - ', data);
+                                    console.log('CheckStatus Response ', notification);
+                                    if(parseInt(data.progress) !== parseInt(notification.progress)) {
+                                        console.log('Inside');
+                                        notification.progress = parseInt(data.progress);
+                                    }
+
+                                    console.log('Notification ', notification);
+
+                                    if (notification.progress === 100) {
+                                        dialog.close();
+                                        notification.status = 'complete';
+                                        notification.disabled = false;
+                                        notification.url = response.projectId;
+                                        $rootScope.toastTitle = 'WorkUp Creation Completed!';
+                                        $rootScope.toastProjectId = response.projectId;
+                                        $mdToast.show({
+                                            hideDelay: 8000,
+                                            position: 'bottom right',
+                                            controller: 'WorkUpToastController',
+                                            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+                                        });
+                                    }
+                                    commonBusiness.emitMsg('update-notification-binding');
                              });
            }
         }
