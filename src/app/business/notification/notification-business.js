@@ -69,13 +69,14 @@
            if (notification) {
                 workupService.checkStatus(notification.projectId)
                              .then(function(data){
-                                    console.log('CheckStatus Response ', notification);
+                                    console.log('CheckStatus Response ', data);
+                                    console.log('Notification ', notification);
                                     if(parseInt(data.templateStatus.percentage) !== parseInt(notification.progress)) {
                                         console.log('Inside');
                                         notification.progress = parseInt(data.templateStatus.percentage);
                                     }
 
-                                    console.log('Notification ', notification);
+                                    console.log('After Set Notification ', notification);
 
                                     if (notification.progress === 100) {
                                         dialog.close();

@@ -36,9 +36,9 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).then(function(data, status, headers, config) {
-                    console.log('Check STatus Data - ')
-                    console.log(data);
-                    return data;
+                    console.log('Workup status');
+                    console.log(data.data);
+                    return data.data;
                 })
                 .catch(function(error) {
 
