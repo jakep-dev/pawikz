@@ -48,9 +48,9 @@
 
             client.get(url, context.args, function (data, response) {
                 logger.debug('Reponse of CheckSTatus');
-                logger.debug(data);
+                logger.debug(data.data.templateStatus);
                 
-                res.status(response.statusCode).send(data);
+                res.send(data);
             })
             .on('error',
             function (err) {
