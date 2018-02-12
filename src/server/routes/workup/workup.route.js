@@ -44,6 +44,8 @@
                     ssnid: req.headers['x-session-token']
                 }
             };
+            logger.debug('Parameters for CheckStatus');
+            logger.debug(context.args.parameters);
             var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
 
             client.get(url, context.args, function (data, response) {
