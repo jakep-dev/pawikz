@@ -67,7 +67,7 @@
             });
         
            if (notification) {
-                workupService.checkStatus(notification.projectId)
+                workupService.checkStatus(notification.id)
                              .then(function(data){
                                     console.log('CheckStatus Response ', data);
                                     console.log('Notification ', notification);
