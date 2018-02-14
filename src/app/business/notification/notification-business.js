@@ -61,7 +61,7 @@
         function checkForNotificationStatusFor15() {
             console.log('Check for status');
            var notification = _.find(business.notifications, function(not) {
-                if (not.status === 'in-process' && not.type === 'Create-WorkUp' && not.progress === 15){
+                if (not.status === 'in-process' && not.type === 'Create-WorkUp'){
                     return not;
                 }
             });
