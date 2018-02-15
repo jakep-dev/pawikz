@@ -22,7 +22,7 @@
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
-
+        
         if(userDetails)
         {
             vm.userName = userDetails.fullName;

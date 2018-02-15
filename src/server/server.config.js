@@ -31,7 +31,7 @@
         webService: {
             protocol: 'https',
             url: 'wsint.advisen.com',
-            port: 443,
+            port: '',
             service: 'advwebservice'
         },
         client: {
@@ -56,7 +56,7 @@
         webService: {
             protocol: 'https',
             url: 'ws.advisen.com',
-            port: 443,
+            port: '',
             service: 'advwebservice'
         },
         client: {
@@ -68,7 +68,7 @@
             useCertificate: false
         },
         log: {
-            logLevel: 'warn',
+            logLevel: 'debug',
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',

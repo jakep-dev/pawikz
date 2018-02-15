@@ -104,6 +104,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     });
 
     commonBusiness.onMsg('notify-create-workup-notification-center', $scope, function(ev, data) {
+        console.log('notify-create-workup-notification-center');
         notificationBusiness.pushNotification(data);
     });
 
