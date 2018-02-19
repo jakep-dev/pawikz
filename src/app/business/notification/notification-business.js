@@ -7,8 +7,8 @@
 
     /* @ngInject */
     function notificationBusiness(toast, dialog,
-                                  $rootScope, $mdToast,
-                                  clientConfig, commonBusiness) {
+                                  $rootScope, $mdToast, $interval,
+                                  clientConfig, commonBusiness, workupService) {
         var business = {
             notifications: [],
             initializeMessages: initializeMessages,
@@ -19,7 +19,8 @@
             setDashboardCallback: setDashboardCallback,
             notifyNotificationCenter: notifyNotificationCenter,
             listenToRenewStatus: listenToRenewStatus,
-            listenToDataRefreshStatus: listenToDataRefreshStatus
+            listenToDataRefreshStatus: listenToDataRefreshStatus,
+            listenToSocket: listenToSocket
         };
 
         return business;
@@ -28,6 +29,82 @@
         function setDashboardCallback(obj) {
             dashboardCallback = obj;
         }
+
+        function listenToSocket (token, userId) {
+            let socketInterval = $interval(function () {
+                if(clientConfig.socketInfo.socket.disconnected)
+                {
+                    clientConfig.socketInfo.socket.connect();
+                }
+
+                console.log('ListenToSocket token - ', token, ' - ', userId);
+
+                if(token && userId) {
+                    clientConfig.socketInfo.socket.emit('init-socket',{
+                        token: token,
+                        userId: userId
+                    }, function(data) {
+                        
+                    });
+                }
+
+                checkForNotificationStatusFor15();
+
+                if(isAllNotificationCompleted()) {
+                    console.log('Inside isAllNotificationCompleted')
+                    $interval.cancel(socketInterval);
+                }
+                
+            }, 10000, token, userId);
+        }
+
+        function checkForNotificationStatusFor15() {
+            console.log('Check for status');
+           var notification = _.find(business.notifications, function(not) {
+                if (not.status === 'in-process' && not.type === 'Create-WorkUp'){
+                    return not;
+                }
+            });
+        
+           if (notification) {
+                workupService.checkStatus(notification.id)
+                             .then(function(data){
+                                    console.log('CheckStatus Response ', data);
+                                    console.log('Notification ', notification);
+                                    if(parseInt(data.templateStatus.percentage) !== parseInt(notification.progress)) {
+                                        console.log('Inside');
+                                        notification.progress = parseInt(data.templateStatus.percentage);
+                                    }
+
+                                    console.log('After Set Notification ', notification);
+
+                                    if (notification.progress === 100) {
+                                        dialog.close();
+                                        notification.status = 'complete';
+                                        notification.disabled = false;
+                                        notification.url = notification.projectId;
+                                        $rootScope.toastTitle = 'WorkUp Creation Completed!';
+                                        $rootScope.toastProjectId = notification.projectId;
+                                        $mdToast.show({
+                                            hideDelay: 8000,
+                                            position: 'bottom right',
+                                            controller: 'WorkUpToastController',
+                                            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+                                        });
+                                    }
+                });
+           }
+        }
+
+        function isAllNotificationCompleted() {
+           var inProcess = _.filter(business.notifications, function(not) {
+                if(not.status === 'in-process') {
+                    return not;
+                }
+            });
+            return !inProcess || (inProcess && inProcess.length === 0);
+        }
+
 
         function notifyNotificationCenter(notification, message) {
             commonBusiness.emitWithArgument(message, notification);
@@ -123,6 +200,8 @@
 
         function listenToWorkUpStatus(userId) {
             clientConfig.socketInfo.socket.on('create-workup-status', function (response) {
+                console.log('create-workup-status ', response);
+
                 if (response) {
 
                     var notification = _.find(business.notifications, function (not) {

@@ -35,10 +35,8 @@
             logger.debug('Init socket');
             socket.on('init-socket', function(data, callback)
             {
-                logger.debug('Token - ' + data.token);
                 if(data.token in config.userSocketInfo)
-                {
-                    logger.debug('Already In');
+                { 
                     callback(false);
                 }
                 else {

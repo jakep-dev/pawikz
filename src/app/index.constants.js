@@ -51,7 +51,8 @@
                     lock: '/api/workup/lock',
                     unlock: '/api/workup/unlock',
                     delete: '/api/workup/delete',
-                    dataRefresh: '/api/workup/refresh'
+                    dataRefresh: '/api/workup/refresh',
+                    checkStatus: '/api/workup/checkStatus'
                 },
                 newsEndPoint: {
                     search: '/api/news/search',
