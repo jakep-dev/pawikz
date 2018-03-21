@@ -18,9 +18,11 @@
     var socket = require('./socket/socket');
     var newsRoute = require('./news/news.route');
     var reportsRoute = require('./reports/reports.route');
+    var redist = require('./redis/redist');
 
     routes.init = function (app, server, config, logger)
     {
+        redist.init(config, logger);
         workupBusiness.init(config, logger);
         socket.init(server, config, workupBusiness, logger);
         dashboardRoute.init(app, config, logger);

@@ -15,8 +15,7 @@
 			if ($location.port != 80) {
 				socketCORSPath += ':' + $location.port();
 			}
-            console.log('socketCORSPath');
-            console.log(socketCORSPath);
+            console.log('socketCORSPath = ' + socketCORSPath);
 			clientConfig.socketInfo.socket = io.connect(socketCORSPath);
 		}
 
@@ -49,8 +48,6 @@
             var userInfo = store.get('user-info');
             logger.log(token, 'info');
 
-
-
             if(token)
             {
                 var userId = '';
@@ -69,19 +66,21 @@
                 var type = commonBusiness.socketType(toState);
                 $document[0].title = 'insite20twenty';
                 Idle.watch();
-                clientConfig.socketInfo.socket.emit('init-socket',{
+                clientConfig.socketInfo.context = {
                     token: token,
                     userId: userId
-                }, function(data) {
-                    if(data)
-                    {
-                        logger.log('Socket created for specific user', 'debug');
+                };
+                clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context, 
+                    function(data) {
+                        if(data)
+                        {
+                            logger.log('Socket created for specific user', 'debug');
+                        }
+                        else {
+                            logger.log('Socket already created for specific user', 'debug');
+                        }
                     }
-                    else {
-
-                        logger.log('Socket already created for specific user', 'debug');
-                    }
-                });
+                );
             }
 
             commonBusiness.resetBottomSheet();

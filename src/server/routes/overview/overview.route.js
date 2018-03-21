@@ -1,8 +1,8 @@
 
 (function(overviewRoute)
 {
-
     var _ = require('underscore');
+    var redis = require('../redis/redist');
     var workupBusiness;
     var logger;
 
@@ -212,63 +212,63 @@
 
         function broadcastWorkUpInfo(token, userId, projectId, status)
         {
-            logger.debug('NotifyWorkUpUse - ' + userId);
+            redis.getValue(redis.SESSION_PREFIX + token, 
+                function(userContext) {
+                    logger.debug('NotifyWorkUpUse - ' + userId);
+                    if(userContext) {
+                        //Release all workup been lock before. 
+                        var workup = _.find(userContext.workups, function(item)
+                        {
+                            if(parseInt(item.userId) === parseInt(userId) &&
+                                item.status === 'in-process')
+                            {
+                                return item;
+                            }
+                        });
 
-            if((token in config.userSocketInfo) &&
-                config.socketIO.socket)
-            {
-                
-                //Release all workup been lock before. 
-                var workup = _.find(config.socketData.workup, function(item)
-                {
-                    if(parseInt(item.userId) === parseInt(userId) &&
-                        item.status === 'in-process')
-                    {
-                        return item;
+                        logger.debug('WorkUps');
+                        logger.debug(workup);
+
+                        if(workup)
+                        {
+                            workup.status = 'complete';
+                        }
+
+                        logger.debug('After Delete');
+                        logger.debug(userContext.workups);
+                        
+                        workup = _.find(userContext.workups, function(item)
+                        {
+                            if(parseInt(item.projectId) === parseInt(projectId))
+                            {
+                                return item;
+                            }
+                        });
+
+                        if(workup)
+                        {
+                            workup.status = status;
+                            workup.userId = userId.toString();
+                        }
+                        else {
+                            //Adding data into the socketData for future user.
+                            userContext.workups.push({
+                                projectId: projectId,
+                                status: status,
+                                userId: userId.toString()
+                            });
+                        }
+                        redis.setValue(redis.SESSION_PREFIX + token, { userId:userId, workups: userContext.workups});
+                        logger.debug('Workup broadcast-');
+                        logger.debug(userContext.workups);
+
+                        config.socketIO.socket.sockets.in(token).emit('workup-room-message', {
+                            type: 'workup-info',
+                            data: userContext.workups
+                        });
                     }
-                });
-
-                logger.debug('WorkuPs');
-                logger.debug(workup);
-
-                if(workup)
-                {
-                    workup.status = 'complete';
                 }
-
-                logger.debug('After Delete');
-                logger.debug(config.socketData.workup);
-                
-                workup = _.find(config.socketData.workup, function(item)
-                {
-                    if(parseInt(item.projectId) === parseInt(projectId))
-                    {
-                        return item;
-                    }
-                });
-
-                if(workup)
-                {
-                    workup.status = status;
-                    workup.userId = userId.toString();
-                }
-                else {
-                    //Adding data into the socketData for future user.
-                    config.socketData.workup.push({
-                        projectId: projectId,
-                        status: status,
-                        userId: userId.toString()
-                    });
-                }
-
-                logger.debug('Workup broadcast-');
-                logger.debug(config.socketData.workup);
-
-                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
-                    type: 'workup-info',
-                    data: config.socketData.workup
-                });
-            }
+            );
         }
 
         function getServiceDetails(serviceName) {

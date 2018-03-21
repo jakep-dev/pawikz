@@ -46,29 +46,28 @@
                     {
                         clientConfig.socketInfo.socket.connect();
                     }
-
-                    clientConfig.socketInfo.socket.emit('init-socket', {
+                    clientConfig.socketInfo.context = {
                         token: response.userinfo.token,
                         userId: userId
-                    }, function(data)
-                    {
-                        if(data)
-                        {
-                            authBusiness.userInfo = response.userinfo;
-                            authBusiness.userName = response.userinfo.fullName;
-                            commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
+                    };
+                    clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
+                        function(data) {
+                            if(data) {
+                                authBusiness.userInfo = response.userinfo;
+                                authBusiness.userName = response.userinfo.fullName;
+                                commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
 
-                            store.set('user-info', authBusiness.userInfo);
-                            store.set('x-session-token', token);
-                            var url = ('/dashboard/').concat(userId);
-                            $location.url(url);
-                            toast.simpleToast('Successfully logged in!');
+                                store.set('user-info', authBusiness.userInfo);
+                                store.set('x-session-token', token);
+                                var url = ('/dashboard/').concat(userId);
+                                $location.url(url);
+                                toast.simpleToast('Successfully logged in!');
+                            } else {
+                                toast.simpleToast('Cannot open multiple sessions!');
+                                //dialog.status('app/main/pages/auth/login/dialog/login.dialog.html', false, false);
+                            }
                         }
-                        else {
-                            toast.simpleToast('Cannot open multiple sessions!');
-                            //dialog.status('app/main/pages/auth/login/dialog/login.dialog.html', false, false);
-                        }
-                    });
+                    );
                 }
             });
         }

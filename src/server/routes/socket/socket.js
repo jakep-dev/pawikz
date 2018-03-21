@@ -4,17 +4,22 @@
     var _ = require('underscore');
     var workupBusiness;
     var logger;
+    var redis = require('../redis/redist');
+    var redisClient;
 
     socket.init = function(server, config, workupBiz, log)
     {
+        redisClient = redis.getRedisClient();
         workupBusiness = workupBiz;
         logger = log;
 
         //Configure the websocket
         var io = require('socket.io').listen(server);
         io.set('origins', config.socketIO.host);
-        io.set('transports', config.client.transports);
-//        io.set('log level', config.client.logLevel);
+        //io.set('transports', config.client.transports);
+        //io.set('log level', config.client.logLevel);
+        redis.setSocketIO(io);
+        //io.adapter(redis.getRedisAdapter());
 
         config.socketIO.socket = io;
 
@@ -23,7 +28,6 @@
            checkWorkUpInfo(socket);
            disConnectionSocket(socket);
         });
-
 
         /*Initialize the socket.
         *Each user will have a specific socket based on token
@@ -35,18 +39,20 @@
             logger.debug('Init socket');
             socket.on('init-socket', function(data, callback)
             {
-                if(data.token in config.userSocketInfo)
-                { 
-                    callback(false);
-                }
-                else {
-                    callback(true);
-                    socket.nickname = data.token;
-                    socket.userid = data.userId;
-                    socket.join('workup-room');
-                    config.userSocketInfo[socket.nickname] = socket;
-                    logger.debug('Adding to userSocketInfo');
-                }
+                //join individual room between user and all the servers in the cluster
+                socket.join(data.token);
+                redis.getKeyCount(redis.SESSION_PREFIX + data.token, 
+                    function(keys) {
+                        logger.debug('[initializeSocket] init-socket:' + keys.length);
+                        if(keys.length == 0) {
+                            redis.setValue(redis.SESSION_PREFIX + data.token, { userId: data.userId, workups: []});
+                            logger.debug('Adding to redis[' + data.token + ',' + data.userId + ']');
+                            callback(true);
+                        } else {
+                            callback(false);
+                        }
+                    }
+                );
             });
         }
 
@@ -54,17 +60,20 @@
         ///Leave the room as well.
         function disConnectionSocket(socket)
         {
-            socket.on('disconnect', function(data)
-            {
-                logger.debug('Disconnected Socket');
-                if(!socket.nickname)
-                    return;
+            socket.on('disconnect', 
+                function(data) {
+                    logger.debug('Disconnected Socket');
+                }
+            );
 
-                releaseWorkUp(socket.userid, socket.nickname);
-                socket.leave('workup-room');
-                delete config.userSocketInfo[socket.nickname];
-                logger.debug(config.userSocketInfo);
-            });
+            socket.on('client-disconnect', 
+                function(data) {
+                    if(data) {
+                        releaseWorkUp(data.userId, data.token);
+                        socket.leave(data.token);
+                    }
+                }
+            );
         }
 
         function checkWorkUpInfo(socket)
@@ -72,43 +81,52 @@
             logger.debug('checkWorkUpInfo Socket');
             socket.on('init-workup', function (data, callback)
             {
-                if(data.token in config.userSocketInfo)
-                {
-                    callback(config.socketData.workup)
-                }
-                else {
-                    callback(false);
-                }
+                redis.getValue(redis.SESSION_PREFIX + data.token, 
+                    function(userContext) {
+                        if(userContext) {
+                            callback(userContext.workups);
+                        } else {
+                            callback(false);
+                        }
+                    }
+                );
             })
         }
 
         function releaseWorkUp(userId, token)
         {
+            logger.debug('releaseWorkUp - started');
             logger.debug('Release Workup - ');
             logger.debug('UserId - ' + userId);
-            if(userId && config.socketData.workup &&
-                config.socketData.workup.length > 0 )
-            {
-                var availableWorkUp = [];
-                var unLock = [];
-
-                _.each(config.socketData.workup, function(work)
-                {
-                    if(parseInt(work.userId) === parseInt(userId)
-                        && work.status !== 'delete')
-                    {
-                        work.status = 'complete';
-                        unLock.push(work, token);
+            redis.getValue(redis.SESSION_PREFIX + token, 
+                function(userContext) {
+                    if(userContext) {
+                        //userContext.workups
+                        if(userContext.workups.length > 0) {
+                            var availableWorkUp = [];
+                            var unLock = [];
+                            _.each(userContext.workups, function(work)
+                            {
+                                if(work.status !== 'delete') {
+                                    work.status = 'complete';
+                                    unLock.push(work, token);
+                                }
+                                else {
+                                    availableWorkUp.push(work);
+                                }
+                            });
+            
+                            broadcastWorkUpRelease(userContext.workups);
+                            unlock(unLock, token);
+                            deleteWorkUp(userId, token, availableWorkUp);
+                        }
                     }
-                    else {
-                        availableWorkUp.push(work);
-                    }
-                });
-
-                broadcastWorkUpRelease();
-                unlock(unLock, token);
-                deleteWorkUp(availableWorkUp);
-            }
+                    logger.debug('Removing key ' + token + ' started');
+                    redis.deleteKey(redis.SESSION_PREFIX + token);
+                    logger.debug('Removing key ' + token + ' finished');
+                }
+            );
+            logger.debug('releaseWorkUp - finished');
         }
 
         /*
@@ -116,7 +134,7 @@
         * */
         function unlock(unlockWorkUp, token)
         {
-            logger.debug('Unlock');
+            logger.debug('unlock - started');
             logger.debug(unlockWorkUp);
             logger.debug(token);
             _.each(unlockWorkUp, function(workup)
@@ -126,30 +144,35 @@
                     workupBusiness.unlock(workup.projectId, workup.userId, token);
                 }
             });
+            logger.debug('unlock - finished');
         }
 
         /*
         * Delete work-up details from the saved workup
         * */
-        function deleteWorkUp(availableWorkUp)
+        function deleteWorkUp(userId, token, availableWorkUp)
         {
+            logger.debug('deleteWorkUp - started');
             logger.debug('AvailableWorkup after release - ');
             logger.debug(availableWorkUp);
-            config.socketData.workup = [];
-            config.socketData.workup.push.apply(config.socketData.workup, availableWorkUp);
+            var workups = [];
+            workups.push.apply(workups, availableWorkUp);
+            redis.setValue(redis.SESSION_PREFIX + token, { userId:userId, workups: workups});
+            logger.debug('deleteWorkUp - finished');
         }
 
         /*
         * Broadcast release work-ups
         * */
-        function broadcastWorkUpRelease()
+        function broadcastWorkUpRelease(workups)
         {
-            logger.debug('broadcastWorkUpRelease');
-            logger.debug(config.socketData.workup);
-            config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
+            logger.debug('broadcastWorkUpRelease - started');
+            logger.debug(workups);
+            config.socketIO.socket.sockets.emit('workup-room-message', {
                 type: 'workup-info',
-                data: config.socketData.workup
+                data: workups
             });
+            logger.debug('broadcastWorkUpRelease - finished');
         }
 
     }

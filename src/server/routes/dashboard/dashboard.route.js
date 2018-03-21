@@ -8,6 +8,7 @@
 
     var _ = require('underscore');
     var async = require('async');
+    var redis = require('../redis/redist');
     var logger;
 
     dashboardRoute.init = function(app, config, log)
@@ -164,31 +165,31 @@
             );
         }
 
-        function releaseWorkUp(projectId, userId, token)
-        {
-            logger.debug('notifyWorkUpNotInUse - ');
-            logger.debug(projectId);
-            logger.debug(userId);
-            logger.debug(config.socketData.workup);
+        // function releaseWorkUp(projectId, userId, token)
+        // {
+        //     logger.debug('notifyWorkUpNotInUse - ');
+        //     logger.debug(projectId);
+        //     logger.debug(userId);
+        //     logger.debug(config.socketData.workup);
 
-            if(config.socketData.workup &&
-                config.socketData.workup.length > 0 &&
-                _.isUndefined(projectId))
-            {
-              var workup =  _.find(config.socketData.workup, function(work)
-                                {
-                                   if(parseInt(work.userId) === parseInt(userId))
-                                   {
-                                       return work;
-                                   }
-                                });
+        //     if(config.socketData.workup &&
+        //         config.socketData.workup.length > 0 &&
+        //         _.isUndefined(projectId))
+        //     {
+        //       var workup =  _.find(config.socketData.workup, function(work)
+        //                         {
+        //                            if(parseInt(work.userId) === parseInt(userId))
+        //                            {
+        //                                return work;
+        //                            }
+        //                         });
 
-                if(workup && !(token in config.userSocketInfo))
-                {
-                    delete config.socketData.workup[workup];
-                }
-            }
-        }
+        //         if(workup && !(token in config.userSocketInfo))
+        //         {
+        //             delete config.socketData.workup[workup];
+        //         }
+        //     }
+        // }
 
 
         //Get dashboard filter user details
@@ -263,33 +264,35 @@
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
-            if((token in config.userSocketInfo) &&
-                config.socketIO.socket)
-            {
-                var workup = _.find(config.socketData.workup, function(item) {
-                    if (parseInt(item.projectId) === parseInt(projectId)) {
-                        return item;
+            redis.getValue(redis.SESSION_PREFIX + token, 
+                function(userContext) {
+                    if(userContext) {
+                        var workup = _.find(userContext.workups, function(item) {
+                            if (parseInt(item.projectId) === parseInt(projectId)) {
+                                return item;
+                            }
+                        });
+        
+                        if(workup)
+                        {
+                            workup.status = status;
+                        }
+                        else {
+                            //Adding data into the socketData for future user.
+                            userContext.workups.push({
+                                projectId: projectId,
+                                status: status,
+                                userId: userId
+                            });
+                        }
+                        redis.setValue(redis.SESSION_PREFIX + token, { userId:userId, workups: userContext.workups});
+                        config.socketIO.socket.sockets.emit('workup-room-message', {
+                            type: 'workup-info',
+                            data: userContext.workups
+                        });
                     }
-                });
-
-                if(workup)
-                {
-                    workup.status = status;
                 }
-                else {
-                    //Adding data into the socketData for future user.
-                    config.socketData.workup.push({
-                        projectId: projectId,
-                        status: status,
-                        userId: userId
-                    });
-                }
-
-                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
-                    type: 'workup-info',
-                    data: config.socketData.workup
-                });
-            }
+            );
         }
 
         function getServiceDetails(serviceName)
