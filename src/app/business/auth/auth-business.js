@@ -40,7 +40,6 @@
             Idle.unwatch();
             authService.logout().then(function(response)
             {
-				clientConfig.socketInfo.socket.emit('client-disconnect', clientConfig.socketInfo.context);
                 clientConfig.socketInfo.socket.disconnect();
                 store.remove('x-session-token');
                 store.remove('user-info');

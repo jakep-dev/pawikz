@@ -12,7 +12,7 @@
     </a>
 </ms-nav-item>
 <ms-nav-item class="notify-child" ng-if="vm.isNotification && vm.notifications.length > 0" ng-repeat="notification in vm.notifications">
-    <a ms-nav-button ng-click="vm.processNotification(notification)" ui-sref-active="active md-accent-bg" md-ink-ripple>
+    <a ms-nav-button ui-sref="#" ng-click="vm.processNotification(notification)" ui-sref-active="active md-accent-bg" md-ink-ripple>
         <div layout="row" layout-align="space-around center">
             <div ng-if="notification.progress === 100">
                 <i ng-if="notification.status === 'complete'" class="fa fa-check s16"></i>

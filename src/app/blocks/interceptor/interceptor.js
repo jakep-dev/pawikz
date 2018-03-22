@@ -35,7 +35,6 @@
 
             var userInfo = store.get('user-info');
             request.headers['x-session-token'] = store.get('x-session-token');
-
             if(userInfo)
             {
                 request.headers['x-session-userId'] = userInfo.userId;
@@ -70,12 +69,10 @@
             switch (rejection.status)
             {
                 case 401:
-                    clientConfig.socketInfo.socket.emit('client-disconnect', clientConfig.socketInfo.context);
                     clientConfig.socketInfo.socket.disconnect();
                     $location.url('/pages/auth/login');
                     break;
                 case 500:
-                    clientConfig.socketInfo.socket.emit('client-disconnect', clientConfig.socketInfo.context);
                     clientConfig.socketInfo.socket.disconnect();
                     $location.url('/pages/errors/error-500');
                     break;

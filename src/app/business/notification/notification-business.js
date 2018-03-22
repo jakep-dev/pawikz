@@ -38,15 +38,14 @@
                 }
 
                 console.log('ListenToSocket token - ', token, ' - ', userId);
-                clientConfig.socketInfo.context = {
-                    token: token,
-                    userId: userId
-                };
+
                 if(token && userId) {
-                    clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
-                        function(data) {
-                        }
-                    );
+                    clientConfig.socketInfo.socket.emit('init-socket',{
+                        token: token,
+                        userId: userId
+                    }, function(data) {
+                        
+                    });
                 }
 
                 checkForNotificationStatusFor15();
@@ -55,7 +54,7 @@
                     console.log('Inside isAllNotificationCompleted')
                     $interval.cancel(socketInterval);
                 }
-
+                
             }, 10000, token, userId);
         }
 
@@ -66,7 +65,7 @@
                     return not;
                 }
             });
-
+        
            if (notification) {
                 workupService.checkStatus(notification.id)
                              .then(function(data){

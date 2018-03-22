@@ -5,15 +5,13 @@
     var _ = require('underscore');
     var interval = null;
     var logger;
-    var redis = require('../redis/redist');
-    var logger;
 
     workupRoute.init = function(app, config, log)
     {
         logger = log;
-        logger.debug('WorkUp Route Config - ');
-        //logger.debug(config.userSocketInfo);
         var client = config.restcall.client;
+        logger.debug('WorkUp Route Config - ');
+        logger.debug(config.userSocketInfo);
 
         config.parallel([
             app.post('/api/workup/create', create),
@@ -51,7 +49,7 @@
             var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
 
             client.get(url, context.args, function (data, response) {
-                logger.debug('Reponse of CheckStatus');
+                logger.debug('Reponse of CheckSTatus');
                 logger.debug(data);
                 res.status(response.statusCode).send(data);
             })
@@ -302,15 +300,11 @@
                             progress: parseInt(data.templateStatus.percentage)
                         };
 
-                        redis.getKeyCount(redis.SESSION_PREFIX + token, 
-                            function(keys) {
-                                logger.debug('[status] getKeyCount:' + keys.length);
-                                if(keys.length > 0) {
-                                    //logger.debug('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
-                                    config.socketIO.socket.sockets.in(token).emit('create-workup-status', context.compData);
-                                }
-                            }
-                        );
+                        if(token in config.userSocketInfo)
+                        {
+                            //logger.debug('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
+                            config.userSocketInfo[token].emit('create-workup-status', context.compData);
+                        }
 
                         if(parseInt(data.templateStatus.percentage) !== 100) {
                            context.timeout = setTimeout(function () {
@@ -378,80 +372,72 @@
             logger.debug(data);
 
             clearInterval(interval);
-            redis.getKeyCount(redis.SESSION_PREFIX + token, 
-                function(keys) {
-                    logger.debug('[notifyStatus] getKeyCount:' + keys.length);
-                    if(keys.length > 0) {
-                        logger.debug('Emit');
-                        data.source = source;
-                        config.socketIO.socket.sockets.in(token).emit(key, data);
-                    }
-                }
-            );
+            if(token in config.userSocketInfo)
+            {
+                logger.debug('Emit');
+                data.source = source;
+                config.userSocketInfo[token].emit(key, data);
+            }
         }
 
-        // function updateRenewStatus(data)
-        // {
-        //    var workUp = _.find(config.socketData.workup, function(item)
-        //                 {
-        //                     if(parseInt(item.projectId) === parseInt(data.projectId))
-        //                     {
-        //                         return item;
-        //                     }
-        //                 });
+        function updateRenewStatus(data)
+        {
+           var workUp = _.find(config.socketData.workup, function(item)
+                        {
+                            if(parseInt(item.projectId) === parseInt(data.projectId))
+                            {
+                                return item;
+                            }
+                        });
 
-        //     logger.debug('updateRenewStatus - ');
-        //     logger.debug(data);
-        //     logger.debug(config.socketData.workup);
-        //     logger.debug(workUp);
+            logger.debug('updateRenewStatus - ');
+            logger.debug(data);
+            logger.debug(config.socketData.workup);
+            logger.debug(workUp);
 
-        //     if(workUp)
-        //     {
-        //         workUp.status = 'complete';
-        //     }
+            if(workUp)
+            {
+                workUp.status = 'complete';
+            }
 
-        //     config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
-        //         type: 'renewal-complete',
-        //         data: {
-        //             projectId: data.projectId
-        //         }
-        //     });
-        // }
+            config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
+                type: 'renewal-complete',
+                data: {
+                    projectId: data.projectId
+                }
+            });
+        }
 
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
-            redis.getValue(redis.SESSION_PREFIX + token, 
-                function(userContext) {
-                    logger.debug('[broadcastWorkUpInfo] getValue:' + userContext);
-                    if(userContext){
-                        if(userContext.workups.length > 0) {
-                            var workup = _.find(userContext.workups, function(item) {
-                                if (parseInt(item.projectId) === parseInt(projectId)) {
-                                    return item;
-                                }
-                            });
-                            if(workup)
-                            {
-                                workup.status = status;
-                            }
-                            else {
-                                //Adding data into the socketData for future user.
-                                userContext.workups.push({
-                                    projectId: projectId,
-                                    status: status,
-                                    userId: userId
-                                });
-                            }
-                            redis.setValue(redis.SESSION_PREFIX + token, userContext);
-                            config.socketIO.socket.sockets.emit('workup-room-message', {
-                                type: 'workup-info',
-                                data: userContext.workups
-                            });
-                        }
+            if((token in config.userSocketInfo) &&
+                config.socketIO.socket)
+            {
+                var workup = _.find(config.socketData.workup, function(item) {
+                    if (parseInt(item.projectId) === parseInt(projectId)) {
+                        return item;
                     }
+                });
+
+                if(workup)
+                {
+                    workup.status = status;
                 }
-            );
+                else {
+                    //Adding data into the socketData for future user.
+                    config.socketData.workup.push({
+                        projectId: projectId,
+                        status: status,
+                        userId: userId
+                    });
+                }
+
+                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
+                    type: 'workup-info',
+                    data: config.socketData.workup
+                });
+            }
         }
 
         //Get the service details

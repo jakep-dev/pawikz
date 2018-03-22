@@ -15,7 +15,6 @@
         environment.webService = config.dev.webService;
         environment.client = config.dev.client;
         environment.logSetting = config.dev.log;
-        environment.redis = config.dev.redis;
         if (env != 'DEV') {
             env = 'DEV';
         }
@@ -24,10 +23,10 @@
     environment.restcall = config.modules.restcall;
     environment.restcall.client = new Client();
     environment.restcall.url = environment.webService.protocol.concat('://', environment.webService.url, ':', environment.webService.port, '/', environment.webService.service);
-    //environment.userSocketInfo = config.modules.userSocketInfo;
+    environment.userSocketInfo = config.modules.userSocketInfo;
     environment.socketIO = config.modules.socketIO;
     environment.socketIO.host = environment.client.protocol.concat('://', environment.client.domain, ':', environment.client.port);
-    //environment.socketData = config.modules.socketData;
+    environment.socketData = config.modules.socketData;
 
     //existing log is in use by server/routes/logging/logging.route.js
     environment.log = config.modules.log;

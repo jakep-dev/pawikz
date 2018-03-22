@@ -2,7 +2,6 @@
     var async = require('async');
     var u = require('underscore');
     var fs = require('fs');
-    var redis = require('../redis/redist');
     var logger;
 
     function getImageBase64Data(imagePath) {
@@ -1755,15 +1754,13 @@
         }
 
         function sendStatus(token, data) {
-            redis.getKeyCount(redis.SESSION_PREFIX + token, 
-                function(keys) {
-                    if(keys.length > 0) {
-                        //The value config.userSocketInfo[token] is null if user logs out from method disConnectionSocket in server/routes/socket/socket.js
-                        //Check if the token is still valid before sending status message
-                        config.socketIO.socket.sockets.in(token).emit('pdf-download-status', data);
-                    }
+            if (token in config.userSocketInfo) {
+                //The value config.userSocketInfo[token] is null if user logs out from method disConnectionSocket in server/routes/socket/socket.js
+                //Check if the token is still valid before sending status message
+                if (config.userSocketInfo[token]) {
+                config.userSocketInfo[token].emit('pdf-download-status', data);
                 }
-            );
+            }
         }
 
         function createTemplatePDFRequest(req, res, next) {

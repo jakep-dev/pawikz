@@ -14,13 +14,8 @@
             domain: 'devcrm.advisen.com',
             port: '443',
             //loglevel: 1,
-            //transports: ['polling'],
+            transports: ['polling'],
             useCertificate: false
-        },
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            auth: "sTu+eFet4AsPAchub4a8em6bAs4abrakh+wuyebrazekuWreq4SACr*Mudaw=swa#esTaf6aFrapUfAfezestU-t5fezU4rekathu6R_CrutA#e8h8_EsTecrEmU#7uV"
         },
         log: {
             logLevel: 'debug',
@@ -47,11 +42,6 @@
             transports: ['polling'],
             useCertificate: false
         },
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            auth: "sTu+eFet4AsPAchub4a8em6bAs4abrakh+wuyebrazekuWreq4SACr*Mudaw=swa#esTaf6aFrapUfAfezestU-t5fezU4rekathu6R_CrutA#e8h8_EsTecrEmU#7uV"
-        },
         log: {
             logLevel: 'debug',
             maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
@@ -76,11 +66,6 @@
             //loglevel: 1,
             transports: ['polling'],
             useCertificate: false
-        },
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            auth: "sTu+eFet4AsPAchub4a8em6bAs4abrakh+wuyebrazekuWreq4SACr*Mudaw=swa#esTaf6aFrapUfAfezestU-t5fezU4rekathu6R_CrutA#e8h8_EsTecrEmU#7uV"
         },
         log: {
             logLevel: 'debug',
@@ -198,17 +183,17 @@
                 }
             ]
         },
-        //userSocketInfo: {
-        //},
+        userSocketInfo: {
+        },
         socketIO: {
             //host: exports.client.protocol.concat('://', exports.client.domain, ':', exports.client.port),
             //host is built once we know the environment (DEV INT or PROD)
             host: '',
             socket: null
         },
-        //socketData: {
-        //    workup: []
-        //},
+        socketData: {
+            workup: []
+        },
         //existing log is in use by server/routes/logging/logging.route.js to capture log messages from client
         log: {
             directory: './advisen-template',
