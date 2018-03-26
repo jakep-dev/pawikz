@@ -45,11 +45,11 @@
                     if(clientConfig.socketInfo.socket.disconnected)
                     {
                         //clientConfig.socketInfo.socket.connect();
-                        var socketCORSPath = $location.protocol() + '://' + $location.host();
+                        var socketCORSPath = 'ws://' + $location.host();
                         if ($location.port != 80) {
                             socketCORSPath += ':' + $location.port();
                         }
-                        clientConfig.socketInfo.socket = io.connect(socketCORSPath);
+                        clientConfig.socketInfo.socket = io(socketCORSPath, {transports: ['websocket']});
                     }
                     clientConfig.socketInfo.context = {
                         token: response.userinfo.token,

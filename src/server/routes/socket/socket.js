@@ -5,21 +5,18 @@
     var workupBusiness;
     var logger;
     var redis = require('../redis/redist');
-    var redisClient;
 
     socket.init = function(server, config, workupBiz, log)
     {
-        redisClient = redis.getRedisClient();
         workupBusiness = workupBiz;
         logger = log;
 
         //Configure the websocket
-        var io = require('socket.io').listen(server);
-        io.set('origins', config.socketIO.host);
+        var io = require('socket.io')(server);
+        //io.set('origins', config.socketIO.host);
         //io.set('transports', config.client.transports);
         //io.set('log level', config.client.logLevel);
         redis.setSocketIO(io);
-        //io.adapter(redis.getRedisAdapter());
 
         config.socketIO.socket = io;
 
