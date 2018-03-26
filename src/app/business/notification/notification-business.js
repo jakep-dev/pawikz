@@ -7,7 +7,7 @@
 
     /* @ngInject */
     function notificationBusiness(toast, dialog,
-                                  $rootScope, $mdToast, $interval,
+                                  $rootScope, $mdToast, $interval, $location,
                                   clientConfig, commonBusiness, workupService) {
         var business = {
             notifications: [],
@@ -34,7 +34,12 @@
             let socketInterval = $interval(function () {
                 if(clientConfig.socketInfo.socket.disconnected)
                 {
-                    clientConfig.socketInfo.socket.connect();
+                    //clientConfig.socketInfo.socket.connect();
+                    var socketCORSPath = $location.protocol() + '://' + $location.host();
+                    if ($location.port != 80) {
+                        socketCORSPath += ':' + $location.port();
+                    }
+                    clientConfig.socketInfo.socket = io.connect(socketCORSPath);
                 }
 
                 console.log('ListenToSocket token - ', token, ' - ', userId);

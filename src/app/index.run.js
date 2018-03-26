@@ -10,12 +10,13 @@
     function runBlock($rootScope, commonBusiness, store,
                       logger, clientConfig, Idle, $location, $document)
     {
+        var socketCORSPath = $location.protocol() + '://' + $location.host();
+        if ($location.port != 80) {
+            socketCORSPath += ':' + $location.port();
+        }
+
 		if (!clientConfig.socketInfo.socket) {
-			var socketCORSPath = $location.protocol() + '://' + $location.host();
-			if ($location.port != 80) {
-				socketCORSPath += ':' + $location.port();
-			}
-            console.log('socketCORSPath = ' + socketCORSPath);
+			console.log('socketCORSPath = ' + socketCORSPath);
 			clientConfig.socketInfo.socket = io.connect(socketCORSPath);
 		}
 
@@ -60,7 +61,8 @@
 
                 if(clientConfig.socketInfo.socket.disconnected)
                 {
-                    clientConfig.socketInfo.socket.connect();
+                    //clientConfig.socketInfo.socket.connect();
+                    clientConfig.socketInfo.socket = io.connect(socketCORSPath);
                 }
 
                 var type = commonBusiness.socketType(toState);
@@ -70,7 +72,7 @@
                     token: token,
                     userId: userId
                 };
-                clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context, 
+                clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
                     function(data) {
                         if(data)
                         {

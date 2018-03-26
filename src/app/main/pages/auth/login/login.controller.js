@@ -44,7 +44,12 @@
 
                     if(clientConfig.socketInfo.socket.disconnected)
                     {
-                        clientConfig.socketInfo.socket.connect();
+                        //clientConfig.socketInfo.socket.connect();
+                        var socketCORSPath = $location.protocol() + '://' + $location.host();
+                        if ($location.port != 80) {
+                            socketCORSPath += ':' + $location.port();
+                        }
+                        clientConfig.socketInfo.socket = io.connect(socketCORSPath);
                     }
                     clientConfig.socketInfo.context = {
                         token: response.userinfo.token,
