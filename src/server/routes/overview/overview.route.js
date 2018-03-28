@@ -212,11 +212,11 @@
 
         function broadcastWorkUpInfo(token, userId, projectId, status)
         {
-            redis.getValue(redis.SESSION_PREFIX + token, 
+            redis.getValue(redis.SESSION_PREFIX + token,
                 function(userContext) {
                     logger.debug('NotifyWorkUpUse - ' + userId);
                     if(userContext) {
-                        //Release all workup been lock before. 
+                        //Release all workup been lock before.
                         var workup = _.find(userContext.workups, function(item)
                         {
                             if(parseInt(item.userId) === parseInt(userId) &&
@@ -236,7 +236,7 @@
 
                         logger.debug('After Delete');
                         logger.debug(userContext.workups);
-                        
+
                         workup = _.find(userContext.workups, function(item)
                         {
                             if(parseInt(item.projectId) === parseInt(projectId))
@@ -262,7 +262,7 @@
                         logger.debug('Workup broadcast-');
                         logger.debug(userContext.workups);
 
-                        config.socketIO.socket.sockets.in(token).emit('workup-room-message', {
+                        config.socketIO.socket.sockets.to(token).emit('workup-room-message', {
                             type: 'workup-info',
                             data: userContext.workups
                         });
@@ -274,7 +274,7 @@
         function getServiceDetails(serviceName) {
             return _.find(config.restcall.service, {name: serviceName});
         }
-        
+
         function setOverViewDetails(data)
         {
             if(data && data.templateOverview && data.templateOverview.steps)

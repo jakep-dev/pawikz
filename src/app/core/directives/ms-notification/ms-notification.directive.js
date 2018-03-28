@@ -67,7 +67,9 @@
                     case 'Renewal':
                     case 'DataRefresh':
                     case 'Create-WorkUp':
-                        $location.url('/overview/' + notification.url);
+                        if(notification.status === 'complete') {
+                            $location.url('/overview/' + notification.url);
+                        }
                         notification.status = 'close';
                         break;
 

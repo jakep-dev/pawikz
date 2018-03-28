@@ -10,16 +10,47 @@
     function runBlock($rootScope, commonBusiness, store,
                       logger, clientConfig, Idle, $location, $document)
     {
-        //var socketCORSPath = $location.protocol() + '://' + $location.host();
-        var socketCORSPath = 'ws://' + $location.host();
-        if ($location.port != 80) {
-            socketCORSPath += ':' + $location.port();
+        var path;
+        var port;
+        if($location.protocol() === 'http') {
+            path = 'ws';
+            port = 80;
+        } else {
+            path = 'wss';
+            port = 443;
+        }
+        path += '://';
+        path += $location.host();
+        if($location.port() !==  port) {
+            path += ':';
+            path += $location.port();
+        }
+        clientConfig.socketInfo.socketCORSPath = path;
+
+        function connect(){
+            if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected) {
+                var token = store.get('x-session-token');
+                if(token) {
+                    console.log('socketCORSPath = ' + clientConfig.socketInfo.socketCORSPath);
+                    clientConfig.socketInfo.socket = io(clientConfig.socketInfo.socketCORSPath,
+                        {
+                            transports: clientConfig.socketInfo.transports,
+                            forceNew: true
+                        }
+                    );
+                    clientConfig.socketInfo.socket.on('connect',
+                        function() {
+                            //console.log('connected - emit room number ' + token);
+                            clientConfig.socketInfo.socket.emit('room', token);
+                        }
+                    );
+                }
+            }
         }
 
-		if (!clientConfig.socketInfo.socket) {
-			console.log('socketCORSPath = ' + socketCORSPath);
-            //clientConfig.socketInfo.socket = io.connect(socketCORSPath);
-            clientConfig.socketInfo.socket = io(socketCORSPath, {transports: ['websocket']});
+        clientConfig.socketInfo.doConnect = connect;
+		if (!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected) {
+            clientConfig.socketInfo.doConnect();
 		}
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams)
@@ -49,7 +80,7 @@
 
             var token = store.get('x-session-token');
             var userInfo = store.get('user-info');
-            logger.log(token, 'info');
+            //logger.log(token, 'info');
 
             if(token)
             {
@@ -61,9 +92,9 @@
                     userId = userInfo.userId;
                 }
 
-                if(clientConfig.socketInfo.socket.disconnected)
+                if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected)
                 {
-                    clientConfig.socketInfo.socket = io(socketCORSPath, {transports: ['websocket']});
+                    clientConfig.socketInfo.doConnect();
                 }
 
                 var type = commonBusiness.socketType(toState);

@@ -476,17 +476,19 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     }
 
     function dashboardRenewalUpdate(data) {
-        $rootScope.toastTitle = 'WorkUp Renewal Completed!';
-        $rootScope.toastProjectId = data.projectId;
-        var obj = $('.renewStyle[projectId="' + data.projectId + '"]');
+        if(data.project_name) {
+            $rootScope.toastTitle = 'WorkUp Renewal Completed!';
+            $rootScope.toastProjectId = data.projectId;
+            $mdToast.show({
+                hideDelay: 5000,
+                position: 'bottom right',
+                controller: 'WorkUpToastController',
+                templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+            });    
+        }
+        var obj = $('.renewStyle[projectId="' + data.old_project_id + '"]');
         var row = obj.closest('tr');
         row.removeClass('not-active');
-        $mdToast.show({
-            hideDelay: 5000,
-            position: 'bottom right',
-            controller: 'WorkUpToastController',
-            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
-        });
 
         console.log('Renewal WorkUp');
         console.log(data);
@@ -545,5 +547,4 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             }
         }
     });
-
 }

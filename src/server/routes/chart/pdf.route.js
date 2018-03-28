@@ -1760,7 +1760,7 @@
                     if(keys.length > 0) {
                         //The value config.userSocketInfo[token] is null if user logs out from method disConnectionSocket in server/routes/socket/socket.js
                         //Check if the token is still valid before sending status message
-                        config.socketIO.socket.sockets.in(token).emit('pdf-download-status', data);
+                        config.socketIO.socket.to(token).emit('pdf-download-status', data);
                     }
                 }
             );

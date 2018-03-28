@@ -12,7 +12,6 @@
     {
         logger = log;
         logger.debug('WorkUp Route Config - ');
-        //logger.debug(config.userSocketInfo);
         var client = config.restcall.client;
 
         config.parallel([
@@ -136,7 +135,19 @@
             client.get(url, context.args,
                 function (data, response) {
                     logger.logIfHttpError(url, context.args, data, response);
-                   // data.projectId = req.body.projectId;
+                    if(!data.projectId) {
+                        data = {
+                            old_project_id: context.args.parameters.project_id,
+                            projectId: null,
+                            project_name: null,
+                            reponseInfo: {
+                                code: response.statusCode,
+                                comment: null,
+                                status: response.statusMessage
+                            }
+                        };
+                        logger.debug(data);
+                    }
 
                     //Notify Renewal Status to the user initiated the request.
                     notifyStatus(req.headers['x-session-token'], data, 'notify-renew-workup-status', context.source);
@@ -302,12 +313,12 @@
                             progress: parseInt(data.templateStatus.percentage)
                         };
 
-                        redis.getKeyCount(redis.SESSION_PREFIX + token, 
+                        redis.getKeyCount(redis.SESSION_PREFIX + token,
                             function(keys) {
                                 logger.debug('[status] getKeyCount:' + keys.length);
                                 if(keys.length > 0) {
-                                    //logger.debug('Sending socket.io message for token = ' + token + '\n' + JSON.stringify(context.compData));
-                                    config.socketIO.socket.sockets.in(token).emit('create-workup-status', context.compData);
+                                    logger.debug('[socket.io]Sending [create-workup-status] message for token = ' + token + '\n' + JSON.stringify(context.compData));
+                                    config.socketIO.socket.sockets.to(token).emit('create-workup-status', context.compData);
                                 }
                             }
                         );
@@ -378,13 +389,13 @@
             logger.debug(data);
 
             clearInterval(interval);
-            redis.getKeyCount(redis.SESSION_PREFIX + token, 
+            redis.getKeyCount(redis.SESSION_PREFIX + token,
                 function(keys) {
                     logger.debug('[notifyStatus] getKeyCount:' + keys.length);
                     if(keys.length > 0) {
                         logger.debug('Emit');
                         data.source = source;
-                        config.socketIO.socket.sockets.in(token).emit(key, data);
+                        config.socketIO.socket.sockets.to(token).emit(key, data);
                     }
                 }
             );
@@ -421,7 +432,7 @@
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
-            redis.getValue(redis.SESSION_PREFIX + token, 
+            redis.getValue(redis.SESSION_PREFIX + token,
                 function(userContext) {
                     logger.debug('[broadcastWorkUpInfo] getValue:' + userContext);
                     if(userContext){

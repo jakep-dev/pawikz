@@ -7,8 +7,8 @@
 
     /* @ngInject */
     function notificationBusiness(toast, dialog,
-                                  $rootScope, $mdToast, $interval, $location,
-                                  clientConfig, commonBusiness, workupService) {
+                                  $rootScope, $mdToast, $interval,
+                                  clientConfig, logger, commonBusiness, workupService) {
         var business = {
             notifications: [],
             initializeMessages: initializeMessages,
@@ -32,17 +32,12 @@
 
         function listenToSocket (token, userId) {
             let socketInterval = $interval(function () {
-                if(clientConfig.socketInfo.socket.disconnected)
+                if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected)
                 {
-                    //clientConfig.socketInfo.socket.connect();
-                    var socketCORSPath = 'ws://' + $location.host();
-                    if ($location.port != 80) {
-                        socketCORSPath += ':' + $location.port();
-                    }
-                    clientConfig.socketInfo.socket = io.connect(socketCORSPath, {transports: ['websocket']});
+                    clientConfig.socketInfo.doConnect();
                 }
 
-                console.log('ListenToSocket token - ', token, ' - ', userId);
+                logger.log('ListenToSocket token - ', token, ' - ', userId);
                 clientConfig.socketInfo.context = {
                     token: token,
                     userId: userId
@@ -263,9 +258,52 @@
                             return not;
                         }
                     });
-                    listenToDataWorkupStatus(notification, response, 'Renewal');
+                    listenToWorkupRenewalStatus(notification, response);
                 }
             });
+        }
+
+        function listenToWorkupRenewalStatus(notification, response) {
+
+            var projectName;
+
+            if(notification) {
+                if(response.projectId && response.project_name) {
+                    notification.status = 'complete';
+                    notification.progress = 100;
+                    notification.disabled = false;
+                    notification.url = parseInt(response.projectId);
+                } else {
+                    notification.status = 'error';
+                    notification.tooltip = 'Workup Renewal error';
+                    notification.progress = 100;
+                    notification.disabled = false;
+                    toast.simpleToast("Issue with Workup Renewal. Please try again.");
+                }
+            } else {
+                projectName = response.project_name || '';
+
+                business.pushNotification({
+                    id: parseInt(response.old_project_id),
+                    title: decodeURIComponent(projectName),
+                    type: 'Renewal',
+                    icon: 'refresh',
+                    progress: 100,
+                    disabled: false,
+                    tooltip: 'Renewal work-up still in-progress',
+                    status: 'complete',
+                    userId: userId,
+                    istrackable: false,
+                    url: parseInt(response.projectId)
+                });
+            }
+
+            if (response.source && response.source === 'fromDashboard' && dashboardCallback) {
+                dashboardCallback(response);
+            } else if (response.source && ((response.source === 'reload-overview') || (response.source === 'reload-steps'))) {
+                dialog.close();
+            }
+            commonBusiness.emitMsg('update-notification-binding');
         }
 
         function listenToDataRefreshStatus(userId) {

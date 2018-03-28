@@ -21,6 +21,13 @@
         config.socketIO.socket = io;
 
         io.sockets.on('connection', function (socket) {
+
+            //join individual room between user and all the servers in the cluster
+            socket.on('room', function(room) {
+                logger.debug('room message for ' + room);
+                socket.join(room);
+            });
+
            initializeSocket(socket);
            checkWorkUpInfo(socket);
            disConnectionSocket(socket);
@@ -36,8 +43,6 @@
             logger.debug('Init socket');
             socket.on('init-socket', function(data, callback)
             {
-                //join individual room between user and all the servers in the cluster
-                socket.join(data.token);
                 redis.getKeyCount(redis.SESSION_PREFIX + data.token, 
                     function(keys) {
                         logger.debug('[initializeSocket] init-socket:' + keys.length);

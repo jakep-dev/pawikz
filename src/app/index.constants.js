@@ -80,7 +80,10 @@
                 compInitialLoadForTablet: 3
             },
             socketInfo: {
-                socket: undefined
+                socket: undefined,
+                socketCORSPath: undefined,
+                transports: ['websocket'],
+                doConnect: undefined
             },
             activity: {
                 //In Seconds

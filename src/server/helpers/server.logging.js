@@ -57,7 +57,7 @@
                 level: config.logSetting.logLevel,
                 dirname: config.logSetting.dirName,
                 filename: config.logSetting.exceptionLogFilePath,
-                datePattern: 'yyyy-MM-dd',
+                datePattern: 'YYYY-MM-DD',
                 prepend: true,
                 handleExceptions: true,
                 humanReadableUnhandledException: true,
@@ -77,7 +77,7 @@
                     level: config.logSetting.logLevel,
                     dirname: config.logSetting.dirName,
                     filename: config.logSetting.logFilePath,
-                    datePattern: 'yyyy-MM-dd',
+                    datePattern: 'YYYY-MM-DD',
                     prepend: true,
                     handleExceptions: true,
                     humanReadableUnhandledException: true,
@@ -117,14 +117,22 @@
                 logger.error(args);
                 if (data) {
                     logger.error('HTTP data =');
-                    if (typeof (data) == 'object' && data.toString) {
-                        logger.error(data.toString('utf8'));
-                    } else {
-                        logger.error(data);
+                    try {
+                        if (typeof (data) == 'object' && data.toString) {
+                            logger.error(data.toString('utf8'));
+                        } else {
+                            logger.error(data);
+                        }
+                    } catch (error) {
+                        logger.error('Can\'t serialize response data object.' );
                     }
                 }
                 logger.error('HTTP response =');
-                logger.error(response);
+                try {
+                    logger.error(response);
+                } catch (error) {
+                    logger.error('Can\'t serialize response object.' );
+                }
                 logger.error('===================');
             }
         }

@@ -41,15 +41,16 @@
 
                     var token = response.userinfo.token;
                     var userId = response.userinfo.userId;
+                    authBusiness.userInfo = response.userinfo;
+                    authBusiness.userName = response.userinfo.fullName;
+                    commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
 
-                    if(clientConfig.socketInfo.socket.disconnected)
+                    store.set('user-info', authBusiness.userInfo);
+                    store.set('x-session-token', token);
+
+                    if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected)
                     {
-                        //clientConfig.socketInfo.socket.connect();
-                        var socketCORSPath = 'ws://' + $location.host();
-                        if ($location.port != 80) {
-                            socketCORSPath += ':' + $location.port();
-                        }
-                        clientConfig.socketInfo.socket = io(socketCORSPath, {transports: ['websocket']});
+                        clientConfig.socketInfo.doConnect();
                     }
                     clientConfig.socketInfo.context = {
                         token: response.userinfo.token,
@@ -58,12 +59,6 @@
                     clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
                         function(data) {
                             if(data) {
-                                authBusiness.userInfo = response.userinfo;
-                                authBusiness.userName = response.userinfo.fullName;
-                                commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
-
-                                store.set('user-info', authBusiness.userInfo);
-                                store.set('x-session-token', token);
                                 var url = ('/dashboard/').concat(userId);
                                 $location.url(url);
                                 toast.simpleToast('Successfully logged in!');
