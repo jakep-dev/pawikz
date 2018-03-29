@@ -13,10 +13,10 @@
         var path;
         var port;
         if($location.protocol() === 'http') {
-            path = 'ws';
+            path = 'http';
             port = 80;
         } else {
-            path = 'wss';
+            path = 'https';
             port = 443;
         }
         path += '://';
