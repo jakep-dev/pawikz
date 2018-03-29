@@ -82,7 +82,7 @@
             socketInfo: {
                 socket: undefined,
                 socketCORSPath: undefined,
-                transports: ['polling', 'websocket'],
+                transports: ['websocket', 'polling'],
                 doConnect: undefined
             },
             activity: {

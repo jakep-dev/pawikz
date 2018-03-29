@@ -13,10 +13,10 @@
         var path;
         var port;
         if($location.protocol() === 'http') {
-            path = 'http';
+            path = 'ws';
             port = 80;
         } else {
-            path = 'https';
+            path = 'wss';
             port = 443;
         }
         path += '://';
@@ -38,6 +38,7 @@
                             forceNew: true
                         }
                     );
+                    //clientConfig.socketInfo.socket = io();
                     clientConfig.socketInfo.socket.on('connect',
                         function() {
                             //console.log('connected - emit room number ' + token);

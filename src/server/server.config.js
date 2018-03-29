@@ -27,8 +27,8 @@
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
-            logFilePath: '%DATE%_all_msg.log',
-            exceptionLogFilePath: '%DATE%_exceptions.log'
+            logFilePath: 'uwf-%DATE%.log',
+            exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
         }
     };
 
@@ -57,8 +57,8 @@
             maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
-            logFilePath: '%DATE%_all_msg.log',
-            exceptionLogFilePath: '%DATE%_exceptions.log'
+            logFilePath: 'uwf-%DATE%.log',
+            exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
         }
     };
 
@@ -87,8 +87,8 @@
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
-            logFilePath: '%DATE%_all_msg.log',
-            exceptionLogFilePath: '%DATE%_exceptions.log'
+            logFilePath: 'uwf-%DATE%.log',
+            exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
         }
     };
 

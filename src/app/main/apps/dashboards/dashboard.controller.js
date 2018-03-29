@@ -535,16 +535,20 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         }
     }
 
-    clientConfig.socketInfo.socket.on('workup-room-message', function(response)
-    {
-        if(response)
-        {
-            switch (response.type)
+    if(clientConfig.socketInfo.socket) {
+        clientConfig.socketInfo.socket.on('workup-room-message', 
+            function(response)
             {
-                case 'workup-info':
-                    workUpStatus(response.data);
-                    break;
+                if(response)
+                {
+                    switch (response.type)
+                    {
+                        case 'workup-info':
+                            workUpStatus(response.data);
+                            break;
+                    }
+                }
             }
-        }
-    });
+        );
+    }
 }
