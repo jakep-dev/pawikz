@@ -9,10 +9,10 @@
         .service('templateBusiness', templateBusiness);
 
     /* @ngInject */
-    function templateBusiness($rootScope, $interval, $filter, $window, $sce, $mdToast, $injector,
+    function templateBusiness($interval, $window, $sce, $injector,
         Papa, dialog, store, deviceDetector, toast,
         clientConfig, commonBusiness, stepsBusiness, notificationBusiness, overviewBusiness,
-        templateService, stockService, financialChartService
+        templateService
     ) {
         var business = {
             mnemonics: null,
@@ -116,17 +116,14 @@
                 name: '',
                 subHeader: ''
             };
-
             if (business.components.header) {
                 header.name = business.components.header.label;
                 header.subHeader = business.components.header.subheader || '';
             }
-
             return header;
         }
 
         function loadComponents() {
-
         }
 
         function pushComponentStatus(id, status) {
@@ -151,7 +148,6 @@
         //Download template pdf
         function downloadTemplatePdf(requestId, workupName) {
             var pdfName = workupName.concat('.pdf');
-
             templateService.downloadTemplatePdf(requestId, pdfName).then(function(data) {
 
                 //uses the browser specific Blob object
@@ -240,7 +236,6 @@
                         }
                     });
             }
-
             dialog.notify('Pdf Download', 'Go to Notification Center ',
                 '<md-icon md-font-icon="icon-bell"></md-icon> <span> to download.</span>',
                 null, null, null, false);
@@ -283,7 +278,6 @@
                 'isnoneditable="isnoneditable" isprocesscomplete="isprocesscomplete" actions="actions" ' +
                 'subtype="' + newScope.subtype + '" islastcomponent="' + isLastComponent + '"></ms-component> <div style="min-height: 5px"></div> </div>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -334,7 +328,6 @@
                     };
                 }
             });
-
             return components;
         }
 
@@ -404,7 +397,6 @@
 
             comp.html = '<ms-tablelayout-f itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet"></ms-tablelayout-f>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -426,7 +418,6 @@
 
             comp.html = '<ms-tablelayout-r itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" iseditable="true" isfulloption="false"></ms-tablelayout-r>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -449,7 +440,6 @@
 
             comp.html = '<ms-tablelayout-r-p itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" iseditable="' + newScope.iseditable + '" isfulloption="false"></ms-tablelayout-r-p>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -471,7 +461,6 @@
 
             comp.html = '<ms-tablelayout-e itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet" isfulloption="false"></ms-tablelayout-e>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -494,7 +483,6 @@
 
             comp.html = '<ms-tablelayout-h itemid="' + newScope.itemid + '" mnemonicid="' + newScope.mnemonicid + '" tearsheet="tearsheet"></ms-tablelayout-h>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -552,7 +540,6 @@
 
             if (tearcontent && tearcontent.length === 1) {
                 content = tearcontent[0];
-
                 if (content.TearSheetItem) {
                     if (content.TearSheetItem.length) {
                         tearSheets.push.apply(tearSheets, content.TearSheetItem);
@@ -565,7 +552,6 @@
             } else {
                 tearSheets.push.apply(tearSheets, tearcontent);
             }
-
             return tearSheets;
         }
 
@@ -588,7 +574,6 @@
                     tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
-
             return tableLayout;
         }
 
@@ -611,7 +596,6 @@
                     tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
-
             return tableLayout;
         }
 
@@ -646,7 +630,6 @@
                     }
                 }
             });
-
             return tableLayout;
         }
 
@@ -673,7 +656,6 @@
                     tableLayout.footer = content.row;
                 }
             });
-
             return tableLayout;
         }
 
@@ -694,7 +676,6 @@
                     tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
-
             return tableLayout;
         }
 
@@ -714,7 +695,6 @@
                     tableLayout.mnemonicId = content.Mnemonic;
                 }
             });
-
             return tableLayout;
         }
 
@@ -734,7 +714,6 @@
 
             comp.html = '<ms-header tearsheet="tearsheet"></ms-header>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -753,7 +732,6 @@
             newScope.isnoneditable = scope.isnoneditable;
             comp.html = '<ms-generic-table tearsheet="tearsheet" isnoneditable="isnoneditable"></ms-generic-table>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -787,12 +765,10 @@
             newScope.isdisabled = false;
             newScope.answer = answer;
 
-
             comp.html = '<ms-rich-text-editor itemid="' + newScope.itemid + '" ' +
                 'mnemonicid="' + newScope.mnemonicid + '" prompt="' + newScope.prompt + '" ' +
                 '" isdisabled="false" answer="' + newScope.answer + '"></ms-rich-text-editor>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -806,12 +782,11 @@
                     scope: null
                 };
 
-                newScope.mnemonicid = mnemonicid;
-                newScope.itemid = itemid;
+            newScope.mnemonicid = mnemonicid;
+            newScope.itemid = itemid;
 
-                comp.html = '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>';
-                comp.scope = newScope;
-
+            comp.html = '<ms-scrape mnemonicid="' + newScope.mnemonicid + '" itemid="' + newScope.itemid + '"></ms-scrape>';
+            comp.scope = newScope;
             return comp;
         }
 
@@ -838,7 +813,6 @@
             newScope.tearsheet = content;
             comp.html += '<ms-expiring tearsheet="tearsheet" copyproposed="' + newScope.copyproposed + '" isnoneditable="isnoneditable"></ms-expiring>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -860,7 +834,6 @@
             newScope.tearsheet = content;
             comp.html += '<ms-proposed tearsheet="tearsheet" copyexpiring="' + newScope.copyexpiring + '"  isnoneditable="isnoneditable"></ms-proposed>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -893,7 +866,6 @@
 
             comp.html += '<ms-expiring-h tearsheet="tearsheet" mnemonic="' + content.Mnemonic + '" item-id="' + content.ItemId + '" copyproposed="' + newScope.copyproposed + '" copstepid="' + newScope.copyStepId + '" isnoneditable="isnoneditable"></ms-expiring-h>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -927,7 +899,6 @@
 
             comp.html += '<ms-proposed-h tearsheet="tearsheet" mnemonic="' + content.Mnemonic + '" item-id="' + content.ItemId + '" copyexpiring="' + newScope.copyexpiring + '"  copystepid="' + newScope.copyStepId + '" isnoneditable="isnoneditable"></ms-proposed-h>';
             comp.scope = newScope;
-
             return comp;
         }
 
@@ -937,11 +908,9 @@
                 html: '',
                 scope: scope
             };
-
             comp.html = '<div layout-padding>';
             comp.html += '<ms-link value="' + content.Label + '" href="' + content.url + '" gotostep="' + content.GoBack + '"></ms-link>';
             comp.html += '</div>';
-
             return comp;
         }
 
@@ -992,11 +961,9 @@
         //Test if inputVal is kmb value if so convert the inputVal and format the value with comma and truncate the number
         //Otherwise return inputVal unchanged
         function transformKMB(inputVal) {
-
             var finalValue = '';
             if (inputVal) {
                 finalValue = inputVal;
-
                 if (isKMBValue(inputVal)) {
                     var abbreviationType = inputVal.slice(-1);
                     var longValue = Number(inputVal.substring(0, inputVal.length - 1));
@@ -1031,7 +998,6 @@
             if (!limit || !att) {
                 return null;
             }
-
             return parseInt(limit) + parseInt(att);
         }
 
@@ -1043,7 +1009,6 @@
                 limit === '') {
                 return null;
             }
-
             return ((parseInt(premium) * 1000000) / parseInt(limit)).toFixed(2);
         }
 
@@ -1055,7 +1020,6 @@
                 previousRate === '') {
                 return null;
             }
-
             return ((parseFloat(currentRate) * 100.0) / parseFloat(previousRate)).toFixed(2);
         }
 
@@ -1066,19 +1030,16 @@
                     return step;
                 }
             });
-
             if (specificStep) {
                 var specificSection = _.find(specificStep.sections, function(section) {
                     if (section.itemId === sectionId) {
                         return section;
                     }
                 });
-
                 if (specificSection) {
                     value = specificSection.value;
                 }
             }
-
             return value;
         }
 
@@ -1107,11 +1068,9 @@
                     if (currentCount !== 1) {
                         newItemId += str;
                     }
-
                     if (currentCount !== 1 && currentCount !== totalCount) {
                         newItemId += '_';
                     }
-
                     currentCount++;
                 });
             }
@@ -1140,14 +1099,11 @@
             return eval(expression);
         }
 
-        //
         function getTableLayoutMnemonicValue(itemId, mnemonic) {
-
         }
 
         function getReayForAutoSaveTableLayout(itemId, mnemonic, row) {
             var mnemonicTable = _.find(business.saveTableMnemonics, { itemId: itemId, mnemonic: mnemonic });
-
             if (angular.isUndefined(mnemonicTable)) {
                 business.saveTableMnemonics.push({
                     itemId: itemId,
@@ -1163,7 +1119,6 @@
                         return;
                     }
                 });
-
                 if (!isExist) {
                     mnemonicTable.table.push(row);
                 }
@@ -1174,7 +1129,6 @@
         //Get ready for auto save.
         function getReadyForAutoSave(itemId, mnemonic, value) {
             var mnemonicRow = _.find(business.saveMnemonics, { itemId: itemId, mnemonic: mnemonic });
-
             if (angular.isUndefined(mnemonicRow)) {
                 business.saveMnemonics.push({
                     itemId: itemId,
@@ -1241,7 +1195,6 @@
                     }
                 }
             });
-
             if (!isAdded) {
                 newRow.action = 'updated';
                 _.each(table, function(savedRow) {
@@ -1264,7 +1217,6 @@
          */
         function hybridDeleteRules(table, newRow, sequence) {
             var isExist = false;
-            //_.each(table, function(addedRow){
             for (var index = table.length - 1; index >= 0; index--) {
                 var row = table[index];
                 if (row.action === 'added' || row.action === 'updated') {
@@ -1276,7 +1228,6 @@
                                 } else if (row.action === 'updated') {
                                     row.action = 'deleted';
                                 }
-
                                 isExist = true;
                                 return;
                             }
@@ -1287,8 +1238,6 @@
                     }
                 }
             }
-            //});
-
             if (!isExist) {
                 newRow.action = 'deleted';
                 table.push(newRow);
@@ -1299,13 +1248,11 @@
         function getMnemonicValue(itemId, mnemonic, format) {
             var value = '';
             if (business.mnemonics) {
-
                 var mnemonic = _.find(business.mnemonics, function(m) {
                     if (m.itemId === itemId) {
                         return m;
                     }
                 });
-
                 if (mnemonic) {
                     if (!format && format === false) { //ensures format is false & not null/undefined
                         value = mnemonic.value;
@@ -1322,13 +1269,11 @@
         function getMnemonicValueNoEscape(itemId, mnemonic, format) {
             var value = '';
             if (business.mnemonics) {
-
                 var mnemonic = _.find(business.mnemonics, function(m) {
                     if (m.itemId === itemId) {
                         return m;
                     }
                 });
-
                 if (mnemonic) {
                     if (!format && format === false) { //ensures format is false & not null/undefined
                         value = mnemonic.value;
@@ -1358,11 +1303,9 @@
                                 });
                             }
                         });
-
                     }
                 });
             }
-
             return subMnemonics;
         }
 
@@ -1370,7 +1313,6 @@
         function formatData(value, valueType) {
             if (!angular.isUndefined(valueType) && !angular.isUndefined(value)) {
                 value = value + ''.trim() || '';
-
                 if (valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
                     (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') ||
                     (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO')) {
@@ -1381,7 +1323,6 @@
                     value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
                 }
             }
-
             return value;
         }
 
@@ -1389,7 +1330,6 @@
         function removeFormatData(value, valueType) {
             if (!angular.isUndefined(valueType) && !angular.isUndefined(value)) {
                 value = value + ''.trim() || '';
-
                 if (valueType.dataType && (valueType.dataType == 'NUMBER' || valueType.dataType == 'TABLE') && valueType.dataSubtype &&
                     (valueType.dataSubtype == 'PERCENTAGE') || (valueType.dataSubtype == 'CURRENCY') ||
                     (valueType.dataSubtype == 'SCALAR') || (valueType.dataSubtype == 'RATIO')) {
@@ -1398,7 +1338,6 @@
                     value = formatDate(parseDate(value, 'DD-MMM-YY'), 'MM/DD/YYYY');
                 }
             }
-
             return value;
         }
 
@@ -1406,18 +1345,15 @@
         function isMnemonicNumberType(mnemonicValue) {
             var isNumber = false;
             if (business.mnemonics) {
-
                 var mnemonic = _.find(business.mnemonics, function(m) {
                     if (m.mnemonic === mnemonicValue) {
                         return m;
                     }
                 });
-
                 if (mnemonic) {
                     isNumber = mnemonic.dataType === 'NUMBER';
                 }
             }
-
             return isNumber;
         }
 
@@ -1447,7 +1383,6 @@
                         return m;
                     }
                 });
-
                 if (mnemonic) {
                     return mnemonic.dataSubtype;
                 }
@@ -1496,10 +1431,8 @@
                         parameters.push(strParam);
                     }
                 });
-
                 return angular.fromJson('{' + parameters.join(', ') + '}');
             }
-
             return null;
         }
 
@@ -1562,7 +1495,6 @@
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 return parts.join(".");
             }
-
             return value;
         }
 
@@ -1594,7 +1526,6 @@
         }
 
         function getTemplateElement() {
-
         }
 
         //Initiate auto-save
@@ -1604,9 +1535,6 @@
                     save();
                     saveTable();
                     saveHybridTable();
-                    //saveInteractiveStockCharts();
-                    //saveSignificantDevelopmentItems();
-                    //saveInteractiveFinancialCharts();
                     cancelPromise();
                 }, clientConfig.appSettings.autoSaveTimeOut);
             }
@@ -1615,7 +1543,6 @@
         //Save template details
         function save() {
             if (business.saveMnemonics.length > 0) {
-
                 var saveMnemoncis = business.saveMnemonics.splice(0, business.saveMnemonics.length);
                 var input = {
                     projectId: commonBusiness.projectId,
@@ -1623,7 +1550,6 @@
                     userId: commonBusiness.userId,
                     mnemonics: saveMnemoncis
                 };
-
                 templateService.save(input).then(function(response) {
                     toast.simpleToast('Saved successfully');
                 }, function(err) {
@@ -1637,7 +1563,6 @@
         function saveTable() {
             if (business.saveTableMnemonics.length > 0) {
                 _.each(business.saveTableMnemonics, function(tableMnemonic, index) {
-
                     var saveTableMnemonics = business.saveTableMnemonics.splice(index, 1);
                     templateService.saveDynamicTableData(commonBusiness.projectId, commonBusiness.stepId,
                         saveTableMnemonics.mnemonic, saveTableMnemonics.itemId, saveTableMnemonics.table).then(function(response) {
@@ -1651,7 +1576,6 @@
         }
 
         function saveHybridTable() {
-
             _.each(business.saveHybridTableMnemonics, function(hybridTable) {
                 var tableItemId = hybridTable.itemId;
                 var tableMnemonicId = hybridTable.mnemonic;
@@ -1716,9 +1640,7 @@
 
                     });
                 }
-
             });
-
             business.saveHybridTableMnemonics = [];
         }
 
@@ -1815,6 +1737,7 @@
             }
             return id;
         }
+
         function componentExcelDownload(scope) {
             var linkElement = $('#link-component-download');
             var dataInfo = buildExcelData(scope.excelComponents, scope.excelFilename);
@@ -1867,7 +1790,6 @@
                     excelRow.push([row]);
                 }
             });
-            
             return excelRow;
         }
 
@@ -2025,7 +1947,6 @@
                     excelRow.push(['No Data Available']);
                 }
             }
-
             return excelRow;
         }
 
@@ -2036,7 +1957,6 @@
             if((fieldId !== 'undefined') && (itemId !== 'undefined')) 
             {
                 var mnemonic = _.find(business.summationMnemonics, {fieldId: fieldId, itemId: itemId});
-
                 if(angular.isUndefined(mnemonic))
                 {
                     business.summationMnemonics.push({
@@ -2065,10 +1985,8 @@
                         summationValue += parseInt(each.value);
                     }
                 });
-
                 commonBusiness.emitWithArgument('fieldId_' + mnemonic.outputFieldId, summationValue);    
             }
-            
         }
 
         //Cancel the auto-save promise.
@@ -2076,123 +1994,5 @@
             $interval.cancel(business.autoSavePromise);
             business.autoSavePromise = [];
         }
-
-        ////Get ready for interactive stock chart auto save.
-        //function getReadyForAutoSaveInteractiveStockChart(companyId, projectId, stepId, mnemonicId, itemId, value) {
-        //    var mnemonicItem = _.find(business.saveInteractiveStockChartMnemonics, function (currentMnemonic) {
-        //        if ((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId)) {
-        //            return currentMnemonic;
-        //        }
-        //    });
-
-        //    if (angular.isUndefined(mnemonicItem)) {
-        //        business.saveInteractiveStockChartMnemonics.push({
-        //            companyId: companyId,
-        //            projectId: projectId,
-        //            stepId: stepId,
-        //            mnemonicId: mnemonicId,
-        //            itemId: itemId,
-        //            value: value
-        //        })
-        //    }
-        //    else {
-        //        mnemonicItem.value = value;
-        //    }
-        //    initiateAutoSave();
-        //}
-
-        ////Save interactive stock chart details
-        //function saveInteractiveStockCharts() {
-        //    if (business.saveInteractiveStockChartMnemonics.length > 0) {
-
-        //        _.each(business.saveInteractiveStockChartMnemonics, function (mnemonicItem) {
-        //            stockService.saveChartAllSettings(mnemonicItem)
-        //                .then(function (response) {
-        //                    //TODO: send message to update chart id
-        //                    toast.simpleToast('Saved successfully');
-        //                });
-        //        });
-        //        business.saveInteractiveStockChartMnemonics = [];
-        //    }
-        //}
-
-        ////Get ready for significant development item auto save.
-        //function getReadyForAutoSaveSignificantDevelopmentItem(companyId, projectId, stepId, mnemonicId, itemId, value) {
-        //    var mnemonicItem = _.find(business.saveSignificantDevelopmentMnemonics, function (currentMnemonic) {
-        //        if ((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId)) {
-        //            return currentMnemonic;
-        //        }
-        //    });
-
-        //    if (angular.isUndefined(mnemonicItem)) {
-        //        business.saveSignificantDevelopmentMnemonics.push({
-        //            companyId: companyId,
-        //            projectId: projectId,
-        //            stepId: stepId,
-        //            mnemonicId: mnemonicId,
-        //            itemId: itemId,
-        //            value: value
-        //        })
-        //    }
-        //    else {
-        //        mnemonicItem.value = value;
-        //    }
-        //    initiateAutoSave();
-        //}
-
-        ////Save significant development item details
-        //function saveSignificantDevelopmentItems() {
-        //    if (business.saveSignificantDevelopmentMnemonics.length > 0) {
-
-        //        _.each(business.saveSignificantDevelopmentMnemonics, function (mnemonicItem) {
-        //            stockService.saveSigDevItems(mnemonicItem)
-        //                .then(function (response) {
-        //                    //TODO: send message to update chart id
-        //                    toast.simpleToast('Saved successfully');
-        //                });
-        //        });
-        //        business.saveSignificantDevelopmentMnemonics =[];
-        //    }
-        //}
-
-        ////Get ready for interactive financial chart auto save.
-        //function getReadyForAutoSaveInteractiveFinancialChart(companyId, projectId, stepId, mnemonicId, itemId, value) {
-        //    var mnemonicItem = _.find(business.saveInteractiveFinancialChartMnemonics, function (currentMnemonic) {
-        //        if((currentMnemonic.projectId == projectId) && (currentMnemonic.stepId = stepId) && (currentMnemonic.mnemonicId = mnemonicId) && (currentMnemonic.itemid = itemId) ) {
-        //            return currentMnemonic;
-        //        }
-        //    });
-
-        //    if (angular.isUndefined(mnemonicItem)) {
-        //        business.saveInteractiveFinancialChartMnemonics.push({
-        //            companyId: companyId,
-        //            projectId: projectId,
-        //            stepId: stepId,
-        //            mnemonicId: mnemonicId,
-        //            itemId: itemId,
-        //            value: value
-        //        })
-        //    }
-        //    else {
-        //        mnemonicItem.value = value;
-        //    }
-        //    initiateAutoSave();
-        //}
-
-        ////Save interactive financial chart details
-        //function saveInteractiveFinancialCharts() {
-        //    if (business.saveInteractiveFinancialChartMnemonics.length > 0) {
-
-        //        _.each(business.saveInteractiveFinancialChartMnemonics, function (mnemonicItem) {
-        //            financialChartService.saveInteractiveFinancialChart(mnemonicItem)
-        //                .then(function (response) {
-        //                    //TODO: send message to update chart id
-        //                    toast.simpleToast('Saved successfully');
-        //                });
-        //        });
-        //        business.saveInteractiveFinancialChartMnemonics = [];
-        //    }
-        //}
-
     }
 })();

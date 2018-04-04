@@ -122,7 +122,6 @@
             }
         }
 
-
         //Get Dashboard data
         function getDashboard(req, res, next) {
 
@@ -164,33 +163,6 @@
                 }
             );
         }
-
-        // function releaseWorkUp(projectId, userId, token)
-        // {
-        //     logger.debug('notifyWorkUpNotInUse - ');
-        //     logger.debug(projectId);
-        //     logger.debug(userId);
-        //     logger.debug(config.socketData.workup);
-
-        //     if(config.socketData.workup &&
-        //         config.socketData.workup.length > 0 &&
-        //         _.isUndefined(projectId))
-        //     {
-        //       var workup =  _.find(config.socketData.workup, function(work)
-        //                         {
-        //                            if(parseInt(work.userId) === parseInt(userId))
-        //                            {
-        //                                return work;
-        //                            }
-        //                         });
-
-        //         if(workup && !(token in config.userSocketInfo))
-        //         {
-        //             delete config.socketData.workup[workup];
-        //         }
-        //     }
-        // }
-
 
         //Get dashboard filter user details
         function getDashboardUsers(req, res, next)
@@ -299,8 +271,5 @@
         {
            return _.find(config.restcall.service, { name: serviceName });
         }
-
     };
-
 })(module.exports);
-

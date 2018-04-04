@@ -374,6 +374,5 @@
             }
             commonBusiness.emitMsg('update-notification-binding');
         }
-
     }
 })();

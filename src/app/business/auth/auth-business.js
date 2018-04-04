@@ -9,9 +9,9 @@
         .service('authBusiness', authBusiness);
 
     /* @ngInject */
-    function authBusiness($location, $mdDialog,
+    function authBusiness($location,
                           Idle, toast, store, dialog,
-                          clientConfig, commonBusiness, authService, notificationBusiness) {
+                          clientConfig, authService, notificationBusiness) {
         this.userInfo = null;
         var userName = null;
 
@@ -23,8 +23,6 @@
             },
             set: function(value) {
                 userName = value;
-                //store.set('x-session-user', userName);
-                //commonBusiness.emitMsg('UserName');
             }
         });
 
@@ -50,7 +48,6 @@
             notificationBusiness.clearNotifications();
         }
 
-
         function initIdle($scope)
         {
             ///When user in Idle mode
@@ -58,12 +55,10 @@
                  dialog.status('app/main/pages/timeout/timeout.html', false, false);
             });
 
-
             ///Event fires when user start using the app
             $scope.$on('IdleEnd', function () {
                 dialog.close();
             });
-
 
             ///Event fires when on timeout.
             $scope.$on('IdleTimeout', function () {

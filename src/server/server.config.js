@@ -261,17 +261,12 @@
                 }
             ]
         },
-        //userSocketInfo: {
-        //},
         socketIO: {
             //host: exports.client.protocol.concat('://', exports.client.domain, ':', exports.client.port),
             //host is built once we know the environment (DEV INT or PROD)
             host: '',
             socket: null
         },
-        //socketData: {
-        //    workup: []
-        //},
         //existing log is in use by server/routes/logging/logging.route.js to capture log messages from client
         log: {
             directory: './advisen-template',

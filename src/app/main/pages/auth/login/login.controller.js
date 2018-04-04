@@ -11,7 +11,7 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $scope, $location, $rootScope, clientConfig, authService,
+    function LoginController($window, $location, $rootScope, clientConfig, authService,
                              authBusiness, toast, store, Idle, commonBusiness)
     {
         var vm = this;

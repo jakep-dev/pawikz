@@ -12,10 +12,10 @@
 function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
                              $compile, $location, $interval, $mdToast,
                              DTColumnDefBuilder, DTColumnBuilder, DTOptionsBuilder,
-                             store, toast, dialog, clientConfig,
-                             authBusiness, commonBusiness, notificationBusiness, templateBusiness,
+                             store, dialog, clientConfig,
+                             commonBusiness, notificationBusiness,
                              breadcrumbBusiness, dashboardBusiness, workupBusiness,
-                             dashboardService, workupService, authService)
+                             dashboardService, authService)
 {
     var vm = this;
     vm.companyId = 0;

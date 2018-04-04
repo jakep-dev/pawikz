@@ -8,9 +8,9 @@
 })();
 
 /** @ngInject */
-function WorkUpController($rootScope, $scope, $stateParams, $location, logger, breadcrumbBusiness,
-                          workupBusiness, templateBusiness, notificationBusiness,
-                          commonBusiness, dialog, store, clientConfig, $mdToast)
+function WorkUpController($rootScope, $stateParams, logger, breadcrumbBusiness,
+                          workupBusiness, notificationBusiness,
+                          clientConfig)
 {
     var vm = this;
 

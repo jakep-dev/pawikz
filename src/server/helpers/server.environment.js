@@ -26,10 +26,8 @@
     environment.restcall = config.modules.restcall;
     environment.restcall.client = new Client();
     environment.restcall.url = environment.webService.protocol.concat('://', environment.webService.url, ':', environment.webService.port, '/', environment.webService.service);
-    //environment.userSocketInfo = config.modules.userSocketInfo;
     environment.socketIO = config.modules.socketIO;
     environment.socketIO.host = environment.client.protocol.concat('://', environment.client.domain, ':', environment.client.port);
-    //environment.socketData = config.modules.socketData;
 
     //existing log is in use by server/routes/logging/logging.route.js
     environment.log = config.modules.log;

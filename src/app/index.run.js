@@ -38,10 +38,8 @@
                             forceNew: true
                         }
                     );
-                    //clientConfig.socketInfo.socket = io();
                     clientConfig.socketInfo.socket.on('connect',
                         function() {
-                            //console.log('connected - emit room number ' + token);
                             clientConfig.socketInfo.socket.emit('room', token);
                         }
                     );
@@ -81,14 +79,13 @@
 
             var token = store.get('x-session-token');
             var userInfo = store.get('user-info');
-            //logger.log(token, 'info');
 
             if(token)
             {
                 var userId = '';
                 if(toParams && toParams.userId) {
                     userId = toParams.userId;
-                }else if(userInfo && userInfo.userId)
+                } else if(userInfo && userInfo.userId)
                 {
                     userId = userInfo.userId;
                 }
@@ -117,7 +114,6 @@
                     }
                 );
             }
-
             commonBusiness.resetBottomSheet();
         });
     }

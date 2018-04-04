@@ -1,7 +1,6 @@
 
 (function (workupRoute)
  {
-
     var _ = require('underscore');
     var interval = null;
     var logger;
@@ -161,7 +160,6 @@
                     logger.error(err);
                 }
             );
-
             res.status('200').send('');
         }
 
@@ -382,7 +380,6 @@
             );
         }
 
-
         function notifyStatus(token, data, key, source)
         {
             logger.debug('Renewal done - key = ' + key + ' source = ' + source);
@@ -400,34 +397,6 @@
                 }
             );
         }
-
-        // function updateRenewStatus(data)
-        // {
-        //    var workUp = _.find(config.socketData.workup, function(item)
-        //                 {
-        //                     if(parseInt(item.projectId) === parseInt(data.projectId))
-        //                     {
-        //                         return item;
-        //                     }
-        //                 });
-
-        //     logger.debug('updateRenewStatus - ');
-        //     logger.debug(data);
-        //     logger.debug(config.socketData.workup);
-        //     logger.debug(workUp);
-
-        //     if(workUp)
-        //     {
-        //         workUp.status = 'complete';
-        //     }
-
-        //     config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
-        //         type: 'renewal-complete',
-        //         data: {
-        //             projectId: data.projectId
-        //         }
-        //     });
-        // }
 
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
@@ -469,8 +438,5 @@
         function getServiceDetails(serviceName) {
             return _.find(config.restcall.service, {name: serviceName});
         }
-
     };
-
  })(module.exports);
-
