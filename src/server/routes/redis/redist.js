@@ -2,8 +2,8 @@
 (function(r)
 {
     var logger;
-    var redis = require('redis');
-    var redisAdapter;// = require('socket.io-redis');
+    var redis = require('ioredis');
+    var redisAdapter;
     var redisHost;
     var redisPort;
     var redisClient;
@@ -17,17 +17,24 @@
 
     r.init = function(config, log) {
         logger = log;
-        redisHost = config.redis.host;
-        redisPort = config.redis.port;
-        redisClient = redis.createClient({host: redisHost, port: redisPort, password: config.redis.auth});
+        redisClient = new redis.Cluster(
+            config.redisCluster,
+            {
+                scaleReads: 'slave'
+            }
+        );
         redisClient.on('ready', 
             function(err, reply){
                 logger.info('Redis redisClient: Connected');
                 redisClientReady = true;
             }
         );
-
-        redisSubscriber = redis.createClient({host: redisHost, port: redisPort, password: config.redis.auth});
+        redisSubscriber = new redis.Cluster(
+            config.redisCluster,
+            {
+                scaleReads: 'slave'
+            }
+        );
         redisSubscriber.on('ready', 
             function(err, reply){
                 logger.info('Redis redisSubscriber: Connected');
@@ -98,10 +105,26 @@
     r.getValue = getValue;
 
     function getKeyCount(keyPattern, callback) {
-        redisClient.keys(keyPattern, 
-            function(err, keys) {
-                if(err) throw err;
-                callback(keys);
+        var nodes = redisClient.nodes('master');
+        Promise.all(
+            nodes.map(
+                function(node) {
+                    return node.keys(keyPattern);
+                }
+          )
+        ).then(
+            function(allKeysLists) {
+                var list = new Array();
+                allKeysLists.forEach(
+                    function(keyList) {
+                            keyList.forEach(
+                            function(keyValue) {
+                                list.push(keyValue);
+                            }
+                        );
+                    }
+                );
+                callback(list);
             }
         );
     }
@@ -112,7 +135,15 @@
         if(typeof value === 'object') {
             value = JSON.stringify(value);
         }
-        redisClient.set(key, value, redis.print);
+        redisClient.set(key, value, 
+            function(error, reply) {
+                if(error) {
+                    logger.error('Error setting value for key = ' + key);
+                } else {
+                    logger.debug('Value set [' + key + ',' + value + ']');
+                }
+            }
+        );
     }
     r.setValue = setValue;
 

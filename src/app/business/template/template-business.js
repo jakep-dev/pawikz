@@ -218,7 +218,7 @@
 
                         if (!data) {
                             if (notification) {
-                                notification.requestId = data.requestId;
+                                notification.requestId = -1;
                                 notification.status = 'error';
                                 notification.progress = 100;
                                 notification.disabled = false;

@@ -17,11 +17,32 @@
             //transports: ['polling'],
             useCertificate: false
         },
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            auth: "sTu+eFet4AsPAchub4a8em6bAs4abrakh+wuyebrazekuWreq4SACr*Mudaw=swa#esTaf6aFrapUfAfezestU-t5fezU4rekathu6R_CrutA#e8h8_EsTecrEmU#7uV"
-        },
+        redisCluster: [
+            {
+                host: '192.168.100.203', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.203', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6380
+            }
+        ],
         log: {
             logLevel: 'debug',
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
@@ -47,11 +68,32 @@
             transports: ['polling'],
             useCertificate: false
         },
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            auth: "sTu+eFet4AsPAchub4a8em6bAs4abrakh+wuyebrazekuWreq4SACr*Mudaw=swa#esTaf6aFrapUfAfezestU-t5fezU4rekathu6R_CrutA#e8h8_EsTecrEmU#7uV"
-        },
+        redisCluster: [
+            {
+                host: '192.168.100.203', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.203', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6380
+            }
+        ],
         log: {
             logLevel: 'debug',
             maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
@@ -77,11 +119,32 @@
             transports: ['polling'],
             useCertificate: false
         },
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            auth: "sTu+eFet4AsPAchub4a8em6bAs4abrakh+wuyebrazekuWreq4SACr*Mudaw=swa#esTaf6aFrapUfAfezestU-t5fezU4rekathu6R_CrutA#e8h8_EsTecrEmU#7uV"
-        },
+        redisCluster: [
+            {
+                host: '192.168.100.203', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.203', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6380
+            }
+        ],
         log: {
             logLevel: 'debug',
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576

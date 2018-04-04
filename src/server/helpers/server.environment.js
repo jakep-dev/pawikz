@@ -7,15 +7,17 @@
         environment.webService = config.prod.webService;
         environment.client = config.prod.client;
         environment.logSetting = config.prod.log;
+        environment.redisCluster = config.prod.redisCluster;
     } else if (env === 'INT') {
         environment.webService = config.int.webService;
         environment.client = config.int.client;
         environment.logSetting = config.int.log;
+        environment.redisCluster = config.int.redisCluster;
     } else {
         environment.webService = config.dev.webService;
         environment.client = config.dev.client;
         environment.logSetting = config.dev.log;
-        environment.redis = config.dev.redis;
+        environment.redisCluster = config.dev.redisCluster;
         if (env != 'DEV') {
             env = 'DEV';
         }
