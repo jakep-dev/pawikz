@@ -46,7 +46,7 @@ gulp.task('html', ['inject', 'partials'], function ()
         .pipe($.rev())
         .pipe(jsFilter)
         .pipe($.ngAnnotate())
-        //.pipe($.uglify({ preserveComments: $.uglifySaveLicense })).on('error', conf.errorHandler('Uglify'))
+        .pipe($.uglify()).on('error', conf.errorHandler('Uglify'))
         .pipe(jsFilter.restore())
         .pipe(cssFilter)
         .pipe($.csso())
@@ -109,5 +109,12 @@ gulp.task('clean-all',['clean','clean-com'],function(done)
 
 });
 
-
 gulp.task('build', ['html', 'fonts', 'other']);
+
+gulp.task('test-js-files', 
+    function(done) {
+        return gulp.src(conf.paths.src + '/app/**/*.js')
+            .pipe($.uglify()).on('error', conf.errorHandler('Uglify'))
+            .pipe(gulp.dest(conf.paths.dist));
+    }
+);

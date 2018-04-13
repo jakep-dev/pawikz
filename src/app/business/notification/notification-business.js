@@ -31,7 +31,7 @@
         }
 
         function listenToSocket (token, userId) {
-            let socketInterval = $interval(function () {
+            var socketInterval = $interval(function () {
                 if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected)
                 {
                     clientConfig.socketInfo.doConnect();
