@@ -1,7 +1,7 @@
 (function (environment) {
     var Client = require('node-rest-client').Client;
     var config = require('../server.config');
-    var env = (process.env.STARTUP_ENV || 'DEV').toUpperCase().trim();
+    var env = (process.env.NODE_ENV || 'DEV').toUpperCase().trim();
 
     if (env === 'PROD') {
         environment.webService = config.prod.webService;

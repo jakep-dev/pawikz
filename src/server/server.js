@@ -8,7 +8,6 @@ var logging = require('./helpers/server.logging');
 var logger;
 
 var port = process.env.PORT || 4000;
-var environment = (process.env.NODE_ENV || 'DEV').toUpperCase();
 const isMultiThreading = parseInt(process.env.USE_MULTITHREADING) || 0;
 
 console.log('isMultiThreading = ' + isMultiThreading);
@@ -39,15 +38,15 @@ if(isMultiThreading) {
     } else {
         logging.init(config, cluster.worker.id);
         logger = logging.getLogger();
-        appStart(config, logging, logger, port, environment);
+        appStart(config, logging, logger, port);
     }
 } else {
     logging.init(config, 0);
     logger = logging.getLogger();
-    appStart(config, logging, logger, port, environment);
+    appStart(config, logging, logger, port);
 }
 
-function appStart(config, logging, logger, port, environment) {
+function appStart(config, logging, logger, port) {
     var express = require('express');
     var app = express();
     var bodyParser = require('body-parser');
@@ -86,14 +85,15 @@ function appStart(config, logging, logger, port, environment) {
     
     var routes = require('./routes');
     routes.init(app, server, config, logger);
-    
+
     app.get('/', function (req, res, next) {
         res.redirect('/pages/auth/login');
     });
-    
+
+    var environment = (process.env.STARTUP_ENV || 'DEV').toUpperCase().trim();
     switch (environment) {
     
-      case 'build':
+      case 'BUILD':
         logger.info('** BUILD **');
         app.use(express.static('./dist/'));
         app.use('/*', express.static('./dist/index.html'));
