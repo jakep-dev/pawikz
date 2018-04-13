@@ -76,8 +76,8 @@ function appStart(config, logging, logger, port) {
     var server = security.getServer(app, port, config.client.useCertificate,
             function () {
                 logger.info('Express server listening on port ' + port);
-                logger.info('NODE_ENV = ' + app.get('env'));
-                logger.info('Running ENV = ' + config.environment);
+                logger.info('STARTUP_ENV = ' + process.env['STARTUP_ENV']);
+                logger.info('NODE_ENV = ' + config.environment);
                 logger.info('__dirname = ' + __dirname);
                 logger.info('process.cwd = ' + process.cwd());
             }
