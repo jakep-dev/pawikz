@@ -17,6 +17,7 @@
             //transports: ['polling'],
             useCertificate: false
         },
+        redisKeyTTL: 14400,
         redisCluster: [
             {
                 host: '192.168.100.203', 
@@ -68,6 +69,7 @@
             transports: ['polling'],
             useCertificate: false
         },
+        redisKeyTTL: 14400,
         redisCluster: [
             {
                 host: '192.168.100.203', 
@@ -119,6 +121,7 @@
             transports: ['polling'],
             useCertificate: false
         },
+        redisKeyTTL: 14400,
         redisCluster: [
             {
                 host: '192.168.100.203', 

@@ -11,12 +11,14 @@
     var redisSubscriber;
     var redisSubscriberReady = false;
     var socketIO;
+    var keyExprirationTime = 60 * 60;
     const SESSION_PREFIX = 'uwf_session_';
 
     r.SESSION_PREFIX = SESSION_PREFIX;
 
     r.init = function(config, log) {
         logger = log;
+        keyExprirationTime = config.redisKeyTTL;
         redisClient = new redis.Cluster(
             config.redisCluster,
             {
@@ -130,12 +132,11 @@
     }
     r.getKeyCount = getKeyCount;
 
-
     function setValue(key, value) {
         if(typeof value === 'object') {
             value = JSON.stringify(value);
         }
-        redisClient.set(key, value, 
+        redisClient.setex(key, keyExprirationTime, value, 
             function(error, reply) {
                 if(error) {
                     logger.error('Error setting value for key = ' + key);
@@ -153,4 +154,3 @@
     r.deleteKey = deleteKey;
 
 })(module.exports);
-
