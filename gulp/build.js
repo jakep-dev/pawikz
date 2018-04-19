@@ -43,7 +43,10 @@ gulp.task('html', ['inject', 'partials'], function ()
     return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
         .pipe($.inject(partialsInjectFile, partialsInjectOptions))
         .pipe(assets = $.useref.assets())
-        .pipe($.rev())
+
+        //remove output file renaming because files in every nodejs needs to be the same name
+        //.pipe($.rev())
+
         .pipe(jsFilter)
         .pipe($.ngAnnotate())
         .pipe($.uglify()).on('error', conf.errorHandler('Uglify'))
