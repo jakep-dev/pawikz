@@ -41,6 +41,7 @@
 
                     var token = response.userinfo.token;
                     var userId = response.userinfo.userId;
+                    clientConfig.socketInfo.isRedis = response.isRedis;
                     authBusiness.userInfo = response.userinfo;
                     authBusiness.userName = response.userinfo.fullName;
                     commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);

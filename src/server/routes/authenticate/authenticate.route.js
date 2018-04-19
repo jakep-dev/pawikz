@@ -3,11 +3,12 @@
 {
 
     var u = require('underscore');
+    var config;
 
-    authenticateRoute.init = function(app, config, log)
+    authenticateRoute.init = function(app, c, log)
     {
+        config = c;
         var client = config.restcall.client;
-        var config = config;
         var logger = log;
 
         config.parallel([
@@ -113,9 +114,16 @@
 
             logger.debug(args);
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
+            var isRedis;
+            if(config.redis.setSocketIO) {
+                isRedis = true;
+            } else {
+                isRedis = false;
+            }
             client.get(url, args,
                 function (data, response) {
                     logger.logIfHttpError(url, args, data, response);
+                    data.isRedis = isRedis;
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',

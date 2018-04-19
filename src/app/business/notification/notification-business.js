@@ -320,30 +320,21 @@
             });
         }
 
-        //Common method for Renewal and Data Refresh
+        //Common method for Data Refresh
         function listenToDataWorkupStatus(notification, response, type){
 
             var projectId = null;
             var projectName;
             var tooltip;
 
-            //If notification.type is equal to 'Renewal'
-            if(notification.type === type &&
-               notification.id === parseInt(response.old_project_id)){
-                projectId = response.old_project_id;
-                projectName = response.project_name;
-                tooltip = 'Renewal work-up';
-            }
-
-            //If notification.type is equal to 'DataRefresh'
-            if(notification.type === type &&
-               notification.id === parseInt(response.projectId)){
-                projectId = response.projectId;
-                projectName = response.projectName;
-                tooltip = 'Refreshing data';
-            }
-
             if (notification) {
+                if(notification.type === type &&
+                    notification.id === parseInt(response.projectId)){
+                    projectId = response.projectId;
+                    projectName = response.projectName;
+                    tooltip = 'Refreshing data';
+                }
+    
                 notification.status = 'complete';
                 notification.progress = 100;
                 notification.disabled = false;

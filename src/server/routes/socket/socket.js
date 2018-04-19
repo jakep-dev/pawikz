@@ -4,19 +4,25 @@
     var _ = require('underscore');
     var workupBusiness;
     var logger;
-    var redis = require('../redis/redist');
+    var redis;
 
     socket.init = function(server, config, workupBiz, log)
     {
         workupBusiness = workupBiz;
+        redis = config.redis;
         logger = log;
 
         //Configure the websocket
-        var io = require('socket.io')(server);
+        var io;
+        if(redis.setSocketIO) {
+            io = require('socket.io')(server);
+            redis.setSocketIO(io);
+        } else {
+            io = require('socket.io').listen(server);
+        }
         //io.set('origins', config.socketIO.host);
         //io.set('transports', config.client.transports);
         //io.set('log level', config.client.logLevel);
-        redis.setSocketIO(io);
 
         config.socketIO.socket = io;
 
@@ -176,8 +182,5 @@
             });
             logger.debug('broadcastWorkUpRelease - finished');
         }
-
     }
-
 })(module.exports);
-

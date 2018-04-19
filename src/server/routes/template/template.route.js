@@ -7,11 +7,12 @@
     var stockCharts = require('../chart/chart.route.js');
     var financialCharts = require('../chart/financial-chart.route.js');
     var async = require('async');
+    var config;
 
-    schemaRoute.init = function(app, config, log)
+    schemaRoute.init = function(app, c, log)
     {
+        config = c;
         var client = config.restcall.client;
-        var config = config;
         var logger = log;
 
         templateBusiness.init(log);

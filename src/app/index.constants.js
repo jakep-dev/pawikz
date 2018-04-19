@@ -62,7 +62,7 @@
                     deleteAttachedArticles: '/api/news/deleteAttachedArticles'
                 },
                 reportsEndPoint: {
-                    get: '/api/reports/list',                    
+                    get: '/api/reports/list',
                     getPDFLink: '/api/reports/getPDFLink',
                     getPreviewReport: '/api/reports/getPreviewReport'
                 },
@@ -83,7 +83,8 @@
                 socket: undefined,
                 socketCORSPath: undefined,
                 transports: ['websocket', 'polling'],
-                doConnect: undefined
+                doConnect: undefined,
+                isRedis: undefined
             },
             activity: {
                 //In Seconds
@@ -123,7 +124,7 @@
                     deleteNewsItem :{
                         title : 'Would you like to delete?',
                         content: 'Selected News Aricles(s) will be deleted. Please Confirm.'
-                    } 
+                    }
                 },
                 analystReports: {
                     title : 'Purchase Report',

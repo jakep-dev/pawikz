@@ -50,33 +50,33 @@
             return title;
         }
 
-        function processIndices() {
+        function processIndices(scope) {
             var indices = stockChartBusiness.indices;
             if (indices.length == 0) {
                 stockService.getIndices()
                 .then(function (data) {
                     stockChartBusiness.indices = data;
-                    processSignificantDevelopmentSources();
+                    processSignificantDevelopmentSources(scope);
                 });
             } else {
-                processSignificantDevelopmentSources();
+                processSignificantDevelopmentSources(scope);
             }
         }
 
-        function processSignificantDevelopmentSources() {
+        function processSignificantDevelopmentSources(scope) {
             var significantDevelopmentSources = stockChartBusiness.significantDevelopmentSources;
             if (significantDevelopmentSources.length == 0) {
                 stockService.getSigDevSource()
                 .then(function (data) {
                     stockChartBusiness.significantDevelopmentSources = data;
-                    getSavedStockChart();
+                    getSavedStockChart(scope);
                 });
             } else {
-                getSavedStockChart();
+                getSavedStockChart(scope);
             }
         };
 
-        function getSavedStockChart() {
+        function getSavedStockChart(scope) {
             stockService.getSavedChartDefer(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid)
             .then(function (defferedData) {
                 var data = defferedData[0];
@@ -440,7 +440,7 @@
             });
         }
 
-        function getSavedFinancialChart() {
+        function getSavedFinancialChart(scope) {
             financialChartService.getSavedFinancialChart(financialChartBusiness.getSavedChartSettingsInputObject(commonBusiness.projectId, commonBusiness.stepId, scope.mnemonicid, scope.itemid))
             .then(function (data) {
                 //console.log(data);
@@ -759,16 +759,16 @@
             });
         };
 
-        function processRatioTypes() {
+        function processRatioTypes(scope) {
             var ratioTypes = financialChartBusiness.ratioTypes;
             if (ratioTypes.length == 0) {
                 financialChartService.getFinancialChartRatioTypes()
                 .then(function (data) {
                     financialChartBusiness.ratioTypes = data;
-                    getSavedFinancialChart();
+                    getSavedFinancialChart(scope);
                 });
             } else {
-                getSavedFinancialChart();
+                getSavedFinancialChart(scope);
             }
         }
 
@@ -798,10 +798,10 @@
                                 stockService.getCompetitors(commonBusiness.companyId)
                                 .then(function (data) {
                                     stockChartBusiness.competitors = data;
-                                    processIndices();
+                                    processIndices(scope);
                                 });
                             } else {
-                                processIndices();
+                                processIndices(scope);
                             }
 
                             break;
@@ -817,10 +817,10 @@
                                 financialChartService.getFinancialChartPeerAndIndustries(commonBusiness.companyId)
                                 .then(function (data) {
                                     financialChartBusiness.peerIndustries = data;
-                                    processRatioTypes();
+                                    processRatioTypes(scope);
                                 });
                             } else {
-                                processRatioTypes();
+                                processRatioTypes(scope);
                             }
                             break;
                         case 'bar':

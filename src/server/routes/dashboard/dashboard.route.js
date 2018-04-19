@@ -8,13 +8,13 @@
 
     var _ = require('underscore');
     var async = require('async');
-    var redis = require('../redis/redist');
+    var redis;
     var logger;
 
     dashboardRoute.init = function(app, config, log)
     {
         var client = config.restcall.client;
-        var config = config;
+        redis = config.redis;
         logger = log;
 
         config.parallel([

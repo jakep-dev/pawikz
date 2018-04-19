@@ -4,13 +4,14 @@
     var _ = require('underscore');
     var interval = null;
     var logger;
-    var redis = require('../redis/redist');
+    var redis;
     var logger;
 
     workupRoute.init = function(app, config, log)
     {
         logger = log;
         logger.debug('WorkUp Route Config - ');
+        redis = config.redis;
         var client = config.restcall.client;
 
         config.parallel([

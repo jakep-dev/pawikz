@@ -2,7 +2,7 @@
     var async = require('async');
     var u = require('underscore');
     var fs = require('fs');
-    var redis = require('../redis/redist');
+    var redis;
     var logger;
 
     function getImageBase64Data(imagePath) {
@@ -15,8 +15,7 @@
     pdfRoutes.init = function (app, config, log) {
         logger = log;
         var client = config.restcall.client;
-        var config = config;
-
+        redis = config.redis;
         var dividendImageData = getImageBase64Data('src/assets/icons/images/Stock_Dividend.jpg');
         var earningsImageData = getImageBase64Data('src/assets/icons/images/Stock_Earnings.jpg');
         var splitImageData = getImageBase64Data('src/assets/icons/images/Stock_Split.jpg');

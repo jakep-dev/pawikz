@@ -38,11 +38,15 @@ if(isMultiThreading) {
     } else {
         logging.init(config, cluster.worker.id);
         logger = logging.getLogger();
+        config.redis = require('./routes/redis/redist');
+        config.redis.init(config, logger);
         appStart(config, logging, logger, port);
     }
 } else {
     logging.init(config, 0);
     logger = logging.getLogger();
+    config.redis = require('./routes/redis/noRedis');
+    config.redis.init(config, logger)
     appStart(config, logging, logger, port);
 }
 
@@ -70,7 +74,7 @@ function appStart(config, logging, logger, port) {
     //}));
     app.use(bodyParser.json({ limit: '100mb' }));
     
-    security.setupSecurity(app);
+    security.setupSecurity(app, isMultiThreading);
     //false for http
     //true for https
     var server = security.getServer(app, port, config.client.useCertificate,

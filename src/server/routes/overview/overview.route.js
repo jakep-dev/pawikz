@@ -2,14 +2,14 @@
 (function(overviewRoute)
 {
     var _ = require('underscore');
-    var redis = require('../redis/redist');
+    var redis;
     var workupBusiness;
     var logger;
 
     overviewRoute.init = function(app, config, workupBiz, log)
     {
         var client = config.restcall.client;
-        var config = config;
+        redis = config.redis;
         workupBusiness = workupBiz;
         logger = log;
 
@@ -294,8 +294,5 @@
            }
            return data;
         }
-
     };
-
 })(module.exports);
-
