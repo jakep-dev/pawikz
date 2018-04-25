@@ -65,14 +65,14 @@
                 var url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName;
                 client.get(url, subContext.args,
                     function (data, response) {
-                        logger.logIfHttpError(url, subContext.args, data, response);
+                        logger.logIfHttpErrorRequest(url, subContext.args, data, response, context.token);
                         context.delete = context.projectId;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[removeWorkUp]Error');
-                        logger.error(err);
+                        logger.errorRequest('[removeWorkUp]Error', context.token);
+                        logger.errorRequest(err, context.token);
                         broadcastWorkUpInfo(context.token, context.projectId, context.userId, 'complete');
                         callback(null, context);
                     }
@@ -108,14 +108,14 @@
                 var url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName;
                 client.get(url, subContext.args,
                     function (data, response) {
-                        logger.logIfHttpError(url, subContext.args, data, response);
+                        logger.logIfHttpErrorRequest(url, subContext.args, data, response, context.token);
                         context.workUpList = data;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getFilteredDashboard]Error');
-                        logger.error(err);
+                        logger.errorRequest('[getFilteredDashboard]Error', context.token);
+                        logger.errorRequest(err, context.token);
                         callback(null, context);
                     }
                 );
@@ -153,13 +153,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getDashboard]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getDashboard]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -187,13 +187,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getDashboardUsers]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getDashboardUsers]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -222,13 +222,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getDashboardCompanies]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getDashboardCompanies]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }

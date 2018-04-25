@@ -139,9 +139,9 @@
         redisClient.setex(key, keyExprirationTime, value, 
             function(error, reply) {
                 if(error) {
-                    logger.error('Error setting value for key = ' + key);
+                    logger.errorRequest('Error setting value for key = ' + key, key);
                 } else {
-                    logger.debug('Value set [' + key + ',' + value + ']');
+                    logger.debugRequest('Value set [' + key + ',' + value + ']', key);
                 }
             }
         );

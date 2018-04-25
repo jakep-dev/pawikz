@@ -2,6 +2,7 @@
 'use strict';
 
 var numCPUs = require('os').cpus().length;
+var hostname = require('os').hostname();
 var cluster = require('cluster');
 var config = require('./helpers/server.environment');
 var logging = require('./helpers/server.logging');
@@ -17,7 +18,7 @@ if(isMultiThreading) {
         for (i = 0; i < numCPUs; i++) {
             cluster.fork();
         }
-        logging.init(config, 0);
+        logging.init(config, 0, hostname);
         logger = logging.getLogger();
         cluster.on('online', function(worker) {
             logger.info('Worker ' + worker.process.pid + ' is online');
@@ -36,14 +37,14 @@ if(isMultiThreading) {
             process.exit(0);
         });        
     } else {
-        logging.init(config, cluster.worker.id);
+        logging.init(config, cluster.worker.id, hostname);
         logger = logging.getLogger();
         config.redis = require('./routes/redis/redist');
         config.redis.init(config, logger);
         appStart(config, logging, logger, port);
     }
 } else {
-    logging.init(config, 0);
+    logging.init(config, 0, hostname);
     logger = logging.getLogger();
     config.redis = require('./routes/redis/noRedis');
     config.redis.init(config, logger)

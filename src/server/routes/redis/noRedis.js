@@ -39,21 +39,24 @@
                 }
             }
         );
-        logger.debug('getKeyCount for ' + keyPattern + ' has ' + list.length + ' elements');
+        logger.debugRequest('getKeyCount for ' + keyPattern + ' has ' + list.length + ' elements', keyPattern);
         callback(list);
     }
     r.getKeyCount = getKeyCount;
 
     function setValue(key, value) {
         userInfo[key] = value;
-        logger.debug('Value set [' + key + ',' + value + ']');
+        if(typeof value === 'object') {
+            value = JSON.stringify(value);
+        }
+        logger.debugRequest('Value set [' + key + ',' + value + ']', key);
     }
     r.setValue = setValue;
 
     function deleteKey(key) {
-        logger.debug(userInfo[key]);
+        logger.debugRequest(userInfo[key], key);
         delete userInfo[key];
-        logger.debug(userInfo[key]);
+        logger.debugRequest(userInfo[key], key);
     }
     r.deleteKey = deleteKey;
 

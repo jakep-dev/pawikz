@@ -39,14 +39,14 @@
         //logger.debug('[saveInteractiveStockChart]\n' + JSON.stringify(context.args));
         client.post(context.url, context.args,
             function (data, response) {
-                logger.logIfHttpError(context.url, context.args, data, response);
+                logger.logIfHttpErrorRequest(context.url, context.args, data, response, mnemonic.token);
                 context.results.data = data;
                 callback(null, context.results);
             }
         ).on('error',
             function (err) {
-                logger.error('[saveInteractiveStockChart]Error');
-                logger.error(err);
+                logger.errorRequest('[saveInteractiveStockChart]Error', mnemonic.token);
+                logger.errorRequest(err, mnemonic.token);
                 context.results.error = 'Error saving interactive stock chart';
                 callback(null, context.results);
             }
@@ -84,14 +84,14 @@
         //logger.debug('[saveSigDevItems]\n' + JSON.stringify(context.args));
         client.post(context.url, context.args,
             function (data, response) {
-                logger.logIfHttpError(context.url, context.args, data, response);
+                logger.logIfHttpErrorRequest(context.url, context.args, data, response, mnemonic.token);
                 context.results.data = data;
                 callback(null, context.results);
             }
         ).on('error',
             function (err) {
-                logger.error('[saveSigDevItems]Error');
-                logger.error(err);
+                logger.errorRequest('[saveSigDevItems]Error', mnemonic.token);
+                logger.errorRequest(err, mnemonic.token);
                 context.results.error = 'Error saving interactive stock chart';
                 callback(null, context.results);
             }
@@ -149,13 +149,13 @@
             //logger.debug('[getChartData] url = ' + url);
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getChartData]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getChartData]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -171,13 +171,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?keyword=' + keyword + '&ssnid=' + ssnid;
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getTickers]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getTickers]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -193,13 +193,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?ssnid=' + ssnid;
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getIndices]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getIndices]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -216,13 +216,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?company_id=' + companyId + '&ssnid=' + ssnid;
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getCompetitors]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getCompetitors]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -243,13 +243,13 @@
             //logger.debug('[getSavedChartData] url = ' + url);
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.status(response.statusCode).send(getChartSettings(data));
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getSavedChartData]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getSavedChartData]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -377,13 +377,13 @@
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getSavedChartTable]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getSavedChartTable]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -410,13 +410,13 @@
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getSignificantDevelopmentList]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getSignificantDevelopmentList]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
 
@@ -444,13 +444,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getMascadLargeLosseList]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getMascadLargeLosseList]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
 
@@ -476,13 +476,13 @@
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getSignificantDevelopmentDetail]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getSignificantDevelopmentDetail]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
 
@@ -508,13 +508,13 @@
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getMascadLargeLosseDetail]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getMascadLargeLosseDetail]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
 
@@ -539,13 +539,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getSigDevSource]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getSigDevSource]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
 

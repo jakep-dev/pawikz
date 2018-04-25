@@ -43,13 +43,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getProjectHistoryFilters]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getProjectHistoryFilters]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -79,18 +79,18 @@
                 }
             };
 
-            logger.debug('Project History Args - ');
-            logger.debug(args);
+            logger.debugRequest('Project History Args - ', args.parameters.ssnid);
+            logger.debugRequest(args, args.parameters.ssnid);
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getProjectHistory]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getProjectHistory]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -117,13 +117,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(setOverViewDetails(data));
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getOverviewDefer]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getOverviewDefer]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -153,15 +153,15 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     workupBusiness.lock(req.body.projectId, req.body.userId, req.headers['x-session-token']);
                     broadcastWorkUpInfo(req.headers['x-session-token'], req.body.userId, req.body.projectId, 'in-process');
                     res.status(response.statusCode).send(setOverViewDetails(data));
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getOverview]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getOverview]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -170,18 +170,18 @@
         function saveOverview(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            logger.debug('Parameters -');
-            logger.debug(req.body);
+            logger.debugRequest('Parameters -', req);
+            logger.debugRequest(req.body, req);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.saveOverview;
             }
 
-            logger.debug(methodName);
+            logger.debugRequest(methodName, req);
 
             var args =
             {
@@ -195,17 +195,17 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            logger.debug(args);
+            logger.debugRequest(args, args.data.token);
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.post(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.data.token);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[saveOverview]Error');
-                    logger.error(err);
+                    logger.errorRequest('[saveOverview]Error', args.data.token);
+                    logger.errorRequest(err, args.data.token);
                 }
             );
         }
@@ -214,7 +214,7 @@
         {
             redis.getValue(redis.SESSION_PREFIX + token,
                 function(userContext) {
-                    logger.debug('NotifyWorkUpUse - ' + userId);
+                    logger.debugRequest('NotifyWorkUpUse - ' + userId, token);
                     if(userContext) {
                         //Release all workup been lock before.
                         var workup = _.find(userContext.workups, function(item)
@@ -226,16 +226,16 @@
                             }
                         });
 
-                        logger.debug('WorkUps');
-                        logger.debug(workup);
+                        logger.debugRequest('WorkUps', token);
+                        logger.debugRequest(workup, token);
 
                         if(workup)
                         {
                             workup.status = 'complete';
                         }
 
-                        logger.debug('After Delete');
-                        logger.debug(userContext.workups);
+                        logger.debugRequest('After Delete', token);
+                        logger.debugRequest(userContext.workups, token);
 
                         workup = _.find(userContext.workups, function(item)
                         {
@@ -259,8 +259,8 @@
                             });
                         }
                         redis.setValue(redis.SESSION_PREFIX + token, { userId:userId, workups: userContext.workups});
-                        logger.debug('Workup broadcast-');
-                        logger.debug(userContext.workups);
+                        logger.debugRequest('Workup broadcast-', token);
+                        logger.debugRequest(userContext.workups, token);
 
                         config.socketIO.socket.sockets.to(token).emit('workup-room-message', {
                             type: 'workup-info',

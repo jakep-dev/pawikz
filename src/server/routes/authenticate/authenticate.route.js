@@ -25,11 +25,11 @@
 
             if(!u.isUndefined(service) && !u.isNull(service))
             {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.userInfo;
             }
 
-            logger.debug(methodName);
+            logger.debugRequest(methodName, req);
 
             var args =
             {
@@ -39,7 +39,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            logger.debug(args);
+            logger.debugRequest(args, req);
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
@@ -48,8 +48,8 @@
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getUserInfo]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getUserInfo]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -80,8 +80,8 @@
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[logout]Error');
-                    logger.error(err);
+                    logger.errorRequest('[logout]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -89,19 +89,19 @@
         //Authenticate the user and save token
         function authenticate(req, res, next)
         {
-            logger.debug('Parameters -');
-            logger.debug(req.body);
+            logger.debugRequest('Parameters -', req);
+            logger.debugRequest(req.body, req);
 
             var service = getServiceDetails('templateManager');
             var methodName = '';
 
             if(!u.isUndefined(service) && !u.isNull(service))
             {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.auth;
             }
 
-            logger.debug(methodName);
+            logger.debugRequest(methodName, req);
 
             var args =
             {
@@ -112,7 +112,7 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            logger.debug(args);
+            logger.debugRequest(args, req);
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
             var isRedis;
             if(config.redis.setSocketIO) {
@@ -128,8 +128,8 @@
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[authenticate]Error');
-                    logger.error(err);
+                    logger.errorRequest('[authenticate]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
