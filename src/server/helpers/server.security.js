@@ -1,4 +1,4 @@
-﻿(function (server) {
+(function (server) {
 
     var cookieParser = require('cookie-parser');
     var csrf = require('csurf');
@@ -12,7 +12,7 @@
         }
     );
 
-    function setupSecurity(expressServer) {
+    function setupSecurity(expressServer, isMultiThreading) {
         //Cookie secret parameter
         expressServer.use(cookieParser('TmN!m9BmqS5x%g8Zdd6p%sqP2G6kft@z5SztHzN##Mc%wk6cL$#?yfUGA=&Xw7rLVB5@WQP7k_+#YWtR2-9u#^&U8fhdDL-Vrjq9%uAt^UfN?ew+SCbcQq&_YZsGmAdx'));
         expressServer.use(csrfProtection);
@@ -28,6 +28,8 @@
             res.header('X-Frame-Options', 'SAMEORIGIN');
             res.header('X-XSS-Protection', '1; mode=block');
             res.header('X-Content-Type-Options', 'nosniff');
+
+            res.cookie('isMultiThreading', '' + isMultiThreading);
             return next();
         });
     }

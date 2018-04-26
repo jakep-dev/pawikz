@@ -17,13 +17,40 @@
             transports: ['polling'],
             useCertificate: false
         },
+        redisKeyTTL: 14400,
+        redisCluster: [
+            {
+                host: '192.168.100.203', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.203', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6380
+            }
+        ],
         log: {
             logLevel: 'debug',
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
-            logFilePath: '_all_msg.log',
-            exceptionLogFilePath: '_exceptions.log'
+            logFilePath: 'uwf-%DATE%.log',
+            exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
         }
     };
 
@@ -42,13 +69,40 @@
             transports: ['polling'],
             useCertificate: false
         },
+        redisKeyTTL: 14400,
+        redisCluster: [
+            {
+                host: '10.0.35.76', 
+                port: 6379
+            },
+            {
+                host: '10.0.35.76', 
+                port: 6380
+            },
+            {
+                host: '10.0.35.77', 
+                port: 6379
+            },
+            {
+                host: '10.0.35.77', 
+                port: 6380
+            },
+            {
+                host: '10.0.35.78', 
+                port: 6379
+            },
+            {
+                host: '10.0.35.78', 
+                port: 6380
+            }
+        ],
         log: {
             logLevel: 'debug',
             maxSize: 10485760, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
-            logFilePath: '_all_msg.log',
-            exceptionLogFilePath: '_exceptions.log'
+            logFilePath: 'uwf-%DATE%.log',
+            exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
         }
     };
 
@@ -67,13 +121,40 @@
             transports: ['polling'],
             useCertificate: false
         },
+        redisKeyTTL: 14400,
+        redisCluster: [
+            {
+                host: '192.168.100.203', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.203', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.201', 
+                port: 6380
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6379
+            },
+            {
+                host: '192.168.100.202', 
+                port: 6380
+            }
+        ],
         log: {
             logLevel: 'debug',
             maxSize: 1048576, //1MB = 1 * 1024 * 1024 = 1048576
             maxFiles: 2000,
             dirName: '/data/logs/nodejs',
-            logFilePath: '_all_msg.log',
-            exceptionLogFilePath: '_exceptions.log'
+            logFilePath: 'uwf-%DATE%.log',
+            exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
         }
     };
 
@@ -183,16 +264,11 @@
                 }
             ]
         },
-        userSocketInfo: {
-        },
         socketIO: {
             //host: exports.client.protocol.concat('://', exports.client.domain, ':', exports.client.port),
             //host is built once we know the environment (DEV INT or PROD)
             host: '',
             socket: null
-        },
-        socketData: {
-            workup: []
         },
         //existing log is in use by server/routes/logging/logging.route.js to capture log messages from client
         log: {

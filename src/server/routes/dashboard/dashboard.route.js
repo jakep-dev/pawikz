@@ -8,12 +8,13 @@
 
     var _ = require('underscore');
     var async = require('async');
+    var redis;
     var logger;
 
     dashboardRoute.init = function(app, config, log)
     {
         var client = config.restcall.client;
-        var config = config;
+        redis = config.redis;
         logger = log;
 
         config.parallel([
@@ -64,14 +65,14 @@
                 var url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName;
                 client.get(url, subContext.args,
                     function (data, response) {
-                        logger.logIfHttpError(url, subContext.args, data, response);
+                        logger.logIfHttpErrorRequest(url, subContext.args, data, response, context.token);
                         context.delete = context.projectId;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[removeWorkUp]Error');
-                        logger.error(err);
+                        logger.errorRequest('[removeWorkUp]Error', context.token);
+                        logger.errorRequest(err, context.token);
                         broadcastWorkUpInfo(context.token, context.projectId, context.userId, 'complete');
                         callback(null, context);
                     }
@@ -107,20 +108,19 @@
                 var url = config.restcall.url + '/' + subContext.service.name + '/' + subContext.methodName;
                 client.get(url, subContext.args,
                     function (data, response) {
-                        logger.logIfHttpError(url, subContext.args, data, response);
+                        logger.logIfHttpErrorRequest(url, subContext.args, data, response, context.token);
                         context.workUpList = data;
                         callback(null, context);
                     }
                 ).on('error',
                     function (err) {
-                        logger.error('[getFilteredDashboard]Error');
-                        logger.error(err);
+                        logger.errorRequest('[getFilteredDashboard]Error', context.token);
+                        logger.errorRequest(err, context.token);
                         callback(null, context);
                     }
                 );
             }
         }
-
 
         //Get Dashboard data
         function getDashboard(req, res, next) {
@@ -153,43 +153,16 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getDashboard]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getDashboard]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
-
-        function releaseWorkUp(projectId, userId, token)
-        {
-            logger.debug('notifyWorkUpNotInUse - ');
-            logger.debug(projectId);
-            logger.debug(userId);
-            logger.debug(config.socketData.workup);
-
-            if(config.socketData.workup &&
-                config.socketData.workup.length > 0 &&
-                _.isUndefined(projectId))
-            {
-              var workup =  _.find(config.socketData.workup, function(work)
-                                {
-                                   if(parseInt(work.userId) === parseInt(userId))
-                                   {
-                                       return work;
-                                   }
-                                });
-
-                if(workup && !(token in config.userSocketInfo))
-                {
-                    delete config.socketData.workup[workup];
-                }
-            }
-        }
-
 
         //Get dashboard filter user details
         function getDashboardUsers(req, res, next)
@@ -214,13 +187,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getDashboardUsers]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getDashboardUsers]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -249,13 +222,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getDashboardCompanies]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getDashboardCompanies]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -263,41 +236,40 @@
         //Broadcast workup details to all users.
         function broadcastWorkUpInfo(token, projectId, userId, status)
         {
-            if((token in config.userSocketInfo) &&
-                config.socketIO.socket)
-            {
-                var workup = _.find(config.socketData.workup, function(item) {
-                    if (parseInt(item.projectId) === parseInt(projectId)) {
-                        return item;
+            redis.getValue(redis.SESSION_PREFIX + token, 
+                function(userContext) {
+                    if(userContext) {
+                        var workup = _.find(userContext.workups, function(item) {
+                            if (parseInt(item.projectId) === parseInt(projectId)) {
+                                return item;
+                            }
+                        });
+        
+                        if(workup)
+                        {
+                            workup.status = status;
+                        }
+                        else {
+                            //Adding data into the socketData for future user.
+                            userContext.workups.push({
+                                projectId: projectId,
+                                status: status,
+                                userId: userId
+                            });
+                        }
+                        redis.setValue(redis.SESSION_PREFIX + token, { userId:userId, workups: userContext.workups});
+                        config.socketIO.socket.sockets.emit('workup-room-message', {
+                            type: 'workup-info',
+                            data: userContext.workups
+                        });
                     }
-                });
-
-                if(workup)
-                {
-                    workup.status = status;
                 }
-                else {
-                    //Adding data into the socketData for future user.
-                    config.socketData.workup.push({
-                        projectId: projectId,
-                        status: status,
-                        userId: userId
-                    });
-                }
-
-                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
-                    type: 'workup-info',
-                    data: config.socketData.workup
-                });
-            }
+            );
         }
 
         function getServiceDetails(serviceName)
         {
            return _.find(config.restcall.service, { name: serviceName });
         }
-
     };
-
 })(module.exports);
-

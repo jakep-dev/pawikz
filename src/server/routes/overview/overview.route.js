@@ -3,13 +3,14 @@
 {
 
     var _ = require('underscore');
+    var redis;
     var workupBusiness;
     var logger;
 
     overviewRoute.init = function(app, config, workupBiz, log)
     {
         var client = config.restcall.client;
-        var config = config;
+        redis = config.redis;
         workupBusiness = workupBiz;
         logger = log;
 
@@ -43,13 +44,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getProjectHistoryFilters]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getProjectHistoryFilters]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -79,18 +80,18 @@
                 }
             };
 
-            logger.debug('Project History Args - ');
-            logger.debug(args);
+            logger.debugRequest('Project History Args - ', args.parameters.ssnid);
+            logger.debugRequest(args, args.parameters.ssnid);
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getProjectHistory]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getProjectHistory]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -117,13 +118,13 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(setOverViewDetails(data));
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getOverviewDefer]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getOverviewDefer]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -153,15 +154,15 @@
             var url = config.restcall.url + '/templateSearch/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     workupBusiness.lock(req.body.projectId, req.body.userId, req.headers['x-session-token']);
                     broadcastWorkUpInfo(req.headers['x-session-token'], req.body.userId, req.body.projectId, 'in-process');
                     res.status(response.statusCode).send(setOverViewDetails(data));
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getOverview]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getOverview]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -170,18 +171,18 @@
         function saveOverview(req, res, next)
         {
             var service = getServiceDetails('templateManager');
-            logger.debug('Parameters -');
-            logger.debug(req.body);
+            logger.debugRequest('Parameters -', req);
+            logger.debugRequest(req.body, req);
 
             var methodName = '';
 
             if(!_.isUndefined(service) && !_.isNull(service))
             {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.saveOverview;
             }
 
-            logger.debug(methodName);
+            logger.debugRequest(methodName, req);
 
             var args =
             {
@@ -195,86 +196,86 @@
                 headers:{'Content-Type':'application/json'}
             };
 
-            logger.debug(args);
+            logger.debugRequest(args, args.data.token);
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.post(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.data.token);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[saveOverview]Error');
-                    logger.error(err);
+                    logger.errorRequest('[saveOverview]Error', args.data.token);
+                    logger.errorRequest(err, args.data.token);
                 }
             );
         }
 
         function broadcastWorkUpInfo(token, userId, projectId, status)
         {
-            logger.debug('NotifyWorkUpUse - ' + userId);
+            redis.getValue(redis.SESSION_PREFIX + token,
+                function(userContext) {
+                    logger.debugRequest('NotifyWorkUpUse - ' + userId, token);
+                    if(userContext) {
+                        //Release all workup been lock before.
+                        var workup = _.find(userContext.workups, function(item)
+                        {
+                            if(parseInt(item.userId) === parseInt(userId) &&
+                                item.status === 'in-process')
+                            {
+                                return item;
+                            }
+                        });
 
-            if((token in config.userSocketInfo) &&
-                config.socketIO.socket)
-            {
-                
-                //Release all workup been lock before. 
-                var workup = _.find(config.socketData.workup, function(item)
-                {
-                    if(parseInt(item.userId) === parseInt(userId) &&
-                        item.status === 'in-process')
-                    {
-                        return item;
+                        logger.debugRequest('WorkUps', token);
+                        logger.debugRequest(workup, token);
+
+                        if(workup)
+                        {
+                            workup.status = 'complete';
+                        }
+
+                        logger.debugRequest('After Delete', token);
+                        logger.debugRequest(userContext.workups, token);
+
+                        workup = _.find(userContext.workups, function(item)
+                        {
+                            if(parseInt(item.projectId) === parseInt(projectId))
+                            {
+                                return item;
+                            }
+                        });
+
+                        if(workup)
+                        {
+                            workup.status = status;
+                            workup.userId = userId.toString();
+                        }
+                        else {
+                            //Adding data into the socketData for future user.
+                            userContext.workups.push({
+                                projectId: projectId,
+                                status: status,
+                                userId: userId.toString()
+                            });
+                        }
+                        redis.setValue(redis.SESSION_PREFIX + token, { userId:userId, workups: userContext.workups});
+                        logger.debugRequest('Workup broadcast-', token);
+                        logger.debugRequest(userContext.workups, token);
+
+                        config.socketIO.socket.sockets.to(token).emit('workup-room-message', {
+                            type: 'workup-info',
+                            data: userContext.workups
+                        });
                     }
-                });
-
-                logger.debug('WorkuPs');
-                logger.debug(workup);
-
-                if(workup)
-                {
-                    workup.status = 'complete';
                 }
-
-                logger.debug('After Delete');
-                logger.debug(config.socketData.workup);
-                
-                workup = _.find(config.socketData.workup, function(item)
-                {
-                    if(parseInt(item.projectId) === parseInt(projectId))
-                    {
-                        return item;
-                    }
-                });
-
-                if(workup)
-                {
-                    workup.status = status;
-                    workup.userId = userId.toString();
-                }
-                else {
-                    //Adding data into the socketData for future user.
-                    config.socketData.workup.push({
-                        projectId: projectId,
-                        status: status,
-                        userId: userId.toString()
-                    });
-                }
-
-                logger.debug('Workup broadcast-');
-                logger.debug(config.socketData.workup);
-
-                config.socketIO.socket.sockets.in('workup-room').emit('workup-room-message', {
-                    type: 'workup-info',
-                    data: config.socketData.workup
-                });
-            }
+            );
         }
 
         function getServiceDetails(serviceName) {
             return _.find(config.restcall.service, {name: serviceName});
         }
-        
+
         function setOverViewDetails(data)
         {
             if(data && data.templateOverview && data.templateOverview.steps)
@@ -294,8 +295,5 @@
            }
            return data;
         }
-
     };
-
 })(module.exports);
-
