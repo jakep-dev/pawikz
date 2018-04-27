@@ -28,17 +28,17 @@
             }
         };
 
-        logger.debug('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token);
+        logger.debugRequest('Lock projectId- ' + projectId + ' userId- ' + userId + ' token- ' + token, token);
         var url = config.restcall.url + '/' + service.name + '/' + methodName;
         client.get(url, args,
             function (data, response)
             {
-                logger.logIfHttpError(url, args, data, response);
+                logger.logIfHttpErrorRequest(url, args, data, response, token);
             }
         ).on('error',
             function (err) {
-                logger.error('[workupBusiness.lock]Error');
-                logger.error(err);
+                logger.errorRequest('[workupBusiness.lock]Error', token);
+                logger.errorRequest(err, token);
             }
         );
     };
@@ -69,12 +69,12 @@
         client.get(url, args,
             function (data, response)
             {
-                logger.logIfHttpError(url, args, data, response);
+                logger.logIfHttpErrorRequest(url, args, data, response, token);
             }
         ).on('error',
             function (err) {
-                logger.error('[workupBusiness.unlock]Error');
-                logger.error(err);
+                logger.errorRequest('[workupBusiness.unlock]Error', token);
+                logger.errorRequest(err, token);
             }
         );
     };

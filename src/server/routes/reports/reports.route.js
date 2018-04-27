@@ -25,7 +25,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.getList;
             }
 
@@ -40,13 +40,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.get(url, args, 
                 function(data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getList - Analyst Report]');
-                    logger.error(err); 
+                    logger.errorRequest('[getList - Analyst Report]', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid); 
                 }
             );
         }
@@ -57,7 +57,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.getPDFLink;
             }
 
@@ -99,7 +99,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.getPreviewReport;
             }
 
@@ -115,13 +115,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.post(url, args, 
                 function(data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.data.ssnid);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getPreviewReport - Analyst Report]');
-                    logger.error(err); 
+                    logger.errorRequest('[getPreviewReport - Analyst Report]', args.data.ssnid);
+                    logger.errorRequest(err, args.data.ssnid); 
                 }
             );
         }

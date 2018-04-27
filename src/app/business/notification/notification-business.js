@@ -8,7 +8,7 @@
     /* @ngInject */
     function notificationBusiness(toast, dialog,
                                   $rootScope, $mdToast, $interval,
-                                  clientConfig, commonBusiness, workupService) {
+                                  clientConfig, logger, commonBusiness, workupService) {
         var business = {
             notifications: [],
             initializeMessages: initializeMessages,
@@ -31,21 +31,22 @@
         }
 
         function listenToSocket (token, userId) {
-            let socketInterval = $interval(function () {
-                if(clientConfig.socketInfo.socket.disconnected)
+            var socketInterval = $interval(function () {
+                if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected)
                 {
-                    clientConfig.socketInfo.socket.connect();
+                    clientConfig.socketInfo.doConnect();
                 }
 
-                console.log('ListenToSocket token - ', token, ' - ', userId);
-
+                logger.log('ListenToSocket token - ', token, ' - ', userId);
+                clientConfig.socketInfo.context = {
+                    token: token,
+                    userId: userId
+                };
                 if(token && userId) {
-                    clientConfig.socketInfo.socket.emit('init-socket',{
-                        token: token,
-                        userId: userId
-                    }, function(data) {
-                        
-                    });
+                    clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
+                        function(data) {
+                        }
+                    );
                 }
 
                 checkForNotificationStatusFor15();
@@ -54,7 +55,7 @@
                     console.log('Inside isAllNotificationCompleted')
                     $interval.cancel(socketInterval);
                 }
-                
+
             }, 10000, token, userId);
         }
 
@@ -65,7 +66,7 @@
                     return not;
                 }
             });
-        
+
            if (notification) {
                 workupService.checkStatus(notification.id)
                              .then(function(data){
@@ -257,9 +258,52 @@
                             return not;
                         }
                     });
-                    listenToDataWorkupStatus(notification, response, 'Renewal');
+                    listenToWorkupRenewalStatus(notification, response, userId);
                 }
             });
+        }
+
+        function listenToWorkupRenewalStatus(notification, response, userId) {
+
+            var projectName;
+
+            if(notification) {
+                if(response.projectId && response.project_name) {
+                    notification.status = 'complete';
+                    notification.progress = 100;
+                    notification.disabled = false;
+                    notification.url = parseInt(response.projectId);
+                } else {
+                    notification.status = 'error';
+                    notification.tooltip = 'Workup Renewal error';
+                    notification.progress = 100;
+                    notification.disabled = false;
+                    toast.simpleToast("Issue with Workup Renewal. Please try again.");
+                }
+            } else {
+                projectName = response.project_name || '';
+
+                business.pushNotification({
+                    id: parseInt(response.old_project_id),
+                    title: decodeURIComponent(projectName),
+                    type: 'Renewal',
+                    icon: 'refresh',
+                    progress: 100,
+                    disabled: false,
+                    tooltip: 'Renewal work-up still in-progress',
+                    status: 'complete',
+                    userId: userId,
+                    istrackable: false,
+                    url: parseInt(response.projectId)
+                });
+            }
+
+            if (response.source && response.source === 'fromDashboard' && dashboardCallback) {
+                dashboardCallback(response);
+            } else if (response.source && ((response.source === 'reload-overview') || (response.source === 'reload-steps'))) {
+                dialog.close();
+            }
+            commonBusiness.emitMsg('update-notification-binding');
         }
 
         function listenToDataRefreshStatus(userId) {
@@ -271,35 +315,26 @@
                             return not;
                         }
                     });
-                    listenToDataWorkupStatus(notification, response, 'DataRefresh');
+                    listenToDataWorkupStatus(notification, response, userId);
                 }
             });
         }
 
-        //Common method for Renewal and Data Refresh
-        function listenToDataWorkupStatus(notification, response, type){
+        //Common method for Data Refresh
+        function listenToDataWorkupStatus(notification, response, userId){
 
             var projectId = null;
             var projectName;
             var tooltip;
 
-            //If notification.type is equal to 'Renewal'
-            if(notification.type === type &&
-               notification.id === parseInt(response.old_project_id)){
-                projectId = response.old_project_id;
-                projectName = response.project_name;
-                tooltip = 'Renewal work-up';
-            }
-
-            //If notification.type is equal to 'DataRefresh'
-            if(notification.type === type &&
-               notification.id === parseInt(response.projectId)){
-                projectId = response.projectId;
-                projectName = response.projectName;
-                tooltip = 'Refreshing data';
-            }
-
             if (notification) {
+                if(notification.type === 'DataRefresh' &&
+                    notification.id === parseInt(response.projectId)){
+                    projectId = response.projectId;
+                    projectName = response.projectName;
+                    tooltip = 'Refreshing data';
+                }
+    
                 notification.status = 'complete';
                 notification.progress = 100;
                 notification.disabled = false;
@@ -311,7 +346,7 @@
                 business.pushNotification({
                     id: parseInt(projectId),
                     title: decodeURIComponent(projectName),
-                    type: type,
+                    type: 'DataRefresh',
                     icon: 'refresh',
                     progress: 100,
                     disabled: false,
@@ -330,6 +365,5 @@
             }
             commonBusiness.emitMsg('update-notification-binding');
         }
-
     }
 })();
