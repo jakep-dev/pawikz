@@ -40,6 +40,7 @@ if(isMultiThreading) {
         logging.init(config, cluster.worker.id, hostname);
         logger = logging.getLogger();
         config.redis = require('./routes/redis/redist');
+        logger.debug('Using redist');
         config.redis.init(config, logger);
         appStart(config, logging, logger, port);
     }
@@ -47,6 +48,7 @@ if(isMultiThreading) {
     logging.init(config, 0, hostname);
     logger = logging.getLogger();
     config.redis = require('./routes/redis/noRedis');
+    logger.debug('Using noRedis');
     config.redis.init(config, logger)
     appStart(config, logging, logger, port);
 }

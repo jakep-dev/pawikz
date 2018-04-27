@@ -19,9 +19,9 @@
             redis.setSocketIO(io);
         } else {
             io = require('socket.io').listen(server);
+            io.set('origins', config.socketIO.host);
+            io.set('transports', config.client.transports);
         }
-        //io.set('origins', config.socketIO.host);
-        //io.set('transports', config.client.transports);
         //io.set('log level', config.client.logLevel);
 
         config.socketIO.socket = io;
