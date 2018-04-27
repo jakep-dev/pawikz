@@ -258,12 +258,12 @@
                             return not;
                         }
                     });
-                    listenToWorkupRenewalStatus(notification, response);
+                    listenToWorkupRenewalStatus(notification, response, userId);
                 }
             });
         }
 
-        function listenToWorkupRenewalStatus(notification, response) {
+        function listenToWorkupRenewalStatus(notification, response, userId) {
 
             var projectName;
 
@@ -315,20 +315,20 @@
                             return not;
                         }
                     });
-                    listenToDataWorkupStatus(notification, response, 'DataRefresh');
+                    listenToDataWorkupStatus(notification, response, userId);
                 }
             });
         }
 
         //Common method for Data Refresh
-        function listenToDataWorkupStatus(notification, response, type){
+        function listenToDataWorkupStatus(notification, response, userId){
 
             var projectId = null;
             var projectName;
             var tooltip;
 
             if (notification) {
-                if(notification.type === type &&
+                if(notification.type === 'DataRefresh' &&
                     notification.id === parseInt(response.projectId)){
                     projectId = response.projectId;
                     projectName = response.projectName;
@@ -346,7 +346,7 @@
                 business.pushNotification({
                     id: parseInt(projectId),
                     title: decodeURIComponent(projectName),
-                    type: type,
+                    type: 'DataRefresh',
                     icon: 'refresh',
                     progress: 100,
                     disabled: false,
