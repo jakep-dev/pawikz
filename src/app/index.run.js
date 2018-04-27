@@ -67,10 +67,10 @@
         if(clientConfig.socketInfo.isRedis == undefined) {
             //set to true if the back end is using multi threading / redis, otherwise false
             //for developers debugging the app on local machine without redis installed set this value to false.
-            if($cookies.get('isMultiThreading')) {
-                clientConfig.socketInfo.isRedis = true;
-            } else {
+            if($cookies.get('isMultiThreading') === "0") {
                 clientConfig.socketInfo.isRedis = false;
+            } else {
+                clientConfig.socketInfo.isRedis = true;
             }
         }
 
