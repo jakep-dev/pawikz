@@ -18,7 +18,6 @@
             io = require('socket.io')(server);
             redis.setSocketIO(io);
             io.set('origins', config.socketIO.host);
-            io.set('transports', config.client.transports);
         } else {
             io = require('socket.io').listen(server);
             io.set('origins', config.socketIO.host);

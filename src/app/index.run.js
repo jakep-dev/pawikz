@@ -46,8 +46,6 @@
                         clientConfig.socketInfo.socket = io(clientConfig.socketInfo.socketCORSPath,
                             {
                                 transports: clientConfig.socketInfo.transports
-                                //,
-                                //forceNew: true
                             }
                         );
                     } else {
