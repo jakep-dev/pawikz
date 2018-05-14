@@ -23,12 +23,13 @@
             res.locals._csrf = csrfToken;
 
             res.removeHeader("X-Powered-By");
+            var cspHeader = '';
             if(connectSrc !== '') {
-                res.header('Content-Security-Policy', "script-src 'self' *.advisen.com 'unsafe-eval' 'unsafe-inline'; object-src 'self'; connect-src 'self' " + connectSrc);
+                cspHeader += " script-src 'self' *.advisen.com 'unsafe-eval' 'unsafe-inline'; object-src 'self'; connect-src 'self' " + connectSrc;
             } else {
-                res.header('Content-Security-Policy', "script-src 'self' *.advisen.com 'unsafe-eval' 'unsafe-inline'; object-src 'self'");
+                cspHeader += " script-src 'self' *.advisen.com 'unsafe-eval' 'unsafe-inline'; object-src 'self'";
             }
-            res.header('Content-Security-Policy', "script-src 'self' *.advisen.com 'unsafe-eval' 'unsafe-inline'; object-src 'self'; connect-src 'self'");
+            res.header('Content-Security-Policy', cspHeader);
             res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
             res.header('X-Frame-Options', 'SAMEORIGIN');
             res.header('X-XSS-Protection', '1; mode=block');

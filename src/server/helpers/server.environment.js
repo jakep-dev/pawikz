@@ -33,15 +33,15 @@
     environment.socketIO.host = environment.client.protocol.concat('://', environment.client.domain, ':', environment.client.port);
     if(environment.client.protocol === 'https') {
         if( environment.client.port === '443') {
-            environment.connectSrc = 'wss://' + environment.client.domain;
+            environment.connectSrc = 'wss: ' + environment.client.domain;
         } else {
-            environment.connectSrc = 'wss://' + environment.client.domain + ':' + environment.client.port;
+            environment.connectSrc = 'wss: ' + environment.client.domain + ':' + environment.client.port;
         }
     } else if(environment.client.protocol === 'http') {
         if( environment.client.port === '80') {
-            environment.connectSrc = 'ws://' + environment.client.domain;
+            environment.connectSrc = 'ws: ' + environment.client.domain;
         } else {
-            environment.connectSrc = 'ws://' + environment.client.domain + ':' + environment.client.port;
+            environment.connectSrc = 'ws: ' + environment.client.domain + ':' + environment.client.port;
         }
     } else {
         environment.connectSrc = '';
