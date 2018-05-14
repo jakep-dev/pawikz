@@ -45,8 +45,7 @@
                         setRedisPath();
                         clientConfig.socketInfo.socket = io(clientConfig.socketInfo.socketCORSPath,
                             {
-                                transports: clientConfig.socketInfo.transports,
-                                forceNew: true
+                                transports: clientConfig.socketInfo.transports
                             }
                         );
                     } else {

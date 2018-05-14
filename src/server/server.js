@@ -77,7 +77,9 @@ function appStart(config, logging, logger, port) {
     //}));
     app.use(bodyParser.json({ limit: '100mb' }));
     
-    security.setupSecurity(app, isMultiThreading);
+    logger.debug('Using connectSrc = ' + config.connectSrc);
+    security.setupSecurity(app, isMultiThreading, config.connectSrc);
+
     //false for http
     //true for https
     var server = security.getServer(app, port, config.client.useCertificate,
