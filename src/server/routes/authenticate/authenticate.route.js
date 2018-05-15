@@ -114,16 +114,10 @@
 
             logger.debugRequest(args, req);
             var url = config.restcall.url + '/' +  service.name  + '/' + methodName;
-            var isRedis;
-            if(config.redis.setSocketIO) {
-                isRedis = true;
-            } else {
-                isRedis = false;
-            }
             client.get(url, args,
                 function (data, response) {
                     logger.logIfHttpError(url, args, data, response);
-                    data.isRedis = isRedis;
+                    data.info = config.froalaKey;
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',

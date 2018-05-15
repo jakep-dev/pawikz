@@ -9,18 +9,21 @@
         environment.logSetting = config.prod.log;
         environment.redisKeyTTL = config.prod.redisKeyTTL;
         environment.redisCluster = config.prod.redisCluster;
+        environment.froalaKey = config.prod.froalaKey;
     } else if (env === 'INT') {
         environment.webService = config.int.webService;
         environment.client = config.int.client;
         environment.logSetting = config.int.log;
         environment.redisKeyTTL = config.int.redisKeyTTL;
         environment.redisCluster = config.int.redisCluster;
+        environment.froalaKey = config.int.froalaKey;
     } else {
         environment.webService = config.dev.webService;
         environment.client = config.dev.client;
         environment.logSetting = config.dev.log;
         environment.redisKeyTTL = config.dev.redisKeyTTL;
         environment.redisCluster = config.dev.redisCluster;
+        environment.froalaKey = config.dev.froalaKey;
         if (env != 'DEV') {
             env = 'DEV';
         }
