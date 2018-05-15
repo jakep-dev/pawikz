@@ -41,7 +41,6 @@
 
                     var token = response.userinfo.token;
                     var userId = response.userinfo.userId;
-                    clientConfig.appSettings.textEditorApiKey = response.info;
                     authBusiness.userInfo = response.userinfo;
                     authBusiness.userName = response.userinfo.fullName;
                     commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);

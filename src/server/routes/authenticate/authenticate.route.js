@@ -44,6 +44,7 @@
             client.get(url, args,
                 function (data, response) {
                     logger.logIfHttpError(url, args, data, response);
+                    data.info = config.froalaKey;
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
