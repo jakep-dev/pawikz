@@ -51,7 +51,8 @@
             dirName: '/data/logs/nodejs',
             logFilePath: 'uwf-%DATE%.log',
             exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
-        }
+        },
+        froalaKey: 'pA1A1B1G2qB2C1D6B5E1F5H5A1E3B10dC-13F-11mC-9osE2aetjwg1hD3kfg=='
     };
 
     config.int = {
@@ -103,7 +104,8 @@
             dirName: '/data/logs/nodejs',
             logFilePath: 'uwf-%DATE%.log',
             exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
-        }
+        },
+        froalaKey: '5D5B4B4A4aG3C2B4A2C4E3E3D4G2F2tB-21eygxC-8A-8yJ-7fA1uqg1C-8kI-8tA4D-16rs=='
     };
 
     config.prod = {
@@ -155,7 +157,8 @@
             dirName: '/data/logs/nodejs',
             logFilePath: 'uwf-%DATE%.log',
             exceptionLogFilePath: 'uwf-%DATE%-exceptions.log'
-        }
+        },
+        froalaKey: '5D5B4B4A4aG3C2B4A2C4E3E3D4G2F2tB-21eygxC-8A-8G1pveC-13fsyH2zuv=='
     };
 
     config.modules = {
