@@ -16,9 +16,11 @@
             if($location.protocol() === 'http') {
                 path = 'ws';
                 port = 80;
+                clientConfig.socketInfo.secure = false;
             } else {
                 path = 'wss';
                 port = 443;
+                clientConfig.socketInfo.secure = true;
             }
             path += '://';
             path += $location.host();
@@ -45,8 +47,9 @@
                         setRedisPath();
                         clientConfig.socketInfo.socket = io(clientConfig.socketInfo.socketCORSPath,
                             {
-                                //forceNew: true,
+                                forceNew: true,
                                 reconnect: true,
+                                secure: clientConfig.socketInfo.secure,
                                 transports: clientConfig.socketInfo.transports
                             }
                         );
