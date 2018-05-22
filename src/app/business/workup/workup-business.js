@@ -75,10 +75,11 @@
                         istrackable: true,
                         url: ''
                     }, 'notify-create-workup-notification-center');
+                    $location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
                 }
             });
             var token =  store.get('x-session-token');
-            $location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
+            //$location.url('/dashboard/'+ userId +'/'+token+'/'+ true);
             dialog.notify('Creating Workup', 'Go to Notification Center ',
                 '<md-icon md-font-icon="icon-bell"></md-icon> <span> to open</span>',
                 null,

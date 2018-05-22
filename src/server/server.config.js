@@ -14,7 +14,7 @@
             domain: 'devcrm.advisen.com',
             port: '443',
             //loglevel: 1,
-            transports: ['websocket', 'polling'],
+            transports: ['polling'],
             useCertificate: false
         },
         redisKeyTTL: 14400,
