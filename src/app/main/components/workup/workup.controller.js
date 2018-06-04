@@ -8,9 +8,9 @@
 })();
 
 /** @ngInject */
-function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrumbBusiness,
-                          workupBusiness, templateBusiness, notificationBusiness,
-                          commonBusiness, dialog, store, clientConfig, $mdToast)
+function WorkUpController($rootScope, $stateParams, logger, breadcrumbBusiness,
+                          workupBusiness, notificationBusiness,
+                          clientConfig)
 {
     var vm = this;
 
@@ -22,14 +22,17 @@ function WorkUpController($rootScope, $scope, $stateParams, $location, breadcrum
 
     workupBusiness.initialize($stateParams.token);
     notificationBusiness.listenToSocket($stateParams.token, $stateParams.userId);
-    console.log('Initiate Create Workup for user - ', $stateParams.userId);
+    logger.log('Initiate Create Workup for user - ', $stateParams.userId);
 
-    clientConfig.socketInfo.socket.emit('init-socket', {
+    clientConfig.socketInfo.context = {
         token: $stateParams.token,
         userId: $stateParams.userId
-    }, function(data)
-    {
-        console.log('Calling CreateWorkup for companyId - ', $stateParams.companyId , ' templateId - ', $stateParams.templateId);
-        workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
-    });
+    }
+
+    clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
+        function(data) {
+            logger.log('Calling CreateWorkup for companyId - ', $stateParams.companyId , ' templateId - ', $stateParams.templateId);
+            workupBusiness.createWorkUp($stateParams.userId, $stateParams.companyId, $stateParams.templateId);
+        }
+    );
 }

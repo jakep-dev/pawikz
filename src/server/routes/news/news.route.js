@@ -36,14 +36,14 @@
 
         client.post(context.url, context.args,
             function (data, response) {
-                logger.logIfHttpError(context.url, context.args, data, response);
+                logger.logIfHttpErrorRequest(context.url, context.args, data, response, mnemonic.token);
                 context.results.data = data;
                 callback(null, context.results);
             }
         ).on('error',
             function(err) {
-                logger.error('[attachNewsArticles]Error');
-                logger.error(err);
+                logger.errorRequest('[attachNewsArticles]Error', mnemonic.token);
+                logger.errorRequest(err, mnemonic.token);
                 context.results.error = 'Error saving boormarked articles';
                 callback(null, context.results);
             }
@@ -75,7 +75,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.showArticleContent;
             }
 
@@ -88,13 +88,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[showArticleContent]Error');
-                    logger.error(err);
+                    logger.errorRequest('[showArticleContent]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -105,7 +105,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.search;
             }
 
@@ -124,13 +124,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[search]Error');
-                    logger.error(err);
+                    logger.errorRequest('[search]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -156,13 +156,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.post(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.data.ssnid);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[attachNewsArticles]Error');
-                    logger.error(err);
+                    logger.errorRequest('[attachNewsArticles]Error', args.data.ssnid);
+                    logger.errorRequest(err, args.data.ssnid);
                 }
             );
         }
@@ -173,7 +173,7 @@
             var methodName = '';
 
             if (!_.isUndefined(service) && !_.isNull(service)) {
-                logger.debug(service.name);
+                logger.debugRequest(service.name, req);
                 methodName = service.methods.getAttachedArticles;
             }
 
@@ -187,13 +187,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.get(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.parameters.ssnid);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getAttachedArticles]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getAttachedArticles]Error', args.parameters.ssnid);
+                    logger.errorRequest(err, args.parameters.ssnid);
                 }
             );
         }
@@ -220,13 +220,13 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.post(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, args.data.ssnid);
                     res.send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[deleteAttachedArticles]Error');
-                    logger.error(err);
+                    logger.errorRequest('[deleteAttachedArticles]Error', args.data.ssnid);
+                    logger.errorRequest(err, args.data.ssnid);
                 }
             );
         }

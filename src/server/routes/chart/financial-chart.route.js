@@ -38,14 +38,14 @@
         var url = config.restcall.url + '/' + context.service.name + '/' + context.methodName;
         client.post(url, context.args,
             function (data, response) {
-                logger.logIfHttpError(url, context.args, data, response);
+                logger.logIfHttpErrorRequest(url, context.args, data, response, mnemonic.token);
                 context.results.data = data.chartSettings;
                 callback(null, context.results);
             }
         ).on('error',
             function (err) {
-                logger.error('[saveInteractiveFinancialChart]Error');
-                logger.error(err);
+                logger.errorRequest('[saveInteractiveFinancialChart]Error', mnemonic.token);
+                logger.errorRequest(err, mnemonic.token);
                 context.results.error = 'Error saving interactive financial chart';
                 callback(null, context.results);
             }
@@ -77,16 +77,16 @@
 
             var ssnid = req.headers['x-session-token'];
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?ssnid=' + ssnid;
-            logger.debug(url);
+            logger.debugRequest(url, req);
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.status(response.statusCode).send(data.data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getFinancialChartRatioTypes]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getFinancialChartRatioTypes]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -101,16 +101,16 @@
 
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?company_id='
                 + req.body.company_id + '&ssnid=' + req.headers['x-session-token'];
-            logger.debug(url);
+            logger.debugRequest(url, req);
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.status(response.statusCode).send(data.data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getFinancialChartPeerAndIndustries]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getFinancialChartPeerAndIndustries]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -126,16 +126,16 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName + '?project_id='
                 + req.body.project_id + '&step_id=' + req.body.step_id + '&mnemonic=' + req.body.mnemonic + '&item_id=' 
                 + req.body.item_id + '&ssnid=' + req.headers['x-session-token'];
-            logger.debug(url);
+            logger.debugRequest(url, req);
             client.get(url,
                 function (data, response) {
-                    logger.logIfHttpError(url, null, data, response);
+                    logger.logIfHttpErrorRequest(url, null, data, response, req);
                     res.status(response.statusCode).send(data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getSavedFinancialChartData]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getSavedFinancialChartData]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }
@@ -168,22 +168,22 @@
             var url = config.restcall.url + '/' + service.name + '/' + methodName;
             client.post(url, args,
                 function (data, response) {
-                    logger.logIfHttpError(url, args, data, response);
+                    logger.logIfHttpErrorRequest(url, args, data, response, req);
                     if (data) {
                         if (data.data) {
-                            logger.debug('[getFinancialChartData]Return data size: ' + data.data.length);
+                            logger.debugRequest('[getFinancialChartData]Return data size: ' + data.data.length, req);
                         } else {
-                            logger.warn('[getFinancialChartData]Return data.data is null');
+                            logger.warnRequest('[getFinancialChartData]Return data.data is null', req);
                         }
                     } else {
-                        logger.warn('[getFinancialChartData]Return data is null');
+                        logger.warnRequest('[getFinancialChartData]Return data is null', req);
                     }                
                     res.send(data.data);
                 }
             ).on('error',
                 function (err) {
-                    logger.error('[getFinancialChartData]Error');
-                    logger.error(err);
+                    logger.errorRequest('[getFinancialChartData]Error', req);
+                    logger.errorRequest(err, req);
                 }
             );
         }

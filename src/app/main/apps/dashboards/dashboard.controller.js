@@ -9,13 +9,13 @@
 
 })();
 /** @ngInject */
-function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams, 
+function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $stateParams,
                              $compile, $location, $interval, $mdToast,
-                             DTColumnDefBuilder, DTColumnBuilder, DTOptionsBuilder, 
-                             store, toast, dialog, clientConfig,
-                             authBusiness, commonBusiness, notificationBusiness, templateBusiness, 
+                             DTColumnDefBuilder, DTColumnBuilder, DTOptionsBuilder,
+                             store, dialog, clientConfig,
+                             commonBusiness, notificationBusiness,
                              breadcrumbBusiness, dashboardBusiness, workupBusiness,
-                             dashboardService, workupService, authService)
+                             dashboardService, authService)
 {
     var vm = this;
     vm.companyId = 0;
@@ -131,7 +131,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     function toggleRedraw()
     {
         vm.isRedrawFromDelete = !vm.isRedrawFromDelete;
-    }    
+    }
 
     function recompileHtml(row, data, dataIndex) {
         $compile(angular.element(row).contents())($scope);
@@ -188,7 +188,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
                 var projectName = obj[0].attributes['projectName'].value;
                 deleteWorkup(projectId, projectName);
             }
-        }); 
+        });
 
 
         if($('#dashBoardDetails tbody tr:first td').length > 0) {
@@ -364,19 +364,19 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             var filterParam = {
                 userId: $stateParams.userId,
                 searchUserId: vm.userId,
-                searchCompanyId: vm.companyId, 
-                rowNum: start, 
-                perPage: length, 
+                searchCompanyId: vm.companyId,
+                rowNum: start,
+                perPage: length,
                 sortOrder: sortOrder,
-                sortFilter: sortFilter, 
-                searchFilter: searchFilter, 
+                sortFilter: sortFilter,
+                searchFilter: searchFilter,
                 projectId: $rootScope.projectId
             };
 
             dashboardService.processRemoveWorkUp(vm.selectedProjectId, filterParam).then(function(results)
             {
                 vm.selectedProjectId = null;
-                
+
                 var data = results.dashboard;
                 var deleted = results.delete;
                 var blankData = {
@@ -440,7 +440,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         ];
 
         // render data for browser resizing
-        var responsive = {details : 
+        var responsive = {details :
                 { renderer : dashboardBusiness.renderHtml }
             };
 
@@ -463,7 +463,7 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
             .withDOM('<"top padding-10" <"left"<"length"l>><"right"f>>rt<"top padding-10"<"left"<"info text-bold"i>><"right"<"pagination"p>>>');
 
         //Defining columns for dashboard
-        vm.dtColumns = [    
+        vm.dtColumns = [
             DTColumnBuilder.newColumn('companyName', 'Company Name'),
             DTColumnBuilder.newColumn('projectName', 'Work-up Name'),
             DTColumnBuilder.newColumn('createdBy', 'Created By'),
@@ -476,17 +476,19 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
     }
 
     function dashboardRenewalUpdate(data) {
-        $rootScope.toastTitle = 'WorkUp Renewal Completed!';
-        $rootScope.toastProjectId = data.projectId;
-        var obj = $('.renewStyle[projectId="' + data.projectId + '"]');
+        if(data.project_name) {
+            $rootScope.toastTitle = 'WorkUp Renewal Completed!';
+            $rootScope.toastProjectId = data.projectId;
+            $mdToast.show({
+                hideDelay: 5000,
+                position: 'bottom right',
+                controller: 'WorkUpToastController',
+                templateUrl: 'app/main/components/workup/toast/workup.toast.html'
+            });    
+        }
+        var obj = $('.renewStyle[projectId="' + data.old_project_id + '"]');
         var row = obj.closest('tr');
         row.removeClass('not-active');
-        $mdToast.show({
-            hideDelay: 5000,
-            position: 'bottom right',
-            controller: 'WorkUpToastController',
-            templateUrl: 'app/main/components/workup/toast/workup.toast.html'
-        });
 
         console.log('Renewal WorkUp');
         console.log(data);
@@ -500,12 +502,11 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         console.log(data);
 
         var workups = [];
-        if(data && data.length) {
-            workups.push.apply(workups, data);
-        }
-        else {
-            workups.push(data);
-        }
+        if(data) {
+			if(data.length > 0) {
+				workups.push.apply(workups, data);
+			}
+		}
 
         if(workups && _.size(workups) > 0)
         {
@@ -534,17 +535,20 @@ function DashboardController($rootScope, $scope, $mdSidenav, $mdMenu, $statePara
         }
     }
 
-    clientConfig.socketInfo.socket.on('workup-room-message', function(response)
-    {
-        if(response)
-        {
-            switch (response.type)
+    if(clientConfig.socketInfo.socket) {
+        clientConfig.socketInfo.socket.on('workup-room-message', 
+            function(response)
             {
-                case 'workup-info':
-                    workUpStatus(response.data);
-                    break;
+                if(response)
+                {
+                    switch (response.type)
+                    {
+                        case 'workup-info':
+                            workUpStatus(response.data);
+                            break;
+                    }
+                }
             }
-        }
-    });
-
+        );
+    }
 }

@@ -22,7 +22,7 @@
 
         var userDetails = store.get('user-info');
         var promiseSetupListener = null;
-        
+
         if(userDetails)
         {
             vm.userName = userDetails.fullName;
@@ -122,6 +122,9 @@
                 notificationBusiness.listenToDataRefreshStatus(userDetails.userId);
                 $interval.cancel(promiseSetupListener);
             } else {
+                if(!store.get('x-session-token')) {
+                    $interval.cancel(promiseSetupListener);
+                }
                 console.log('[setupListeners]userId not available.');
             }
         }

@@ -11,7 +11,7 @@
         .controller('LoginController', LoginController);
 
     /** @ngInject */
-    function LoginController($window, $scope, $location, $rootScope, clientConfig, authService,
+    function LoginController($window, $location, $rootScope, clientConfig, authService,
                              authBusiness, toast, store, Idle, commonBusiness)
     {
         var vm = this;
@@ -41,34 +41,33 @@
 
                     var token = response.userinfo.token;
                     var userId = response.userinfo.userId;
+                    authBusiness.userInfo = response.userinfo;
+                    authBusiness.userName = response.userinfo.fullName;
+                    commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
 
-                    if(clientConfig.socketInfo.socket.disconnected)
+                    store.set('user-info', authBusiness.userInfo);
+                    store.set('x-session-token', token);
+
+                    if(!clientConfig.socketInfo.socket || clientConfig.socketInfo.socket.disconnected)
                     {
-                        clientConfig.socketInfo.socket.connect();
+                        clientConfig.socketInfo.doConnect();
                     }
-
-                    clientConfig.socketInfo.socket.emit('init-socket', {
+                    clientConfig.socketInfo.context = {
                         token: response.userinfo.token,
                         userId: userId
-                    }, function(data)
-                    {
-                        if(data)
-                        {
-                            authBusiness.userInfo = response.userinfo;
-                            authBusiness.userName = response.userinfo.fullName;
-                            commonBusiness.emitWithArgument('UserFullName', response.userinfo.fullName);
-
-                            store.set('user-info', authBusiness.userInfo);
-                            store.set('x-session-token', token);
-                            var url = ('/dashboard/').concat(userId);
-                            $location.url(url);
-                            toast.simpleToast('Successfully logged in!');
+                    };
+                    clientConfig.socketInfo.socket.emit('init-socket', clientConfig.socketInfo.context,
+                        function(data) {
+                            if(data) {
+                                var url = ('/dashboard/').concat(userId);
+                                $location.url(url);
+                                toast.simpleToast('Successfully logged in!');
+                            } else {
+                                toast.simpleToast('Cannot open multiple sessions!');
+                                //dialog.status('app/main/pages/auth/login/dialog/login.dialog.html', false, false);
+                            }
                         }
-                        else {
-                            toast.simpleToast('Cannot open multiple sessions!');
-                            //dialog.status('app/main/pages/auth/login/dialog/login.dialog.html', false, false);
-                        }
-                    });
+                    );
                 }
             });
         }
