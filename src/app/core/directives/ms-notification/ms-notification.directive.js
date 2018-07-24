@@ -9,8 +9,8 @@
 
     /** @ngInject */
     function msNotificationController(toast,
-                                      $location, $interval, $scope, $window,
-                                      commonBusiness, templateBusiness, notificationBusiness, overviewBusiness
+                                      $location, $scope,
+                                      commonBusiness, templateBusiness, notificationBusiness
                                      )
     {
         var vm = this;
@@ -38,15 +38,14 @@
         function close(notification)
         {
             var not = _.findIndex(notificationBusiness.notifications, function (notify)
-           {
+            {
                console.log(parseInt(notify.id));
                console.log(parseInt(notification.id));
                if(notify.id === notification.id)
                {
                    return notify;
                }
-           });
-
+            });
             if(not > 0)
             {
                 notificationBusiness.notifications.splice(not, not);
@@ -55,7 +54,6 @@
             {
                 notificationBusiness.notifications.splice(not, 1);
             }
-
         }
 
         //Process Notification based on type
@@ -67,7 +65,9 @@
                     case 'Renewal':
                     case 'DataRefresh':
                     case 'Create-WorkUp':
-                        $location.url('/overview/' + notification.url);
+                        if(notification.status === 'complete') {
+                            $location.url('/overview/' + notification.url);
+                        }
                         notification.status = 'close';
                         break;
 
@@ -102,5 +102,4 @@
             templateUrl: 'app/core/directives/ms-notification/ms-notification.html'
         };
     }
-
 })();

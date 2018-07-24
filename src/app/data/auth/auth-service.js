@@ -54,6 +54,8 @@
                 dataType: "json",
             })
                 .then(function(data, status, headers, config) {
+                    clientConfig.appSettings.textEditorApiKey = data.data.info;
+                    delete data.data.info;
                     return data.data;
                 })
                 .catch(function(error) {
@@ -71,6 +73,8 @@
                 dataType: "json",
             })
             .then(function(data, status, headers, config) {
+                clientConfig.appSettings.textEditorApiKey = data.data.info;
+                delete data.data.info;
                 return data.data;
             })
             .catch(function(error) {

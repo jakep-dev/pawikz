@@ -43,10 +43,13 @@ gulp.task('html', ['inject', 'partials'], function ()
     return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
         .pipe($.inject(partialsInjectFile, partialsInjectOptions))
         .pipe(assets = $.useref.assets())
-        .pipe($.rev())
+
+        //remove output file renaming because files in every nodejs needs to be the same name
+        //.pipe($.rev())
+
         .pipe(jsFilter)
         .pipe($.ngAnnotate())
-        //.pipe($.uglify({ preserveComments: $.uglifySaveLicense })).on('error', conf.errorHandler('Uglify'))
+        .pipe($.uglify()).on('error', conf.errorHandler('Uglify'))
         .pipe(jsFilter.restore())
         .pipe(cssFilter)
         .pipe($.csso())
@@ -109,5 +112,12 @@ gulp.task('clean-all',['clean','clean-com'],function(done)
 
 });
 
-
 gulp.task('build', ['html', 'fonts', 'other']);
+
+gulp.task('test-js-files', 
+    function(done) {
+        return gulp.src(conf.paths.src + '/app/**/*.js')
+            .pipe($.uglify()).on('error', conf.errorHandler('Uglify'))
+            .pipe(gulp.dest(conf.paths.dist));
+    }
+);
